@@ -11,6 +11,7 @@ package edu.city.studentuml.applet;
 //Finally, class Application manages various utilities, such as opening/saving a project,
 //exporting a diagram to a graphics file, forward engineering code, checking diagram's
 //consistencies, etc, mainly by making use of other classes.
+//Alexander taking over
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.ImageExporter;
