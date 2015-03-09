@@ -1,0 +1,129 @@
+# simplerules.txt
+# Use # to comment a line
+# Use :- to define a fact
+# Use $ to define simplification
+
+:- DiagramModel belongsTo(this,getGraphicalElements.this)
+:- CCDModel diagram(this,'getDiagramName',"ccd")
+:- SDModel diagram(this,'getDiagramName',"sd")
+:- DCDModel diagram(this,'getDiagramName',"dcd")
+
+:- Association association(this,'getName')
+:- Association assocBetween(this,getClassA,getClassB,getDirection)
+:- AssociationGR responisbleFor(getAssociation,this)
+
+:- Aggregation aggregation(this,'getName')
+:- Aggregation aggregBetween(this,getWhole,getPart)
+
+:- Dependency dependBetween(this,getFrom,getTo)
+:- DependencyGR responisbleFor(getDependency,this)
+
+:- Generalization generBetween(this,getBaseClass,getSuperClass)
+:- GeneralizationGR responisbleFor(getGeneralization,this)
+
+:- ConceptualClass concept(this,'getName')
+:- ConceptualClassGR responsibleFor(getConceptualClass,this)
+
+:- DesignClass class(this,'getName')
+:- DesignClass hasMethod(this,getMethods.this,'this.getName')
+:- ClassGR responsibleFor(getDesignClass,this)
+
+:- Attribute attribute(this,getType,getVisibilityName)
+
+:- Method method(this,'getName','getReturnTypeAsString')
+:- Method methodParam(this,getParameters.this,'this.getName','this.getTypeAsString')
+
+:- Interface interface(this)
+
+:- SDObject objectClass(this,getDesignClass)
+:- SDObjectGR responsibleFor(getSDObject,this)
+:- SDObject sdObject(this,'getName')
+
+:- MultiObject sdObject(this,'getName')
+:- MultiObjectGR responsibleFor(getMultiObject,this)
+:- MultiObject objectClass(this,getDesignClass)
+:- MultiObject isMultiObject(this)
+
+:- SDMessage messBetween(this,getSource,getTarget,'getName')
+:- CallMessage callMessageParam(this,getParameters.this,'this.toString')
+:- CallMessage callMessage(this,getSource,getTarget,'getName','getReturnValueAsString','getRank')
+
+
+
+:- CreateMessage createMessage(this,getSource,getTarget,'getRank')
+
+
+######################################################################################################
+# SIMPLIFICATIONS
+
+$ hasMethod(Child,MethodObject,MethodName) :- generBetween(_,Child,Parent),hasMethod(Parent,MethodObject,MethodName)
+
+$ getCCDConcept(CCDConcept) :- getCCDConcept(CCDConcept,_)
+$ getCCDConcept(CCDConcept,ClassName) :- diagram(CCD,_,ccd),belongsTo(CCD,ConceptGR),responsibleFor(CCDConcept,ConceptGR),concept(CCDConcept,ClassName)
+$ getCCDConcept(CCDConcept,ConceptGR,ClassName,CCD) :- diagram(CCD,_,ccd),belongsTo(CCD,ConceptGR),responsibleFor(CCDConcept,ConceptGR),concept(CCDConcept,ClassName)
+
+$ getSDClass(SDObject,SDObjectC,SD) :- diagram(SD,_,sd),belongsTo(SD,SDGR),responsibleFor(SDObject,SDGR),objectClass(SDObject,SDObjectC)  
+#$ getDCDClass(DCDClass) :- diagram(DCD,_,dcd),belongsTo(DCD,DCDGR),responsibleFor(DCDClass,DCDGR),class(DCDClass,_)
+$ getDCDClass(DCDClass) :- getDCDClass(DCDClass,_)
+$ getDCDClass(DCDClass,ClassName) :- diagram(DCD,_,dcd),belongsTo(DCD,DCDGR),responsibleFor(DCDClass,DCDGR),class(DCDClass,ClassName)
+$ getDCDClass(DCDClass,DCDGR,ClassName,DCD) :- diagram(DCD,_,dcd),belongsTo(DCD,DCDGR),responsibleFor(DCDClass,DCDGR),class(DCDClass,ClassName)
+
+$ getSDObject(SDObject) :- diagram(SD,_,sd),belongsTo(SD,SDGR),responsibleFor(SDObject,SDGR) 
+
+$ getSDObjectFor(SDDiagram,SDObject):- diagram(SDDiagram,_,sd),belongsTo(SDDiagram,SDGR),responsibleFor(SDObject,SDGR)
+
+$ getMethodParamsFor(DesignClass,MethodName,ParamList) :- hasMethod(DesignClass,Method,MethodName),findall(ParamName,methodParam(Method,_,ParamName,_),ParamList)
+$ getCallMessageParamsFor(DesignClass,CallMessageName,ParamList,RV) :- objectClass(SDObject,DesignClass),not(isMultiObject(SDObject)),callMessage(Message,_,SDObject,CallMessageName,RV,_),findall(MessageParamName,callMessageParam(Message,_,MessageParamName),ParamList)
+
+
+
+#needed for getting the last element of a list (jLog prolog lacks the list command last(List,Elem))
+$ tail([E|[]],E)
+$ tail([_|Tail],E) :- tail(Tail,E)
+
+
+######################################################################################################
+# Rules definitions
+# Rule name (should be smth descriptive and explanatory, no duplicate names allowed)
+# expression - prolog expression that defines a constrain, returns true if the constrain is satisfied
+# result - (all) for all existent cases, (first) for the first case, prevents backtracking
+
+Unnamed conceptual class in CCD {
+	expression : diagram(CCD,CCDName,ccd),belongsTo(CCD,ConceptGR),responsibleFor(CCDConcept,ConceptGR),concept(CCDConcept,ClassName),ClassName=''
+	result : all
+	severity : warning
+	message : There is an unnamed conceptual class in CCD diagram %CCDName . You must provide name for the class.
+}
+
+Unnamed class in DCD {
+	expression : diagram(DCD,DCDName,dcd),belongsTo(DCD,ClassGR),responsibleFor(DCDClass,ClassGR),class(DCDClass,ClassName),ClassName = ''
+	result : all
+	severity : warning
+	message : There is an unnamed class in DCD diagram %DCDName . You must provide name for the class.
+}
+
+Unnamed object in SD {
+	expression : class(SDclass,CLName),getSDClass(SDobject,SDclass,SD),diagram(SD,SDname,sd),sdObject(SDobject,OName),OName = ''
+	result : all
+	severity : warning
+	message : There is an unnamed object of class %CLName in SD diagram %SDname
+}
+
+Nonexistent class in DCD {
+	expression : getSDClass(_,SDclass,SD),not(getDCDClass(SDclass)),class(SDclass,CLName),diagram(DCD,DCDname,dcd)
+	result : all
+	severity : warning
+	message : There does not exist a class %CLName in DCD Diagram %DCDname
+	action : DCD.addC(SDclass)
+}
+
+
+
+Method missing {
+	expression : getCallMessageParamsFor(SomeClass,Name,List1,RV),getDCDClass(SomeClass,_,SCname,_),((getMethodParamsFor(SomeClass,Name,List),List1 \= List,hasMethod(SomeClass,_,Name));(not(hasMethod(SomeClass,_,Name))))
+	result : all
+	severity : error
+	message : Method missing for class %SCname in DCD: method name %Name with arguments %List1 and return value %RV
+}
+
+

@@ -1,0 +1,48 @@
+package edu.city.studentuml.model.domain;
+
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//ReturnMessage.java
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+import org.w3c.dom.Element;
+
+public class ReturnMessage extends SDMessage implements IXMLCustomStreamable {
+
+    private String name;
+
+    public ReturnMessage(RoleClassifier from, RoleClassifier to, String n) {
+        super(from, to);
+        name = n;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String n) {
+        name = n;
+    }
+
+    public String toString() {
+        return getRank() + ": " + name;
+    }
+
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // TODO Auto-generated method stub
+        setName(node.getAttribute("name"));
+    }
+
+    public void streamToXML(Element node, XMLStreamer streamer) {
+        // TODO Auto-generated method stub
+        node.setAttribute("name", getName());
+
+        node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
+        node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
+    }
+
+    public ReturnMessage clone() {
+        return new ReturnMessage(getSource(), getTarget(), getName());
+    }
+}

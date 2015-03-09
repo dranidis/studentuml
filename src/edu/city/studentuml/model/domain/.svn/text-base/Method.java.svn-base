@@ -1,0 +1,222 @@
+package edu.city.studentuml.model.domain;
+
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ramollari Ervin
+//Method.java
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.XMLStreamer;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.w3c.dom.Element;
+
+public class Method implements Serializable, IXMLCustomStreamable {
+
+    // static integer constants defining scope
+    public static final int INSTANCE = 1;
+    public static final int CLASSIFIER = 2;
+    // static integer constants defining visibility
+    public static final int PRIVATE = 1;
+    public static final int PUBLIC = 2;
+    public static final int PROTECTED = 3;
+    public GenericOperation genericOperation;
+    private int scope;         // 1 = instance, 2 = classifier
+    private int visibility;    // 1 = private, 2 = public, 3 = protected
+    private Type returnType;
+    private NotifierVector parameters;
+
+    public Method(GenericOperation go) {
+        genericOperation = go;
+        scope = INSTANCE;
+        visibility = PUBLIC;
+        returnType = DataType.VOID;
+        parameters = new NotifierVector();
+    }
+
+    public Method(String name) {
+        this(new GenericOperation(name));
+    }
+
+    // 'set' methods
+    public void setGenericOperation(GenericOperation go) {
+        genericOperation = go;
+    }
+
+    public void setName(String name) {
+        genericOperation.setName(name);
+    }
+
+    public void setScope(int sc) {
+        if (sc == INSTANCE) {
+            scope = sc;
+        } else {
+            scope = CLASSIFIER;
+        }
+    }
+
+    public void setVisibility(int vis) {
+        if (vis == PRIVATE) {
+            visibility = vis;
+        } else if (vis == PUBLIC) {
+            visibility = vis;
+        } else {
+            visibility = PROTECTED;
+        }
+    }
+
+    public void setReturnType(Type dt) {
+        returnType = dt;
+    }
+
+    public void addParameter(MethodParameter p) {
+        parameters.add(p);
+    }
+
+    public void removeParameter(MethodParameter p) {
+        parameters.remove(p);
+    }
+
+    public void removeParameter(int index) {
+        try {
+            parameters.remove(index);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return;
+        }
+    }
+
+    // 'get' methods
+    public GenericOperation getGenericOperation() {
+        return genericOperation;
+    }
+
+    public String getName() {
+        return genericOperation.getName();
+    }
+
+    public int getScope() {
+        return scope;
+    }
+
+    public int getVisibility() {
+        return visibility;
+    }
+
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    public Vector getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Vector param) {
+        parameters.clear();
+        parameters = NotifierVector.from(param);
+    }
+
+    public MethodParameter getParameter(int index) {
+        MethodParameter p;
+
+        try {
+            p = (MethodParameter) parameters.elementAt(index);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+
+        return p;
+    }
+
+    public String toString() {
+        return getVisibilityString() + getNameString() + "(" + getParametersString() + ")" + getReturnTypeString();
+    }
+
+    public String getVisibilityString() {
+        if (visibility == PRIVATE) {
+            return "-";
+        } else if (visibility == PUBLIC) {
+            return "+";
+        } else {
+            return "#";
+        }
+    }
+
+    public String getNameString() {
+        return getName();
+    }
+
+    public String getParametersString() {
+        String parametersString = "";
+        Iterator iterator = parameters.iterator();
+        MethodParameter parameter;
+        int i = 0;    // keeps track if it is the first iteration
+
+        while (iterator.hasNext()) {
+            parameter = (MethodParameter) iterator.next();
+
+            if (i == 0) {
+                parametersString += parameter.toString();
+            } else {
+                parametersString = parametersString + ", " + parameter.toString();
+            }
+
+            i++;
+        }
+
+        return parametersString;
+    }
+
+    public String getReturnTypeString() {
+        return " : " + returnType.getName();
+    }
+
+    public String getReturnTypeAsString() {
+        return returnType.getName();
+    }
+
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // TODO Auto-generated method stub
+        setName(node.getAttribute("name"));
+        setVisibility(Integer.parseInt(node.getAttribute("visibility")));
+        setScope(Integer.parseInt(node.getAttribute("scope")));
+
+        String thistype = node.getAttribute("returntype");
+        returnType = new DataType(thistype);
+        parameters.clear();
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+    }
+
+    public void streamToXML(Element node, XMLStreamer streamer) {
+        // TODO Auto-generated method stub
+        node.setAttribute("name", getName());
+
+        node.setAttribute("returntype", returnType.getName());
+        node.setAttribute("scope", Integer.toString(getScope()));
+        node.setAttribute("visibility", Integer.toString(getVisibility()));
+        streamer.streamObjects(streamer.addChild(node, "parameters"), parameters.iterator());
+    }
+
+    private void setReturnTypeByName(String dt) {
+        returnType = new DataType(dt);
+    }
+
+    public Method clone() {
+        Method copyMethod = new Method(this.getName());
+        copyMethod.setScope(this.getScope());
+        copyMethod.setVisibility(this.getVisibility());
+
+        if (this.getReturnType() != null) {
+            copyMethod.setReturnTypeByName(this.returnType.getName());
+        }
+
+        MethodParameter parameter;
+        Iterator parameterIterator = parameters.iterator();
+        while (parameterIterator.hasNext()) {
+            parameter = (MethodParameter) parameterIterator.next();
+            copyMethod.addParameter(parameter.clone());
+        }
+
+        return copyMethod;
+    }
+}
