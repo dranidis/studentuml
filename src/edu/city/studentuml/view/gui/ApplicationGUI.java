@@ -589,7 +589,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         //scrollPane_f = new JScrollPane();
         //scrollPane_f.setViewportView(factsTree);
-
         tabbedPane.addTab("Problems", null, panel, null);
         //tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile), null);
         //tabbedPane.addTab("Facts", null, scrollPane_f, null);
@@ -825,41 +824,54 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * depending on the type integer
      */
     public void createNewInternalFrame(int type) {
-        if (type == DiagramModel.UCD) {
-            String modelName = JOptionPane.showInputDialog("Use Case Diagram Name: ");
-            UCDModel model = new UCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.SSD) {
-            String modelName = JOptionPane.showInputDialog("System Sequence Diagram Name: ");
-            SSDModel model = new SSDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.CCD) {
-            String modelName = JOptionPane.showInputDialog("Conceptual Class Diagram Name: ");
-            CCDModel model = new CCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.SD) {
-            String modelName = JOptionPane.showInputDialog("Sequence Diagram Name: ");
-            SDModel model = new SDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.DCD) {
-            String modelName = JOptionPane.showInputDialog("Design Class Diagram Name: ");
-            DCDModel model = new DCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.AD) {
-            String modelName = JOptionPane.showInputDialog("Activity Diagram Name: ");
-            ADModel model = new ADModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } //else if (type == DiagramModel.STATE) {
-            //handle state internal frame
-        //}
+        String dialogText;
+        DiagramModel model;
+        switch (type) {
+            case DiagramModel.UCD:
+                dialogText = "Use Case Diagram Name: ";
+                break;
+            case DiagramModel.SSD:
+                dialogText = "System Sequence Diagram Name:";
+                break;
+            case DiagramModel.SD:
+                dialogText = "Sequence Diagram Name: ";
+                break;
+            case DiagramModel.CCD:
+                dialogText = "Conceptual Class Diagram Name: ";
+                break;
+            case DiagramModel.DCD:
+                dialogText = "Design Class Diagram Name: ";
+                break;
+            case DiagramModel.AD:
+                dialogText = "Activity Diagram Name: ";
+                break;
+            default:
+                dialogText = "";
+        }
+        String modelName = JOptionPane.showInputDialog(dialogText);
+        if ((modelName != null) && (modelName.length() > 0)) {
+            if (type == DiagramModel.SSD) {
+                model = new SSDModel(modelName, umlProject);
 
-        setSaved(false);
+            } else if (type == DiagramModel.SD) {
+                model = new SDModel(modelName, umlProject);
+
+            } else if (type == DiagramModel.CCD) {
+                model = new CCDModel(modelName, umlProject);
+
+            } else if (type == DiagramModel.DCD) {
+                model = new DCDModel(modelName, umlProject);
+            } else if (type == DiagramModel.AD) {
+                model = new ADModel(modelName, umlProject);
+            } else if (type == DiagramModel.UCD) {
+                model = new UCDModel(modelName, umlProject);
+            } else {
+                return;
+            }
+            model.addObserver(this);
+            addInternalFrame(model);
+            setSaved(false);
+        }
     }
 
     public void resizeView() {
@@ -975,7 +987,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (model instanceof ADModel) {
             f = new ADInternalFrame((ADModel) model);
         } //else if (model instanceof StateModel) {
-            //f = new StateInternalFrame((StateModel) model);
+        //f = new StateInternalFrame((StateModel) model);
         //}
 
         if (R != null) {
@@ -1044,7 +1056,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
             } //else if (f instanceof StateInternalFrame) {
-                //stateFrames.add(f);
+            //stateFrames.add(f);
             //}
         }
 
@@ -1061,7 +1073,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (type == DiagramModel.AD) {
             return adFrames;
         } //else if () {
-            //return stateFrames;
+        //return stateFrames;
         //}
 
         return new Vector();
@@ -1186,6 +1198,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * Below methods are used for remembering the tree expansion state for messageTree
      * is path1 descendant of path2
      */
+
     public static boolean isDescendant(TreePath path1, TreePath path2) {
         int count1 = path1.getPathCount();
         int count2 = path2.getPathCount();
@@ -1525,7 +1538,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             //validateSD_DCDButton = new JButton(validateSD_DCDIcon);
             //validateSD_DCDButton.setToolTipText("Validate SD against DCD");
             //validateSD_DCDButton.addActionListener(this);
-
             addSeparator();
 
             ImageIcon reloadIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "reload.gif"));
