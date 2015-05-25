@@ -812,7 +812,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         DiagramModel model;
         switch (type) {
             case DiagramModel.SSD:
-                dialogText = "System Sequence Diagram Name test:";
+                dialogText = "System Sequence Diagram Name :";
                 break;
             case DiagramModel.SD:
                 dialogText = "Sequence Diagram Name: ";

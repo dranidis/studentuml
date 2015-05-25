@@ -57,6 +57,7 @@ public class ApplicationFrame extends ApplicationGUI {
         SystemWideObjectNamePool.getInstance().clear();
         SystemWideObjectNamePool.getInstance().reload();
         SystemWideObjectNamePool.umlProject = umlProject;
+        umlProject.setSaved(true);
     }
 
     private void setFileName(String name) {
@@ -96,7 +97,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
         umlProject.loadFromXML(file);
 
-        setSaved(true);
+        umlProject.setSaved(true);
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         repositoryTreeView.setUMLProject(umlProject);
@@ -132,7 +133,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
             setFilePath(path);
             setFileName(path.substring(path.lastIndexOf('\\') + 1));
-            setSaved(true);
+            umlProject.setSaved(true);
         }
     }
 
@@ -157,7 +158,7 @@ public class ApplicationFrame extends ApplicationGUI {
         setFileName(fileName);
 
         umlProject.getInstance().streamToXML(getFilePath());
-        setSaved(true);
+        umlProject.setSaved(true);
     }
 
     //ZASTO STRING
