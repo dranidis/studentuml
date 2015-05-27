@@ -128,7 +128,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         actorInstanceDialog = new JDialog(owner, true);
         actorInstanceDialog.getContentPane().add(this);
         actorInstanceDialog.setTitle(title);
-        actorInstanceDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        actorInstanceDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         actorInstanceDialog.pack();
         actorInstanceDialog.setResizable(false);
         actorInstanceDialog.setLocationRelativeTo(owner);

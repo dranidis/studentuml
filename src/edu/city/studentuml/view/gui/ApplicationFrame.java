@@ -6,10 +6,12 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
+import java.io.File;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -41,6 +43,23 @@ public class ApplicationFrame extends ApplicationGUI {
     }
 
     @Override
+    public void renameProject() {
+        if (umlProject == null) {
+            return;
+        }
+        String projectName = JOptionPane.showInputDialog("Enter project name: ");
+        if ((projectName != null) && (projectName.length() > 0)) {
+            projectName += ".xml";
+            if (getFilePath() != null && !getFilePath().equalsIgnoreCase("")) {
+                String newFilePath = getFilePath().replace(getFileName(), projectName);
+                saveProject();
+                umlProject.setSaved(true);
+            }
+            setFileName(projectName);
+        }
+    }
+
+    @Override
     public void newProject() {
         if (!closeProject()) {
             return;
@@ -53,7 +72,10 @@ public class ApplicationFrame extends ApplicationGUI {
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         umlProject.setUser(DESKTOP_USER);
-        setFileName("New Project");
+        String projectName = JOptionPane.showInputDialog("Enter project name: ");
+        if ((projectName != null) && (projectName.length() > 0)) {
+            setFileName(projectName + ".xml");
+        }
         SystemWideObjectNamePool.getInstance().clear();
         SystemWideObjectNamePool.getInstance().reload();
         SystemWideObjectNamePool.umlProject = umlProject;
@@ -141,11 +163,19 @@ public class ApplicationFrame extends ApplicationGUI {
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
         //System.out.println(SystemWideObjectNamePool.getInstance().isRuntimeChecking());
+        xmlFileChooser.setSelectedFile(new File(getFileName()));
         int response = xmlFileChooser.showSaveDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
         }
-
+        boolean exists = (xmlFileChooser.getSelectedFile().exists());
+        if (exists) {
+            int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?", "Confirm",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (existsResponse == JOptionPane.NO_OPTION || existsResponse == JOptionPane.CLOSED_OPTION) {
+                xmlFileChooser.setSelectedFile(new File(getFileName()));
+            }
+        }
         String fileName = xmlFileChooser.getSelectedFile().getName();
         String filePath = xmlFileChooser.getSelectedFile().getAbsolutePath();
 

@@ -126,7 +126,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         objectDialog = new JDialog(owner, true);
         objectDialog.getContentPane().add(this);
         objectDialog.setTitle(title);
-        objectDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        objectDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         objectDialog.pack();
         objectDialog.setResizable(false);
         objectDialog.setLocationRelativeTo(owner);

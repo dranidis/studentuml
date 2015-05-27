@@ -75,7 +75,7 @@ public class ControlFlowEditor extends JPanel implements ActionListener {
         controlFlowDialog = new JDialog(owner, true);
         controlFlowDialog.getContentPane().add(this);
         controlFlowDialog.setTitle(title);
-        controlFlowDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        controlFlowDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         controlFlowDialog.pack();
         controlFlowDialog.setResizable(false);
         controlFlowDialog.setLocationRelativeTo(owner);

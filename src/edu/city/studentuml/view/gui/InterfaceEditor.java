@@ -118,7 +118,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
         interfaceDialog = new JDialog(owner, true);
         interfaceDialog.getContentPane().add(this);
         interfaceDialog.setTitle(title);
-        interfaceDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        interfaceDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         interfaceDialog.pack();
         interfaceDialog.setResizable(false);
         interfaceDialog.setLocationRelativeTo(owner);

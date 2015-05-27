@@ -198,6 +198,10 @@ public class ApplicationApplet extends ApplicationGUI {
             return false;
         }
     }
+    
+        @Override
+    public void renameProject() {
+    }
 
     // NEW SOLUTION TO EXERCISE
     public void newSolution() {

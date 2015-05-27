@@ -126,7 +126,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         multiObjectDialog = new JDialog(owner, true);
         multiObjectDialog.getContentPane().add(this);
         multiObjectDialog.setTitle(title);
-        multiObjectDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        multiObjectDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         multiObjectDialog.pack();
         multiObjectDialog.setResizable(false);
         multiObjectDialog.setLocationRelativeTo(owner);

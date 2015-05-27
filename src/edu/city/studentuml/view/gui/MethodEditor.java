@@ -161,7 +161,7 @@ public class MethodEditor extends JPanel implements ActionListener {
         methodDialog = new JDialog(owner, true);
         methodDialog.getContentPane().add(this);
         methodDialog.setTitle(title);
-        methodDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        methodDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         methodDialog.pack();
         methodDialog.setResizable(false);
         methodDialog.setLocationRelativeTo(owner);

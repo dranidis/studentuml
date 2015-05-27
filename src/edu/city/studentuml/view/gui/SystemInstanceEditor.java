@@ -128,7 +128,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         systemInstanceDialog = new JDialog(owner, true);
         systemInstanceDialog.getContentPane().add(this);
         systemInstanceDialog.setTitle(title);
-        systemInstanceDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        systemInstanceDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         systemInstanceDialog.pack();
         systemInstanceDialog.setResizable(false);
         systemInstanceDialog.setLocationRelativeTo(owner);

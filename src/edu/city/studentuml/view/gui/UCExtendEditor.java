@@ -121,7 +121,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         ucExtendDialog = new JDialog(owner, true);
         ucExtendDialog.getContentPane().add(this);
         ucExtendDialog.setTitle(title);
-        ucExtendDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        ucExtendDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         ucExtendDialog.pack();
         ucExtendDialog.setResizable(false);
         ucExtendDialog.setLocationRelativeTo(owner);

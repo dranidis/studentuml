@@ -159,7 +159,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         objectNodeDialog = new JDialog(owner, true);
         objectNodeDialog.getContentPane().add(this);
         objectNodeDialog.setTitle(title);
-        objectNodeDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        objectNodeDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         objectNodeDialog.pack();
         objectNodeDialog.setResizable(false);
         objectNodeDialog.setLocationRelativeTo(owner);

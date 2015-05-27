@@ -181,7 +181,7 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         associationDialog = new JDialog(owner, true);
         associationDialog.getContentPane().add(this);
         associationDialog.setTitle(title);
-        associationDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        associationDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         associationDialog.pack();
         associationDialog.setResizable(false);
         associationDialog.setLocationRelativeTo(owner);

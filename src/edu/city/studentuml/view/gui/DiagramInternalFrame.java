@@ -65,7 +65,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 view.setSize(new Dimension(newWidth, newHeight));
             }
         });
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
     }
 

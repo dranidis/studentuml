@@ -195,7 +195,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         classDialog = new JDialog(owner, true);
         classDialog.getContentPane().add(this);
         classDialog.setTitle(title);
-        classDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        classDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);

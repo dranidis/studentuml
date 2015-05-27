@@ -243,7 +243,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         associationClassDialog = new JDialog(owner, true);
         associationClassDialog.getContentPane().add(this);
         associationClassDialog.setTitle(title);
-        associationClassDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        associationClassDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         associationClassDialog.pack();
         associationClassDialog.setResizable(false);
         associationClassDialog.setLocationRelativeTo(owner);

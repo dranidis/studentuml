@@ -117,7 +117,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         parameterDialog = new JDialog(owner, true);
         parameterDialog.getContentPane().add(this);
         parameterDialog.setTitle(title);
-        parameterDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        parameterDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         parameterDialog.pack();
         parameterDialog.setResizable(false);
         parameterDialog.setLocationRelativeTo(owner);
