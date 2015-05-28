@@ -300,8 +300,8 @@ public abstract class SelectionController {
         }
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
-        for (int i = 0; i < selectedElements.size(); i++) {
-            deleteElement(selectedElements.get(i));
+        for (GraphicalElement selectedElement : selectedElements) {
+            deleteElement(selectedElement);
         }
         selectedElements.clear();
     }

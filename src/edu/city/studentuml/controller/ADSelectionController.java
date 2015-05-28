@@ -309,10 +309,12 @@ public class ADSelectionController extends SelectionController {
         UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
         
         model.removeGraphicalElement(selectedElement);
+        synchronized(this){
         for (Object o : model.getGraphicalElements()) {
             if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
                 model.removeGraphicalElement((UMLNoteGR) o);
             }
+        }
         }
         parentComponent.setSelectionMode();
         
