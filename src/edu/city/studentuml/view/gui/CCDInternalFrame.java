@@ -50,7 +50,7 @@ public class CCDInternalFrame extends DiagramInternalFrame {
         getContentPane().add(sp, BorderLayout.WEST);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, "ConceptualClassGR"));
-
+        //Let user specify this, or load
         setSize(550, 450);
     }
 

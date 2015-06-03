@@ -211,7 +211,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         showArrowCheckBox.setSelected(a.getShowArrow());
 
         // initialize the direction combo box
-        if (a.getDirection() == Association.BIDIRECTIONAL) {
+        if (a.getDirection() == Association.BIDIRECTIONAL_FIX) {
             directionComboBox.setSelectedIndex(0);
         } else if (a.getDirection() == Association.AB) {
             directionComboBox.setSelectedIndex(1);
@@ -270,7 +270,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
 
     public int getDirection() {
         if (directionComboBox.getSelectedIndex() == 0) {
-            return Association.BIDIRECTIONAL;
+            return Association.BIDIRECTIONAL_FIX;
         } else if (directionComboBox.getSelectedIndex() == 1) {
             return Association.AB;
         } else {
