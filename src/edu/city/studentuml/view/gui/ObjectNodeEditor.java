@@ -1,5 +1,6 @@
 package edu.city.studentuml.view.gui;
 
+import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.State;
@@ -18,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -48,10 +50,11 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     private JTextField objectNameField;
     private JPanel objectTypePanel;
     private JPanel cardPanel;
-    private JPanel emptyPanel;
     private JPanel nonemptyPanel;
     private JLabel addObjectTypeLabel;
     private JButton addObjectTypeButton;
+    private JButton editObjectTypeButton;
+    private JButton deleteObjectTypeButton;
     private JLabel objectTypeLabel;
     private JComboBox objectTypeComboBox;
     private JPanel statesPanel;
@@ -92,14 +95,18 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         objectTypePanel.add(objectTypeComboBox);
 
         cardPanel = new JPanel(new CardLayout());
-        emptyPanel = new JPanel();
         nonemptyPanel = new JPanel(new FlowLayout());
-        addObjectTypeLabel = new JLabel("Add new object type: ");
+        addObjectTypeLabel = new JLabel("Object type: ");
         addObjectTypeButton = new JButton("Add...");
         addObjectTypeButton.addActionListener(this);
+        editObjectTypeButton = new JButton("Edit...");
+        editObjectTypeButton.addActionListener(this);
+        deleteObjectTypeButton = new JButton("Delete");
+        deleteObjectTypeButton.addActionListener(this);
         nonemptyPanel.add(addObjectTypeLabel);
         nonemptyPanel.add(addObjectTypeButton);
-        cardPanel.add("empty", emptyPanel);
+        nonemptyPanel.add(editObjectTypeButton);
+        nonemptyPanel.add(deleteObjectTypeButton);
         cardPanel.add("nonempty", nonemptyPanel);
 
         centerPanel.add(objectNamePanel);
@@ -177,7 +184,11 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public Type getType() {
-        return (Type) types.elementAt(objectTypeComboBox.getSelectedIndex());
+        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+            return null;
+        } else {
+            return type;
+        }
     }
 
     // initialize the text fields and other components with the
@@ -195,7 +206,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             type = objectNode.getType();
             // initialize the types combo box
             if (!isInList(type, types)) {
-                types.add(0, type);
+                types.add(type);
             }
             Type t;
             Iterator iterator = types.iterator();
@@ -204,11 +215,9 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
                 if ((t != null) && !t.getName().equals("")) {
                     objectTypeComboBox.addItem(t.getName());
-                } else {
-                    objectTypeComboBox.addItem("(unnamed)");
                 }
             }
-
+            objectTypeComboBox.addItem("(unnamed)");
             objectTypeComboBox.setSelectedIndex(types.indexOf(type));
             updateAddTypePanel();
 
@@ -236,13 +245,13 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         return false;
     }
 
-    public void addNewType() {
+    public String addNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
         ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {
-            return;
+            return "fail";
         }
 
         DesignClass newClass = new DesignClass(classNameEditor.getName());
@@ -252,10 +261,11 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+            return "fail";
         } else {
-            type = newClass;
-            types.set(0, type);
+            types.add(newClass);
             repository.addClass(newClass);
+            return newClass.getName();
         }
     }
 
@@ -317,9 +327,20 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         updateStatesList();
     }
 
+    private void setSelectedType() {
+        System.out.println("Selected: " + objectTypeComboBox.getSelectedItem().toString());
+        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+            type = null;
+        } else {
+            type = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
+            System.out.println("type is: " + type.getName());
+        }
+    }
+
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton)
                 || (event.getSource() == objectNameField)) {
+            setSelectedType();
             objectNodeDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
@@ -331,10 +352,72 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         } else if (event.getSource() == deleteStateButton) {
             deleteState();
         } else if (event.getSource() == addObjectTypeButton) {
-            addNewType();
-            updateComboBox();
-            updateAddTypePanel();
+            String index = addNewType();
+            if (!index.equals("fail")) {
+                updateComboBox(index);
+                updateAddTypePanel();
+            }
+        } else if (event.getSource() == editObjectTypeButton) {
+            String index = editType();
+            if (!index.equals("fail")) {
+                updateComboBox(index);
+            }
+        } else if (event.getSource() == deleteObjectTypeButton) {
+            deleteType();
+            updateComboBox("(unnamed)");
         }
+    }
+
+    private String editType() {
+        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+            return "fail";
+        }
+
+        Type t = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
+        ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+
+        // show the class editor dialog and check whether the user has pressed cancel
+        if (!classNameEditor.showDialog(this, "Class Editor")) {
+            return "fail";
+        }
+
+        DesignClass newClass = new DesignClass(classNameEditor.getName());
+
+        if ((repository.getDesignClass(newClass.getName()) != null)
+                && !newClass.getName().equals("")) {
+            JOptionPane.showMessageDialog(null,
+                    "There is an existing class with the given name already!\n",
+                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+            return "fail";
+        } else {
+            if (type.equals(t)) {
+                type = newClass;
+            }
+            types.remove(t);
+            repository.removeClass(repository.getDesignClass(t.getName()));
+            types.add(newClass);
+            repository.addClass(newClass);
+            return newClass.getName();
+        }
+    }
+
+    private void deleteType() {
+        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+            return;
+        }
+        int n = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete this type?",
+                "Delete Type",
+                JOptionPane.YES_NO_OPTION);
+        if (n != JOptionPane.YES_OPTION) {
+            return;
+        }
+        Type t = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
+        types.remove(t);
+        repository.removeClass(repository.getDesignClass(t.getName()));
+        type = null;
     }
 
     public void itemStateChanged(ItemEvent e) {
@@ -342,44 +425,29 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     // updates the combo box according to the list of classes
-    private void updateComboBox() {
-        int selectedIndex = objectTypeComboBox.getSelectedIndex();
-
+    private void updateComboBox(String index) {
         objectTypeComboBox.removeAllItems();
-
         Type t;
         Iterator iterator = types.iterator();
         while (iterator.hasNext()) {
             t = (Type) iterator.next();
-
             if ((t != null) && !t.getName().equals("")) {
                 objectTypeComboBox.addItem(t.getName());
-            } else {
-                objectTypeComboBox.addItem("(unnamed)");
             }
         }
-
-        objectTypeComboBox.setSelectedIndex(selectedIndex);
+        objectTypeComboBox.addItem("(unnamed)");
+        objectTypeComboBox.setSelectedItem(index);
     }
 
     private void updateAddTypePanel() {
-        Type t = ((ObjectNode) objectNodeGR.getNodeComponent()).getType();
         String s = getSelectedItem();
-
-        if (t == null || t.getName().equals("")) {
-            if (s.equals("(unnamed)")) {
-                setPanel("nonempty");
-            } else {
-                setPanel("empty");
-            }
+        if (s.equals("(unnamed)") || Arrays.asList(DataType.STANDARD).contains(s)) {
+            editObjectTypeButton.setEnabled(false);
+            deleteObjectTypeButton.setEnabled(false);
         } else {
-            setPanel("empty");
+            editObjectTypeButton.setEnabled(true);
+            deleteObjectTypeButton.setEnabled(true);
         }
-    }
-
-    private void setPanel(String s) {
-        CardLayout cl = (CardLayout) cardPanel.getLayout();
-        cl.show(cardPanel, s);
     }
 
     private String getSelectedItem() {
