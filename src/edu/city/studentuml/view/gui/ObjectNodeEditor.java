@@ -328,12 +328,10 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     private void setSelectedType() {
-        System.out.println("Selected: " + objectTypeComboBox.getSelectedItem().toString());
         if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
             type = null;
         } else {
             type = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
-            System.out.println("type is: " + type.getName());
         }
     }
 
