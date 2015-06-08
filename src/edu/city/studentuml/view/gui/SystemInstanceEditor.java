@@ -41,12 +41,13 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     private JTextField nameField;
 
     private final JPanel cardPanel;
-    private final JPanel emptyPanel;
     private final JPanel nonemptyPanel;
-    private final JLabel editSystemLabel;
+    private final JLabel addSystemLabel;
 
     private JPanel centerPanel;
+    private JButton addSystemButton;
     private JButton editSystemButton;
+    private JButton deleteSystemButton;
 
     private JPanel bottomPanel;
     private JButton okButton;
@@ -83,14 +84,18 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         systemPanel.add(systemComboBox);
 
         cardPanel = new JPanel(new CardLayout());
-        emptyPanel = new JPanel();
         nonemptyPanel = new JPanel(new FlowLayout());
-        editSystemLabel = new JLabel("Add new system: ");
-        editSystemButton = new JButton("Add...");
+        addSystemLabel = new JLabel("System options: ");
+        addSystemButton = new JButton("Add...");
+        addSystemButton.addActionListener(this);
+        editSystemButton = new JButton("Edit...");
         editSystemButton.addActionListener(this);
-        nonemptyPanel.add(editSystemLabel);
+        deleteSystemButton = new JButton("Delete");
+        deleteSystemButton.addActionListener(this);
+        nonemptyPanel.add(addSystemLabel);
+        nonemptyPanel.add(addSystemButton);
         nonemptyPanel.add(editSystemButton);
-        cardPanel.add("empty", emptyPanel);
+        nonemptyPanel.add(deleteSystemButton);
         cardPanel.add("nonempty", nonemptyPanel);
 
         centerPanel.add(namePanel);
@@ -145,23 +150,31 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
         // initialize the system names combo box
         if (!isInList(system, systems)) {
-            systems.add(0, system);
+            systems.add(system);
         }
 
         System s;
         Iterator iterator = systems.iterator();
+        boolean hasEmpty = false;
         while (iterator.hasNext()) {
             s = (System) iterator.next();
-
             if ((s != null) && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else {
+            } else if ((s != null) && s.getName().equals("")) {
                 systemComboBox.addItem("(unnamed)");
+                hasEmpty = true;
             }
         }
-
-        systemComboBox.setSelectedIndex(systems.indexOf(system));
-        updateEditSystemPanel();
+        if (!hasEmpty) {
+            systems.add(new System(""));
+            systemComboBox.addItem("(unnamed)");
+        }
+        if (system.getName().equals("")) {
+            systemComboBox.setSelectedItem("(unnamed)");
+        } else {
+            systemComboBox.setSelectedItem(system.getName());
+        }
+        updateAddSystemPanel();
     }
 
     public boolean isInList(System system, Vector list) {
@@ -184,16 +197,37 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     }
 
     public System getSystem() {
-        return (System) systems.elementAt(systemComboBox.getSelectedIndex());
+        return system;
+    }
+
+    public String addNewSystem() {
+        String systemName = JOptionPane.showInputDialog("Enter the System's Name");
+        if (systemName == null) {    // user has pressed cancel
+            return "fail";
+        }
+
+        System newSystem = new System(systemName);
+
+        if ((repository.getSystem(newSystem.getName()) != null)
+                && !newSystem.getName().equals("")) {
+            JOptionPane.showMessageDialog(null,
+                    "There is an existing System with the given name already!\n",
+                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+            return "fail";
+        } else {
+            systems.add(newSystem);
+            repository.addSystem(newSystem);
+            return newSystem.getName();
+        }
     }
 
     // edits the given system
-    public void editSystem(System s) {
+    public String editSystem(System s) {
         // show the system editor dialog
         String systemName = JOptionPane.showInputDialog("Enter the System's Name");
 
         if (systemName == null) {    // user has pressed cancel
-            return;
+            return "fail";
         }
 
         // ensure that the to-be-edited system exists in the repository
@@ -210,67 +244,87 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
             JOptionPane.showMessageDialog(null,
                     "There is an existing system with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+            return "fail";
         } else {
             repository.editSystem(s, newSystem);
+            return newSystem.getName();
         }
     }
 
-    // updates the combo box according to the list of systems
-    public void updateComboBox() {
-        int selectedIndex = systemComboBox.getSelectedIndex();
-
+    public void updateComboBox(String index) {
         systemComboBox.removeAllItems();
-
         System s;
         Iterator iterator = systems.iterator();
         while (iterator.hasNext()) {
             s = (System) iterator.next();
-
             if ((s != null) && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else {
+            } else if ((s != null) && s.getName().equals("")) {
                 systemComboBox.addItem("(unnamed)");
             }
         }
+        systemComboBox.setSelectedItem(index);
+    }
 
-        systemComboBox.setSelectedIndex(selectedIndex);
+    private void setSelectedSystem() {
+        system = (System) systems.get(systemComboBox.getSelectedIndex());
     }
 
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+            setSelectedSystem();
             systemInstanceDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
             systemInstanceDialog.setVisible(false);
+        } else if (event.getSource() == addSystemButton) {
+            String index = addNewSystem();
+            if (!index.equals("fail")) {
+                updateComboBox(index);
+                updateAddSystemPanel();
+            }
         } else if (event.getSource() == editSystemButton) {
-            editSystem((System) systems.elementAt(systemComboBox.getSelectedIndex()));
-            updateComboBox();
-            updateEditSystemPanel();
+            String index = editSystem((System) systems.elementAt(systemComboBox.getSelectedIndex()));
+            if (!index.equals("fail")) {
+                updateComboBox(index);
+                updateAddSystemPanel();
+            }
+        } else if (event.getSource() == deleteSystemButton) {
+            deleteSystem();
+            updateComboBox("(unnamed)");
+        }
+    }
+
+    private void deleteSystem() {
+        if (systemComboBox.getSelectedItem().equals("(unnamed)")) {
+            return;
+        }
+        int n = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete this type?",
+                "Delete Type",
+                JOptionPane.YES_NO_OPTION);
+        if (n != JOptionPane.YES_OPTION) {
+            return;
+        }
+        System s = repository.getSystem(systemComboBox.getSelectedItem().toString());
+        systems.remove(s);
+        repository.removeSystem(repository.getSystem(s.getName()));
+    }
+
+    private void updateAddSystemPanel() {
+        String s = getSelectedItem();
+        if (s.equals("(unnamed)")) {
+            editSystemButton.setEnabled(false);
+            deleteSystemButton.setEnabled(false);
+        } else {
+            editSystemButton.setEnabled(true);
+            deleteSystemButton.setEnabled(true);
         }
     }
 
     public void itemStateChanged(ItemEvent e) {
-        updateEditSystemPanel();
-    }
-
-    private void updateEditSystemPanel() {
-        System a = systemInstance.getSystemInstance().getSystem();
-        String s = getSelectedItem();
-
-        if (a.getName().equals("")) {
-            if (s.equals("(unnamed)")) {
-                setPanel("nonempty");
-            } else {
-                setPanel("empty");
-            }
-        } else {
-            setPanel("empty");
-        }
-    }
-
-    private void setPanel(String s) {
-        CardLayout cl = (CardLayout) cardPanel.getLayout();
-        cl.show(cardPanel, s);
+        updateAddSystemPanel();
     }
 
     private String getSelectedItem() {
