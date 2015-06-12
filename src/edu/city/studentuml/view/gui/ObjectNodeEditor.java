@@ -212,13 +212,16 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             Iterator iterator = types.iterator();
             while (iterator.hasNext()) {
                 t = (Type) iterator.next();
-
                 if ((t != null) && !t.getName().equals("")) {
                     objectTypeComboBox.addItem(t.getName());
                 }
             }
             objectTypeComboBox.addItem("(unnamed)");
-            objectTypeComboBox.setSelectedIndex(types.indexOf(type));
+            if (type != null) {
+                objectTypeComboBox.setSelectedItem(type.getName());
+            } else {
+                objectTypeComboBox.setSelectedItem("(unnamed)");
+            }
             updateAddTypePanel();
 
             // make a copy of the states for editing purposes
@@ -331,7 +334,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
             type = null;
         } else {
-            type = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
+            System.out.println("size: " + types.size() + " index:" + objectTypeComboBox.getSelectedIndex());
+            type = (Type) types.get(objectTypeComboBox.getSelectedIndex());
         }
     }
 
@@ -359,10 +363,12 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             String index = editType();
             if (!index.equals("fail")) {
                 updateComboBox(index);
+                updateAddTypePanel();
             }
         } else if (event.getSource() == deleteObjectTypeButton) {
             deleteType();
             updateComboBox("(unnamed)");
+            updateAddTypePanel();
         }
     }
 

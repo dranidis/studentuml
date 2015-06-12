@@ -9,12 +9,13 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.view.UCDView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -35,7 +36,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
 
     private DrawingToolbar toolbar;
     private UseCaseResizeWithCoveredElementsController resizeController;
-    
+
     public UCDInternalFrame(UCDModel ucdModel) {
         super(ucdModel.getDiagramName());
         model = ucdModel;
@@ -46,6 +47,8 @@ public class UCDInternalFrame extends DiagramInternalFrame {
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new DrawingToolbar(this);
+        toolbar.setFloatable(false);
+        toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);
         sp.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(sp, BorderLayout.WEST);
@@ -95,7 +98,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
 
     private class DrawingToolbar extends JToolBar implements ActionListener {
 
-        private Vector buttons;
+        private LinkedList buttons;
         private UCDInternalFrame parent;
 
         private JToggleButton selectionButton;
@@ -316,7 +319,6 @@ public class UCDInternalFrame extends DiagramInternalFrame {
 
             refreshUndoRedoButtons();
 
-
             // register the toolbar as the action listener of button events
             selectionButton.addActionListener(this);
             actorButton.addActionListener(this);
@@ -344,9 +346,8 @@ public class UCDInternalFrame extends DiagramInternalFrame {
                 }
             });
 
-
             // add the toolbar buttons to the vector list
-            buttons = new Vector();
+            buttons = new LinkedList();
             buttons.add(selectionButton);
             buttons.add(actorButton);
             buttons.add(useCaseButton);

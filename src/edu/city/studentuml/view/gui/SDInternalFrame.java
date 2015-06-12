@@ -10,6 +10,7 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.view.SDView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -47,6 +48,8 @@ public class SDInternalFrame extends DiagramInternalFrame {
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new DrawingToolbar(this);
+        toolbar.setFloatable(false);
+        toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);
         sp.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(sp, BorderLayout.WEST);
@@ -85,7 +88,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
 
         public DrawingToolbar(SDInternalFrame parentFr) {
             parent = parentFr;
-            
+
             Icon selectionIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "selection.gif"));
             selectionButton = new JToggleButton(selectionIcon);
             selectionButton.addMouseListener(new MouseAdapter() {
@@ -214,7 +217,6 @@ public class SDInternalFrame extends DiagramInternalFrame {
             destroyMessageButton.setActionCommand("DestroyMessageGR");
             destroyMessageButton.setToolTipText("Destroy Message");
 
-
             Icon noteIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "note.gif"));
             noteButton = new JToggleButton(noteIcon);
             noteButton.addMouseListener(new MouseAdapter() {
@@ -266,7 +268,6 @@ public class SDInternalFrame extends DiagramInternalFrame {
             //redoButton.setToolTipText(undoManager.getRedoPresentationName());
             refreshUndoRedoButtons();
 
-
             // add the toolbar as the action listener of button events
             selectionButton.addActionListener(this);
             objectButton.addActionListener(this);
@@ -293,7 +294,6 @@ public class SDInternalFrame extends DiagramInternalFrame {
                     refreshUndoRedoButtons();
                 }
             });
-
 
             // add the toolbar buttons to the vector list
             buttons = new Vector();

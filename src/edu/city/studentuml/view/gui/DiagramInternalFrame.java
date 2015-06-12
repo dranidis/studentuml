@@ -11,18 +11,25 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.JInternalFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEditSupport;
 
 public abstract class DiagramInternalFrame extends JInternalFrame {
 
+    protected JPopupMenu popup;
     protected AddElementControllerFactory addElementControllerFactory;
     protected AddElementController addElementController;
     protected DrawLineController drawLineController; //TK draw line
@@ -31,13 +38,16 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected DiagramView view;
     protected boolean isActive = false;
     protected boolean isIconified = false;
-    
+
     // Undo/Redo
     protected UndoManager undoManager;
     protected UndoableEditSupport undoSupport;
 
     public DiagramInternalFrame(String title) {
         super(title, true, true, false, true);
+        popup = new JPopupMenu();
+        addRename();
+        ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
         // Undo/Redo
@@ -67,6 +77,27 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         });
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
+    }
+
+    private void addRename() {
+        JMenuItem rename = new JMenuItem("Rename");
+        ActionListener renameListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (event.getActionCommand().equals("Rename")) {
+                    renameDiagram();
+                }
+            }
+        };
+        rename.addActionListener(renameListener);
+        popup.add(rename);
+    }
+
+    private void renameDiagram() {
+        String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:");
+        if (newName != null && !newName.equals("")) {
+            model.setName(newName);
+            setTitle(newName);
+        }
     }
 
     public void setActive(boolean how) {
@@ -114,6 +145,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     public abstract boolean getSelectionMode();
+
     public abstract void setSelectionMode();
 
     public UndoableEditSupport getUndoSupport() {

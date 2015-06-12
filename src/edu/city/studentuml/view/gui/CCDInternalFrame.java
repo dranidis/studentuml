@@ -7,6 +7,8 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.view.CCDView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -45,9 +47,11 @@ public class CCDInternalFrame extends DiagramInternalFrame {
 
         drawingPanel.add(view);
         toolbar = new DrawingToolbar(this);
-        JScrollPane sp = new JScrollPane(toolbar);
-        sp.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(sp, BorderLayout.WEST);
+        toolbar.setFloatable(false);
+        toolbar.setLayout(new GridLayout(0,1));
+        //JScrollPane sp = new JScrollPane(toolbar);
+        //sp.setPreferredSize(new Dimension(55, 400));
+        getContentPane().add(toolbar, BorderLayout.WEST);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, "ConceptualClassGR"));
         //Let user specify this, or load
@@ -70,7 +74,7 @@ public class CCDInternalFrame extends DiagramInternalFrame {
 
         private Vector buttons;
         private CCDInternalFrame parent;
-        
+
         private JToggleButton selectionButton;
         private JToggleButton classButton;
         private JToggleButton associationButton;
@@ -79,7 +83,7 @@ public class CCDInternalFrame extends DiagramInternalFrame {
         private JToggleButton aggregationButton;
         private JToggleButton generalizationButton;
         private JToggleButton noteButton;
-        
+
         // Undo/Redo
         private JToggleButton undoButton;
         private JToggleButton redoButton;
@@ -250,7 +254,6 @@ public class CCDInternalFrame extends DiagramInternalFrame {
 
             refreshUndoRedoButtons();
 
-
             // register the toolbar as the action listener of button events
             selectionButton.addActionListener(this);
             classButton.addActionListener(this);
@@ -276,7 +279,6 @@ public class CCDInternalFrame extends DiagramInternalFrame {
                     refreshUndoRedoButtons();
                 }
             });
-
 
             // add the toolbar buttons to the vector list
             buttons = new Vector();

@@ -4,11 +4,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/ObjectEditor.java</file>
-            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/controller/ADSelectionController.java</file>
-            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/MultiObjectEditor.java</file>
-            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/SystemInstanceEditor.java</file>
-            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/ObjectNodeEditor.java</file>
+            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/ADInternalFrame.java</file>
+            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/CCDInternalFrame.java</file>
+            <file>file:/D:/Drive/NetBeansProjects/studentuml/src/edu/city/studentuml/view/gui/DiagramInternalFrame.java</file>
         </group>
     </open-files>
 </project-private>
