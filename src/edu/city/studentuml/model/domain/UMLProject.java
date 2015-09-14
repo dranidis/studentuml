@@ -93,6 +93,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         //ApplicationGUI.closeFrames();
         diagramModels.clear();
         repository.clear();
+        setFilename("");
+        setFilepath("");
+        setName("");
         SystemWideObjectNamePool.getInstance().clear();
         projectChanged();
     }

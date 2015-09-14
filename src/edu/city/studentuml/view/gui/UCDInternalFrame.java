@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -98,7 +98,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
 
     private class DrawingToolbar extends JToolBar implements ActionListener {
 
-        private LinkedList buttons;
+        private Vector buttons;
         private UCDInternalFrame parent;
 
         private JToggleButton selectionButton;
@@ -347,7 +347,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
             });
 
             // add the toolbar buttons to the vector list
-            buttons = new LinkedList();
+            buttons = new Vector();
             buttons.add(selectionButton);
             buttons.add(actorButton);
             buttons.add(useCaseButton);
