@@ -6,7 +6,11 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
+
+import java.io.File;
 import java.util.Observable;
+import java.util.prefs.Preferences;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -19,6 +23,9 @@ public class ApplicationFrame extends ApplicationGUI {
 
     public static String applicationName = "StudentUML";
     private JFileChooser xmlFileChooser;
+    Preferences pref= Preferences.userRoot();
+    String path = pref.get("DEFAULT_PATH", "");
+    
 
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
@@ -27,6 +34,7 @@ public class ApplicationFrame extends ApplicationGUI {
         frame.setIconImage(icon.getImage());
         xmlFileChooser = new JFileChooser();
         xmlFileChooser.setFileFilter(new XMLFileFilter());
+        xmlFileChooser.setCurrentDirectory(new File(path));
     }
 
     @Override
@@ -158,6 +166,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
         umlProject.getInstance().streamToXML(getFilePath());
         setSaved(true);
+        pref.put("DEFAULT_PATH", filePath);
     }
 
     //ZASTO STRING
