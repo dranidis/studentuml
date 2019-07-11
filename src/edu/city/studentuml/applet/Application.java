@@ -1072,7 +1072,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         private JButton saveAsButton;
         private JButton saveButton;
         private JButton helpButton;
-        // private JButton forwardEngineerButton;
+        private JButton forwardEngineerButton;
         private JButton validateSD_DCDButton;
         JButton reloadRulesButton;
 
@@ -1260,6 +1260,33 @@ public class Application extends JApplet implements Observer, KeyListener {
             reloadRulesButton.setToolTipText("Reload Rules");
             add(reloadRulesButton);
 
+            addSeparator();
+            
+            ImageIcon forwardEngineerIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "code.gif"));
+            Image img2 = forwardEngineerIcon.getImage();
+            Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
+            forwardEngineerIcon.setImage(imgScaled2);
+            forwardEngineerButton = new JButton(forwardEngineerIcon);
+            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+            forwardEngineerButton.addMouseListener(new MouseAdapter() {
+
+                public void mouseEntered(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                }
+
+                public void mouseExited(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+                }
+            });
+
+            forwardEngineerButton.setToolTipText("Generate Code");
+            forwardEngineerButton.addActionListener(this);
+
+            add(forwardEngineerButton);
+
+            setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        
             addSeparator();
 
             ImageIcon helpIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "help.gif"));

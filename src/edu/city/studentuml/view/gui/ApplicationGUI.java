@@ -1238,7 +1238,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         private JButton sdButton;
         private JButton dcdButton;
         private JButton adButton;
-        // private JButton forwardEngineerButton;
+        private JButton forwardEngineerButton;
         private JButton resizeButton;
         private JButton helpButton;
         JButton reloadRulesButton;
@@ -1551,6 +1551,44 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             add(reloadRulesButton);
 
             addSeparator();
+            
+            ImageIcon forwardEngineerIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
+            Image img2 = forwardEngineerIcon.getImage();
+            Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
+            forwardEngineerIcon.setImage(imgScaled2);
+            forwardEngineerButton = new JButton(forwardEngineerIcon);
+            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            forwardEngineerButton.setToolTipText("Generate Code");
+            forwardEngineerButton.addMouseListener(new MouseAdapter() {
+
+                public void mouseEntered(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                }
+
+                public void mouseExited(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+                }
+            });
+            forwardEngineerButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                	//0 for yes and 1 for no
+                	int codeGenerationConfirm = JOptionPane.showConfirmDialog(
+                		    frame,
+                		    "Do you Want to Generate Code? \n"
+                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
+                            + "Design and Sequence Diagrams First!",
+                            "Code Generation",
+                		    JOptionPane.YES_NO_OPTION);
+                	if (codeGenerationConfirm == 0) {
+                		
+                	}
+                }
+            });
+            add(forwardEngineerButton);
+            
+            addSeparator();
+
 
             ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
