@@ -36,6 +36,21 @@ public abstract class SDMessage implements Serializable {
     public boolean isReflective() {
         return (source == target);
     }
+    
+    public Method getMethod() {
+    	Method sdMethod = new Method(this.toString().substring(this.toString().indexOf(":=")+3,this.toString().lastIndexOf("(")));
+    	return sdMethod;
+    }
+    
+    public String getReturnType() {
+    	return (this.toString().substring(this.toString().indexOf(": ")+2,this.toString().lastIndexOf(":=")));
+    	
+    }
+    
+    public String getAttributes() {
+    	return (this.toString().substring(this.toString().indexOf("(")+1,this.toString().lastIndexOf(")")));
+    	
+    }
 
     // the sd message subclasses should define a toString() method
     public abstract String toString();

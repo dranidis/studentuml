@@ -1581,7 +1581,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                             "Code Generation",
                 		    JOptionPane.YES_NO_OPTION);
                 	if (codeGenerationConfirm == 0) {
-                		
+                		umlProject.generateCode();
                 	}
                 }
             });

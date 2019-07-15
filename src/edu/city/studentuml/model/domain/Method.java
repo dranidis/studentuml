@@ -141,6 +141,16 @@ public class Method implements Serializable, IXMLCustomStreamable {
             return "#";
         }
     }
+    
+    public String getVisibilityAsString() {
+        if (visibility == PRIVATE) {
+            return "private";
+        } else if (visibility == PUBLIC) {
+            return "public";
+        } else {
+            return "protected";
+        }
+    }
 
     public String getNameString() {
         return getName();
