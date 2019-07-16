@@ -5,7 +5,10 @@ package edu.city.studentuml.model.domain;
 //Class.java
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -13,6 +16,10 @@ public class DesignClass extends AbstractClass {
 
     private String stereotype;
     private NotifierVector methods;
+    private AbstractClass extendClass;
+    //private Interface implementInterface;
+    private List<Interface> implementInterfaces = new ArrayList();
+    
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -127,5 +134,21 @@ public class DesignClass extends AbstractClass {
         }
 
         return copyClass;
+    }
+    
+    public void setExtendClass(AbstractClass newExtendClass) {
+    	this.extendClass = newExtendClass;
+    }
+    
+    public AbstractClass getExtendClass() {
+    	return this.extendClass;
+    }
+    
+    public void setImplementInterface(Interface newInterface) {
+    	this.implementInterfaces.add(newInterface);
+    }
+    
+    public List<Interface> getImplementInterfaces() {
+    	return this.implementInterfaces;
     }
 }

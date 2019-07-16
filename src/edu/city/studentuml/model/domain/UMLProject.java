@@ -13,12 +13,15 @@ package edu.city.studentuml.model.domain;
 import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.CodeGenerator;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -27,7 +30,9 @@ import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
@@ -442,331 +447,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setSaved(false);
     }
     
-    public static final Logger LOG = Logger.getLogger(UMLProject.class);
-    private boolean verboseDocs;
-    private boolean lfBeforeCurly;
-    private static final boolean VERBOSE_DOCS = false;
-    private static final String LINE_SEPARATOR =
-	java.lang.System.getProperty("line.separator");
-    private static final String LANG_PACKAGE = "java.lang";
-
-    private static final Set<String> JAVA_TYPES;
-    static {
-	Set<String> types = new HashSet<String>();
-	types.add("void");
-	types.add("boolean");
-	types.add("byte");
-	types.add("char");
-	types.add("int");
-	types.add("short");
-	types.add("long");
-	types.add("float");
-	types.add("double");
-	JAVA_TYPES = Collections.unmodifiableSet(types);
-    }
-    private static boolean isFileGeneration;
-    private static boolean isInUpdateMode;
-    private static final String INDENT = "  ";
-    
-    private String generateFile(DesignClass classObject, String path) {
-        String name = classObject.getName();
-        if (name == null || name.length() == 0) {
-            return null;
-        }
-       // Object classifier = modelElement;
-        path =  path + File.separator + this.getName().substring(0,this.getName().lastIndexOf("."));
-        String filename = name + ".java";
-        StringBuilder sbPath = new StringBuilder(path);
-        if (!path.endsWith(File.separator)) {
-            sbPath.append(File.separator);
-        }
-
-        String packagePath = classObject.getName();
-        
-        String pathname = sbPath.toString() + filename;
-        //cat.info("-----" + pathname + "-----");
-
-        //now decide whether file exist and need an update or is to be
-        //newly generated
-        File f = new File(pathname);
-        if (!f.isDirectory()) {
-        	if (!Paths.get(path).toFile().isDirectory()) {
-            if (!f.getParentFile().mkdir()) {
-                LOG.severe(" could not make directory " + path);
-                return null;
-            }
-          }  
-        }
-        isFileGeneration = true; // used to produce method javadoc
-
-        //String pathname = path + filename;
-        // TODO: package, project basepath, tagged values to configure
-        LOG.info("Generating " + f.getPath());
-        isFileGeneration = true;
-        //String header = generateHeader(classifier, pathname, packagePath);
-        String src = generateClassifier(classObject); 
-        BufferedWriter fos = null;
-        try {
-          fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
-          //  fos.write(header);
-            fos.write(src);
-        } catch (IOException exp) {
-            LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
-        } finally {
-            isFileGeneration = false;
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException exp) {
-                LOG.severe("FAILED: " + f.getPath());
-            }
-        }
-
-        //cat.info("----- end updating -----");
-        return pathname;
-    }
-    
-    private String generateClassifier(DesignClass cls) {
-        StringBuffer returnValue = new StringBuffer();
-        StringBuffer start = generateClassifierStart(cls);
-        if ((start != null) && (start.length() > 0)) {
-            StringBuffer body = generateClassifierBody(cls);
-            StringBuffer end = generateClassifierEnd(cls);
-            returnValue.append(start.toString());
-            if ((body != null) && (body.length() > 0)) {
-                returnValue.append(LINE_SEPARATOR);
-                returnValue.append(body);
-                if (lfBeforeCurly) {
-                    returnValue.append(LINE_SEPARATOR);
-                }
-            }
-            returnValue.append((end != null) ? end.toString() : "");
-        }
-        return returnValue.toString();
-    }
-    
-    StringBuffer generateClassifierStart(DesignClass cls) {
-        String sClassifierKeyword;
-        sClassifierKeyword = "class";
-
-        StringBuffer sb = new StringBuffer(80);
-
-        // Now add visibility, but not for non public top level classifiers
-       
-        sb.append("public ");
-
-        // add classifier keyword and classifier name
-        sb.append(sClassifierKeyword).append(" ");
-		sb.append(cls.getName());
-		// add type parameters
-		
-        // add base class/interface
-   
-        // add implemented interfaces, if needed
-        // UML: realizations!
-     
-        // add opening brace
-        sb.append(lfBeforeCurly ? (LINE_SEPARATOR + "{") : " {");
-
-        return sb;
-    }
-    
-    private StringBuffer generateClassifierBody(DesignClass cls) {
-        StringBuffer sb = new StringBuffer();
-        Vector classAttributes = cls.getAttributes();
-
-            if (!classAttributes.isEmpty()) {
-                sb.append(LINE_SEPARATOR);
-                sb.append(INDENT).append("// Attributes");
-                sb.append(LINE_SEPARATOR);
-            }
-
-		boolean first = true;
-		for (int i = 0; i < classAttributes.size(); i++) {
-		    if (first) {
-			sb.append(LINE_SEPARATOR);
-		    }
-		    sb.append(INDENT);
-            Attribute classAttribute = (Attribute) classAttributes.get(i);         
-            sb.append(generateAttribute(classAttribute, false));
-
-		    first = false;
-            }
-		
-        // add operations
-        // TODO: constructors
-        Vector classMethods = cls.getMethods();
-
-        if (!classMethods.isEmpty()) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(INDENT).append("// Methods");
-            sb.append(LINE_SEPARATOR);
-        }
-
-	first = true;
-	for (int x = 0; x < classMethods.size(); x++) {
-
-	    if (!first) {
-                    sb.append(LINE_SEPARATOR);
-                }
-	    sb.append(INDENT);
-	    Method classMethod = (Method) classMethods.get(x); 
-        sb.append(generateOperation(classMethod, false));
-
-            if (lfBeforeCurly) {
-                sb.append(LINE_SEPARATOR).append(INDENT);
-            } else {
-                sb.append(' ');
-            }
-            sb.append('{');
-
-            // there is no ReturnType in behavioral feature (UML)
-            sb.append(LINE_SEPARATOR);
-			sb.append(generateMethodBody(classMethod));
-			sb.append(INDENT);
-			sb.append("}").append(LINE_SEPARATOR);
-
-	    first = false;
-        }
-       	
-        return sb;
-    }
-    
-    String generateOperation(Method op, boolean documented) {
-        if (isFileGeneration) {
-            documented = true; // fix Issue 1506
-        }
-        StringBuffer sb = new StringBuffer(80);
-        String nameStr = null;
-        boolean constructor = false;
-        nameStr = op.getName();
-
-        sb.append(op.getVisibilityAsString()).append(' ');
-
-        // pick out return type
-        
-        sb.append(op.getReturnTypeAsString()).append(' ');
-
-        // name and params
-        Vector params = op.getParameters();
-
-        sb.append(nameStr).append('(');
-
-        if (params != null) {
-            for (int i = 0; i < params.size(); i++) {
-                if (i > 0) {
-                    sb.append(", ");
-                }
-                MethodParameter param = (MethodParameter) params.get(i);
-                sb.append(generateParameter(param));
-            }
-        }
-
-        sb.append(')');
-
-        return sb.toString();
-    }
-    
-    private String generateMethodBody(Method op) {
-        //cat.info("generateMethodBody");
-        if (op != null) {
-        	Type returnType = op.getReturnType();
-
-            // pick out return type
-        	if (returnType != null) {
-                return generateDefaultReturnStatement(returnType);
-            }
-        }
-        return generateDefaultReturnStatement(null);
-    }
-    
-    private String generateDefaultReturnStatement(Type cls) {
-        if (cls == null) {
-            return "";
-        }
-
-        String clsName = cls.getName();
-        if (clsName.equals("void")) {
-            return "";
-        }
-        if (clsName.equals("char")) {
-            return INDENT + "return 'x';" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("int")) {
-            return INDENT + "return 0;" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("boolean")) {
-            return INDENT + "return false;" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("byte")) {
-            return INDENT + "return 0;" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("long")) {
-            return INDENT + "return 0;" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("float")) {
-            return INDENT + "return 0.0;" + LINE_SEPARATOR;
-        }
-        if (clsName.equals("double")) {
-            return INDENT + "return 0.0;" + LINE_SEPARATOR;
-        }
-        return INDENT + "return null;" + LINE_SEPARATOR;
-    }
-    
-    
-    private String generateParameter(MethodParameter parameter) {
-        StringBuffer sb = new StringBuffer(20);
-        //TODO: qualifiers (e.g., const)
-        //TODO: stereotypes...
-        sb.append(parameter.getTypeAsString());
-	    sb.append(' ');
-        sb.append(parameter.getName());
-        //TODO: initial value
-        return sb.toString();
-    }
-    
-    private String generateAttribute(Attribute attr, boolean documented) {
-        if (isFileGeneration) {
-            documented = true; // always "documented" if we generate file.
-        }
-        StringBuffer sb = new StringBuffer(80);
-        sb.append(generateCoreAttribute(attr));
-        sb.append(";").append(LINE_SEPARATOR);
-
-        return sb.toString();
-    }
-    
-    String generateCoreAttribute(Attribute attr) {
-        StringBuffer sb = new StringBuffer(80);
-        sb.append(attr.getVisibilityName()).append(' ');
-        sb.append(attr.getType()).append(' ');
-        sb.append(attr.getName());
-   
-        return sb.toString();
-    }
-    
-    private StringBuffer generateClassifierEnd(DesignClass cls) {
-        StringBuffer sb = new StringBuffer();
-        String classifierkeyword = "class";
-        sb.append(LINE_SEPARATOR);
-		sb.append("//end of ").append(classifierkeyword);
-		sb.append(" ").append(cls.getName());
-		sb.append(LINE_SEPARATOR);
-        sb.append("}");
-        return sb;
-    }
-    
-    public void setLfBeforeCurly(boolean beforeCurl) {
-        lfBeforeCurly = beforeCurl;
-    }
-    
-    public boolean isLfBeforeCurly() {
-        return lfBeforeCurly;
-    }
     
     public void generateCode() {
     	Vector projectDiagrams = this.getDiagramModels();
+    	CodeGenerator javaGenerator= new CodeGenerator(); 
+    	DesignClass dc = null;
     	for (int y = 0; y < projectDiagrams.size(); y++) {
     	  DiagramModel currDiagram = (DiagramModel) projectDiagrams.get(y);	
     	  Vector projectElements = currDiagram.getGraphicalElements();
@@ -774,15 +459,33 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               GraphicalElement currEl = (GraphicalElement) projectElements.get(i);
               if (currEl instanceof ClassGR) {
             	  out.println("DCD:");
-                  DesignClass dc = ((ClassGR) currEl).getDesignClass();
+                  dc = ((ClassGR) currEl).getDesignClass();
                   out.println("Class:" + dc.getName());
-                  String projectPath = new File(this.getFilepath()).getParent();
-                  String genPath = generateFile(dc,projectPath);
-                  out.println("Generated in: " + genPath);
               }
-              if (currEl instanceof SDObjectGR) {
+              if (currEl instanceof RealizationGR) {
+            	  out.println("DCD:");
+                  Realization realz = ((RealizationGR) currEl).getRealization();
+                  dc = realz.getTheClass();
+                  dc.setImplementInterface(realz.getTheInterface());
+                         
+              }
+              if (currEl instanceof GeneralizationGR) {
+            	  out.println("DCD:");
+                  Generalization genz = ((GeneralizationGR) currEl).getGeneralization();
+                  dc = (DesignClass) genz.getSuperClass();
+                  dc.setExtendClass(genz.getBaseClass());
+                         
+              }
+              if (currEl instanceof InterfaceGR) {
+                  Interface interfs = ((InterfaceGR) currEl).getInterface();
+                  String projectPath = new File(this.getFilepath()).getParent();
+                  String genPath = javaGenerator.generateFile(interfs,projectPath,this);
+                  out.println("Generated in: " + genPath);           
+              }
+              
+          /*    if (currEl instanceof SDObjectGR) {
                   out.println("SD:");
-                  DesignClass dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
+                  dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
                   out.println("Class:" + dc.getName());
                   Vector classMethods = dc.getMethods();
                   for (int x = 0; x < classMethods.size(); x++) {
@@ -799,6 +502,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   out.println("Return Type:" + sdm.getReturnType());
                   out.println("Attributes:" + sdm.getAttributes());
               }
+             */ 
+              if(dc != null) {
+              String projectPath = new File(this.getFilepath()).getParent();
+              String genPath = javaGenerator.generateFile(dc,projectPath,this);
+              out.println("Generated in: " + genPath);
+              }  
           }
     	}
     }
