@@ -4,6 +4,8 @@ package edu.city.studentuml.model.domain;
 //Author: Ervin Ramollari
 //SDMessage.java
 import java.io.Serializable;
+import java.util.Vector;
+import static java.lang.System.out;
 
 public abstract class SDMessage implements Serializable {
 
@@ -11,6 +13,7 @@ public abstract class SDMessage implements Serializable {
     // instead it is set by the diagram model
     protected RoleClassifier source;    // message originating from this object
     protected RoleClassifier target;    // message directed to this object
+    private Vector methodParameters = new Vector();
 
     public SDMessage(RoleClassifier from, RoleClassifier to) {
         source = from;
@@ -39,17 +42,37 @@ public abstract class SDMessage implements Serializable {
     
     public Method getMethod() {
     	Method sdMethod = new Method(this.toString().substring(this.toString().indexOf(":=")+3,this.toString().lastIndexOf("(")));
+    	sdMethod.setReturnType(this.getReturnType());
+    	this.getMethodParameters();
+    	if (!this.methodParameters.isEmpty()) {
+         for (int x=0; x<this.methodParameters.size();x++) {
+    		sdMethod.addParameter((MethodParameter) this.methodParameters.get(x)); 
+    		}
+    	}
     	return sdMethod;
     }
     
-    public String getReturnType() {
-    	return (this.toString().substring(this.toString().indexOf(": ")+2,this.toString().lastIndexOf(":=")));
-    	
+    public Type getReturnType() {
+    	String returnType = this.toString().substring(this.toString().indexOf(": ")+2,this.toString().lastIndexOf(":="));
+    	DataType dataType = new DataType(returnType);
+    	return dataType;
     }
     
-    public String getAttributes() {
-    	return (this.toString().substring(this.toString().indexOf("(")+1,this.toString().lastIndexOf(")")));
+    public void getMethodParameters() {
     	
+    	this.methodParameters.clear();
+    	String parameters = this.toString().substring(this.toString().indexOf("(")+1,this.toString().lastIndexOf(")"));
+    	if (parameters !=null && !parameters.isEmpty() && parameters != "") {
+	    	String [] splitParameters = parameters.split("[\\s|,]");
+	    	for(int i=0;i<splitParameters.length;i++) {
+	    		Type parameterType = new DataType (splitParameters[i]);
+	    		i++;
+	    		String parameter = splitParameters[i];
+	    		out.println("Parameter:" + parameter);
+	    		MethodParameter methodParameter = new MethodParameter (parameter,parameterType);
+	    		this.methodParameters.add(methodParameter);
+	    	 }
+    	}
     }
 
     // the sd message subclasses should define a toString() method

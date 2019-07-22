@@ -9,6 +9,7 @@ import edu.city.studentuml.util.XMLStreamer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.w3c.dom.Element;
 
@@ -17,9 +18,9 @@ public class DesignClass extends AbstractClass {
     private String stereotype;
     private NotifierVector methods;
     private AbstractClass extendClass;
-    //private Interface implementInterface;
     private List<Interface> implementInterfaces = new ArrayList();
-    
+    private Vector sdMethods = new Vector();
+    private List <String> calledMethods = new ArrayList<String>();
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -151,4 +152,38 @@ public class DesignClass extends AbstractClass {
     public List<Interface> getImplementInterfaces() {
     	return this.implementInterfaces;
     }
+    
+    public void resetImplementInterfaces() {
+    	this.implementInterfaces.clear() ;
+    }
+    
+    public void resetSDMethods() {
+    	this.sdMethods.clear();
+    }
+    
+    public void addSDMethod(Method m) {
+        this.sdMethods.add(m);
+    }
+    
+    public Vector getSDMethods() {
+    	return this.sdMethods;
+    }
+    
+    public void addCalledMethod (Method m, DesignClass calledClass) {
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(calledClass.getName()).append(".");
+    	sb.append(m.getName()).append("(");
+    	sb.append(m.getParametersAsString());
+    	sb.append(");");
+    	this.calledMethods.add(sb.toString());
+    }
+    
+    public List<String> getCalledMethods(){
+    	return this.calledMethods;
+    }
+    
+    public void clearCalledMethods() {
+    	this.calledMethods.clear();
+    }
+    
 }

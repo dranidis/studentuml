@@ -229,4 +229,16 @@ public class Method implements Serializable, IXMLCustomStreamable {
 
         return copyMethod;
     }
+    
+    public String getParametersAsString() {
+    	String allParameters = "";
+    	for (int i=0;i<parameters.size();i++) {
+    		MethodParameter parameter = (MethodParameter) parameters.get(i);
+    		allParameters += parameter.getName();
+    		if (i+2 <= parameters.size()) {
+    			allParameters += ",";
+    		}
+    	}
+    	return allParameters;
+    }
 }

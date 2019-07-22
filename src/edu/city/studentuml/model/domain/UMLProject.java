@@ -452,6 +452,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	Vector projectDiagrams = this.getDiagramModels();
     	CodeGenerator javaGenerator= new CodeGenerator(); 
     	DesignClass dc = null;
+    	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
     	for (int y = 0; y < projectDiagrams.size(); y++) {
     	  DiagramModel currDiagram = (DiagramModel) projectDiagrams.get(y);	
     	  Vector projectElements = currDiagram.getGraphicalElements();
@@ -461,6 +462,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             	  out.println("DCD:");
                   dc = ((ClassGR) currEl).getDesignClass();
                   out.println("Class:" + dc.getName());
+                  dc.setExtendClass(null);
+                  dc.resetImplementInterfaces();
               }
               if (currEl instanceof RealizationGR) {
             	  out.println("DCD:");
@@ -473,42 +476,48 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             	  out.println("DCD:");
                   Generalization genz = ((GeneralizationGR) currEl).getGeneralization();
                   dc = (DesignClass) genz.getSuperClass();
-                  dc.setExtendClass(genz.getBaseClass());
-                         
+                  dc.setExtendClass(genz.getBaseClass());                      
               }
               if (currEl instanceof InterfaceGR) {
                   Interface interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
                   String genPath = javaGenerator.generateFile(interfs,projectPath,this);
                   out.println("Generated in: " + genPath);           
-              }
-              
-          /*    if (currEl instanceof SDObjectGR) {
+              } 
+              if (currEl instanceof SDObjectGR) {
                   out.println("SD:");
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
                   out.println("Class:" + dc.getName());
-                  Vector classMethods = dc.getMethods();
-                  for (int x = 0; x < classMethods.size(); x++) {
-                	  Method currMethod = (Method) classMethods.get(x);
-                	  out.println("Method:" + currMethod.getName());
-                  }
-              }
+                  dc.resetSDMethods();
+                  dc.clearCalledMethods();
+              }    
+              
               if (currEl instanceof SDMessageGR) {
                   SDMessage sdm = ((SDMessageGR) currEl).getMessage();
-                  out.println("Method:" + sdm.toString());
-                  out.println("From:" + sdm.getSource().getClassifier().getName());
-                  out.println("To:" + sdm.getTarget().getClassifier().getName());
-                  out.println("Method:" + sdm.getMethod().getName());
-                  out.println("Return Type:" + sdm.getReturnType());
-                  out.println("Attributes:" + sdm.getAttributes());
-              }
-             */ 
-              if(dc != null) {
-              String projectPath = new File(this.getFilepath()).getParent();
-              String genPath = javaGenerator.generateFile(dc,projectPath,this);
-              out.println("Generated in: " + genPath);
-              }  
+                  dc = (DesignClass) sdm.getTarget().getClassifier();                  
+                   out.println("ClassSD:" + dc.getName());
+                   dc.addSDMethod(sdm.getMethod());
+                   out.println("AddedSDMethod: " + sdm.getMethod());
+                   DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
+                   dc2.addCalledMethod(sdm.getMethod(),dc);
+              }     
+              if(dcToGenerate.isEmpty()) {
+            	  dcToGenerate.add(dc);
+             }else {
+            	 if(dcToGenerate.contains(dc)){
+            	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
+            	 }else {
+            	   dcToGenerate.add(dc); 
+            	 }
+             }
           }
+          
+    	}
+    	for (int i=0; i<dcToGenerate.size();i++) {
+    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
+    	String projectPath = new File(this.getFilepath()).getParent();
+        String genPath = javaGenerator.generateFile(dci,projectPath,this);
+        out.println("Generated in: " + genPath);
     	}
     }
 }

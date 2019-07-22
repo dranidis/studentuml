@@ -38,10 +38,7 @@ public class CodeGenerator {
     private boolean verboseDocs;
     private boolean lfBeforeCurly;
     private static final boolean VERBOSE_DOCS = false;
-    private static final String LINE_SEPARATOR =
-	java.lang.System.getProperty("line.separator");
-    private static final String LANG_PACKAGE = "java.lang";
-
+    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     private static final Set<String> JAVA_TYPES;
     static {
 	Set<String> types = new HashSet<String>();
@@ -202,6 +199,7 @@ public class CodeGenerator {
     private StringBuffer generateClassifierBody(Object obj) {
         StringBuffer sb = new StringBuffer();
         Vector classMethods = new Vector();
+        Vector classSDMethods = new Vector();
         boolean first;
         
         if( obj instanceof DesignClass) {
@@ -225,7 +223,20 @@ public class CodeGenerator {
 	
 			    first = false;
 	            }
+			
 			classMethods = cls.getMethods();
+			classSDMethods = cls.getSDMethods();
+			List<String> calledMethods = cls.getCalledMethods();
+			if (!calledMethods.isEmpty()) {
+				sb.append(LINE_SEPARATOR);
+	            sb.append(INDENT).append("// calledMethods");
+	            sb.append(LINE_SEPARATOR);
+			}
+			for (int i=0; i<calledMethods.size();i++) {
+				sb.append(INDENT).append(calledMethods.get(i));
+				sb.append(LINE_SEPARATOR);
+			}
+			
         }
         // add operations
         // TODO: constructors
@@ -264,13 +275,37 @@ public class CodeGenerator {
 
 	    first = false;
         }
-       	
+		first = true;
+		for (int x = 0; x < classSDMethods.size(); x++) {
+			Method classSDMethod = (Method) classSDMethods.get(x);
+			if (!classMethods.contains(classSDMethod)) {
+				 if (first) {
+	                    sb.append(LINE_SEPARATOR);
+	                }
+				sb.append(INDENT);
+				  sb.append(generateOperation(classSDMethod, false));
+
+		            if (lfBeforeCurly) {
+		                sb.append(LINE_SEPARATOR).append(INDENT);
+		            } else {
+		                sb.append(' ');
+		            }
+		            sb.append('{');
+
+		            // there is no ReturnType in behavioral feature (UML)
+		            sb.append(LINE_SEPARATOR);
+					sb.append(generateMethodBody(classSDMethod));
+					sb.append(INDENT);
+					sb.append("}").append(LINE_SEPARATOR);
+					first = false;
+			}
+		}   	
         return sb;
     }
     
     String generateOperation(Method op, boolean documented) {
         if (isFileGeneration) {
-            documented = true; // fix Issue 1506
+            documented = true; 
         }
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
@@ -304,7 +339,7 @@ public class CodeGenerator {
     }
     
     private String generateMethodBody(Method op) {
-        //cat.info("generateMethodBody");
+        
         if (op != null) {
         	Type returnType = op.getReturnType();
 
