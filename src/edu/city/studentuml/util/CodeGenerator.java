@@ -270,7 +270,6 @@ public class CodeGenerator {
             }
             sb.append('{');
 
-            // there is no ReturnType in behavioral feature (UML)
             sb.append(LINE_SEPARATOR);
 			sb.append(generateMethodBody(classMethod));
 			sb.append(INDENT);
@@ -290,10 +289,10 @@ public class CodeGenerator {
 			}
 			if (!equal) {
 				if (!classSDMethod.getName().equals("create")) {
-					 if (first) {
+					 if (!first) {
 		                    sb.append(LINE_SEPARATOR);
 		                }
-					sb.append(INDENT);
+					  sb.append(INDENT);
 					  sb.append(generateOperation(classSDMethod, false));
 	
 			            if (lfBeforeCurly) {
@@ -303,7 +302,6 @@ public class CodeGenerator {
 			            }
 			            sb.append('{');
 	
-			            // there is no ReturnType in behavioral feature (UML)
 			            sb.append(LINE_SEPARATOR);
 						sb.append(generateMethodBody(classSDMethod));
 						sb.append(INDENT);
@@ -326,7 +324,7 @@ public class CodeGenerator {
        
         sb.append(op.getVisibilityAsString()).append(' ');
 
-        // pick out return type
+        // return type
         
         sb.append(op.getReturnTypeAsString()).append(' ');
 
@@ -375,7 +373,7 @@ public class CodeGenerator {
         if (typeName.equals("void")) {
             return "";
         }
-        if (typeName.equals("char")) {
+        if (typeName.equals("String") || typeName.equals("string")) {
             return INDENT + "return 'x';" + LINE_SEPARATOR;
         }
         if (typeName.equals("int")) {
@@ -402,8 +400,6 @@ public class CodeGenerator {
     
     private String generateParameter(MethodParameter parameter) {
         StringBuffer sb = new StringBuffer(20);
-        //TODO: qualifiers (e.g., const)
-        //TODO: stereotypes...
         sb.append(parameter.getTypeAsString());
 	    sb.append(' ');
         sb.append(parameter.getName());

@@ -14,6 +14,7 @@ public abstract class SDMessage implements Serializable {
     protected RoleClassifier source;    // message originating from this object
     protected RoleClassifier target;    // message directed to this object
     private Vector methodParameters = new Vector();
+    private String returnParameter = "x";
 
     public SDMessage(RoleClassifier from, RoleClassifier to) {
         source = from;
@@ -64,6 +65,13 @@ public abstract class SDMessage implements Serializable {
 	    		return null;
 	    	}
     	}catch(StringIndexOutOfBoundsException e) {
+    		String[] split = this.toString().split("\\s+");
+    		for(int i=0;i<split.length;i++) {
+    			if (i==2) {
+    				setReturnParameter(split[i]);
+    			}
+    		}
+    		out.println("returnParameter: " + returnParameter);
     		return null;
     	}
     }
@@ -72,9 +80,20 @@ public abstract class SDMessage implements Serializable {
     	DataType dataType = new DataType("void"); 
     	try {
     	String returnType = this.toString().substring(this.toString().indexOf(":")+2,this.toString().lastIndexOf(":=")-1);
+    	String[] split2 = returnType.toString().split("\\s+");
+    	int i=0;
+    	do {
+			if (i==0) {
+				returnType = split2[i];
+			}
+			if (i==1) {
+				setReturnParameter(split2[i]);
+			}
+			i++;
+		}while(i<split2.length);
 	    dataType = new DataType(returnType);
     	}catch(StringIndexOutOfBoundsException e) {
-    		out.print("reseting to void");
+    		out.println("No datatype, reseting to void!");
     	}
         return dataType;
     }
@@ -106,6 +125,14 @@ public abstract class SDMessage implements Serializable {
     	}else {
     		return false;
     	}
+    }
+    
+    public void setReturnParameter (String newParameter) {
+    	this.returnParameter = newParameter;
+    }
+    
+    public String getReturnParameter () {
+    	return this.returnParameter;
     }
 
     // the sd message subclasses should define a toString() method

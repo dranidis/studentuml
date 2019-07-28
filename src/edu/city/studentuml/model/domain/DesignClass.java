@@ -186,6 +186,9 @@ public class DesignClass extends AbstractClass {
 	    		sb.append("for(int i=0;i<x;i++){").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}
+	    	if (!m.getReturnType().getName().equals("void")) {
+	    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
+	    	}
 	    	if (calledClass.getName().equals(this.getName())) {
 	    		sb.append("this").append(".");
 	    	}else {
