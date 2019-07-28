@@ -496,10 +496,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   SDMessage sdm = ((SDMessageGR) currEl).getMessage();
                   dc = (DesignClass) sdm.getTarget().getClassifier();                  
                    out.println("ClassSD:" + dc.getName());
-                   dc.addSDMethod(sdm.getMethod());
-                   out.println("AddedSDMethod: " + sdm.getMethod());
-                   DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
-                   dc2.addCalledMethod(sdm.getMethod(),dc);
+                   if (sdm.getMethod()!=null) {
+                	   dc.addSDMethod(sdm.getMethod());
+                	   boolean isIterative = sdm.isIterative();
+                	   out.println("AddedSDMethod: " + sdm.getMethod());
+                	   DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
+                	   dc2.addCalledMethod(sdm.getMethod(),dc,isIterative);
+                   }   
               }     
               if(dcToGenerate.isEmpty()) {
             	  dcToGenerate.add(dc);

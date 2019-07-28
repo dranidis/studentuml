@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -212,30 +215,30 @@ public class CodeGenerator {
 	            sb.append(LINE_SEPARATOR);
 	        }
 	
-			first = true;
+			
 			for (int i = 0; i < classAttributes.size(); i++) {
-			    if (first) {
-				sb.append(LINE_SEPARATOR);
-			    }
+			   
 			    sb.append(INDENT);
 	            Attribute classAttribute = (Attribute) classAttributes.get(i);         
 	            sb.append(generateAttribute(classAttribute, false));
 	
-			    first = false;
 	            }
 			
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
-			List<String> calledMethods = cls.getCalledMethods();
+			HashMap<String,Integer> calledMethods = cls.getCalledMethods();
 			if (!calledMethods.isEmpty()) {
 				sb.append(LINE_SEPARATOR);
 	            sb.append(INDENT).append("// calledMethods");
 	            sb.append(LINE_SEPARATOR);
 			}
-			for (int i=0; i<calledMethods.size();i++) {
+			for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
+				sb.append(INDENT).append(calledMethod.getKey());
+				sb.append(LINE_SEPARATOR);
+	/*		for (int i=0; i<calledMethods.size();i++) {
 				sb.append(INDENT).append(calledMethods.get(i));
 				sb.append(LINE_SEPARATOR);
-			}
+	*/		}
 			
         }
         // add operations
@@ -278,26 +281,35 @@ public class CodeGenerator {
 		first = true;
 		for (int x = 0; x < classSDMethods.size(); x++) {
 			Method classSDMethod = (Method) classSDMethods.get(x);
-			if (!classMethods.contains(classSDMethod)) {
-				 if (first) {
-	                    sb.append(LINE_SEPARATOR);
-	                }
-				sb.append(INDENT);
-				  sb.append(generateOperation(classSDMethod, false));
-
-		            if (lfBeforeCurly) {
-		                sb.append(LINE_SEPARATOR).append(INDENT);
-		            } else {
-		                sb.append(' ');
-		            }
-		            sb.append('{');
-
-		            // there is no ReturnType in behavioral feature (UML)
-		            sb.append(LINE_SEPARATOR);
-					sb.append(generateMethodBody(classSDMethod));
+			boolean equal = false;
+			for (int y = 0; y < classMethods.size(); y++) {
+				Method tempMethod =  (Method) classMethods.get(y); 
+				if (classSDMethod.getName().equals(tempMethod.getName())) {
+					equal = true;
+				}
+			}
+			if (!equal) {
+				if (!classSDMethod.getName().equals("create")) {
+					 if (first) {
+		                    sb.append(LINE_SEPARATOR);
+		                }
 					sb.append(INDENT);
-					sb.append("}").append(LINE_SEPARATOR);
-					first = false;
+					  sb.append(generateOperation(classSDMethod, false));
+	
+			            if (lfBeforeCurly) {
+			                sb.append(LINE_SEPARATOR).append(INDENT);
+			            } else {
+			                sb.append(' ');
+			            }
+			            sb.append('{');
+	
+			            // there is no ReturnType in behavioral feature (UML)
+			            sb.append(LINE_SEPARATOR);
+						sb.append(generateMethodBody(classSDMethod));
+						sb.append(INDENT);
+						sb.append("}").append(LINE_SEPARATOR);
+						first = false;
+				}
 			}
 		}   	
         return sb;
@@ -311,7 +323,7 @@ public class CodeGenerator {
         String nameStr = null;
         boolean constructor = false;
         nameStr = op.getName();
-
+       
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // pick out return type
@@ -345,6 +357,9 @@ public class CodeGenerator {
 
             // pick out return type
         	if (returnType != null) {
+        		if(!returnType.getName().equals("void")) {
+        			return INDENT + generateDefaultReturnStatement(returnType);
+        		}
                 return generateDefaultReturnStatement(returnType);
             }
         }

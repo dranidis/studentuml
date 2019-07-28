@@ -41,21 +41,42 @@ public abstract class SDMessage implements Serializable {
     }
     
     public Method getMethod() {
-    	Method sdMethod = new Method(this.toString().substring(this.toString().indexOf(":=")+3,this.toString().lastIndexOf("(")));
-    	sdMethod.setReturnType(this.getReturnType());
-    	this.getMethodParameters();
-    	if (!this.methodParameters.isEmpty()) {
-         for (int x=0; x<this.methodParameters.size();x++) {
-    		sdMethod.addParameter((MethodParameter) this.methodParameters.get(x)); 
-    		}
+    	try {
+	    	if (!this.toString().substring(this.toString().indexOf(":")+1).chars().allMatch(Character::isWhitespace)) {
+	    		String methodName = this.toString().substring(this.toString().indexOf(":=")+3,this.toString().lastIndexOf("("));
+	    		methodName= methodName.replaceAll("\\s+","");
+		    	Method sdMethod = new Method(methodName);
+		    	String mtdNumber = this.toString().substring(0,1);
+		    	sdMethod.setPriority(Integer.parseInt(mtdNumber));
+		    	if (this.getReturnType() != null ) {
+		    		sdMethod.setReturnType(this.getReturnType());
+		    	}else {
+		    		sdMethod.setReturnType(new DataType("void"));	
+		    	}
+		    	this.getMethodParameters();
+		    	if (!this.methodParameters.isEmpty()) {
+		         for (int x=0; x<this.methodParameters.size();x++) {
+		    		sdMethod.addParameter((MethodParameter) this.methodParameters.get(x)); 
+		    		}
+		    	}
+		    	return sdMethod;
+	    	}else {
+	    		return null;
+	    	}
+    	}catch(StringIndexOutOfBoundsException e) {
+    		return null;
     	}
-    	return sdMethod;
     }
     
     public Type getReturnType() {
-    	String returnType = this.toString().substring(this.toString().indexOf(": ")+2,this.toString().lastIndexOf(":="));
-    	DataType dataType = new DataType(returnType);
-    	return dataType;
+    	DataType dataType = new DataType("void"); 
+    	try {
+    	String returnType = this.toString().substring(this.toString().indexOf(":")+2,this.toString().lastIndexOf(":=")-1);
+	    dataType = new DataType(returnType);
+    	}catch(StringIndexOutOfBoundsException e) {
+    		out.print("reseting to void");
+    	}
+        return dataType;
     }
     
     public void getMethodParameters() {
@@ -63,15 +84,27 @@ public abstract class SDMessage implements Serializable {
     	this.methodParameters.clear();
     	String parameters = this.toString().substring(this.toString().indexOf("(")+1,this.toString().lastIndexOf(")"));
     	if (parameters !=null && !parameters.isEmpty() && parameters != "") {
-	    	String [] splitParameters = parameters.split("[\\s|,]");
+	    	String [] splitParameters = parameters.split("[,]");
 	    	for(int i=0;i<splitParameters.length;i++) {
-	    		Type parameterType = new DataType (splitParameters[i]);
-	    		i++;
-	    		String parameter = splitParameters[i];
+	    		String [] words = splitParameters[i].split("\\s+");
+	    		if(words[0].chars().allMatch(Character::isWhitespace)) {
+	    			words[0] = words[1];
+	    			words[1] = words[2];
+	    		}
+	    		Type parameterType = new DataType (words[0]);
+	    		String parameter = words[1];
 	    		out.println("Parameter:" + parameter);
 	    		MethodParameter methodParameter = new MethodParameter (parameter,parameterType);
 	    		this.methodParameters.add(methodParameter);
 	    	 }
+    	}
+    }
+    
+    public boolean isIterative() {
+    	if (this.toString().contains("*")) {
+    		return true;
+    	}else {
+    		return false;
     	}
     }
 

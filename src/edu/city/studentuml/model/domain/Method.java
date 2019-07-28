@@ -26,6 +26,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     private int visibility;    // 1 = private, 2 = public, 3 = protected
     private Type returnType;
     private NotifierVector parameters;
+    private int priority = 0 ;
 
     public Method(GenericOperation go) {
         genericOperation = go;
@@ -240,5 +241,15 @@ public class Method implements Serializable, IXMLCustomStreamable {
     		}
     	}
     	return allParameters;
+    }
+    
+    public void setPriority(int mtdPriority)
+    {
+    	this.priority = mtdPriority;
+    }
+    
+    public int getPriority()
+    {
+    	return this.priority;
     }
 }

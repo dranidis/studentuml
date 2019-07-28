@@ -7,9 +7,15 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.lang.*;
+import java.util.*;
 
 import org.w3c.dom.Element;
 
@@ -20,7 +26,8 @@ public class DesignClass extends AbstractClass {
     private AbstractClass extendClass;
     private List<Interface> implementInterfaces = new ArrayList();
     private Vector sdMethods = new Vector();
-    private List <String> calledMethods = new ArrayList<String>();
+    private HashMap <String,Integer> calledMethods = new HashMap<String,Integer>();
+    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -169,21 +176,53 @@ public class DesignClass extends AbstractClass {
     	return this.sdMethods;
     }
     
-    public void addCalledMethod (Method m, DesignClass calledClass) {
+    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative) {
     	StringBuffer sb = new StringBuffer();
-    	sb.append(calledClass.getName()).append(".");
-    	sb.append(m.getName()).append("(");
-    	sb.append(m.getParametersAsString());
-    	sb.append(");");
-    	this.calledMethods.add(sb.toString());
+    	if (m.getName().equals("create")) {
+    		sb.append(calledClass.getName()+" "+calledClass.getName().toLowerCase()).append(" = ");
+    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
+    	}else {
+	    	if(isIterative) {
+	    		sb.append("for(int i=0;i<x;i++){").append(LINE_SEPARATOR);
+	    		sb.append("   ");
+	    	}
+	    	if (calledClass.getName().equals(this.getName())) {
+	    		sb.append("this").append(".");
+	    	}else {
+	    		sb.append(calledClass.getName()).append(".");
+	    	}
+	    	sb.append(m.getName()).append("(");
+	    	sb.append(m.getParametersAsString());
+	    	sb.append(");");
+	    	if(isIterative) {
+	    		sb.append(LINE_SEPARATOR).append(" ");
+	    		sb.append(" }");
+	    	}
+    	}	
+    	this.calledMethods.put(sb.toString(),m.getPriority());
     }
     
-    public List<String> getCalledMethods(){
-    	return this.calledMethods;
+    public HashMap<String,Integer> getCalledMethods(){
+    	
+    	return sortByValue(this.calledMethods);
     }
     
     public void clearCalledMethods() {
     	this.calledMethods.clear();
+    }
+    
+    public static HashMap<String,Integer> sortByValue(HashMap<String,Integer> hm){
+    	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String,Integer>>(hm.entrySet());
+    	Collections.sort(list, new Comparator<Map.Entry<String,Integer>>(){
+    		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2) {
+    			return (o1.getValue()).compareTo(o2.getValue());
+    		}
+    	});
+    	HashMap<String,Integer> temp = new LinkedHashMap<String,Integer>();
+    	for( Map.Entry<String,Integer> aa : list) {
+    		temp.put(aa.getKey(), aa.getValue());
+    	}
+    	return temp;
     }
     
 }
