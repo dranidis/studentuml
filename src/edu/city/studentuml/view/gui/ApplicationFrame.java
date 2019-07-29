@@ -99,24 +99,25 @@ public class ApplicationFrame extends ApplicationGUI {
         messageTree.setModel(null);//
         factsTree.setModel(null);//
         repairButton.setEnabled(false);
-
+        
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
-
+        
         umlProject.loadFromXML(file);
-
+        
         setSaved(true);
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         repositoryTreeView.setUMLProject(umlProject);
         umlProject.projectChanged();
-
+        
         setFilePath(file);
         setFileName(file.substring(file.lastIndexOf('\\') + 1));
-
+        /* throws error
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
+        */
         return true;
     }
 
