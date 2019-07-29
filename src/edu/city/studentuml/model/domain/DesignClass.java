@@ -176,11 +176,13 @@ public class DesignClass extends AbstractClass {
     	return this.sdMethods;
     }
     
-    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative) {
+    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative, RoleClassifier object) {
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
-    		sb.append(calledClass.getName()+" "+calledClass.getName().toLowerCase()).append(" = ");
+    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
     		sb.append("new ").append(calledClass.getName()+"("+")"+";");
+    	}else if(m.getName().equals("destroy")) {
+    		sb.append(object.getName() + ".destroy()").append(";");
     	}else {
 	    	if(isIterative) {
 	    		sb.append("for(int i=0;i<x;i++){").append(LINE_SEPARATOR);
@@ -192,7 +194,7 @@ public class DesignClass extends AbstractClass {
 	    	if (calledClass.getName().equals(this.getName())) {
 	    		sb.append("this").append(".");
 	    	}else {
-	    		sb.append(calledClass.getName()).append(".");
+	    		sb.append(object.getName()).append(".");
 	    	}
 	    	sb.append(m.getName()).append("(");
 	    	sb.append(m.getParametersAsString());

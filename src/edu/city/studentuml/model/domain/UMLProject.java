@@ -495,12 +495,19 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               if (currEl instanceof SDMessageGR) {
                   SDMessage sdm = ((SDMessageGR) currEl).getMessage();
                   dc = (DesignClass) sdm.getTarget().getClassifier();
-                  DesignClass dc2;
+                  DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
+                  RoleClassifier dcObject = null;
+                  if (sdm.getTarget() instanceof SDObject) {
+	                  dcObject = (SDObject) sdm.getTarget();
+                  }else if (sdm.getTarget() instanceof MultiObject) {
+                	  dcObject = (MultiObject) sdm.getTarget();
+                  }               	  
                    out.println("ClassSD:" + dc.getName());
                    if (sdm instanceof CreateMessage) {
                 	   Method createMethod = new Method("create");
+                	   createMethod.setPriority(sdm.getRank());
                 	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-                	   dc2.addCalledMethod(createMethod, dc, false);
+                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
                    }
                    if (sdm instanceof CallMessage) {
                 	   CallMessage cm = (CallMessage) sdm;
@@ -508,7 +515,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	   if (sdMethod != null) {
                 		   sdMethod.setParameters(cm.getSDMethodParameters());
                 		   String returnValue = cm.getReturnValueAsString();
-                		   sdMethod.setReturnParameter(cm.getReturnParameter());
                 		   if (returnValue.contains(" ")) {
                 			   String[] split = returnValue.split("\\s+");
                 			   returnValue = split[0];
@@ -523,8 +529,14 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                	   boolean isIterative = cm.isIterative();
 	                	   out.println("AddedSDMethod: " + sdMethod);
 	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-	                	   dc2.addCalledMethod(sdMethod, dc, isIterative);
+	                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
                 	   }
+                   }
+                   if (sdm instanceof DestroyMessage) {
+                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+                	   Method destroyMethod = new Method("destroy");
+                	   destroyMethod.setPriority(sdm.getRank());
+                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);  
                    }
                   
               /*     //second solution

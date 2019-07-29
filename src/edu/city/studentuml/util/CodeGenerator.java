@@ -355,7 +355,7 @@ public class CodeGenerator {
 
             // pick out return type
         	if (returnType != null) {
-        		if(!returnType.getName().equals("void")) {
+        		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID")) {
         			return INDENT + generateDefaultReturnStatement(returnType);
         		}
                 return generateDefaultReturnStatement(returnType);
