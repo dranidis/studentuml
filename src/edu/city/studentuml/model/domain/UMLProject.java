@@ -494,9 +494,41 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               
               if (currEl instanceof SDMessageGR) {
                   SDMessage sdm = ((SDMessageGR) currEl).getMessage();
-                  dc = (DesignClass) sdm.getTarget().getClassifier();                  
+                  dc = (DesignClass) sdm.getTarget().getClassifier();
+                  DesignClass dc2;
                    out.println("ClassSD:" + dc.getName());
-                   if (sdm.getMethod()!=null) {
+                   if (sdm instanceof CreateMessage) {
+                	   Method createMethod = new Method("create");
+                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+                	   dc2.addCalledMethod(createMethod, dc, false);
+                   }
+                   if (sdm instanceof CallMessage) {
+                	   CallMessage cm = (CallMessage) sdm;
+                	   Method sdMethod = new Method(cm.getName());
+                	   if (sdMethod != null) {
+                		   sdMethod.setParameters(cm.getSDMethodParameters());
+                		   String returnValue = cm.getReturnValueAsString();
+                		   sdMethod.setReturnParameter(cm.getReturnParameter());
+                		   if (returnValue.contains(" ")) {
+                			   String[] split = returnValue.split("\\s+");
+                			   returnValue = split[0];
+                			   if (split.length>1) {
+                			   String returnParameter = split[1];
+                			   sdMethod.setReturnParameter(returnParameter);
+                			   }
+                		   }
+                		   sdMethod.setReturnType(new DataType(returnValue));
+	                	   sdMethod.setPriority(cm.getRank());
+	                	   dc.addSDMethod(sdMethod);
+	                	   boolean isIterative = cm.isIterative();
+	                	   out.println("AddedSDMethod: " + sdMethod);
+	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+	                	   dc2.addCalledMethod(sdMethod, dc, isIterative);
+                	   }
+                   }
+                  
+              /*     //second solution
+               		   if (sdm.getMethod()!=null) {
                 	   Method sdMethod = sdm.getMethod();
                 	   sdMethod.setReturnParameter(sdm.getReturnParameter());
                 	   dc.addSDMethod(sdMethod);
@@ -505,6 +537,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	   DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
                 	   dc2.addCalledMethod(sdMethod,dc,isIterative);
                    }
+              */     
               }     
               if(dcToGenerate.isEmpty()) {
             	  dcToGenerate.add(dc);

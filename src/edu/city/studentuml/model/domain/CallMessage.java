@@ -7,6 +7,9 @@ import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+
+import static java.lang.System.out;
+
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -189,5 +192,25 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         }
 
         return copyCallMessage;
+    }
+    
+    public Vector getSDMethodParameters() {
+        Iterator iterator = parameters.iterator();
+        MessageParameter param;
+        Vector methodParameters = new Vector<MethodParameter>();
+
+        while (iterator.hasNext()) {
+            param = (MessageParameter) iterator.next();
+            String [] parameterStr = param.getName().split("\\s+");
+            try {
+            	Type parameterType = new DataType (parameterStr[0]);
+	    		String parameter = parameterStr[1];
+	    		out.println("Parameter:" + parameter);
+	    		methodParameters.add(new MethodParameter(parameter,parameterType));
+            }catch(ArrayIndexOutOfBoundsException e) {
+            	out.println("Wrong Parameter");
+            } 
+        }
+        return methodParameters;
     }
 }

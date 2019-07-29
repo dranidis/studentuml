@@ -370,7 +370,7 @@ public class CodeGenerator {
         }
 
         String typeName = type.getName();
-        if (typeName.equals("void")) {
+        if (typeName.equals("void") || typeName.equals("VOID")) {
             return "";
         }
         if (typeName.equals("String") || typeName.equals("string")) {
