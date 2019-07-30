@@ -35,6 +35,8 @@ import static java.lang.System.out;
 import org.w3c.dom.Element;
 import com.sun.istack.internal.logging.Logger;
 
+//@author Spyros Maniopoulos
+
 public class CodeGenerator {
 	
 	public static final Logger LOG = Logger.getLogger(UMLProject.class);
@@ -104,7 +106,7 @@ public class CodeGenerator {
         isFileGeneration = true; // used to produce method javadoc
 
         //String pathname = path + filename;
-        // TODO: package, project basepath, tagged values to configure
+        // TODO: package, project basepath
         LOG.info("Generating " + f.getPath());
         isFileGeneration = true;
         //String header = generateHeader(classifier, pathname, packagePath);
@@ -127,7 +129,6 @@ public class CodeGenerator {
             }
         }
 
-        //cat.info("----- end updating -----");
         return pathname;
     }
     
@@ -153,7 +154,7 @@ public class CodeGenerator {
     StringBuffer generateClassifierStart(Object obj) {
         String sClassifierKeyword;
         StringBuffer sb = new StringBuffer(80);
-        // Now add visibility
+        // add visibility
         sb.append("public ");
         // add base class/interface
         if (obj instanceof DesignClass) {
