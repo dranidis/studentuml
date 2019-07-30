@@ -90,8 +90,7 @@ public class CodeGenerator {
         String packagePath = name;
         
         String pathname = sbPath.toString() + filename;
-        //cat.info("-----" + pathname + "-----");
-
+      
         //now decide whether file exist and need an update or is to be
         //newly generated
         File f = new File(pathname);
@@ -215,31 +214,17 @@ public class CodeGenerator {
 	            sb.append(INDENT).append("// Attributes");
 	            sb.append(LINE_SEPARATOR);
 	        }
-	
-			
+	        
 			for (int i = 0; i < classAttributes.size(); i++) {
-			   
 			    sb.append(INDENT);
 	            Attribute classAttribute = (Attribute) classAttributes.get(i);         
 	            sb.append(generateAttribute(classAttribute, false));
-	
 	            }
 			
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
-			HashMap<String,Integer> calledMethods = cls.getCalledMethods();
-			if (!calledMethods.isEmpty()) {
-				sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("// calledMethods");
-	            sb.append(LINE_SEPARATOR);
-			}
-			for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
-				sb.append(INDENT).append(calledMethod.getKey());
-				sb.append(LINE_SEPARATOR);
-	/*		for (int i=0; i<calledMethods.size();i++) {
-				sb.append(INDENT).append(calledMethods.get(i));
-				sb.append(LINE_SEPARATOR);
-	*/		}
+			//addCalledMethods
+			sb.append(generateCalledMethods(cls));
 			
         }
         // add operations
@@ -460,5 +445,22 @@ public class CodeGenerator {
         return lfBeforeCurly;
     }
 	
-
+    public String generateCalledMethods(DesignClass cls) {
+    	 StringBuffer sb = new StringBuffer();
+    	 HashMap<String,Integer> calledMethods = cls.getCalledMethods();
+			if (!calledMethods.isEmpty()) {
+				sb.append(LINE_SEPARATOR);
+	            sb.append(INDENT).append("// calledMethods");
+	            sb.append(LINE_SEPARATOR);
+			}
+			for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
+				sb.append(INDENT).append(calledMethod.getKey());
+				sb.append(LINE_SEPARATOR);
+	/*		for (int i=0; i<calledMethods.size();i++) {
+				sb.append(INDENT).append(calledMethods.get(i));
+				sb.append(LINE_SEPARATOR);
+	*/		}
+			return sb.toString();
+    	 
+    }
 }
