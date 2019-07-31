@@ -177,24 +177,36 @@ public class DesignClass extends AbstractClass {
     }
     
     public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative, RoleClassifier object) {
+    	//create a string with the call message for the method
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
-    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
-    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
-    	}else if(m.getName().equals("destroy")) {
+    		if( object instanceof SDObject) {
+	    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
+	    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
+    		}else if (object instanceof MultiObject) {
+    		  	sb.append("List<"+calledClass.getName()+"> "+object.getName()+"= new ArrayList<"+calledClass.getName()+">();");
+    		}
+    	}else if(m.getName().equals("destroy") && object instanceof SDObject) {
     		sb.append(object.getName() + ".destroy()").append(";");
+    	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
+    		sb.append(object.getName() + " = null").append(";");
     	}else {
-	    	if(isIterative) {
-	    		sb.append("for(int i=0;i<x;i++){").append(LINE_SEPARATOR);
+	    	if(isIterative && object instanceof SDObject) {
+	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
+	    		sb.append("   ");
+	    	}else if (isIterative && object instanceof MultiObject) {
+	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++){").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
 	    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
 	    	}
-	    	if (calledClass.getName().equals(this.getName())) {
+	    	if (calledClass.getName().equals(this.getName()) && object instanceof SDObject) {
 	    		sb.append("this").append(".");
-	    	}else {
+	    	}else if (object instanceof SDObject){
 	    		sb.append(object.getName()).append(".");
+	    	}else if (object instanceof MultiObject) {
+	    		sb.append(object.getName()).append("[i].");
 	    	}
 	    	sb.append(m.getName()).append("(");
 	    	sb.append(m.getParametersAsString());
@@ -208,7 +220,7 @@ public class DesignClass extends AbstractClass {
     }
     
     public HashMap<String,Integer> getCalledMethods(){
-    	
+    	//sort by rank and return list of call messages
     	return sortByValue(this.calledMethods);
     }
     
