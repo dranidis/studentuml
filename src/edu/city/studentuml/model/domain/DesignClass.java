@@ -242,4 +242,8 @@ public class DesignClass extends AbstractClass {
     	return temp;
     }
     
+    public void replaceSDMethod(int index,Method newSDMethod) {
+    	this.sdMethods.set(index,newSDMethod);
+    }
+    
 }

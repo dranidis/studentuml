@@ -48,9 +48,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -452,6 +454,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	Vector projectDiagrams = this.getDiagramModels();
     	CodeGenerator javaGenerator= new CodeGenerator(); 
     	DesignClass dc = null;
+    	boolean hasLifeline=false;
+    	Method headMethod=null;
     	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
     	for (int y = 0; y < projectDiagrams.size(); y++) {
     	  DiagramModel currDiagram = (DiagramModel) projectDiagrams.get(y);	
@@ -530,6 +534,19 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                	   out.println("AddedSDMethod: " + sdMethod);
 	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
 	                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
+	                	   if(hasLifeline && headMethod!=null) {
+	                		   if(!dc.getSDMethods().contains(headMethod)) {
+	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+	                			  methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject);
+	                			  out.println("headMethod2: " + methodToChange.getName());
+	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+	                		   }
+	                	   }
+	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID")) {
+	                		   hasLifeline=true;
+	                		   headMethod=sdMethod;
+	                		   out.println("headMethod: " + headMethod.getName());
+	                	   }
                 	   }
                    }
                    if (sdm instanceof DestroyMessage) {
@@ -538,18 +555,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	   destroyMethod.setPriority(sdm.getRank());
                 	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);  
                    }
-                  
-              /*     //second solution
-               		   if (sdm.getMethod()!=null) {
-                	   Method sdMethod = sdm.getMethod();
-                	   sdMethod.setReturnParameter(sdm.getReturnParameter());
-                	   dc.addSDMethod(sdMethod);
-                	   boolean isIterative = sdm.isIterative();
-                	   out.println("AddedSDMethod: " + sdMethod);
-                	   DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
-                	   dc2.addCalledMethod(sdMethod,dc,isIterative);
+                   if(sdm instanceof ReturnMessage) {
+                	   hasLifeline=false;
+                	   headMethod=null;
                    }
-              */     
+                  
               }     
               if(dcToGenerate.isEmpty()) {
             	  dcToGenerate.add(dc);

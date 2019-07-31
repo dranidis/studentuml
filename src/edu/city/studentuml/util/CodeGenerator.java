@@ -13,11 +13,15 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,24 +44,8 @@ import com.sun.istack.internal.logging.Logger;
 public class CodeGenerator {
 	
 	public static final Logger LOG = Logger.getLogger(UMLProject.class);
-    private boolean verboseDocs;
     private boolean lfBeforeCurly;
-    private static final boolean VERBOSE_DOCS = false;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-    private static final Set<String> JAVA_TYPES;
-    static {
-	Set<String> types = new HashSet<String>();
-	types.add("void");
-	types.add("boolean");
-	types.add("byte");
-	types.add("char");
-	types.add("int");
-	types.add("short");
-	types.add("long");
-	types.add("float");
-	types.add("double");
-	JAVA_TYPES = Collections.unmodifiableSet(types);
-    }
     private static boolean isFileGeneration;
     private static boolean isInUpdateMode;
     private static final String INDENT = "  ";
@@ -93,6 +81,7 @@ public class CodeGenerator {
       
         //now decide whether file exist and need an update or is to be
         //newly generated
+        BufferedWriter fos = null;
         File f = new File(pathname);
         if (!f.isDirectory()) {
         	if (!Paths.get(path).toFile().isDirectory()) {
@@ -100,9 +89,53 @@ public class CodeGenerator {
                 LOG.severe(" could not make directory " + path);
                 return null;
             }
-          }  
-        }
-        isFileGeneration = true; // used to produce method javadoc
+          }
+        } /* if a file already exists update
+        else if (!f.isDirectory() && f.exists()) {
+        	try {
+        		List<String> lines = new ArrayList<String>();
+        		String line = null;
+        		DesignClass cls = null;
+        		Vector classAttributes = new Vector();
+        		if(classObject instanceof DesignClass) {
+        			cls = (DesignClass) classObject;
+        			classAttributes = cls.getAttributes();
+        		}
+        		
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("class")) {
+        				line = line.replace(line, generateClassifierStart(classObject).toString());
+        			}
+        			for (int i=0;i<classAttributes.size();i++) {
+        				Attribute classAttribute = (Attribute) classAttributes.get(i);
+        				if(line.contains(classAttribute.getName())) {
+        					line = line.replace(line,generateAttribute(classAttribute,false));
+        				}
+        			}		
+        			lines.add(line);
+        		}
+        		fr.close();
+        		br.close();
+        		
+        		FileWriter fw = new FileWriter(f);
+        		BufferedWriter outString = new BufferedWriter(fw);
+        		for(String s : lines) {
+        			outString.write(s);
+        			outString.write(LINE_SEPARATOR);
+        		}
+        		outString.flush();
+        		outString.close();
+        		return pathname;
+        		
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}
+        		
+        } */
+        
+        isFileGeneration = true;
 
         //String pathname = path + filename;
         // TODO: package, project basepath
@@ -110,7 +143,6 @@ public class CodeGenerator {
         isFileGeneration = true;
         //String header = generateHeader(classifier, pathname, packagePath);
         String src = generateClassifier(classObject); 
-        BufferedWriter fos = null;
         try {
           fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
           //  fos.write(header);
@@ -130,6 +162,7 @@ public class CodeGenerator {
 
         return pathname;
     }
+    
     
     private String generateClassifier(Object cls) {
         StringBuffer returnValue = new StringBuffer();
@@ -233,21 +266,21 @@ public class CodeGenerator {
 	        Interface interfs = (Interface) obj;	
 	        classMethods = interfs.getMethods();
         }
-        if (!classMethods.isEmpty()) {
+        if (!classMethods.isEmpty() || !classSDMethods.isEmpty()) {
             sb.append(LINE_SEPARATOR);
             sb.append(INDENT).append("// Methods");
             sb.append(LINE_SEPARATOR);
         }
 
 		first = true;
-		for (int x = 0; x < classMethods.size(); x++) {
+		for (int x = 0; x < classSDMethods.size(); x++) {
 
 		    if (!first) {
 	                    sb.append(LINE_SEPARATOR);
 	                }
 		    sb.append(INDENT);
-		    Method classMethod = (Method) classMethods.get(x); 
-	        sb.append(generateOperation(classMethod, false));
+		    Method classSDMethod = (Method) classSDMethods.get(x); 
+	        sb.append(generateOperation(classSDMethod, false));
 
             if (lfBeforeCurly) {
                 sb.append(LINE_SEPARATOR).append(INDENT);
@@ -257,29 +290,29 @@ public class CodeGenerator {
             sb.append('{');
 
             sb.append(LINE_SEPARATOR);
-			sb.append(generateMethodBody(classMethod));
+			sb.append(generateMethodBody(classSDMethod));
 			sb.append(INDENT);
 			sb.append("}").append(LINE_SEPARATOR);
 
 	    first = false;
         }
 		first = true;
-		for (int x = 0; x < classSDMethods.size(); x++) {
-			Method classSDMethod = (Method) classSDMethods.get(x);
+		for (int x = 0; x < classMethods.size(); x++) {
+			Method classMethod = (Method) classMethods.get(x);
 			boolean equal = false;
-			for (int y = 0; y < classMethods.size(); y++) {
-				Method tempMethod =  (Method) classMethods.get(y); 
-				if (classSDMethod.getName().equals(tempMethod.getName())) {
+			for (int y = 0; y < classSDMethods.size(); y++) {
+				Method tempMethod =  (Method) classSDMethods.get(y); 
+				if (classMethod.getName().equals(tempMethod.getName())) {
 					equal = true;
 				}
 			}
 			if (!equal) {
-				if (!classSDMethod.getName().equals("create")) {
+				if (!classMethod.getName().equals("create")) {
 					 if (!first) {
 		                    sb.append(LINE_SEPARATOR);
 		                }
 					  sb.append(INDENT);
-					  sb.append(generateOperation(classSDMethod, false));
+					  sb.append(generateOperation(classMethod, false));
 	
 			            if (lfBeforeCurly) {
 			                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -289,7 +322,7 @@ public class CodeGenerator {
 			            sb.append('{');
 	
 			            sb.append(LINE_SEPARATOR);
-						sb.append(generateMethodBody(classSDMethod));
+						sb.append(generateMethodBody(classMethod));
 						sb.append(INDENT);
 						sb.append("}").append(LINE_SEPARATOR);
 						first = false;
@@ -335,6 +368,18 @@ public class CodeGenerator {
     }
     
     private String generateMethodBody(Method op) {
+    	
+    	StringBuffer sb = new StringBuffer();
+    	HashMap<String,Integer> calledMethods = op.getCalledMethods();
+		if (!calledMethods.isEmpty()) {
+			sb.append(LINE_SEPARATOR);
+            sb.append(INDENT+INDENT).append("// calledMethods");
+            sb.append(LINE_SEPARATOR);
+		}
+		for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
+			sb.append(INDENT+INDENT).append(calledMethod.getKey());
+			sb.append(LINE_SEPARATOR);
+		}
         
         if (op != null) {
         	Type returnType = op.getReturnType();
@@ -342,12 +387,12 @@ public class CodeGenerator {
             // pick out return type
         	if (returnType != null) {
         		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID")) {
-        			return INDENT + generateDefaultReturnStatement(returnType);
-        		}
-                return generateDefaultReturnStatement(returnType);
+        			sb.append(INDENT + generateDefaultReturnStatement(returnType));
+        		}  
             }
         }
-        return generateDefaultReturnStatement(null);
+        
+        return sb.toString();
     }
     
     private String generateDefaultReturnStatement(Type type) {

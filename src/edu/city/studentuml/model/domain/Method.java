@@ -7,7 +7,14 @@ import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.w3c.dom.Element;
@@ -28,6 +35,8 @@ public class Method implements Serializable, IXMLCustomStreamable {
     private NotifierVector parameters;
     private int priority = 0 ;
     private String returnParameter = "x";
+    private HashMap <String,Integer> calledMethods = new HashMap<String,Integer>();
+    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     public Method(GenericOperation go) {
         genericOperation = go;
@@ -261,4 +270,71 @@ public class Method implements Serializable, IXMLCustomStreamable {
     public String getReturnParameter () {
     	return this.returnParameter;
     }
+    
+    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative, RoleClassifier object) {
+    	//create a string with the call message for the method
+    	StringBuffer sb = new StringBuffer();
+    	if (m.getName().equals("create")) {
+    		if( object instanceof SDObject) {
+	    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
+	    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
+    		}else if (object instanceof MultiObject) {
+    		  	sb.append("List<"+calledClass.getName()+"> "+object.getName()+"= new ArrayList<"+calledClass.getName()+">();");
+    		}
+    	}else if(m.getName().equals("destroy") && object instanceof SDObject) {
+    		sb.append(object.getName() + ".destroy()").append(";");
+    	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
+    		sb.append(object.getName() + " = null").append(";");
+    	}else {
+	    	if(isIterative && object instanceof SDObject) {
+	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
+	    		sb.append("   ");
+	    	}else if (isIterative && object instanceof MultiObject) {
+	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++){").append(LINE_SEPARATOR);
+	    		sb.append("   ");
+	    	}
+	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
+	    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
+	    	}
+	    	if (calledClass.getName().equals(this.getName()) && object instanceof SDObject) {
+	    		sb.append("this").append(".");
+	    	}else if (object instanceof SDObject){
+	    		sb.append(object.getName()).append(".");
+	    	}else if (object instanceof MultiObject) {
+	    		sb.append(object.getName()).append("[i].");
+	    	}
+	    	sb.append(m.getName()).append("(");
+	    	sb.append(m.getParametersAsString());
+	    	sb.append(");");
+	    	if(isIterative) {
+	    		sb.append(LINE_SEPARATOR).append(" ");
+	    		sb.append(" }");
+	    	}
+    	}	
+    	this.calledMethods.put(sb.toString(),m.getPriority());
+    }
+    
+    public HashMap<String,Integer> getCalledMethods(){
+    	//sort by rank and return list of call messages
+    	return sortByValue(this.calledMethods);
+    }
+    
+    public void clearCalledMethods() {
+    	this.calledMethods.clear();
+    }
+    
+    public static HashMap<String,Integer> sortByValue(HashMap<String,Integer> hm){
+    	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String,Integer>>(hm.entrySet());
+    	Collections.sort(list, new Comparator<Map.Entry<String,Integer>>(){
+    		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2) {
+    			return (o1.getValue()).compareTo(o2.getValue());
+    		}
+    	});
+    	HashMap<String,Integer> temp = new LinkedHashMap<String,Integer>();
+    	for( Map.Entry<String,Integer> aa : list) {
+    		temp.put(aa.getKey(), aa.getValue());
+    	}
+    	return temp;
+    }
+    
 }
