@@ -274,27 +274,29 @@ public class CodeGenerator {
 
 		first = true;
 		for (int x = 0; x < classSDMethods.size(); x++) {
-
-		    if (!first) {
-	                    sb.append(LINE_SEPARATOR);
-	                }
-		    sb.append(INDENT);
-		    Method classSDMethod = (Method) classSDMethods.get(x); 
-	        sb.append(generateOperation(classSDMethod, false));
-
-            if (lfBeforeCurly) {
-                sb.append(LINE_SEPARATOR).append(INDENT);
-            } else {
-                sb.append(' ');
-            }
-            sb.append('{');
-
-            sb.append(LINE_SEPARATOR);
-			sb.append(generateMethodBody(classSDMethod));
-			sb.append(INDENT);
-			sb.append("}").append(LINE_SEPARATOR);
-
-	    first = false;
+			Method classSDMethod = (Method) classSDMethods.get(x); 
+			if (!classSDMethod.getName().equals("create") && !classSDMethod.getName().equals("destroy")) {
+			    if (!first) {
+		                    sb.append(LINE_SEPARATOR);
+		                }
+			    sb.append(INDENT);
+			    
+		        sb.append(generateOperation(classSDMethod, false));
+	
+	            if (lfBeforeCurly) {
+	                sb.append(LINE_SEPARATOR).append(INDENT);
+	            } else {
+	                sb.append(' ');
+	            }
+	            sb.append('{');
+	
+	            sb.append(LINE_SEPARATOR);
+				sb.append(generateMethodBody(classSDMethod));
+				sb.append(INDENT);
+				sb.append("}").append(LINE_SEPARATOR);
+	
+		    first = false;
+		   } 
         }
 		first = true;
 		for (int x = 0; x < classMethods.size(); x++) {
@@ -307,7 +309,7 @@ public class CodeGenerator {
 				}
 			}
 			if (!equal) {
-				if (!classMethod.getName().equals("create")) {
+				if (!classMethod.getName().equals("create") && !classMethod.getName().equals("destroy")) {
 					 if (!first) {
 		                    sb.append(LINE_SEPARATOR);
 		                }

@@ -498,8 +498,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               
               if (currEl instanceof SDMessageGR) {
                   SDMessage sdm = ((SDMessageGR) currEl).getMessage();
-                  dc = (DesignClass) sdm.getTarget().getClassifier();
-                  DesignClass dc2 = (DesignClass) sdm.getSource().getClassifier();
+                  if (sdm.getTarget().getClassifier() instanceof DesignClass) {
+                	 dc = (DesignClass) sdm.getTarget().getClassifier();
+                  }
+                  DesignClass dc2 = null;
+                  if (sdm.getSource().getClassifier() instanceof DesignClass) {
+                	  dc2 = (DesignClass) sdm.getSource().getClassifier();
+                  }
                   RoleClassifier dcObject = null;
                   if (sdm.getTarget() instanceof SDObject) {
 	                  dcObject = (SDObject) sdm.getTarget();
@@ -510,8 +515,19 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                    if (sdm instanceof CreateMessage) {
                 	   Method createMethod = new Method("create");
                 	   createMethod.setPriority(sdm.getRank());
-                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
+                	   dc.addSDMethod(createMethod);
+                	   if(dc2 !=null) {
+	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+	                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
+	                	   if(hasLifeline && headMethod!=null) {
+	                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+	                			  methodToChange.addCalledMethod(createMethod, dc, false, dcObject);
+	                			  out.println("headMethod2: " + methodToChange.getName());
+	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+	                		   }
+	                	   }
+                	   }
                    }
                    if (sdm instanceof CallMessage) {
                 	   CallMessage cm = (CallMessage) sdm;
@@ -532,44 +548,57 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                	   dc.addSDMethod(sdMethod);
 	                	   boolean isIterative = cm.isIterative();
 	                	   out.println("AddedSDMethod: " + sdMethod);
-	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-	                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
-	                	   if(hasLifeline && headMethod!=null) {
-	                		   if(!dc.getSDMethods().contains(headMethod)) {
-	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-	                			  methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject);
-	                			  out.println("headMethod2: " + methodToChange.getName());
-	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
-	                		   }
+	                	   if (dc2 != null) {
+		                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+		                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
+		                	   if(hasLifeline && headMethod!=null) {
+		                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+		                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+		                			  methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject);
+		                			  out.println("headMethod2: " + methodToChange.getName());
+		                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+		                		   }
+		                	   }
 	                	   }
 	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID")) {
 	                		   hasLifeline=true;
 	                		   headMethod=sdMethod;
 	                		   out.println("headMethod: " + headMethod.getName());
-	                	   }
+	                	   } 
                 	   }
                    }
                    if (sdm instanceof DestroyMessage) {
-                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
                 	   Method destroyMethod = new Method("destroy");
                 	   destroyMethod.setPriority(sdm.getRank());
-                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);  
+                	   dc.addSDMethod(destroyMethod);
+                	   if (dc2!=null) {
+	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+	                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);
+	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject);
+	                			  out.println("headMethod2: " + methodToChange.getName());
+	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+	                		   }
+                	   }   
                    }
                    if(sdm instanceof ReturnMessage) {
                 	   hasLifeline=false;
                 	   headMethod=null;
                    }
                   
-              }     
+              }
+              if (dc!=null) {
               if(dcToGenerate.isEmpty()) {
             	  dcToGenerate.add(dc);
-             }else {
+              }else {
             	 if(dcToGenerate.contains(dc)){
             	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
             	 }else {
             	   dcToGenerate.add(dc); 
             	 }
-             }
+              }
+            }
           }
           
     	}
