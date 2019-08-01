@@ -174,7 +174,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         callMessageDialog = new JDialog(owner, true);
         callMessageDialog.getContentPane().add(this);
         callMessageDialog.setTitle(title);
-        callMessageDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        callMessageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         callMessageDialog.pack();
         callMessageDialog.setResizable(false);
         callMessageDialog.setLocationRelativeTo(owner);

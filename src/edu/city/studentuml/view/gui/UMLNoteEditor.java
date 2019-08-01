@@ -34,7 +34,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
 
     public UMLNoteEditor(UMLNoteGR note) {
         this.note = note;
-
+        
         textLabel = new JLabel("UML note text: ");
         textArea = new JTextArea(5, 20);
         textArea.setEditable(true);
@@ -92,7 +92,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
         noteDialog = new JDialog(owner, true);
         noteDialog.getContentPane().add(this);
         noteDialog.setTitle(title);
-        noteDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        noteDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         noteDialog.pack();
         noteDialog.setResizable(false);
         noteDialog.setLocationRelativeTo(owner);
@@ -114,6 +114,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
             noteDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
+            System.out.println(event.getSource());
             noteDialog.setVisible(false);
         }
     }

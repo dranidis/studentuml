@@ -88,7 +88,7 @@ public class ObjectFlowEditor extends JPanel implements ActionListener {
         objectFlowDialog = new JDialog(owner, true);
         objectFlowDialog.getContentPane().add(this);
         objectFlowDialog.setTitle(title);
-        objectFlowDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        objectFlowDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         objectFlowDialog.pack();
         objectFlowDialog.setResizable(false);
         objectFlowDialog.setLocationRelativeTo(owner);

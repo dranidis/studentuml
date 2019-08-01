@@ -20,6 +20,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
     public static final int BIDIRECTIONAL = 0;
     public static final int AB = 1;
     public static final int BA = 2;
+    public static final int BIDIRECTIONAL_FIX = 3;
     protected Association association;
     protected AbstractClass associationClass;
 

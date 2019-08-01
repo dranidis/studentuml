@@ -75,7 +75,7 @@ public class ActionNodeEditor extends JPanel implements ActionListener {
         actionNodeDialog = new JDialog(owner, true);
         actionNodeDialog.getContentPane().add(this);
         actionNodeDialog.setTitle(title);
-        actionNodeDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        actionNodeDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         actionNodeDialog.pack();
         actionNodeDialog.setResizable(false);
         actionNodeDialog.setLocationRelativeTo(owner);

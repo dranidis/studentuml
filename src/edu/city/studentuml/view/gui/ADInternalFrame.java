@@ -10,6 +10,7 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.view.ADView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,12 +43,13 @@ public class ADInternalFrame extends DiagramInternalFrame {
         super(adModel.getDiagramName());
         model = adModel;
         view = new ADView((ADModel) model);
-
         // add view to drawing panel in the center and toolbar to the west
         JPanel drawingPanel = new JPanel();
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new DrawingToolbar(this);
+        toolbar.setFloatable(false);
+        toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);
         sp.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(sp, BorderLayout.WEST);
@@ -60,7 +62,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
 
         view.addMouseListener(resizeController.getMouseListener());
         view.addMouseMotionListener(resizeController.getMouseMotionListener());
-        
+
         // pass selection controller and add element controller to view
         view.addMouseListener(selectionController.getMouseListener());
         view.addMouseMotionListener(selectionController.getMouseMotionListener());
@@ -122,7 +124,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
         // non atomic; swimlanes and activities
         private JToggleButton swimlanesButton;
         private JToggleButton activityButton;
-        
+
         private JToggleButton noteButton;
 
         // Undo/Redo
@@ -257,7 +259,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
             controlFlowButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             controlFlowButton.setActionCommand("ControlFlowGR");
             controlFlowButton.setToolTipText("Control Flow");
-        
+
             Icon objectFlowIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "objectFlow.gif"));
             objectFlowButton = new JToggleButton(objectFlowIcon);
             objectFlowButton.addMouseListener(new MouseAdapter() {
@@ -293,7 +295,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
             decisionNodeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             decisionNodeButton.setActionCommand("DecisionNodeGR");
             decisionNodeButton.setToolTipText("Decision Node");
-            
+
             Icon mergeNodeIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "merge.gif"));
             mergeNodeButton = new JToggleButton(mergeNodeIcon);
             mergeNodeButton.addMouseListener(new MouseAdapter() {
@@ -441,7 +443,6 @@ public class ADInternalFrame extends DiagramInternalFrame {
 
             refreshUndoRedoButtons();
 
-
             // register the toolbar as the action listener of button events
             selectionButton.addActionListener(this);
             initialNodeButton.addActionListener(this);
@@ -476,7 +477,6 @@ public class ADInternalFrame extends DiagramInternalFrame {
                     refreshUndoRedoButtons();
                 }
             });
-
 
             // add the toolbar buttons to the vector list
             buttons = new Vector();
@@ -516,7 +516,8 @@ public class ADInternalFrame extends DiagramInternalFrame {
             add(forkNodeButton);
             add(joinNodeButton);
 
-            add(swimlanesButton);swimlanesButton.setEnabled(false);
+            add(swimlanesButton);
+            swimlanesButton.setEnabled(false);
             add(activityButton);
 
             addSeparator();

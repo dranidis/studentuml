@@ -140,7 +140,7 @@ public class AttributeEditor extends JPanel implements ActionListener {
         attributeDialog = new JDialog(owner, true);
         attributeDialog.getContentPane().add(this);
         attributeDialog.setTitle(title);
-        attributeDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        attributeDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         attributeDialog.pack();
         attributeDialog.setResizable(false);
         attributeDialog.setLocationRelativeTo(owner);

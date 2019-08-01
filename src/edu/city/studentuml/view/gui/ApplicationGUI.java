@@ -94,6 +94,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JMenuItem exitMenuItem;
     protected JMenu editMenu;
     protected JMenuItem resizeDrawingAreaMenuItem;
+    protected JMenuItem renameProject;
     protected JMenuItem reloadRulesMenuItem;
     protected JMenu preferencesMenu;
     protected JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem;
@@ -328,6 +329,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         editMenu.setText(" Edit ");
         menuBar.add(editMenu);
 
+        renameProject = new JMenuItem();
+        renameProject.setText("Rename Project");
+        renameProject.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                renameProject();
+            }
+        });
+        editMenu.add(renameProject);
+
         resizeDrawingAreaMenuItem = new JMenuItem();
         resizeDrawingAreaMenuItem.setText("Resize Drawing Area");
         resizeDrawingAreaMenuItem.addActionListener(new ActionListener() {
@@ -482,7 +493,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 createNewInternalFrame(DiagramModel.UCD);
             }
         });
-        createMenu.add(newUseCaseMenuItem);
 
         newSystemSequenceMenuItem = new JMenuItem();
         newSystemSequenceMenuItem.setText("New System Sequence Diagram");
@@ -492,7 +502,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 createNewInternalFrame(DiagramModel.SSD);
             }
         });
-        createMenu.add(newSystemSequenceMenuItem);
 
         newConceptualClassMenuItem = new JMenuItem();
         newConceptualClassMenuItem.setText("New Conceptual Class Diagram");
@@ -502,7 +511,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 createNewInternalFrame(DiagramModel.CCD);
             }
         });
-        createMenu.add(newConceptualClassMenuItem);
 
         newSequenceDiagramMenuItem = new JMenuItem();
         newSequenceDiagramMenuItem.setText("New Sequence Diagram");
@@ -512,7 +520,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 createNewInternalFrame(DiagramModel.SD);
             }
         });
-        createMenu.add(newSequenceDiagramMenuItem);
 
         newDesignClassMenuItem = new JMenuItem();
         newDesignClassMenuItem.setText("New Design Class Diagram");
@@ -522,7 +529,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 createNewInternalFrame(DiagramModel.DCD);
             }
         });
-        createMenu.add(newDesignClassMenuItem);
 
         newActivityDiagramMenuItem = new JMenuItem();
         newActivityDiagramMenuItem.setText("New Activity Diagram");
@@ -533,6 +539,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
         });
         createMenu.add(newActivityDiagramMenuItem);
+        createMenu.add(newUseCaseMenuItem);
+        createMenu.add(newConceptualClassMenuItem);
+        createMenu.add(newSystemSequenceMenuItem);
+        createMenu.add(newSequenceDiagramMenuItem);
+        createMenu.add(newDesignClassMenuItem);
     }
 
     private void createHelpMenu() {
@@ -589,7 +600,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         //scrollPane_f = new JScrollPane();
         //scrollPane_f.setViewportView(factsTree);
-
         tabbedPane.addTab("Problems", null, panel, null);
         //tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile), null);
         //tabbedPane.addTab("Facts", null, scrollPane_f, null);
@@ -825,42 +835,57 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * depending on the type integer
      */
     public void createNewInternalFrame(int type) {
-        if (type == DiagramModel.UCD) {
-            String modelName = JOptionPane.showInputDialog("Use Case Diagram Name: ");
-            UCDModel model = new UCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.SSD) {
-            String modelName = JOptionPane.showInputDialog("System Sequence Diagram Name: ");
-            SSDModel model = new SSDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.CCD) {
-            String modelName = JOptionPane.showInputDialog("Conceptual Class Diagram Name: ");
-            CCDModel model = new CCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.SD) {
-            String modelName = JOptionPane.showInputDialog("Sequence Diagram Name: ");
-            SDModel model = new SDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.DCD) {
-            String modelName = JOptionPane.showInputDialog("Design Class Diagram Name: ");
-            DCDModel model = new DCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.AD) {
-            String modelName = JOptionPane.showInputDialog("Activity Diagram Name: ");
-            ADModel model = new ADModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } //else if (type == DiagramModel.STATE) {
-            //handle state internal frame
-        //}
+        String dialogText;
+        DiagramModel model;
+        switch (type) {
+            case DiagramModel.UCD:
+                dialogText = "Use Case Diagram Name: ";
+                break;
+            case DiagramModel.SSD:
+                dialogText = "System Sequence Diagram Name:";
+                break;
+            case DiagramModel.SD:
+                dialogText = "Sequence Diagram Name: ";
+                break;
+            case DiagramModel.CCD:
+                dialogText = "Conceptual Class Diagram Name: ";
+                break;
+            case DiagramModel.DCD:
+                dialogText = "Design Class Diagram Name: ";
+                break;
+            case DiagramModel.AD:
+                dialogText = "Activity Diagram Name: ";
+                break;
+            default:
+                dialogText = "";
+        }
+        String modelName = JOptionPane.showInputDialog(dialogText);
+        if ((modelName != null) && (modelName.length() > 0)) {
+            if (type == DiagramModel.SSD) {
+                model = new SSDModel("SSD: " + modelName, umlProject);
 
-        setSaved(false);
+            } else if (type == DiagramModel.SD) {
+                model = new SDModel("SD: " + modelName, umlProject);
+
+            } else if (type == DiagramModel.CCD) {
+                model = new CCDModel("CCD: " + modelName, umlProject);
+
+            } else if (type == DiagramModel.DCD) {
+                model = new DCDModel("DCD: " + modelName, umlProject);
+            } else if (type == DiagramModel.AD) {
+                model = new ADModel("AD: " + modelName, umlProject);
+            } else if (type == DiagramModel.UCD) {
+                model = new UCDModel("UCD: " + modelName, umlProject);
+            } else {
+                return;
+            }
+            model.addObserver(this);
+            addInternalFrame(model);
+            setSaved(false);
+        }
     }
+
+    public abstract void renameProject();
 
     public void resizeView() {
         JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
@@ -975,7 +1000,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (model instanceof ADModel) {
             f = new ADInternalFrame((ADModel) model);
         } //else if (model instanceof StateModel) {
-            //f = new StateInternalFrame((StateModel) model);
+        //f = new StateInternalFrame((StateModel) model);
         //}
 
         if (R != null) {
@@ -1044,7 +1069,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
             } //else if (f instanceof StateInternalFrame) {
-                //stateFrames.add(f);
+            //stateFrames.add(f);
             //}
         }
 
@@ -1061,7 +1086,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (type == DiagramModel.AD) {
             return adFrames;
         } //else if () {
-            //return stateFrames;
+        //return stateFrames;
         //}
 
         return new Vector();
@@ -1186,6 +1211,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * Below methods are used for remembering the tree expansion state for messageTree
      * is path1 descendant of path2
      */
+
     public static boolean isDescendant(TreePath path1, TreePath path2) {
         int count1 = path1.getPathCount();
         int count2 = path2.getPathCount();
@@ -1245,13 +1271,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         // private JButton validateSD_DCDButton;
 
         public ProjectToolBar() {
-
+            setFloatable(false);
             ImageIcon newIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "new.gif"));
             newButton = new JButton(newIcon);
             newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             newButton.setToolTipText("New Project");
             newButton.addMouseListener(new MouseAdapter() {
-
                 public void mouseEntered(MouseEvent e) {
                     newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
                 }
@@ -1269,7 +1294,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             if (!isApplet) {  //applet version does not allow creation of new project
                 add(newButton);
             }
-
             ImageIcon openIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "open.gif"));
             openButton = new JButton(openIcon);
             openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -1385,7 +1409,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     createNewInternalFrame(DiagramModel.UCD);
                 }
             });
-            add(useCaseButton);
 
             ImageIcon ssdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
             ssdButton = new JButton(ssdIcon);
@@ -1407,7 +1430,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     createNewInternalFrame(DiagramModel.SSD);
                 }
             });
-            add(ssdButton);
 
             ImageIcon ccdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ccd.gif"));
             ccdButton = new JButton(ccdIcon);
@@ -1429,7 +1451,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     createNewInternalFrame(DiagramModel.CCD);
                 }
             });
-            add(ccdButton);
 
             ImageIcon sdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "sd.gif"));
             sdButton = new JButton(sdIcon);
@@ -1451,7 +1472,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     createNewInternalFrame(DiagramModel.SD);
                 }
             });
-            add(sdButton);
 
             ImageIcon dcdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "dcd.gif"));
             dcdButton = new JButton(dcdIcon);
@@ -1473,7 +1493,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     createNewInternalFrame(DiagramModel.DCD);
                 }
             });
-            add(dcdButton);
 
             ImageIcon adIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "activityDiagram.gif"));
             adButton = new JButton(adIcon);
@@ -1496,7 +1515,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 }
             });
             add(adButton);
-
+            add(useCaseButton);
+            add(ccdButton);
+            add(ssdButton);
+            add(sdButton);
+            add(dcdButton);
             addSeparator();
 
             ImageIcon resizeIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "resize.gif"));
@@ -1525,7 +1548,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             //validateSD_DCDButton = new JButton(validateSD_DCDIcon);
             //validateSD_DCDButton.setToolTipText("Validate SD against DCD");
             //validateSD_DCDButton.addActionListener(this);
-
             addSeparator();
 
             ImageIcon reloadIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "reload.gif"));

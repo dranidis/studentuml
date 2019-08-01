@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.w3c.tools.codec.Base64Encoder;
 
@@ -34,7 +35,7 @@ public class ImageExporter {
         BufferedImage image = view.getImage();
 
         // get the parent component where to show the file chooser
-        Frame owner = null;
+        Frame owner;
 
         if (parent instanceof Frame) {
             owner = (Frame) parent;
@@ -43,12 +44,11 @@ public class ImageExporter {
         }
 
         JFileChooser fileChooser = new JFileChooser();
-
-        if (fileChooser.showSaveDialog(owner) != fileChooser.APPROVE_OPTION) {
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
+        if (fileChooser.showSaveDialog(owner) != JFileChooser.APPROVE_OPTION) {
             return;
         }
-
-        // THIS IS TEMPORARILY; SHOULD BE CHANGED LATER
         File outputFile = fileChooser.getSelectedFile();
         int beginIndex = outputFile.getName().lastIndexOf('.');
         if (beginIndex == -1) {
@@ -59,7 +59,16 @@ public class ImageExporter {
                 outputFile = new File(outputFile.getAbsolutePath() + PNG);
             }
         }
-
+        if (outputFile.exists() && outputFile.canRead()) {
+            int n = JOptionPane.showConfirmDialog(
+                    owner,
+                    "This file exists. Are you sure you want to overwrite?",
+                    "Confirmation Dialog",
+                    JOptionPane.YES_NO_OPTION);
+            if (n == 1) {
+                return;
+            }
+        }
         exportToPNGImage(image, outputFile);
     }
 
@@ -67,48 +76,9 @@ public class ImageExporter {
         try {
             ImageIO.write(image, "PNG", file);
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public static void exportToJPEGImage(BufferedImage image, File file) {
-        try {
-            ImageIO.write(image, "JPEG", file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // exports the diagram image in view to a Base64 encoded string
-    public static String exportToJPEGImageString(DiagramView view) {
-        return exportToJPEGImageStringByScale(view, 1);
-    }
-
-    public static String exportToJPEGImageStringByScale(DiagramView view, double scale) {
-        BufferedImage image = view.getImageByScale(scale, scale);
-
-        return exportToImageString(image, "JPEG");
-    }
-
-    public static String exportToJPEGImageStringByHeight(DiagramView view, int height) {
-        BufferedImage image = view.getImageByHeight(height);
-
-        return exportToImageString(image, "JPEG");
-    }
-
-    public static String exportToJPEGImageStringByWidth(DiagramView view, int width) {
-        BufferedImage image = view.getImageByWidth(width);
-
-        return exportToImageString(image, "JPEG");
-    }
-
-    public static String exportToJPEGImageStringByDimensions(DiagramView view, int width, int height) {
-        BufferedImage image = view.getImageByDimensions(width, height);
-
-        return exportToImageString(image, "JPEG");
-    }
-
-    // exports the diagram image in view to a Base64 encoded string
     public static String exportToPNGImageString(DiagramView view) {
         return exportToPNGImageStringByScale(view, 1);
     }
@@ -119,30 +89,10 @@ public class ImageExporter {
         return exportToImageString(image, "PNG");
     }
 
-    public static String exportToPNGImageStringByHeight(DiagramView view, int height) {
-        BufferedImage image = view.getImageByHeight(height);
-
-        return exportToImageString(image, "PNG");
-    }
-
-    public static String exportToPNGImageStringByWidth(DiagramView view, int width) {
-        BufferedImage image = view.getImageByWidth(width);
-
-        return exportToImageString(image, "PNG");
-    }
-
     public static String exportToPNGImageStringByDimensions(DiagramView view, int width, int height) {
         BufferedImage image = view.getImageByDimensions(width, height);
 
         return exportToImageString(image, "PNG");
-    }
-
-    public static void exportToImageFile(BufferedImage image, File file, String format) {
-        try {
-            ImageIO.write(image, format, file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static byte[] exportToImageByteArray(BufferedImage image, String format) {

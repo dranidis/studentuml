@@ -15,6 +15,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
     public static final int BIDIRECTIONAL = 0;
     public static final int AB = 1;
     public static final int BA = 2;
+    public static final int BIDIRECTIONAL_FIX = 3;
     // constants defining reading direction label
     public static final int FROM_A_TO_B = 3;
     public static final int FROM_B_TO_A = 4;
@@ -47,6 +48,8 @@ public class Association implements Serializable, IXMLCustomStreamable {
         if (dir == AB) {
             direction = dir;
         } else if (dir == BA) {
+            direction = dir;
+        } else if (dir == BIDIRECTIONAL_FIX) {
             direction = dir;
         } else {
             direction = BIDIRECTIONAL;

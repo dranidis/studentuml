@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.DesignClass;
@@ -22,12 +21,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
  * @author draganbisercic
  */
-public class ClassNameEditor extends JPanel implements ActionListener {
+public class ClassNameEditor extends JPanel implements ActionListener, DocumentListener {
 
     private JDialog classDialog;
     private ClassGR classGR;    // the design class that the dialog edits
@@ -48,6 +49,7 @@ public class ClassNameEditor extends JPanel implements ActionListener {
         nameLabel = new JLabel("Class Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
+        nameField.getDocument().addDocumentListener(this);
         namePanel = new JPanel();
         namePanel.setLayout(new FlowLayout());
         namePanel.add(nameLabel);
@@ -84,7 +86,7 @@ public class ClassNameEditor extends JPanel implements ActionListener {
         classDialog = new JDialog(owner, true);
         classDialog.getContentPane().add(this);
         classDialog.setTitle(title);
-        classDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        classDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);
@@ -102,16 +104,36 @@ public class ClassNameEditor extends JPanel implements ActionListener {
     public void initialize() {
         DesignClass designClass = classGR.getDesignClass();
 
-
         if (designClass != null) {
             nameField.setText(designClass.getName());
         }
     }
 
+    public void changedUpdate(DocumentEvent e) {
+        checkName();
+    }
+
+    public void removeUpdate(DocumentEvent e) {
+        checkName();
+    }
+
+    public void insertUpdate(DocumentEvent e) {
+        checkName();
+    }
+
+    private void checkName() {
+        okButton.setEnabled(!nameField.getText().isEmpty());
+    }
+
     public void actionPerformed(ActionEvent event) {
+        if (event.getSource() == nameField) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
+                okButton.setEnabled(false);
+            }
+        }
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
             if ((nameField.getText() == null) || nameField.getText().equals("")) {
-                JOptionPane.showMessageDialog(this, 
+                JOptionPane.showMessageDialog(this,
                         "You must provide a class name",
                         "Warning",
                         JOptionPane.WARNING_MESSAGE);

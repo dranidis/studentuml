@@ -26,13 +26,13 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
     // OVERRIDE drawArrowHeads of AssociationGR
     public void drawArrowHeads(Graphics2D g) {
         drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), getAngleRoleB(), g);
-        drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
+        //drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
     }
 
     public void drawArrowHeadsReflective(Graphics2D g) {
         drawAggregationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(),
                 getAggregation().isStrong(), Math.PI / 2, g);
-        drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
+        //drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
     }
 
     public void drawAggregationArrowHead(int x, int y, boolean isStrong, double angle, Graphics2D g) {

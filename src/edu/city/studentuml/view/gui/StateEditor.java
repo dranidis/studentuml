@@ -73,7 +73,7 @@ public class StateEditor extends JPanel implements ActionListener {
         stateDialog = new JDialog(owner, true);
         stateDialog.getContentPane().add(this);
         stateDialog.setTitle(title);
-        stateDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        stateDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         stateDialog.pack();
         stateDialog.setResizable(false);
         stateDialog.setLocationRelativeTo(owner);

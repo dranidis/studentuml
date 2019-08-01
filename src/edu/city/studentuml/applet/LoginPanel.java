@@ -94,7 +94,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         loginDialog = new JDialog(owner, true);
         loginDialog.getContentPane().add(this);
         loginDialog.setTitle(title);
-        loginDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        loginDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         loginDialog.pack();
         loginDialog.setResizable(false);
         loginDialog.setLocationRelativeTo(owner);
