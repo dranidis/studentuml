@@ -160,6 +160,7 @@ public class ApplicationFrame extends ApplicationGUI {
             setFilePath(path);
             setFileName(path.substring(path.lastIndexOf('\\') + 1));
             setSaved(true);
+            pref.put("DEFAULT_PATH", path);
         }
     }
 
