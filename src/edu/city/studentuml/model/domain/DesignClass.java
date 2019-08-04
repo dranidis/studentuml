@@ -26,7 +26,7 @@ public class DesignClass extends AbstractClass {
     private AbstractClass extendClass;
     private List<Interface> implementInterfaces = new ArrayList();
     private Vector sdMethods = new Vector();
-    private HashMap <String,Integer> calledMethods = new HashMap<String,Integer>();
+    private List<String> calledMethods = new ArrayList<String>();
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     public DesignClass(GenericClass gc) {
@@ -216,30 +216,15 @@ public class DesignClass extends AbstractClass {
 	    		sb.append(" }");
 	    	}
     	}	
-    	this.calledMethods.put(sb.toString(),m.getPriority());
+    	this.calledMethods.add(sb.toString());
     }
     
-    public HashMap<String,Integer> getCalledMethods(){
-    	//sort by rank and return list of call messages
-    	return sortByValue(this.calledMethods);
+    public List<String> getCalledMethods(){
+    	return this.calledMethods;
     }
     
     public void clearCalledMethods() {
     	this.calledMethods.clear();
-    }
-    
-    public static HashMap<String,Integer> sortByValue(HashMap<String,Integer> hm){
-    	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String,Integer>>(hm.entrySet());
-    	Collections.sort(list, new Comparator<Map.Entry<String,Integer>>(){
-    		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2) {
-    			return (o1.getValue()).compareTo(o2.getValue());
-    		}
-    	});
-    	HashMap<String,Integer> temp = new LinkedHashMap<String,Integer>();
-    	for( Map.Entry<String,Integer> aa : list) {
-    		temp.put(aa.getKey(), aa.getValue());
-    	}
-    	return temp;
     }
     
     public void replaceSDMethod(int index,Method newSDMethod) {

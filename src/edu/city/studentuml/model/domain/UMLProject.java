@@ -48,9 +48,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -463,6 +466,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	for (int y = 0; y < projectDiagrams.size(); y++) {
     	  DiagramModel currDiagram = (DiagramModel) projectDiagrams.get(y);	
     	  Vector projectElements = currDiagram.getGraphicalElements();
+    	  HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
+    	  
     	  for (int i = 0; i < projectElements.size(); i++) {
               GraphicalElement currEl = (GraphicalElement) projectElements.get(i);
               if (currEl instanceof ClassGR) {
@@ -498,112 +503,135 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   dc.resetSDMethods();
                   dc.clearCalledMethods();
               }    
-              
-              if (currEl instanceof SDMessageGR) {
-                  SDMessage sdm = ((SDMessageGR) currEl).getMessage();
-                  if (sdm.getTarget().getClassifier() instanceof DesignClass) {
-                	 dc = (DesignClass) sdm.getTarget().getClassifier();
-                  }
-                  DesignClass dc2 = null;
-                  if (sdm.getSource().getClassifier() instanceof DesignClass) {
-                	  dc2 = (DesignClass) sdm.getSource().getClassifier();
-                  }
-                  RoleClassifier dcObject = null;
-                  if (sdm.getTarget() instanceof SDObject) {
-	                  dcObject = (SDObject) sdm.getTarget();
-                  }else if (sdm.getTarget() instanceof MultiObject) {
-                	  dcObject = (MultiObject) sdm.getTarget();
-                  }               	  
-                   out.println("ClassSD:" + dc.getName());
-                   if (sdm instanceof CreateMessage) {
-                	   Method createMethod = new Method("create");
-                	   createMethod.setPriority(sdm.getRank());
-                	   dc.addSDMethod(createMethod);
-                	   if(dc2 !=null) {
-	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-	                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
-	                	   if(hasLifeline && headMethod!=null) {
-	                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
-	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-	                			  methodToChange.addCalledMethod(createMethod, dc, false, dcObject);
-	                			  out.println("headMethod2: " + methodToChange.getName());
-	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
-	                		   }
-	                	   }
-                	   }
-                   }
-                   if (sdm instanceof CallMessage) {
-                	   CallMessage cm = (CallMessage) sdm;
-                	   Method sdMethod = new Method(cm.getName());
-                	   if (sdMethod != null) {
-                		   sdMethod.setParameters(cm.getSDMethodParameters());
-                		   String returnValue = cm.getReturnValueAsString();
-                		   if (returnValue.contains(" ")) {
-                			   String[] split = returnValue.split("\\s+");
-                			   returnValue = split[0];
-                			   if (split.length>1) {
-                			   String returnParameter = split[1];
-                			   sdMethod.setReturnParameter(returnParameter);
-                			   }
-                		   }
-                		   sdMethod.setReturnType(new DataType(returnValue));
-	                	   sdMethod.setPriority(cm.getRank());
-	                	   dc.addSDMethod(sdMethod);
-	                	   boolean isIterative = cm.isIterative();
-	                	   out.println("AddedSDMethod: " + sdMethod);
-	                	   if (dc2 != null) {
-		                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-		                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
-		                	   if(hasLifeline && headMethod!=null) {
-		                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
-		                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			  methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject);
-		                			  out.println("headMethod2: " + methodToChange.getName());
-		                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
-		                		   }
-		                	   }
-	                	   }
-	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID")) {
-	                		   hasLifeline=true;
-	                		   headMethod=sdMethod;
-	                		   out.println("headMethod: " + headMethod.getName());
-	                	   } 
-                	   }
-                   }
-                   if (sdm instanceof DestroyMessage) {
-                	   Method destroyMethod = new Method("destroy");
-                	   destroyMethod.setPriority(sdm.getRank());
-                	   dc.addSDMethod(destroyMethod);
-                	   if (dc2!=null) {
-	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-	                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);
-	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
-	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject);
-	                			  out.println("headMethod2: " + methodToChange.getName());
-	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
-	                		   }
-                	   }   
-                   }
-                   if(sdm instanceof ReturnMessage) {
-                	   hasLifeline=false;
-                	   headMethod=null;
-                   }
-                  
-              }
               if (dc!=null) {
-              if(dcToGenerate.isEmpty()) {
-            	  dcToGenerate.add(dc);
-              }else {
-            	 if(dcToGenerate.contains(dc)){
-            	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
-            	 }else {
-            	   dcToGenerate.add(dc); 
-            	 }
-              }
+	              if(dcToGenerate.isEmpty()) {
+	            	  dcToGenerate.add(dc);
+	              }else {
+	            	 if(dcToGenerate.contains(dc)){
+	            	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
+	            	 }else {
+	            	   dcToGenerate.add(dc); 
+	            	 }
+	             }
             }
           }
-          
+    	  //sort by rank and add Methods of Message Calls
+    	  if(currDiagram instanceof SDModel) {
+    		  for (int i = 0; i < projectElements.size(); i++) {
+    			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
+    			  if (currElSD instanceof SDMessageGR) {
+    				  SDMessage sdmx = ((SDMessageGR) currElSD).getMessage();
+    				  SDMessages.put(sdmx,sdmx.getRank());
+    			  }  
+    		  }
+    		  if(!SDMessages.isEmpty()) {
+    		  SDMessages = sortByValue(SDMessages);
+    		  for (Map.Entry<SDMessage,Integer> SDMessage : SDMessages.entrySet()) {
+    			  SDMessage sdm = SDMessage.getKey();
+    	           if (sdm.getTarget().getClassifier() instanceof DesignClass) {
+                  	 dc = (DesignClass) sdm.getTarget().getClassifier();
+                    }
+                    DesignClass dc2 = null;
+                    if (sdm.getSource().getClassifier() instanceof DesignClass) {
+                  	  dc2 = (DesignClass) sdm.getSource().getClassifier();
+                    }
+                    RoleClassifier dcObject = null;
+                    if (sdm.getTarget() instanceof SDObject) {
+  	                  dcObject = (SDObject) sdm.getTarget();
+                    }else if (sdm.getTarget() instanceof MultiObject) {
+                  	  dcObject = (MultiObject) sdm.getTarget();
+                    }               	  
+                     out.println("ClassSD:" + dc.getName());
+                     if (sdm instanceof CreateMessage) {
+                  	   Method createMethod = new Method("create");
+                  	   createMethod.setPriority(sdm.getRank());
+                  	   dc.addSDMethod(createMethod);
+                  	   if(dc2 !=null) {
+  	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+  	                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
+  	                	   if(hasLifeline && headMethod!=null) {
+  	                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+  	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+  	                			  methodToChange.addCalledMethod(createMethod, dc, false, dcObject,false);
+  	                			  out.println("headMethod2: " + methodToChange.getName());
+  	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+  	                		   }
+  	                	   }
+                  	   }
+                     }
+                     if (sdm instanceof CallMessage) {
+                  	   CallMessage cm = (CallMessage) sdm;
+                  	   Method sdMethod = new Method(cm.getName());
+                  	   if (sdMethod != null) {
+                  		   sdMethod.setParameters(cm.getSDMethodParameters());
+                  		   String returnValue = cm.getReturnValueAsString();
+                  		   if (returnValue.contains(" ")) {
+                  			   String[] split = returnValue.split("\\s+");
+                  			   returnValue = split[0];
+                  			   if (split.length>1) {
+                  			   String returnParameter = split[1];
+                  			   sdMethod.setReturnParameter(returnParameter);
+                  			   }
+                  		   }
+                  		   sdMethod.setReturnType(new DataType(returnValue));
+  	                	   sdMethod.setPriority(cm.getRank());
+  	                	   dc.addSDMethod(sdMethod);
+  	                	   boolean isIterative = cm.isIterative();
+  	                	   out.println("AddedSDMethod: " + sdMethod);
+  	                	   if (dc2 != null) {
+  		                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+  		                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
+  		                	   if(hasLifeline && headMethod!=null) {
+  		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
+  		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+		                			methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject, cm.isReflective());
+		                			out.println("headMethod2: " + methodToChange.getName());
+		                			dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	
+  	                			  }
+  		                		  if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+  		                			 Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+  		                			 methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject,cm.isReflective());
+  		                			 out.println("headMethod2: " + methodToChange.getName());
+  		                			 dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+  		                		  }
+  		                	   }
+  	                	   }
+  	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID") && !cm.isReflective()) {
+  	                		   hasLifeline=true;
+  	                		   headMethod=sdMethod;
+  	                		   out.println("headMethod: " + headMethod.getName());
+  	                	   }
+                  	   }
+                     }
+                     if (sdm instanceof DestroyMessage) {
+                  	   Method destroyMethod = new Method("destroy");
+                  	   destroyMethod.setPriority(sdm.getRank());
+                  	   dc.addSDMethod(destroyMethod);
+                  	   if (dc2!=null) {
+  	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
+  	                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);
+  	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
+  	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
+  	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject,false);
+  	                			  out.println("headMethod2: " + methodToChange.getName());
+  	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+  	                		   }
+                  	   }   
+                     }
+                     if(sdm instanceof ReturnMessage) { 
+	                  	   hasLifeline=false;
+	                  	   headMethod=null;	   
+                     }
+    			}
+    		  }
+    	  }
+    	  if (dc!=null) {
+        	 if(dcToGenerate.contains(dc)){
+        	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
+        	 }else {
+        	   dcToGenerate.add(dc); 
+        	 }    
+    	  }
     	}
     	for (int i=0; i<dcToGenerate.size();i++) {
     	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
@@ -611,5 +639,19 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         String genPath = javaGenerator.generateFile(dci,projectPath,this);
         out.println("Generated in: " + genPath);
     	}
+    }
+    
+    public static HashMap<SDMessage,Integer> sortByValue(HashMap<SDMessage,Integer> hm){
+    	List<Map.Entry<SDMessage,Integer>> list = new LinkedList<Map.Entry<SDMessage,Integer>>(hm.entrySet());
+    	Collections.sort(list, new Comparator<Map.Entry<SDMessage,Integer>>(){
+    		public int compare(Map.Entry<SDMessage,Integer> o1, Map.Entry<SDMessage,Integer> o2) {
+    			return (o1.getValue()).compareTo(o2.getValue());
+    		}
+    	});
+    	HashMap<SDMessage,Integer> temp = new LinkedHashMap<SDMessage,Integer>();
+    	for( Map.Entry<SDMessage,Integer> aa : list) {
+    		temp.put(aa.getKey(), aa.getValue());
+    	}
+    	return temp;
     }
 }

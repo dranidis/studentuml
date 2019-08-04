@@ -372,14 +372,14 @@ public class CodeGenerator {
     private String generateMethodBody(Method op) {
     	
     	StringBuffer sb = new StringBuffer();
-    	HashMap<String,Integer> calledMethods = op.getCalledMethods();
+    	List<String> calledMethods = op.getCalledMethods();
 		if (!calledMethods.isEmpty()) {
 			sb.append(LINE_SEPARATOR);
             sb.append(INDENT+INDENT).append("// calledMethods");
             sb.append(LINE_SEPARATOR);
 		}
-		for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
-			sb.append(INDENT+INDENT).append(calledMethod.getKey());
+		for (int i=0;i<calledMethods.size();i++) {
+			sb.append(INDENT+INDENT).append(calledMethods.get(i));
 			sb.append(LINE_SEPARATOR);
 		}
         
@@ -494,19 +494,16 @@ public class CodeGenerator {
 	
     public String generateCalledMethods(DesignClass cls) {
     	 StringBuffer sb = new StringBuffer();
-    	 HashMap<String,Integer> calledMethods = cls.getCalledMethods();
+    	 List<String> calledMethods = cls.getCalledMethods();
 			if (!calledMethods.isEmpty()) {
 				sb.append(LINE_SEPARATOR);
 	            sb.append(INDENT).append("// calledMethods");
 	            sb.append(LINE_SEPARATOR);
 			}
-			for (Map.Entry<String,Integer> calledMethod : calledMethods.entrySet()) {
-				sb.append(INDENT).append(calledMethod.getKey());
-				sb.append(LINE_SEPARATOR);
-	/*		for (int i=0; i<calledMethods.size();i++) {
+			for (int i=0; i<calledMethods.size();i++) {
 				sb.append(INDENT).append(calledMethods.get(i));
 				sb.append(LINE_SEPARATOR);
-	*/		}
+			}
 			return sb.toString();
     	 
     }
