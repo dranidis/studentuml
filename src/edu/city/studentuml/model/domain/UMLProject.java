@@ -461,6 +461,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	CodeGenerator javaGenerator= new CodeGenerator(); 
     	DesignClass dc = null;
     	boolean hasLifeline=false;
+    	boolean firstSD=true;
     	Method headMethod=null;
     	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
     	for (int y = 0; y < projectDiagrams.size(); y++) {
@@ -500,8 +501,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   out.println("SD:");
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
                   out.println("Class:" + dc.getName());
-                  dc.resetSDMethods();
-                  dc.clearCalledMethods();
+                  if (firstSD) {
+	                  dc.resetSDMethods();
+	                  dc.clearCalledMethods();
+                  }    
               }    
               if (dc!=null) {
 	              if(dcToGenerate.isEmpty()) {
@@ -517,6 +520,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
           }
     	  //sort by rank and add Methods of Message Calls
     	  if(currDiagram instanceof SDModel) {
+    		  firstSD=false;
     		  List<Method> headMethods= new ArrayList<Method>();
     		  for (int i = 0; i < projectElements.size(); i++) {
     			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
