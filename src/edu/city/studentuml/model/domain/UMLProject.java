@@ -517,6 +517,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
           }
     	  //sort by rank and add Methods of Message Calls
     	  if(currDiagram instanceof SDModel) {
+    		  List<Method> headMethods= new ArrayList<Method>();
     		  for (int i = 0; i < projectElements.size(); i++) {
     			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
     			  if (currElSD instanceof SDMessageGR) {
@@ -581,6 +582,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   if (dc2 != null) {
   		                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
   		                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
+  		                	   if(headMethods.size() > 0) {
+  		                		   headMethod=headMethods.get(headMethods.size()-1);
+  		                	   }
   		                	   if(hasLifeline && headMethod!=null) {
   		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
   		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
@@ -598,8 +602,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   }
   	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID") && !cm.isReflective()) {
   	                		   hasLifeline=true;
-  	                		   headMethod=sdMethod;
-  	                		   out.println("headMethod: " + headMethod.getName());
+  	                		   headMethods.add(sdMethod);
+  	                		   out.println("headMethod: " + sdMethod.getName());
   	                	   }
                   	   }
                      }
@@ -618,9 +622,15 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                		   }
                   	   }   
                      }
-                     if(sdm instanceof ReturnMessage) { 
-	                  	   hasLifeline=false;
-	                  	   headMethod=null;	   
+                     if(sdm instanceof ReturnMessage) {
+                    	   if((headMethods.size() > 1)){
+		                  	   headMethod=headMethods.remove(headMethods.size()-1);
+                    	   }
+                    	   else {
+                    		   headMethods.clear();
+                    		   hasLifeline=false;
+                    		   headMethod=null;
+                    	   }
                      }
     			}
     		  }
