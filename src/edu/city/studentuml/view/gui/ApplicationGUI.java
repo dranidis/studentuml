@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -1599,11 +1600,22 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 		    frame,
                 		    "Do you Want to Generate Code? \n"
                 		    + "Make Sure You Have Created and Saved the Approrpiate\n"
-                            + "Design and Sequence Diagrams First!",
+                            + "Design (first) and Sequence Diagrams!",
                             "Code Generation",
                 		    JOptionPane.YES_NO_OPTION);
                 	if (codeGenerationConfirm == 0) {
-                		umlProject.generateCode();
+                		int genFilesCount = umlProject.generateCode();
+                		if (genFilesCount>0) {
+                			JOptionPane.showMessageDialog(frame,
+                			"Success!! \n" +
+                			"You have generated " + genFilesCount + " files in\n" +
+                			umlProject.getFilepath().replace(".xml", File.separator),
+                			"Code Generator",JOptionPane.INFORMATION_MESSAGE);		
+                		}else {
+                			JOptionPane.showMessageDialog(frame,
+                        			"No Input - New Files Not Generated",
+                					"Code Generator",JOptionPane.INFORMATION_MESSAGE);
+                		}
                 	}
                 }
             });

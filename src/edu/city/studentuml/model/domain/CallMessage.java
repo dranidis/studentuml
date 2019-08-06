@@ -205,7 +205,6 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
             try {
             	Type parameterType = new DataType (parameterStr[0]);
 	    		String parameter = parameterStr[1];
-	    		out.println("Parameter:" + parameter);
 	    		methodParameters.add(new MethodParameter(parameter,parameterType));
             }catch(ArrayIndexOutOfBoundsException e) {
             	out.println("Wrong Parameter");

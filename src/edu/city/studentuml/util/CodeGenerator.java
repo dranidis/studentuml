@@ -141,11 +141,11 @@ public class CodeGenerator {
         // TODO: package, project basepath
         LOG.info("Generating " + f.getPath());
         isFileGeneration = true;
-        //String header = generateHeader(classifier, pathname, packagePath);
+        String header = generateHeader();
         String src = generateClassifier(classObject); 
         try {
           fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
-          //  fos.write(header);
+          	fos.write(header);
             fos.write(src);
         } catch (IOException exp) {
             LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
@@ -163,7 +163,13 @@ public class CodeGenerator {
         return pathname;
     }
     
-    
+    private String generateHeader() {
+    	StringBuffer imports = new StringBuffer();
+    	imports.append(LINE_SEPARATOR);
+    	imports.append("import java.util.*;").append(LINE_SEPARATOR);
+    	imports.append(LINE_SEPARATOR);
+    	return imports.toString();
+    }
     private String generateClassifier(Object cls) {
         StringBuffer returnValue = new StringBuffer();
         StringBuffer start = generateClassifierStart(cls);

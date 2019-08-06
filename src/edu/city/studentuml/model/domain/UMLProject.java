@@ -456,7 +456,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
     
     
-    public void generateCode() {
+    public int generateCode() {
+    	int genFilesCount = 0;
     	Vector projectDiagrams = this.getDiagramModels();
     	CodeGenerator javaGenerator= new CodeGenerator(); 
     	DesignClass dc = null;
@@ -472,21 +473,17 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	  for (int i = 0; i < projectElements.size(); i++) {
               GraphicalElement currEl = (GraphicalElement) projectElements.get(i);
               if (currEl instanceof ClassGR) {
-            	  out.println("DCD:");
                   dc = ((ClassGR) currEl).getDesignClass();
-                  out.println("Class:" + dc.getName());
                   dc.setExtendClass(null);
                   dc.resetImplementInterfaces();
               }
               if (currEl instanceof RealizationGR) {
-            	  out.println("DCD:");
                   Realization realz = ((RealizationGR) currEl).getRealization();
                   dc = realz.getTheClass();
                   dc.setImplementInterface(realz.getTheInterface());
                          
               }
               if (currEl instanceof GeneralizationGR) {
-            	  out.println("DCD:");
                   Generalization genz = ((GeneralizationGR) currEl).getGeneralization();
                   dc = (DesignClass) genz.getSuperClass();
                   dc.setExtendClass(genz.getBaseClass());                      
@@ -495,12 +492,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   Interface interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
                   String genPath = javaGenerator.generateFile(interfs,projectPath,this);
-                  out.println("Generated in: " + genPath);           
+                  out.println("Generated in: " + genPath);
+                  genFilesCount++;
               } 
               if (currEl instanceof SDObjectGR) {
-                  out.println("SD:");
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
-                  out.println("Class:" + dc.getName());
                   if (firstSD) {
 	                  dc.resetSDMethods();
 	                  dc.clearCalledMethods();
@@ -546,7 +542,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                     }else if (sdm.getTarget() instanceof MultiObject) {
                   	  dcObject = (MultiObject) sdm.getTarget();
                     }               	  
-                     out.println("ClassSD:" + dc.getName());
                      if (sdm instanceof CreateMessage) {
                   	   Method createMethod = new Method("create");
                   	   createMethod.setPriority(sdm.getRank());
@@ -558,7 +553,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
   	                			  methodToChange.addCalledMethod(createMethod, dc, false, dcObject,false);
-  	                			  out.println("headMethod2: " + methodToChange.getName());
   	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   	                		   }
   	                	   }
@@ -593,13 +587,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
   		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
 		                			methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject, cm.isReflective());
-		                			out.println("headMethod2: " + methodToChange.getName());
 		                			dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	
   	                			  }
   		                		  if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   		                			 Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
   		                			 methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject,cm.isReflective());
-  		                			 out.println("headMethod2: " + methodToChange.getName());
   		                			 dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   		                		  }
   		                	   }
@@ -607,7 +599,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   if(!sdMethod.getReturnType().getName().equals("void") && !sdMethod.getReturnType().getName().equals("VOID") && !cm.isReflective()) {
   	                		   hasLifeline=true;
   	                		   headMethods.add(sdMethod);
-  	                		   out.println("headMethod: " + sdMethod.getName());
   	                	   }
                   	   }
                      }
@@ -621,7 +612,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
   	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject,false);
-  	                			  out.println("headMethod2: " + methodToChange.getName());
   	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   	                		   }
                   	   }   
@@ -652,7 +642,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	String projectPath = new File(this.getFilepath()).getParent();
         String genPath = javaGenerator.generateFile(dci,projectPath,this);
         out.println("Generated in: " + genPath);
+        genFilesCount++;
     	}
+    	
+    	return genFilesCount;
     }
     
     public static HashMap<SDMessage,Integer> sortByValue(HashMap<SDMessage,Integer> hm){
