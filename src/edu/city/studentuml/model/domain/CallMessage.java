@@ -193,7 +193,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
         return copyCallMessage;
     }
-    
+    //new method to return MethodParameter and not MessageParameter
     public Vector getSDMethodParameters() {
         Iterator iterator = parameters.iterator();
         MessageParameter param;

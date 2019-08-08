@@ -64,7 +64,7 @@ public class CodeGenerator {
     		Interface interfs = (Interface) classObject;
     		name = interfs.getName();
     	}
-        if (name == null || name.length() == 0) {
+        if (name == null || name.length() == 0 || path==null) {
             return null;
         }
        // Object classifier = modelElement;

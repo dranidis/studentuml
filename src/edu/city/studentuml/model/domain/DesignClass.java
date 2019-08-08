@@ -152,7 +152,7 @@ public class DesignClass extends AbstractClass {
     	return this.extendClass;
     }
     
-    public void setImplementInterface(Interface newInterface) {
+    public void addImplementInterfaces(Interface newInterface) {
     	this.implementInterfaces.add(newInterface);
     }
     

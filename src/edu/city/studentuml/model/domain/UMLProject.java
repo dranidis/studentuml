@@ -480,20 +480,22 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               if (currEl instanceof RealizationGR) {
                   Realization realz = ((RealizationGR) currEl).getRealization();
                   dc = realz.getTheClass();
-                  dc.setImplementInterface(realz.getTheInterface());
+                  dc.addImplementInterfaces(realz.getTheInterface());
                          
               }
               if (currEl instanceof GeneralizationGR) {
                   Generalization genz = ((GeneralizationGR) currEl).getGeneralization();
-                  dc = (DesignClass) genz.getSuperClass();
-                  dc.setExtendClass(genz.getBaseClass());                      
+                  dc = (DesignClass) genz.getBaseClass();
+                  dc.setExtendClass(genz.getSuperClass());
               }
               if (currEl instanceof InterfaceGR) {
                   Interface interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
                   String genPath = javaGenerator.generateFile(interfs,projectPath,this);
                   out.println("Generated in: " + genPath);
-                  genFilesCount++;
+                  if(genPath!=null) {
+                	  genFilesCount++;
+                  }  
               } 
               if (currEl instanceof SDObjectGR) {
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
@@ -638,11 +640,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	  }
     	}
     	for (int i=0; i<dcToGenerate.size();i++) {
-    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
-    	String projectPath = new File(this.getFilepath()).getParent();
-        String genPath = javaGenerator.generateFile(dci,projectPath,this);
-        out.println("Generated in: " + genPath);
-        genFilesCount++;
+	    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
+	    	String projectPath = new File(this.getFilepath()).getParent();
+	        String genPath = javaGenerator.generateFile(dci,projectPath,this);
+	        out.println("Generated in: " + genPath);
+		    if(genPath!=null) {
+		    	genFilesCount++;
+		    }
     	}
     	
     	return genFilesCount;

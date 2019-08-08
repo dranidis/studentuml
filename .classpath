@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/jasperreports-2.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/jlogic.jar"/>
 	<classpathentry kind="lib" path="lib/lipstikLF-RC2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
