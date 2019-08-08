@@ -549,6 +549,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   	   createMethod.setPriority(sdm.getRank());
                   	   dc.addSDMethod(createMethod);
                   	   if(dc2 !=null) {
+                  		 if(headMethods.size() > 0) {
+	                		   headMethod=headMethods.get(headMethods.size()-1);
+	                	   }
   	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
   	                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
   	                	   if(hasLifeline && headMethod!=null) {
@@ -609,6 +612,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   	   destroyMethod.setPriority(sdm.getRank());
                   	   dc.addSDMethod(destroyMethod);
                   	   if (dc2!=null) {
+                  		 if(headMethods.size() > 0) {
+	                		   headMethod=headMethods.get(headMethods.size()-1);
+	                	   }
   	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
   	                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);
   	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
@@ -619,14 +625,14 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   	   }   
                      }
                      if(sdm instanceof ReturnMessage) {
-                    	   if((headMethods.size() > 1)){
-		                  	   headMethod=headMethods.remove(headMethods.size()-1);
-                    	   }
-                    	   else {
-                    		   headMethods.clear();
-                    		   hasLifeline=false;
-                    		   headMethod=null;
-                    	   }
+                	   if((headMethods.size() > 1) && hasLifeline==true){
+	                  	   headMethod=headMethods.remove(headMethods.size()-1);
+                	   }
+                	   else if (hasLifeline==true){
+                		   headMethods.clear();
+                		   hasLifeline=false;
+                		   headMethod=null;
+                	   }
                      }
     			}
     		  }
