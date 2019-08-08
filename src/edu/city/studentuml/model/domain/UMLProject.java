@@ -572,9 +572,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   		   if (returnValue.contains(" ")) {
                   			   String[] split = returnValue.split("\\s+");
                   			   returnValue = split[0];
-                  			   if (split.length>1) {
-                  			   String returnParameter = split[1];
-                  			   sdMethod.setReturnParameter(returnParameter);
+                  			   if(!returnValue.equals("")) {
+	                  			   if (split.length>1) {
+	                  			   String returnParameter = split[1];
+	                  			   sdMethod.setReturnParameter(returnParameter);
+	                  			   }
+                  			   }else {
+                  				   returnValue="void";
                   			   }
                   		   }
                   		   sdMethod.setReturnType(new DataType(returnValue));

@@ -111,7 +111,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public String getReturnValueAsString() {
-        if (returnValue != null) {
+        if (returnValue != null && !returnValue.equals("")) {
             return returnValue.getName();
         } else {
             return "VOID";
