@@ -195,7 +195,7 @@ public class DesignClass extends AbstractClass {
 	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}else if (isIterative && object instanceof MultiObject) {
-	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++){").append(LINE_SEPARATOR);
+	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {

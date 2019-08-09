@@ -259,6 +259,15 @@ public class CodeGenerator {
 	            Attribute classAttribute = (Attribute) classAttributes.get(i);         
 	            sb.append(generateAttribute(classAttribute, false));
 	            }
+			//constructor
+			sb.append(LINE_SEPARATOR);
+			sb.append(INDENT).append("// Constructor");
+			sb.append(LINE_SEPARATOR);
+			sb.append(INDENT).append("public " + cls.getName() +"() {");
+			sb.append(LINE_SEPARATOR);
+			sb.append(LINE_SEPARATOR);
+			sb.append(INDENT).append("}");
+			sb.append(LINE_SEPARATOR);
 			
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
@@ -267,7 +276,6 @@ public class CodeGenerator {
 			
         }
         // add operations
-        // TODO: constructors
         if (obj instanceof Interface) {
 	        Interface interfs = (Interface) obj;	
 	        classMethods = interfs.getMethods();
