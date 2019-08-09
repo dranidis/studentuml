@@ -231,4 +231,9 @@ public class DesignClass extends AbstractClass {
     	this.sdMethods.set(index,newSDMethod);
     }
     
+    public void replaceCalledMethod(int index,String newCallMethod) {
+    	this.calledMethods.set(index,newCallMethod);
+    }
+    
+    
 }

@@ -324,4 +324,8 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	this.calledMethods.clear();
     }
     
+    public void replaceCalledMethod(int index,String newCallMethod) {
+    	this.calledMethods.set(index,newCallMethod);
+    }
+    
 }

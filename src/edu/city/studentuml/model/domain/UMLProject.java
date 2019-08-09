@@ -625,10 +625,53 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
   	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject,false);
   	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
-  	                		   }
+  	                	   }
                   	   }   
                      }
                      if(sdm instanceof ReturnMessage) {
+                    	//check for parameter in return message and replace it in called Method 
+                       if(hasLifeline) {
+                    	 ReturnMessage rm = (ReturnMessage) sdm;
+                    	 if(headMethods.size() > 0) {
+	                		   headMethod=headMethods.get(headMethods.size()-1);	   
+	                	 }
+                    	 if(headMethod!=null && rm.getTarget().getClassifier() instanceof DesignClass) {
+                    		dc2 = (DesignClass) rm.getTarget().getClassifier();
+                    		String returnParameter = rm.getName();
+                    		String[] parameters = returnParameter.split("\\s+");
+                    		if (parameters.length==2){
+                    			returnParameter=parameters[1];
+                    		}else {
+                    			returnParameter="";
+                    		}
+                    		if(!returnParameter.equals("")) {
+                    			List<String> calledMethods = dc2.getCalledMethods();
+                    			for (int i=0;i<calledMethods.size();i++) {
+                    				if(calledMethods.get(i).contains(headMethod.getName())) {
+                    					calledMethods.set(i,calledMethods.get(i).replace(" x "," "+returnParameter+" "));
+                    					dc2.replaceCalledMethod(i, calledMethods.get(i));
+                    				}
+                    			}
+                    			if(headMethods.size() > 1) {
+	                    			Vector targetSdMethods = dc2.getSDMethods();
+	                    			for (int i=0;i<targetSdMethods.size();i++) {
+	                    				Method checkMethod = (Method) targetSdMethods.get(i);
+	                    				if(checkMethod == headMethods.get(headMethods.size()-2)) {
+	                    					List<String> mtdCalledMethods = checkMethod.getCalledMethods();
+	                    					for (int c=0;c<mtdCalledMethods.size();c++) {
+	                            				if(calledMethods.get(c).contains(headMethod.getName())) {
+	                            					calledMethods.set(c,calledMethods.get(c).replace(" x "," "+returnParameter+" "));
+	                            					checkMethod.replaceCalledMethod(c, calledMethods.get(c));
+	                            				}
+	                            			}
+	                    					dc2.replaceSDMethod(i, checkMethod);
+	                    				}
+	                    			}
+                    			}		
+                    		}
+                    	 }
+                       }
+                       //check headMethod (method that contains the branched called messages)
                 	   if((headMethods.size() > 1) && hasLifeline==true){
 	                  	   headMethod=headMethods.remove(headMethods.size()-1);
                 	   }
