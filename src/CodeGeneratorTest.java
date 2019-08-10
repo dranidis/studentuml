@@ -459,7 +459,7 @@ public class CodeGeneratorTest {
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, false, new SDObject("sd2",dc2));;
+		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -509,7 +509,7 @@ public class CodeGeneratorTest {
 		mtd1.setReturnType(new DataType("void"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, false, new SDObject("sd2",dc2));;
+		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -559,7 +559,7 @@ public class CodeGeneratorTest {
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, false, new MultiObject("sd2Array",dc2));;
+		dc.addCalledMethod(mtd1, dc2, new MultiObject("sd2Array",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -608,7 +608,7 @@ public class CodeGeneratorTest {
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		dc.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc, false, new SDObject("sd1",dc));
+		dc.addCalledMethod(mtd1, dc, new SDObject("sd1",dc));
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -657,8 +657,9 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
+		mtd1.setIterative(true);
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, true, new SDObject("sd2",dc2));;
+		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -708,7 +709,7 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc2, false, new SDObject("sd2",dc2),false);
+		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
 		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
 		af.saveProject();

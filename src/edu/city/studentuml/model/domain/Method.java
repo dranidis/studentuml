@@ -38,6 +38,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     private String returnParameter = "x";
     private List<String> calledMethods = new ArrayList<String>();
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+    private boolean iterative = false;
 
     public Method(GenericOperation go) {
         genericOperation = go;
@@ -272,7 +273,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	return this.returnParameter;
     }
     
-    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative, RoleClassifier object, boolean isReflective) {
+    public void addCalledMethod (Method m, DesignClass calledClass, RoleClassifier object, boolean isReflective) {
     	//create a string with the call message for the method
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
@@ -287,10 +288,10 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
     		sb.append(object.getName() + " = null").append(";");
     	}else {
-	    	if(isIterative && object instanceof SDObject) {
+	    	if(m.isIterative() && object instanceof SDObject) {
 	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
 	    		sb.append("   ");
-	    	}else if (isIterative && object instanceof MultiObject) {
+	    	}else if (m.isIterative() && object instanceof MultiObject) {
 	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}
@@ -307,7 +308,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
 	    	sb.append(m.getName()).append("(");
 	    	sb.append(m.getParametersAsString());
 	    	sb.append(");");
-	    	if(isIterative) {
+	    	if(m.isIterative()) {
 	    		sb.append(LINE_SEPARATOR).append(" ");
 	    		sb.append(" }");
 	    	}
@@ -326,6 +327,14 @@ public class Method implements Serializable, IXMLCustomStreamable {
     
     public void replaceCalledMethod(int index,String newCallMethod) {
     	this.calledMethods.set(index,newCallMethod);
+    }
+    
+    public boolean isIterative() {
+        return iterative;
+    }
+
+    public void setIterative(boolean i) {
+        iterative = i;
     }
     
 }

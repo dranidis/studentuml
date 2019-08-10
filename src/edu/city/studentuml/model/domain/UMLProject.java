@@ -86,6 +86,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private String projectFilename = "";
     private String projectFilepath = "";
     private String projectName = "";
+    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     protected UMLProject() {
         ref = this;
@@ -553,11 +554,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                		   headMethod=headMethods.get(headMethods.size()-1);
 	                	   }
   	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  	                	   dc2.addCalledMethod(createMethod, dc, false,dcObject);
+  	                	   dc2.addCalledMethod(createMethod, dc,dcObject);
   	                	   if(hasLifeline && headMethod!=null) {
   	                		   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-  	                			  methodToChange.addCalledMethod(createMethod, dc, false, dcObject,false);
+  	                			  methodToChange.addCalledMethod(createMethod, dc, dcObject,false);
   	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   	                		   }
   	                	   }
@@ -584,23 +585,23 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   		   sdMethod.setReturnType(new DataType(returnValue));
   	                	   sdMethod.setPriority(cm.getRank());
   	                	   dc.addSDMethod(sdMethod);
-  	                	   boolean isIterative = cm.isIterative();
+  	                	   sdMethod.setIterative(cm.isIterative());
   	                	   out.println("AddedSDMethod: " + sdMethod);
   	                	   if (dc2 != null) {
   		                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  		                	   dc2.addCalledMethod(sdMethod, dc, isIterative,dcObject);
+  		                	   dc2.addCalledMethod(sdMethod, dc,dcObject);
   		                	   if(headMethods.size() > 0) {
   		                		   headMethod=headMethods.get(headMethods.size()-1);
   		                	   }
   		                	   if(hasLifeline && headMethod!=null) {
   		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
   		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject, cm.isReflective());
+		                			methodToChange.addCalledMethod(sdMethod, dc, dcObject, cm.isReflective());
 		                			dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	
   	                			  }
   		                		  if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   		                			 Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-  		                			 methodToChange.addCalledMethod(sdMethod, dc, isIterative, dcObject,cm.isReflective());
+  		                			 methodToChange.addCalledMethod(sdMethod, dc, dcObject,cm.isReflective());
   		                			 dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   		                		  }
   		                	   }
@@ -620,10 +621,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                		   headMethod=headMethods.get(headMethods.size()-1);
 	                	   }
   	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  	                	   dc2.addCalledMethod(destroyMethod, dc, false,dcObject);
+  	                	   dc2.addCalledMethod(destroyMethod, dc,dcObject);
   	                	   if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-  	                			  methodToChange.addCalledMethod(destroyMethod, dc, false, dcObject,false);
+  	                			  methodToChange.addCalledMethod(destroyMethod, dc, dcObject,false);
   	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
   	                	   }
                   	   }   
@@ -645,10 +646,16 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                     			returnParameter="";
                     		}
                     		if(!returnParameter.equals("")) {
+                    			 if (sdm.getTarget() instanceof SDObject) {
+                 	                  dcObject = (SDObject) sdm.getSource();
+                                 }else if (sdm.getTarget() instanceof MultiObject) {
+                             	  dcObject = (MultiObject) sdm.getSource();
+                                 }
                     			List<String> calledMethods = dc2.getCalledMethods();
                     			for (int i=0;i<calledMethods.size();i++) {
                     				if(calledMethods.get(i).contains(headMethod.getName())) {
-                    					calledMethods.set(i,calledMethods.get(i).replace(" x "," "+returnParameter+" "));
+                    					headMethod.setReturnParameter(returnParameter);
+                    					calledMethods.set(i,generateCalledMethod(headMethod,dcObject));
                     					dc2.replaceCalledMethod(i, calledMethods.get(i));
                     				}
                     			}
@@ -660,7 +667,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                    					List<String> mtdCalledMethods = checkMethod.getCalledMethods();
 	                    					for (int c=0;c<mtdCalledMethods.size();c++) {
 	                            				if(calledMethods.get(c).contains(headMethod.getName())) {
-	                            					calledMethods.set(c,calledMethods.get(c).replace(" x "," "+returnParameter+" "));
+	                            					headMethod.setReturnParameter(returnParameter);
+	                            					calledMethods.set(c,generateCalledMethod(headMethod,dcObject));
 	                            					checkMethod.replaceCalledMethod(c, calledMethods.get(c));
 	                            				}
 	                            			}
@@ -703,6 +711,33 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	}
     	
     	return genFilesCount;
+    }
+    
+    public String generateCalledMethod(Method m, RoleClassifier object) {
+    	StringBuffer sb = new StringBuffer();
+    	if(m.isIterative() && object instanceof SDObject) {
+    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
+    		sb.append("   ");
+    	}else if (m.isIterative() && object instanceof MultiObject) {
+    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
+    		sb.append("   ");
+    	}
+    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
+    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
+    	}
+    	if (object instanceof SDObject){
+    		sb.append(object.getName()).append(".");
+    	}if (object instanceof MultiObject) {
+    		sb.append(object.getName()).append("[i].");
+    	}
+    	sb.append(m.getName()).append("(");
+    	sb.append(m.getParametersAsString());
+    	sb.append(");");
+    	if(m.isIterative()) {
+    		sb.append(LINE_SEPARATOR).append(" ");
+    		sb.append(" }");
+    	}
+    	return sb.toString();
     }
     
     public static HashMap<SDMessage,Integer> sortByValue(HashMap<SDMessage,Integer> hm){

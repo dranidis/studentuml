@@ -176,7 +176,7 @@ public class DesignClass extends AbstractClass {
     	return this.sdMethods;
     }
     
-    public void addCalledMethod (Method m, DesignClass calledClass, boolean isIterative, RoleClassifier object) {
+    public void addCalledMethod (Method m, DesignClass calledClass, RoleClassifier object) {
     	//create a string with the call message for the method
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
@@ -191,10 +191,10 @@ public class DesignClass extends AbstractClass {
     	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
     		sb.append(object.getName() + " = null").append(";");
     	}else {
-	    	if(isIterative && object instanceof SDObject) {
+	    	if(m.isIterative() && object instanceof SDObject) {
 	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
 	    		sb.append("   ");
-	    	}else if (isIterative && object instanceof MultiObject) {
+	    	}else if (m.isIterative() && object instanceof MultiObject) {
 	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
 	    		sb.append("   ");
 	    	}
@@ -211,7 +211,7 @@ public class DesignClass extends AbstractClass {
 	    	sb.append(m.getName()).append("(");
 	    	sb.append(m.getParametersAsString());
 	    	sb.append(");");
-	    	if(isIterative) {
+	    	if(m.isIterative()) {
 	    		sb.append(LINE_SEPARATOR).append(" ");
 	    		sb.append(" }");
 	    	}
