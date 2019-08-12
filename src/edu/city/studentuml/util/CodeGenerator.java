@@ -290,6 +290,12 @@ public class CodeGenerator {
 		for (int x = 0; x < classSDMethods.size(); x++) {
 			Method classSDMethod = (Method) classSDMethods.get(x); 
 			if (!classSDMethod.getName().equals("create") && !classSDMethod.getName().equals("destroy")) {
+				for (int y = 0; y < classMethods.size(); y++) {
+					Method classMethod =  (Method) classMethods.get(y); 
+					if (classSDMethod.getName().equals(classMethod.getName())) {
+						classSDMethod.setVisibility(classMethod.getVisibility());
+					}
+				}
 			    if (!first) {
 		                    sb.append(LINE_SEPARATOR);
 		                }
