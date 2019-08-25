@@ -27,6 +27,7 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -477,6 +478,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   dc = ((ClassGR) currEl).getDesignClass();
                   dc.setExtendClass(null);
                   dc.resetImplementInterfaces();
+              }
+              if (currEl instanceof AssociationClassGR) {
+                  AssociationClassGR acgr = (AssociationClassGR) currEl;
+                  dc = (DesignClass) acgr.getAssociationClass().getAssociationClass();
+                         
               }
               if (currEl instanceof RealizationGR) {
                   Realization realz = ((RealizationGR) currEl).getRealization();

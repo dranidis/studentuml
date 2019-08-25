@@ -6,6 +6,7 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
@@ -20,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,8 +48,8 @@ public class CodeGenerator {
 	public static final Logger LOG = Logger.getLogger(UMLProject.class);
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-    private static boolean isFileGeneration;
-    private static boolean isInUpdateMode;
+    private boolean isFileGeneration=true;
+    private boolean isInUpdateMode = false;
     private static final String INDENT = "  ";
     
     public CodeGenerator () {
@@ -83,64 +85,109 @@ public class CodeGenerator {
         //newly generated
         BufferedWriter fos = null;
         File f = new File(pathname);
-        if (!f.isDirectory()) {
+        Map<Integer,String> oldLines = new HashMap<Integer,String>();
+        String line = null;
+        if (!f.isDirectory() && !f.exists()) {
         	if (!Paths.get(path).toFile().isDirectory()) {
             if (!f.getParentFile().mkdir()) {
                 LOG.severe(" could not make directory " + path);
                 return null;
             }
           }
-        } /* if a file already exists update
-        else if (!f.isDirectory() && f.exists()) {
+        	isFileGeneration = true;
+        }  
+        if (!f.isDirectory() && f.exists()) {
         	try {
-        		List<String> lines = new ArrayList<String>();
-        		String line = null;
         		DesignClass cls = null;
         		Vector classAttributes = new Vector();
+        		Vector methods = new Vector();
+        		Vector sdMethods = new Vector();
+        		List<String> calledMethods = new ArrayList<String>();
+        		int fileIndex=0;
+        		boolean doesNotExist = true;
         		if(classObject instanceof DesignClass) {
         			cls = (DesignClass) classObject;
         			classAttributes = cls.getAttributes();
+        			methods = cls.getMethods();
+        			sdMethods = cls.getSDMethods();
+        			calledMethods = cls.getCalledMethods();
         		}
-        		
+        		if(classObject instanceof Interface) {
+        			Interface infs = (Interface) classObject;
+        			methods = infs.getMethods();
+        		}
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("class")) {
-        				line = line.replace(line, generateClassifierStart(classObject).toString());
+        			doesNotExist = true;
+        			if(line.contains(" class ") || line.contains(" interface ") || line.contains("//") || line.trim().isEmpty() || line.contains("}") 
+        					|| line.contains("{") || line.contains("return") || line.contains("import")) {
+        				doesNotExist = false;
         			}
-        			for (int i=0;i<classAttributes.size();i++) {
-        				Attribute classAttribute = (Attribute) classAttributes.get(i);
-        				if(line.contains(classAttribute.getName())) {
-        					line = line.replace(line,generateAttribute(classAttribute,false));
+        			if(cls!=null) {
+        				if(line.contains(cls.getName())) {
+        					doesNotExist = false;
         				}
-        			}		
-        			lines.add(line);
-        		}
+        			}
+        			for(int i=0;i<classAttributes.size();i++) {
+        				Attribute classAttribute = (Attribute) classAttributes.get(i);
+        				if (line.contains(classAttribute.getName())) {
+        					doesNotExist = false;
+        				}
+        			}
+        			for(int i=0;i<calledMethods.size();i++) {
+        				String calledMethod = calledMethods.get(i);
+        				if(calledMethod.contains(".")) {
+        					calledMethod=calledMethod.substring(calledMethod.lastIndexOf(".")+1,calledMethod.lastIndexOf("("));
+        				}	
+        				if (line.contains(calledMethod)) {
+        					doesNotExist = false;
+        				}
+        			}
+        			for(int i=0;i<methods.size();i++) {
+        				Method method = (Method) methods.get(i);
+        				if (line.contains(method.getName())) {
+        					doesNotExist = false;
+        				}
+        			}
+        			for(int i=0;i<sdMethods.size();i++) {
+        				Method sdMethod = (Method) sdMethods.get(i);
+        				if (line.contains(sdMethod.getName())) {
+        					doesNotExist = false;
+        				}
+        			}
+        			for(int i=0;i<sdMethods.size();i++) {
+        				Method sdMethod = (Method) sdMethods.get(i);
+        				List<String> calledMethodsInMethod = sdMethod.getCalledMethods();
+        				for(int y=0;y<calledMethodsInMethod.size();y++) {
+        					String calledMethodInMethod = calledMethodsInMethod.get(y);
+        					if(calledMethodInMethod.contains(".")) {
+        						calledMethodInMethod=calledMethodInMethod.substring(calledMethodInMethod.lastIndexOf(".")+1,calledMethodInMethod.lastIndexOf("("));
+            				}
+	        				if (line.contains(calledMethodInMethod)) {
+	        					doesNotExist = false;
+	        				}
+        				}	
+        			}
+        			if(doesNotExist) {
+        				isInUpdateMode=false; //set true to enable updating
+        				oldLines.put(fileIndex,line);
+        			}
+        			fileIndex++;
+        		}	
         		fr.close();
         		br.close();
         		
-        		FileWriter fw = new FileWriter(f);
-        		BufferedWriter outString = new BufferedWriter(fw);
-        		for(String s : lines) {
-        			outString.write(s);
-        			outString.write(LINE_SEPARATOR);
-        		}
-        		outString.flush();
-        		outString.close();
-        		return pathname;
         		
         	}catch(Exception ex) {
         		ex.printStackTrace();
         	}
         		
-        } */
-        
-        isFileGeneration = true;
-
+        }
+       
         //String pathname = path + filename;
         // TODO: package, project basepath
         LOG.info("Generating " + f.getPath());
-        isFileGeneration = true;
         String header = generateHeader();
         String src = generateClassifier(classObject); 
         try {
@@ -159,7 +206,39 @@ public class CodeGenerator {
                 LOG.severe("FAILED: " + f.getPath());
             }
         }
-
+        if(isInUpdateMode) {
+        	try {
+	        	FileReader fr2 = new FileReader(f);
+	    		BufferedReader br2 = new BufferedReader(fr2);
+	    		int currLine = 0;
+	    		int extrlines = 0;
+	    		List<String> lines = new ArrayList<String>();
+	    		while((line=br2.readLine()) != null) {
+		        	for (Map.Entry<Integer,String> oldLine : oldLines.entrySet()) {
+		        		if(currLine==(oldLine.getKey())) {
+		        			if(line.trim().isEmpty()) {
+		        				line = line.replace(line, oldLine.getValue());
+		        			}else {
+		        				lines.add(oldLine.getValue());
+		        			}
+		        		}	
+		        	}	
+		        	lines.add(line);
+		        	currLine++;
+	    		}
+	    		br2.close();
+	    		fr2.close();
+	    		BufferedWriter fos2 = new BufferedWriter(new FileWriter(f));
+	    		for(String s:lines) {
+	    			fos2.write(s);
+	    			fos2.write(LINE_SEPARATOR);
+	    		}
+	    		fos2.close();
+        	}catch (IOException e) {
+        		e.printStackTrace();
+        	}
+        }    
+          
         return pathname;
     }
     
@@ -189,7 +268,7 @@ public class CodeGenerator {
         return returnValue.toString();
     }
     
-    StringBuffer generateClassifierStart(Object obj) {
+    public StringBuffer generateClassifierStart(Object obj) {
         String sClassifierKeyword;
         StringBuffer sb = new StringBuffer(80);
         // add visibility
@@ -301,7 +380,7 @@ public class CodeGenerator {
 		                }
 			    sb.append(INDENT);
 			    
-		        sb.append(generateOperation(classSDMethod, false));
+		        sb.append(generateOperation(classSDMethod));
 	
 	            if (lfBeforeCurly) {
 	                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -334,7 +413,7 @@ public class CodeGenerator {
 		                    sb.append(LINE_SEPARATOR);
 		                }
 					  sb.append(INDENT);
-					  sb.append(generateOperation(classMethod, false));
+					  sb.append(generateOperation(classMethod));
 	
 			            if (lfBeforeCurly) {
 			                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -354,10 +433,8 @@ public class CodeGenerator {
         return sb;
     }
     
-    String generateOperation(Method op, boolean documented) {
-        if (isFileGeneration) {
-            documented = true; 
-        }
+    public String generateOperation(Method op) {
+ 
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
         boolean constructor = false;
@@ -460,18 +537,21 @@ public class CodeGenerator {
         return sb.toString();
     }
     
-    private String generateAttribute(Attribute attr, boolean documented) {
-        if (isFileGeneration) {
-            documented = true; // always "documented" if we generate file.
-        }
+    private String generateAttribute(Attribute attr, boolean update) {
+        //if (isFileGeneration) {
+        //    update = true; // always "documented" if we generate file.
+        //}
         StringBuffer sb = new StringBuffer(80);
         sb.append(generateCoreAttribute(attr));
-        sb.append(";").append(LINE_SEPARATOR);
+        sb.append(";");
+        if(!update) {
+        	sb.append(LINE_SEPARATOR);
+        }
 
         return sb.toString();
     }
     
-    String generateCoreAttribute(Attribute attr) {
+    public String generateCoreAttribute(Attribute attr) {
         StringBuffer sb = new StringBuffer(80);
         sb.append(attr.getVisibilityName()).append(' ');
         sb.append(attr.getType()).append(' ');
