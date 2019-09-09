@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.junit.Test;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.DesignClass;
@@ -21,9 +22,11 @@ import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
@@ -364,29 +367,38 @@ public class UMLProjectTest {
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
 		DesignClass dc2 = new DesignClass("Class2");
+		DesignClass dc3 = new DesignClass("Class3");
 		GenericOperation mtd1 = new GenericOperation("mtd1");
+		GenericOperation mtd2 = new GenericOperation("mtd2");
 		SDObject sd1 = new SDObject("sd1",dc1);
 		SDObject sd2 = new SDObject("sd2",dc2);
+		SDObject sd3 = new SDObject("sd3",dc3);
 		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
 		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
+		SDObjectGR sd3GR = new SDObjectGR(sd3,3);
 		currDiagram.addGraphicalElement(sd1GR);
 		currDiagram.addGraphicalElement(sd2GR);
-		CallMessage cm = new CallMessage(sd1,sd2,mtd1);
-		cm.setReturnValue(new MessageReturnValue("int"));
-		cm.addParameter(new MessageParameter("int y"));
-		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm,1));
+		currDiagram.addGraphicalElement(sd3GR);
+		CallMessage cm1 = new CallMessage(sd1,sd2,mtd1);
+		cm1.setReturnValue(new MessageReturnValue("int"));
+		cm1.addParameter(new MessageParameter("int y"));
+		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm1,1));
+		CallMessage cm2 = new CallMessage(sd2,sd3,mtd2);
+		cm2.setReturnValue(new MessageReturnValue("void"));
+		cm2.addParameter(new MessageParameter("int y"));
+		currDiagram.addGraphicalElement(new CallMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode();
-		File f = new File("C:\\test\\test\\Class1.java");
-		boolean CalledMethodExists = false;
+		File f = new File("C:\\test\\test\\Class2.java");
+		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
         		String line = null;
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("int x = sd2.mtd1(y)")) {
-        				CalledMethodExists=true;
+        			if(line.contains("sd3.mtd2(y)")) {
+        				calledMethodExists=true;
         			}
         		}
         		fr.close();
@@ -395,164 +407,11 @@ public class UMLProjectTest {
         		ex.printStackTrace();
         	}
 		}
-		assertTrue(CalledMethodExists && generatedFiles==2);
+		assertTrue(calledMethodExists && generatedFiles==3);
 	}
 	
 	@Test
 	public void testGenerateCalledMethodWithReturnParameterFromSD() {
-		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
-		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
-		UMLProject umlProject = UMLProject.getInstance();
-		umlProject.clear();
-		File file = new File("C:\\test");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Directory cannot be Created!");
-            }
-        }
-		umlProject.setFilepath("C:\\test\\test.xml");
-		umlProject.setFilename("test.xml");
-		SDModel currDiagram = new SDModel("sd1",umlProject);
-		DesignClass dc1 = new DesignClass("Class1");
-		DesignClass dc2 = new DesignClass("Class2");
-		GenericOperation mtd1 = new GenericOperation("mtd1");
-		SDObject sd1 = new SDObject("sd1",dc1);
-		SDObject sd2 = new SDObject("sd2",dc2);
-		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
-		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
-		currDiagram.addGraphicalElement(sd1GR);
-		currDiagram.addGraphicalElement(sd2GR);
-		CallMessage cm = new CallMessage(sd1,sd2,mtd1);
-		cm.setReturnValue(new MessageReturnValue("int w"));
-		cm.addParameter(new MessageParameter("int y"));
-		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm,1));
-		af.saveProject();
-		int generatedFiles = umlProject.generateCode();
-		File f = new File("C:\\test\\test\\Class1.java");
-		boolean CalledMethodExists = false;
-		if (!f.isDirectory() && f.exists()) {
-        	try {
-        		String line = null;
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			if(line.contains("int w = sd2.mtd1(y)")) {
-        				CalledMethodExists=true;
-        			}
-        		}
-        		fr.close();
-        		br.close();
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-		}
-		assertTrue(CalledMethodExists && generatedFiles==2);
-	}
-	
-	@Test
-	public void testGenerateCreateMethodFromSD() {
-		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
-		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
-		UMLProject umlProject = UMLProject.getInstance();
-		umlProject.clear();
-		File file = new File("C:\\test");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Directory cannot be Created!");
-            }
-        }
-		umlProject.setFilepath("C:\\test\\test.xml");
-		umlProject.setFilename("test.xml");
-		SDModel currDiagram = new SDModel("sd1",umlProject);
-		DesignClass dc1 = new DesignClass("Class1");
-		DesignClass dc2 = new DesignClass("Class2");
-		SDObject sd1 = new SDObject("sd1",dc1);
-		SDObject sd2 = new SDObject("sd2",dc2);
-		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
-		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
-		currDiagram.addGraphicalElement(sd1GR);
-		currDiagram.addGraphicalElement(sd2GR);
-		CreateMessage cm = new CreateMessage(sd1,sd2);
-		currDiagram.addGraphicalElement(new CreateMessageGR(sd1GR,sd2GR,cm,1));
-		af.saveProject();
-		int generatedFiles = umlProject.generateCode();
-		File f = new File("C:\\test\\test\\Class1.java");
-		boolean createMethodExists = false;
-		if (!f.isDirectory() && f.exists()) {
-        	try {
-        		String line = null;
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			if(line.contains("Class2 sd2 = new Class2()")) {
-        				createMethodExists=true;
-        			}
-        		}
-        		fr.close();
-        		br.close();
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-		}
-		assertTrue(createMethodExists && generatedFiles==2);
-	}
-	
-	@Test
-	public void testGenerateDestroyMethodFromSD() {
-		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
-		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
-		UMLProject umlProject = UMLProject.getInstance();
-		umlProject.clear();
-		File file = new File("C:\\test");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Directory cannot be Created!");
-            }
-        }
-		umlProject.setFilepath("C:\\test\\test.xml");
-		umlProject.setFilename("test.xml");
-		SDModel currDiagram = new SDModel("sd1",umlProject);
-		DesignClass dc1 = new DesignClass("Class1");
-		DesignClass dc2 = new DesignClass("Class2");
-		SDObject sd1 = new SDObject("sd1",dc1);
-		SDObject sd2 = new SDObject("sd2",dc2);
-		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
-		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
-		currDiagram.addGraphicalElement(sd1GR);
-		currDiagram.addGraphicalElement(sd2GR);
-		DestroyMessage cm = new DestroyMessage(sd1,sd2);
-		currDiagram.addGraphicalElement(new DestroyMessageGR(sd1GR,sd2GR,cm,1));
-		af.saveProject();
-		int generatedFiles = umlProject.generateCode();
-		File f = new File("C:\\test\\test\\Class1.java");
-		boolean destroyMethodExists = false;
-		if (!f.isDirectory() && f.exists()) {
-        	try {
-        		String line = null;
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			if(line.contains("sd2.destroy()")) {
-        				destroyMethodExists=true;
-        			}
-        		}
-        		fr.close();
-        		br.close();
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-		}
-		assertTrue(destroyMethodExists && generatedFiles==2);
-	}
- 
-	@Test
-	public void testGenerateBrancedCalledMethodFromSD() {
 		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
@@ -587,21 +446,21 @@ public class UMLProjectTest {
 		cm1.addParameter(new MessageParameter("int y"));
 		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm1,1));
 		CallMessage cm2 = new CallMessage(sd2,sd3,mtd2);
-		cm2.setReturnValue(new MessageReturnValue("void"));
+		cm2.setReturnValue(new MessageReturnValue("int"));
 		cm2.addParameter(new MessageParameter("int y"));
 		currDiagram.addGraphicalElement(new CallMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode();
 		File f = new File("C:\\test\\test\\Class2.java");
-		int calledMethodExists = 0;
+		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
         		String line = null;
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("sd3.mtd2(y)")) {
-        				calledMethodExists++;
+        			if(line.contains("x = sd3.mtd2(y)")) {
+        				calledMethodExists=true;
         			}
         		}
         		fr.close();
@@ -610,7 +469,127 @@ public class UMLProjectTest {
         		ex.printStackTrace();
         	}
 		}
-		assertTrue(calledMethodExists==2 && generatedFiles==3);
+		assertTrue(calledMethodExists && generatedFiles==3);
+	}
+	
+	@Test
+	public void testGenerateCreateMethodFromSD() {
+		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
+		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
+		UMLProject umlProject = UMLProject.getInstance();
+		umlProject.clear();
+		File file = new File("C:\\test");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
+		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilename("test.xml");
+		SDModel currDiagram = new SDModel("sd1",umlProject);
+		DesignClass dc1 = new DesignClass("Class1");
+		DesignClass dc2 = new DesignClass("Class2");
+		DesignClass dc3 = new DesignClass("Class3");
+		GenericOperation mtd1 = new GenericOperation("mtd1");
+		GenericOperation mtd2 = new GenericOperation("mtd2");
+		SDObject sd1 = new SDObject("sd1",dc1);
+		SDObject sd2 = new SDObject("sd2",dc2);
+		SDObject sd3 = new SDObject("sd3",dc3);
+		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
+		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
+		SDObjectGR sd3GR = new SDObjectGR(sd3,3);
+		currDiagram.addGraphicalElement(sd1GR);
+		currDiagram.addGraphicalElement(sd2GR);
+		currDiagram.addGraphicalElement(sd3GR);
+		CallMessage cm1 = new CallMessage(sd1,sd2,mtd1);
+		cm1.setReturnValue(new MessageReturnValue("int"));
+		cm1.addParameter(new MessageParameter("int y"));
+		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm1,1));
+		CreateMessage cm2 = new CreateMessage(sd2,sd3);
+		currDiagram.addGraphicalElement(new CreateMessageGR(sd2GR,sd3GR,cm2,2));
+		af.saveProject();
+		int generatedFiles = umlProject.generateCode();
+		File f = new File("C:\\test\\test\\Class2.java");
+		boolean calledMethodExists = false;
+		if (!f.isDirectory() && f.exists()) {
+        	try {
+        		String line = null;
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("sd3 = new Class3()")) {
+        				calledMethodExists=true;
+        			}
+        		}
+        		fr.close();
+        		br.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}
+		}
+		assertTrue(calledMethodExists && generatedFiles==3);
+	}
+	
+	@Test
+	public void testGenerateDestroyMethodFromSD() {
+		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
+		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
+		UMLProject umlProject = UMLProject.getInstance();
+		umlProject.clear();
+		File file = new File("C:\\test");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
+		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilename("test.xml");
+		SDModel currDiagram = new SDModel("sd1",umlProject);
+		DesignClass dc1 = new DesignClass("Class1");
+		DesignClass dc2 = new DesignClass("Class2");
+		DesignClass dc3 = new DesignClass("Class3");
+		GenericOperation mtd1 = new GenericOperation("mtd1");
+		GenericOperation mtd2 = new GenericOperation("mtd2");
+		SDObject sd1 = new SDObject("sd1",dc1);
+		SDObject sd2 = new SDObject("sd2",dc2);
+		SDObject sd3 = new SDObject("sd3",dc3);
+		SDObjectGR sd1GR = new SDObjectGR(sd1,1);
+		SDObjectGR sd2GR = new SDObjectGR(sd2,2);
+		SDObjectGR sd3GR = new SDObjectGR(sd3,3);
+		currDiagram.addGraphicalElement(sd1GR);
+		currDiagram.addGraphicalElement(sd2GR);
+		currDiagram.addGraphicalElement(sd3GR);
+		CallMessage cm1 = new CallMessage(sd1,sd2,mtd1);
+		cm1.setReturnValue(new MessageReturnValue("int"));
+		cm1.addParameter(new MessageParameter("int y"));
+		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm1,1));
+		DestroyMessage cm2 = new DestroyMessage(sd2,sd3);
+		currDiagram.addGraphicalElement(new DestroyMessageGR(sd2GR,sd3GR,cm2,2));
+		af.saveProject();
+		int generatedFiles = umlProject.generateCode();
+		File f = new File("C:\\test\\test\\Class2.java");
+		boolean calledMethodExists = false;
+		if (!f.isDirectory() && f.exists()) {
+        	try {
+        		String line = null;
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("sd3.destroy()")) {
+        				calledMethodExists=true;
+        			}
+        		}
+        		fr.close();
+        		br.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}
+		}
+		assertTrue(calledMethodExists && generatedFiles==3);
 	}
 	
 	@Test
@@ -779,4 +758,186 @@ public class UMLProjectTest {
 		}
 		assertTrue(classExists && generatedFiles==3);
 	}
+	
+	@Test
+	public void testGenerateAssociationAttributeAtoB() {
+		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
+		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
+		UMLProject umlProject = UMLProject.getInstance();
+		umlProject.clear();
+		File file = new File("C:\\test");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
+		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilename("test.xml");
+		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
+		DesignClass dc1 = new DesignClass("Class1");
+		DesignClass dc2 = new DesignClass("Class2");
+		ClassGR dc1GR = new ClassGR(dc1,new Point(1,10));
+		ClassGR dc2GR = new ClassGR(dc2,new Point(10,20));
+		currDiagram.addGraphicalElement(dc1GR);
+		currDiagram.addGraphicalElement(dc2GR);
+		Role dc1Role = new Role(dc1);
+		dc1Role.setName("sd1");
+		Role dc2Role = new Role(dc2);
+		dc2Role.setName("sd2");
+		Association AtoB = new Association(dc1Role,dc2Role);
+		AtoB.setDirection(1);
+		AtoB.setShowArrow(true);
+		currDiagram.addGraphicalElement(new AssociationGR(dc1GR,dc2GR,AtoB));
+		af.saveProject();
+		int generatedFiles = umlProject.generateCode();
+		File f = new File("C:\\test\\test\\Class1.java");
+		boolean parameterExists = false;
+		if (!f.isDirectory() && f.exists()) {
+        	try {
+        		String line = null;
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("Class2 sd2;")) {
+        				parameterExists=true;
+        			}
+        		}
+        		fr.close();
+        		br.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}
+		}
+		assertTrue(parameterExists && generatedFiles==2);
+	}
+	
+	@Test
+	public void testGenerateAssociationAttributeBtoA() {
+		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
+		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
+		UMLProject umlProject = UMLProject.getInstance();
+		umlProject.clear();
+		File file = new File("C:\\test");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
+		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilename("test.xml");
+		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
+		DesignClass dc1 = new DesignClass("Class1");
+		DesignClass dc2 = new DesignClass("Class2");
+		ClassGR dc1GR = new ClassGR(dc1,new Point(1,10));
+		ClassGR dc2GR = new ClassGR(dc2,new Point(10,20));
+		currDiagram.addGraphicalElement(dc1GR);
+		currDiagram.addGraphicalElement(dc2GR);
+		Role dc1Role = new Role(dc1);
+		dc1Role.setName("sd1");
+		Role dc2Role = new Role(dc2);
+		dc2Role.setName("sd2");
+		Association BtoA = new Association(dc1Role,dc2Role);
+		BtoA.setDirection(2);
+		BtoA.setShowArrow(true);
+		currDiagram.addGraphicalElement(new AssociationGR(dc1GR,dc2GR,BtoA));
+		af.saveProject();
+		int generatedFiles = umlProject.generateCode();
+		File f = new File("C:\\test\\test\\Class2.java");
+		boolean parameterExists = false;
+		if (!f.isDirectory() && f.exists()) {
+        	try {
+        		String line = null;
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("Class1 sd1;")) {
+        				parameterExists=true;
+        			}
+        		}
+        		fr.close();
+        		br.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}
+		}
+		assertTrue(parameterExists && generatedFiles==2);
+	}
+	
+	@Test
+	public void testGenerateAssociationAttributeBidirectional() {
+		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
+		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
+		UMLProject umlProject = UMLProject.getInstance();
+		umlProject.clear();
+		File file = new File("C:\\test");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
+		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilename("test.xml");
+		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
+		DesignClass dc1 = new DesignClass("Class1");
+		DesignClass dc2 = new DesignClass("Class2");
+		ClassGR dc1GR = new ClassGR(dc1,new Point(1,10));
+		ClassGR dc2GR = new ClassGR(dc2,new Point(10,20));
+		currDiagram.addGraphicalElement(dc1GR);
+		currDiagram.addGraphicalElement(dc2GR);
+		Role dc1Role = new Role(dc1);
+		dc1Role.setName("sd1");
+		Role dc2Role = new Role(dc2);
+		dc2Role.setName("sd2");
+		Association bi = new Association(dc1Role,dc2Role);
+		bi.setDirection(3);
+		bi.setShowArrow(true);
+		currDiagram.addGraphicalElement(new AssociationGR(dc1GR,dc2GR,bi));
+		af.saveProject();
+		int generatedFiles = umlProject.generateCode();
+		int parameterExists = 0;
+		File f = new File("C:\\test\\test\\Class1.java");		
+		if (!f.isDirectory() && f.exists()) {
+        	try {
+        		String line = null;
+        		FileReader fr = new FileReader(f);
+        		BufferedReader br = new BufferedReader(fr);
+        		while((line=br.readLine()) != null) {
+        			if(line.contains("Class2 sd2;")) {
+        				parameterExists++;
+        			}
+        		}
+        		fr.close();
+        		br.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}   	
+		}
+		File f2 = new File("C:\\test\\test\\Class2.java");		
+		if (!f2.isDirectory() && f2.exists()) {
+        	try {
+        		String line2 = null;
+        		FileReader fr2 = new FileReader(f2);
+        		BufferedReader br2 = new BufferedReader(fr2);
+        		while((line2=br2.readLine()) != null) {
+        			if(line2.contains("Class1 sd1;")) {
+        				parameterExists++;
+        			}
+        		}
+        		fr2.close();
+        		br2.close();
+        	}catch(Exception ex) {
+        		ex.printStackTrace();
+        	}   	
+		}
+		assertTrue(parameterExists==2 && generatedFiles==2);
+	}
+	
+	
+	
 }

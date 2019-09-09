@@ -329,7 +329,7 @@ public class CodeGenerator {
 	
 	        if (!classAttributes.isEmpty()) {
 	            sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("// Attributes");
+	            sb.append(INDENT).append("// Generated Attributes");
 	            sb.append(LINE_SEPARATOR);
 	        }
 	        
@@ -338,20 +338,11 @@ public class CodeGenerator {
 	            Attribute classAttribute = (Attribute) classAttributes.get(i);         
 	            sb.append(generateAttribute(classAttribute, false));
 	            }
-			//constructor
-			sb.append(LINE_SEPARATOR);
-			sb.append(INDENT).append("// Constructor");
-			sb.append(LINE_SEPARATOR);
-			sb.append(INDENT).append("public " + cls.getName() +"() {");
-			sb.append(LINE_SEPARATOR);
-			sb.append(LINE_SEPARATOR);
-			sb.append(INDENT).append("}");
+			
 			sb.append(LINE_SEPARATOR);
 			
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
-			//addCalledMethods
-			sb.append(generateCalledMethods(cls));
 			
         }
         // add operations
@@ -361,7 +352,7 @@ public class CodeGenerator {
         }
         if (!classMethods.isEmpty() || !classSDMethods.isEmpty()) {
             sb.append(LINE_SEPARATOR);
-            sb.append(INDENT).append("// Methods");
+            sb.append(INDENT).append("//Methods");
             sb.append(LINE_SEPARATOR);
         }
 
@@ -375,11 +366,13 @@ public class CodeGenerator {
 						classSDMethod.setVisibility(classMethod.getVisibility());
 					}
 				}
-			    if (!first) {
-		                    sb.append(LINE_SEPARATOR);
+			    if (first) {
+		                 //   sb.append(LINE_SEPARATOR);
 		                }
+			    sb.append(LINE_SEPARATOR);
+	            sb.append(INDENT).append("//Generated Method");
+	            sb.append(LINE_SEPARATOR);
 			    sb.append(INDENT);
-			    
 		        sb.append(generateOperation(classSDMethod));
 	
 	            if (lfBeforeCurly) {
@@ -409,11 +402,14 @@ public class CodeGenerator {
 			}
 			if (!equal) {
 				if (!classMethod.getName().equals("create") && !classMethod.getName().equals("destroy")) {
-					 if (!first) {
-		                    sb.append(LINE_SEPARATOR);
+					 if (first) {
+		                  //  sb.append(LINE_SEPARATOR);
 		                }
-					  sb.append(INDENT);
-					  sb.append(generateOperation(classMethod));
+					 sb.append(LINE_SEPARATOR);
+			         sb.append(INDENT).append("//Generated Method");
+			         sb.append(LINE_SEPARATOR);
+					 sb.append(INDENT);
+					 sb.append(generateOperation(classMethod));
 	
 			            if (lfBeforeCurly) {
 			                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -437,14 +433,16 @@ public class CodeGenerator {
  
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
-        boolean constructor = false;
         nameStr = op.getName();
        
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // return type
-        
-        sb.append(op.getReturnTypeAsString()).append(' ');
+        if(op.getReturnTypeAsString()=="VOID") {
+        	sb.append("void").append(' ');
+        }else {
+         sb.append(op.getReturnTypeAsString()).append(' ');
+        } 
 
         // name and params
         Vector params = op.getParameters();
@@ -472,7 +470,7 @@ public class CodeGenerator {
     	List<String> calledMethods = op.getCalledMethods();
 		if (!calledMethods.isEmpty()) {
 			sb.append(LINE_SEPARATOR);
-            sb.append(INDENT+INDENT).append("// calledMethods");
+            sb.append(INDENT+INDENT).append("// Generated called Methods");
             sb.append(LINE_SEPARATOR);
 		}
 		for (int i=0;i<calledMethods.size();i++) {
@@ -486,6 +484,7 @@ public class CodeGenerator {
             // pick out return type
         	if (returnType != null) {
         		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID")) {
+        			sb.append(INDENT + INDENT + "// Generated Return").append(LINE_SEPARATOR);
         			sb.append(INDENT + generateDefaultReturnStatement(returnType));
         		}  
             }
@@ -597,7 +596,7 @@ public class CodeGenerator {
     	 List<String> calledMethods = cls.getCalledMethods();
 			if (!calledMethods.isEmpty()) {
 				sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("// calledMethods");
+	            sb.append(INDENT).append("//Generated called Methods");
 	            sb.append(LINE_SEPARATOR);
 			}
 			for (int i=0; i<calledMethods.size();i++) {

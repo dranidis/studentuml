@@ -278,10 +278,10 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
     		if( object instanceof SDObject) {
-	    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
+	    		sb.append(object.getName()).append(" = ");
 	    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
     		}else if (object instanceof MultiObject) {
-    		  	sb.append("List<"+calledClass.getName()+"> "+object.getName()+"= new ArrayList<"+calledClass.getName()+">();");
+    		  	sb.append(object.getName()+" = new ArrayList<"+calledClass.getName()+">();");
     		}
     	}else if(m.getName().equals("destroy") && object instanceof SDObject) {
     		sb.append(object.getName() + ".destroy()").append(";");
@@ -289,28 +289,30 @@ public class Method implements Serializable, IXMLCustomStreamable {
     		sb.append(object.getName() + " = null").append(";");
     	}else {
 	    	if(m.isIterative() && object instanceof SDObject) {
-	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
-	    		sb.append("   ");
+	    		sb.append("for(int i=0;i<10;i++){").append(LINE_SEPARATOR);
+	    		sb.append("    ");
 	    	}else if (m.isIterative() && object instanceof MultiObject) {
-	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
-	    		sb.append("   ");
+	    		sb.append("for(" + calledClass.getName() + " obj : "+object.getName()+") {").append(LINE_SEPARATOR);
+	    		sb.append("    ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
-	    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
+	    		sb.append(m.getReturnParameter() + " = ");
 	    	}
 	    	if (isReflective && object instanceof SDObject) {
 	    		sb.append("this").append(".");
 	    	}else if (object instanceof SDObject){
 	    		sb.append(object.getName()).append(".");
-	    	}else if (object instanceof MultiObject) {
-	    		sb.append(object.getName()).append("[i].");
+	    	}else if (object instanceof MultiObject && m.isIterative()) {
+	    		sb.append("obj.");
+	    	}else if (object instanceof MultiObject && !m.isIterative()) {
+	    		sb.append(object.getName() + ".");
 	    	}
 	    	sb.append(m.getName()).append("(");
 	    	sb.append(m.getParametersAsString());
 	    	sb.append(");");
 	    	if(m.isIterative()) {
 	    		sb.append(LINE_SEPARATOR).append(" ");
-	    		sb.append(" }");
+	    		sb.append("   }");
 	    	}
     	}	
     	this.calledMethods.add(sb.toString());

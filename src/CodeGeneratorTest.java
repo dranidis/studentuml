@@ -453,27 +453,29 @@ public class CodeGeneratorTest {
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
-		DesignClass dc2 = new DesignClass("Class2"); 
+		DesignClass dc2 = new DesignClass("Class2");
+		Method headMethod = new Method("hmtd");
 		Method mtd1 = new Method("mtd1");
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
+		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
 		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
 		File f = new File(path);
-		boolean calledMethodExists = false;
+		boolean calledBranchedMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
         		String line = null;
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("int x = sd2.mtd1(x)")) {
-        				calledMethodExists=true;
+        			if(line.contains("x = sd2.mtd1(x)")) {
+        				calledBranchedMethodExists=true;
         			}
         		}
         		fr.close();
@@ -482,7 +484,7 @@ public class CodeGeneratorTest {
         		ex.printStackTrace();
         	}
 		}
-		assertTrue(calledMethodExists);
+		assertTrue(calledBranchedMethodExists);
 	}
 	
 	@Test
@@ -503,13 +505,15 @@ public class CodeGeneratorTest {
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
-		DesignClass dc2 = new DesignClass("Class2"); 
+		DesignClass dc2 = new DesignClass("Class2");
+		Method headMethod = new Method("hmtd");
 		Method mtd1 = new Method("mtd1");
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("void"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
+		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -553,13 +557,15 @@ public class CodeGeneratorTest {
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
-		DesignClass dc2 = new DesignClass("Class2"); 
+		DesignClass dc2 = new DesignClass("Class2");
+		Method headMethod = new Method("hmtd");
 		Method mtd1 = new Method("mtd1");
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
+		headMethod.addCalledMethod(mtd1, dc2, new MultiObject("sd2Array",dc2),false);
+		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, new MultiObject("sd2Array",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -572,7 +578,7 @@ public class CodeGeneratorTest {
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("int x = sd2Array[i].mtd1(x);")) {
+        			if(line.contains("x = sd2Array.mtd1(x)")) {
         				multiobjectCalledMethodExists=true;
         			}
         		}
@@ -602,13 +608,15 @@ public class CodeGeneratorTest {
 		umlProject.setFilepath("C:\\test\\test.xml");
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
-		DesignClass dc = (DesignClass) classObject; 
+		DesignClass dc = (DesignClass) classObject;
+		Method headMethod = new Method("hmtd");
 		Method mtd1 = new Method("mtd1");
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
+		headMethod.addCalledMethod(mtd1, dc, new SDObject("sd1",dc),true);
+		dc.addMethod(headMethod);
 		dc.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc, new SDObject("sd1",dc));
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -621,7 +629,7 @@ public class CodeGeneratorTest {
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("int x = this.mtd1(x);")) {
+        			if(line.contains("x = this.mtd1(x)")) {
         				selfCalledMethodExists=true;
         			}
         		}
@@ -652,14 +660,16 @@ public class CodeGeneratorTest {
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
-		DesignClass dc2 = new DesignClass("Class2"); 
+		DesignClass dc2 = new DesignClass("Class2");
+		Method headMethod = new Method("hmtd");
 		Method mtd1 = new Method("mtd1");
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		mtd1.setIterative(true);
+		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
-		dc.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2));;
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
@@ -672,7 +682,7 @@ public class CodeGeneratorTest {
         		FileReader fr = new FileReader(f);
         		BufferedReader br = new BufferedReader(fr);
         		while((line=br.readLine()) != null) {
-        			if(line.contains("for(int i=0;i<length;i++){")) {
+        			if(line.contains("for(int i=0;i<10;i++){")) {
         				iterativeCalledMethodExists=true;
         			}
         		}
@@ -685,57 +695,7 @@ public class CodeGeneratorTest {
 		assertTrue(iterativeCalledMethodExists);
 	}
 	
-	@Test
-	public void testGenerateBranchedCalledMethods() {
-		StudentUMLFrame studentUMLFrame =  StudentUMLFrame.getInstance();
-		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
-		UMLProject umlProject = UMLProject.getInstance();
-		umlProject.clear();
-		File file = new File("C:\\test");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Directory cannot be Created!");
-            }
-        }
-		umlProject.setFilepath("C:\\test\\test.xml");
-		umlProject.setFilename("test.xml");
-		Object classObject = new DesignClass("Class1");
-		DesignClass dc = (DesignClass) classObject;
-		DesignClass dc2 = new DesignClass("Class2");
-		Method headMethod = new Method("hmtd");
-		Method mtd1 = new Method("mtd1");
-		mtd1.setVisibility(2);
-		mtd1.setReturnType(new DataType("int"));
-		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
-		dc.addMethod(headMethod);
-		dc2.addSDMethod(mtd1);
-		af.saveProject();
-		String projectPath = new File(umlProject.getFilepath()).getParent();
-		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
-		File f = new File(path);
-		boolean calledBranchedMethodExists = false;
-		if (!f.isDirectory() && f.exists()) {
-        	try {
-        		String line = null;
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			if(line.contains("int x = sd2.mtd1(x)")) {
-        				calledBranchedMethodExists=true;
-        			}
-        		}
-        		fr.close();
-        		br.close();
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-		}
-		assertTrue(calledBranchedMethodExists);
-	}
+
 	
 	@Test
 	public void testNoInputGenerateFile() {
