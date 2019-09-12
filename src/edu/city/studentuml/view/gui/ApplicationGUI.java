@@ -42,6 +42,7 @@ import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -1595,16 +1596,20 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             forwardEngineerButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
+                	JCheckBox checkBox = new JCheckBox("Update Current Files",false);
+                	String message = "Do you Want to Generate Code? \n"
+                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
+                            + "Design (first) and Sequence Diagrams!";
+                	Object[] params= {message, checkBox};
                 	//0 for yes and 1 for no
                 	int codeGenerationConfirm = JOptionPane.showConfirmDialog(
                 		    frame,
-                		    "Do you Want to Generate Code? \n"
-                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
-                            + "Design (first) and Sequence Diagrams!",
+                		    params,
                             "Code Generation",
                 		    JOptionPane.YES_NO_OPTION);
+                	boolean update = checkBox.isSelected();
                 	if (codeGenerationConfirm == 0) {
-                		int genFilesCount = umlProject.generateCode();
+                		int genFilesCount = umlProject.generateCode(update);
                 		if (genFilesCount>0) {
                 			JOptionPane.showMessageDialog(frame,
                 			"Success!! \n" +

@@ -460,7 +460,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
     
     
-    public int generateCode() {
+    public int generateCode(boolean isInUpdateMode) {
     	int genFilesCount = 0;
     	Vector projectDiagrams = this.getDiagramModels();
     	CodeGenerator javaGenerator= new CodeGenerator(); 
@@ -502,7 +502,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               if (currEl instanceof InterfaceGR) {
                   interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
-                  String genPath = javaGenerator.generateFile(interfs,projectPath,this);
+                  String genPath = javaGenerator.generateFile(isInUpdateMode,interfs,projectPath,this);
                   out.println("Generated in: " + genPath);
                   if(genPath!=null) {
                 	  genFilesCount++;
@@ -855,7 +855,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	for (int i=0; i<dcToGenerate.size();i++) {
 	    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
 	    	String projectPath = new File(this.getFilepath()).getParent();
-	        String genPath = javaGenerator.generateFile(dci,projectPath,this);
+	        String genPath = javaGenerator.generateFile(isInUpdateMode,dci,projectPath,this);
 	        out.println("Generated in: " + genPath);
 		    if(genPath!=null) {
 		    	genFilesCount++;

@@ -49,14 +49,14 @@ public class CodeGenerator {
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     private boolean isFileGeneration=true;
-    private boolean isInUpdateMode = false;
+    private boolean isUpdate = false;
     private static final String INDENT = "  ";
     
     public CodeGenerator () {
     	
     }
     
-    public String generateFile(Object classObject, String path,UMLProject umlproject) {
+    public String generateFile(boolean isInUpdateMode,Object classObject, String path,UMLProject umlproject) {
     	String name = null;
     	if ( classObject instanceof DesignClass) {
     		DesignClass cls = (DesignClass) classObject;
@@ -96,7 +96,7 @@ public class CodeGenerator {
           }
         	isFileGeneration = true;
         }  
-        if (!f.isDirectory() && f.exists()) {
+        if (!f.isDirectory() && f.exists() && isInUpdateMode) {
         	try {
         		DesignClass cls = null;
         		Vector classAttributes = new Vector();
@@ -131,28 +131,19 @@ public class CodeGenerator {
         			}
         			for(int i=0;i<classAttributes.size();i++) {
         				Attribute classAttribute = (Attribute) classAttributes.get(i);
-        				if (line.contains(classAttribute.getName())) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<calledMethods.size();i++) {
-        				String calledMethod = calledMethods.get(i);
-        				if(calledMethod.contains(".")) {
-        					calledMethod=calledMethod.substring(calledMethod.lastIndexOf(".")+1,calledMethod.lastIndexOf("("));
-        				}	
-        				if (line.contains(calledMethod)) {
+        				if (line.contains(classAttribute.getName() + ";")) {
         					doesNotExist = false;
         				}
         			}
         			for(int i=0;i<methods.size();i++) {
         				Method method = (Method) methods.get(i);
-        				if (line.contains(method.getName())) {
+        				if (line.contains(method.getName()+"(")) {
         					doesNotExist = false;
         				}
         			}
         			for(int i=0;i<sdMethods.size();i++) {
         				Method sdMethod = (Method) sdMethods.get(i);
-        				if (line.contains(sdMethod.getName())) {
+        				if (line.contains(sdMethod.getName()+"(")) {
         					doesNotExist = false;
         				}
         			}
@@ -170,7 +161,7 @@ public class CodeGenerator {
         				}	
         			}
         			if(doesNotExist) {
-        				isInUpdateMode=false; //set true to enable updating
+        				isUpdate=true; //set true to enable updating
         				oldLines.put(fileIndex,line);
         			}
         			fileIndex++;
@@ -206,7 +197,7 @@ public class CodeGenerator {
                 LOG.severe("FAILED: " + f.getPath());
             }
         }
-        if(isInUpdateMode) {
+        if(isUpdate) {
         	try {
 	        	FileReader fr2 = new FileReader(f);
 	    		BufferedReader br2 = new BufferedReader(fr2);

@@ -43,7 +43,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		assertTrue(path.contains("Class1"));
 		assertTrue(f.exists() && !f.isDirectory());
@@ -69,7 +69,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		assertTrue(path.contains("Int1"));
 		assertTrue(f.exists() && !f.isDirectory());
@@ -95,7 +95,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -137,7 +137,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean interfaceExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -181,7 +181,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(dc,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,dc,projectPath,umlProject);
 		File f = new File(path);
 		boolean abstractClassExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -226,7 +226,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(dc,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,dc,projectPath,umlProject);
 		File f = new File(path);
 		boolean implementInterfaceExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -272,7 +272,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(dc,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,dc,projectPath,umlProject);
 		File f = new File(path);
 		boolean extendClassExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -320,7 +320,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean methodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -368,7 +368,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean methodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -412,7 +412,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean attributeExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -465,7 +465,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean calledBranchedMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -517,7 +517,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean calledVoidMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -569,7 +569,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean multiobjectCalledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -620,7 +620,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean selfCalledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -673,7 +673,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		File f = new File(path);
 		boolean iterativeCalledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -717,7 +717,7 @@ public class CodeGeneratorTest {
 		af.saveProject();
 		String projectPath = new File(umlProject.getFilepath()).getParent();
 		CodeGenerator testGenerator =new CodeGenerator();
-		String path = testGenerator.generateFile(classObject,projectPath,umlProject);
+		String path = testGenerator.generateFile(false,classObject,projectPath,umlProject);
 		assertTrue(path==null);
 	}
 }
