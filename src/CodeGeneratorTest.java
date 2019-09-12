@@ -459,7 +459,7 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		headMethod.addCalledMethod(dc,mtd1, dc2, new SDObject("sd2",dc2),false);
 		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
 		af.saveProject();
@@ -511,7 +511,7 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("void"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		headMethod.addCalledMethod(dc,mtd1, dc2, new SDObject("sd2",dc2),false);
 		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
 		af.saveProject();
@@ -563,7 +563,7 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc2, new MultiObject("sd2Array",dc2),false);
+		headMethod.addCalledMethod(dc,mtd1, dc2, new MultiObject("sd2Array",dc2),false);
 		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
 		af.saveProject();
@@ -614,7 +614,7 @@ public class CodeGeneratorTest {
 		mtd1.setVisibility(2);
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
-		headMethod.addCalledMethod(mtd1, dc, new SDObject("sd1",dc),true);
+		headMethod.addCalledMethod(dc,mtd1, dc, new SDObject("sd1",dc),true);
 		dc.addMethod(headMethod);
 		dc.addSDMethod(mtd1);
 		af.saveProject();
@@ -667,7 +667,7 @@ public class CodeGeneratorTest {
 		mtd1.setReturnType(new DataType("int"));
 		mtd1.addParameter(new MethodParameter("x",new DataType("int")));
 		mtd1.setIterative(true);
-		headMethod.addCalledMethod(mtd1, dc2, new SDObject("sd2",dc2),false);
+		headMethod.addCalledMethod(dc,mtd1, dc2, new SDObject("sd2",dc2),false);
 		dc.addMethod(headMethod);
 		dc2.addSDMethod(mtd1);
 		af.saveProject();

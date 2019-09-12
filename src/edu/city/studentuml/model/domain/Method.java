@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import static java.lang.System.out;
 
 import org.w3c.dom.Element;
 
@@ -273,7 +274,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	return this.returnParameter;
     }
     
-    public void addCalledMethod (Method m, DesignClass calledClass, RoleClassifier object, boolean isReflective) {
+    public void addCalledMethod (DesignClass homeClass, Method m, DesignClass calledClass, RoleClassifier object, boolean isReflective) {
     	//create a string with the call message for the method
     	StringBuffer sb = new StringBuffer();
     	if (m.getName().equals("create")) {
@@ -296,6 +297,20 @@ public class Method implements Serializable, IXMLCustomStreamable {
 	    		sb.append("    ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
+	    		Vector attributes = homeClass.getAttributes();
+	    		boolean parameterExists = false;
+	    		Attribute attribute;
+	    		for(int i=0;i<attributes.size();i++) {
+	    			attribute= (Attribute) attributes.get(i);
+	    			out.println(attribute.getName().toLowerCase());
+	    			out.println(m.getReturnParameter().toString().toLowerCase());
+	    			if(attribute.getName().toLowerCase().equals(m.getReturnParameter().toString().toLowerCase())){
+	    				parameterExists = true;
+	    			}
+	    		}
+	    		if(!parameterExists) {
+	    			sb.append(m.getReturnTypeAsString() + " ");
+	    		}
 	    		sb.append(m.getReturnParameter() + " = ");
 	    	}
 	    	if (isReflective && object instanceof SDObject) {

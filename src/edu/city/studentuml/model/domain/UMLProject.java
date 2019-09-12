@@ -27,6 +27,7 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
@@ -465,6 +466,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	CodeGenerator javaGenerator= new CodeGenerator(); 
     	DesignClass dc = null;
     	DesignClass dc2 = null;
+    	Interface interfs = null;
     	boolean hasLifeline=false;
     	boolean firstSD=true;
     	Method headMethod=null;
@@ -498,7 +500,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   dc.setExtendClass(genz.getSuperClass());
               }
               if (currEl instanceof InterfaceGR) {
-                  Interface interfs = ((InterfaceGR) currEl).getInterface();
+                  interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
                   String genPath = javaGenerator.generateFile(interfs,projectPath,this);
                   out.println("Generated in: " + genPath);
@@ -508,44 +510,149 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               }
               if (currEl instanceof AssociationGR) {
             	  Association association = ((AssociationGR) currEl).getAssociation();
-            	 
-            		  if(association.getDirection()==1) {
-            			  out.println("A->B");
-	            		  dc = (DesignClass) association.getClassA();
-	            		  dc2 = (DesignClass) association.getClassB();
+            	  if(association.getRoleA().getName()==null || association.getRoleA().getName().equals("")) {
+            		  association.getRoleA().setName(association.getClassA().getName().toLowerCase());
+            	  }
+            	  if(association.getRoleB().getName()==null || association.getRoleB().getName().equals("")) {
+            		  association.getRoleB().setName(association.getClassB().getName().toLowerCase());
+            	  }
+            	  if (association.getClassA() instanceof DesignClass) {
+            		  dc = (DesignClass) association.getClassA();
+            	  }else if(association.getClassA() instanceof Interface) {
+            		  interfs= (Interface) association.getClassA();
+            	  }
+            	  if (association.getClassB() instanceof DesignClass) {
+            		  dc2 = (DesignClass) association.getClassB();
+            	  }else if(association.getClassB() instanceof Interface) {
+            		  interfs= (Interface) association.getClassB();
+            	  }
+        		  if(association.getDirection()==1) {
+        			  out.println("A->B");
+            		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
+            			  if(association.getClassB() instanceof DesignClass) {
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">")));
+            			  }
+            			  if(association.getClassB() instanceof Interface) {
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            			  }
+            		  }else {
+            			  if(association.getClassB() instanceof DesignClass) {
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType(dc2.getName())));
+            			  }
+            			  if(association.getClassB() instanceof Interface) {
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType(interfs.getName())));
+            			  }
+            		  }
+            		  
+        		  }else
+        		  if(association.getDirection()==2) {
+        			  out.println("B->A");
+            		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
+            			  if(association.getClassA() instanceof DesignClass) {
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">")));  
+            			  }
+            			  if(association.getClassB() instanceof Interface) {
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            			  }  
+            		  }else {
+            			  if(association.getClassA() instanceof DesignClass) {
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(dc.getName())));
+            			  }
+            			  if(association.getClassA() instanceof Interface) {
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(interfs.getName())));
+            			  }
+            		  }
+        		  }else
+        		   if(association.getDirection()==3 || association.getDirection()==0) {
+                	  out.println("Bi");
+                	  if(association.getClassA() instanceof DesignClass && association.getClassB() instanceof DesignClass) {
 	            		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
 	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
 	            		  }else {
 	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType(dc2.getName())));  
 	            		  }
-	            		  
-            		  }else
-            		  if(association.getDirection()==2) {
-            			  out.println("B->A");
-            			  dc = (DesignClass) association.getClassB();
-	            		  dc2 = (DesignClass) association.getClassA();
 	            		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
-	            			  dc.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
-	            		  }else {
-	            			  dc.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(dc2.getName())));  
-	            		  }
-            		  }else
-            		   if(association.getDirection()==3 || association.getDirection()==0) {
-                    	  out.println("Bi");
-                    	  dc = (DesignClass) association.getClassA();
-                		  dc2 = (DesignClass) association.getClassB();
-                		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
-	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
-	            		  }else {
-	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType(dc2.getName())));  
-	            		  }
-                		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
 	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">"))); 
 	            		  }else {
 	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(dc.getName())));  
 	            		  }
-                	  }	 
-            	  
+                	  }else {
+                		  out.println("Biderectional association not applicable in interfaces");
+                	  }
+            	  }	   
+              }
+              if (currEl instanceof AggregationGR) {
+            	  Aggregation aggregation = ((AggregationGR) currEl).getAggregation();
+            	  if(aggregation.getRoleA().getName()==null || aggregation.getRoleA().getName().equals("")) {
+            		  aggregation.getRoleA().setName(aggregation.getClassA().getName().toLowerCase());
+            	  }
+            	  if(aggregation.getRoleB().getName()==null || aggregation.getRoleB().getName().equals("")) {
+            		  aggregation.getRoleB().setName(aggregation.getClassB().getName().toLowerCase());
+            	  }
+            	  if (aggregation.getClassA() instanceof DesignClass) {
+            		  dc = (DesignClass) aggregation.getClassA();
+            	  }else if(aggregation.getClassA() instanceof Interface) {
+            		  interfs= (Interface) aggregation.getClassA();
+            	  }
+            	  if (aggregation.getClassB() instanceof DesignClass) {
+            		  dc2 = (DesignClass) aggregation.getClassB();
+            	  }else if(aggregation.getClassB() instanceof Interface) {
+            		  interfs= (Interface) aggregation.getClassB();
+            	  }
+        		  if(aggregation.getDirection()==1) {
+        			  out.println("A->B");
+            		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
+            			  if(aggregation.getClassB() instanceof DesignClass) {
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">")));
+            			  }
+            			  if(aggregation.getClassB() instanceof Interface) {
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            			  }
+            		  }else {
+            			  if(aggregation.getClassB() instanceof DesignClass) {
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType(dc2.getName())));
+            			  }
+            			  if(aggregation.getClassB() instanceof Interface) {
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType(interfs.getName())));
+            			  }
+            		  }
+            		  
+        		  }else
+        		  if(aggregation.getDirection()==2) {
+        			  out.println("B->A");
+            		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
+            			  if(aggregation.getClassA() instanceof DesignClass) {
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">")));  
+            			  }
+            			  if(aggregation.getClassB() instanceof Interface) {
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            			  }  
+            		  }else {
+            			  if(aggregation.getClassA() instanceof DesignClass) {
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType(dc.getName())));
+            			  }
+            			  if(aggregation.getClassA() instanceof Interface) {
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType(interfs.getName())));
+            			  }
+            		  }
+        		  }else
+        		   if(aggregation.getDirection()==3 || aggregation.getDirection()==0) {
+                	  out.println("Bi");
+                	  if(aggregation.getClassA() instanceof DesignClass && aggregation.getClassB() instanceof DesignClass) {
+	            		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
+	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
+	            		  }else {
+	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType(dc2.getName())));  
+	            		  }
+	            		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
+	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">"))); 
+	            		  }else {
+	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType(dc.getName())));  
+	            		  }
+                	  }else {
+                		  out.println("Biderectional association not applicable in interfaces");
+                	  }
+            	  }	   
               }
               if (currEl instanceof SDObjectGR) {
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
@@ -607,7 +714,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   if(hasLifeline && headMethod!=null) {  
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
  	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
- 	                			  methodToChange.addCalledMethod(createMethod, dc, dcObject,false);
+ 	                			  methodToChange.addCalledMethod(dc2,createMethod, dc, dcObject,false);
  	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
  	                		   }
   	                	   }
@@ -645,12 +752,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 		                	   if(hasLifeline && headMethod!=null) {
 		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
 		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			methodToChange.addCalledMethod(sdMethod, dc, dcObject, cm.isReflective());
+		                			methodToChange.addCalledMethod(dc2,sdMethod, dc, dcObject, cm.isReflective());
 		                			dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	
 	                			  }
 		                		  if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
 		                			 Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			 methodToChange.addCalledMethod(sdMethod, dc, dcObject,cm.isReflective());
+		                			 methodToChange.addCalledMethod(dc2,sdMethod, dc, dcObject,cm.isReflective());
 		                			 dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
 		                		  }
 		                	   }
@@ -674,7 +781,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	 if(hasLifeline && headMethod!=null) {
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
  	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
- 	                			  methodToChange.addCalledMethod(destroyMethod, dc, dcObject,false);
+ 	                			  methodToChange.addCalledMethod(dc2,destroyMethod, dc, dcObject,false);
  	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
  	                	   }
   	                	 }	 
@@ -700,7 +807,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                     			for (int i=0;i<calledMethods.size();i++) {
                     				if(calledMethods.get(i).contains(headMethod.getName())) {
                     					headMethod.setReturnParameter(returnParameter);
-                    					calledMethods.set(i,generateCalledMethod(headMethod,dcObject));
+                    					calledMethods.set(i,generateCalledMethod(dc2,headMethod,dcObject));
                     					dc2.replaceCalledMethod(i, calledMethods.get(i));
                     				}
                     			} 
@@ -711,10 +818,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                    				if(checkMethod == headMethods.get(headMethods.size()-2)) {
 	                    					List<String> mtdCalledMethods = checkMethod.getCalledMethods();
 	                    					for (int c=0;c<mtdCalledMethods.size();c++) {
-	                            				if(calledMethods.get(c).contains(headMethod.getName())) {
+	                            				if(mtdCalledMethods.get(c).contains(headMethod.getName())) {
 	                            					headMethod.setReturnParameter(returnParameter);
-	                            					calledMethods.set(c,generateCalledMethod(headMethod,dcObject));
-	                            					checkMethod.replaceCalledMethod(c, calledMethods.get(c));
+	                            					mtdCalledMethods.set(c,generateCalledMethod(dc2,headMethod,dcObject));
+	                            					checkMethod.replaceCalledMethod(c, mtdCalledMethods.get(c));
 	                            				}
 	                            			}
 	                    					dc2.replaceSDMethod(i, checkMethod);
@@ -758,7 +865,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	return genFilesCount;
     }
     
-    public String generateCalledMethod(Method m, RoleClassifier object) {
+    public String generateCalledMethod(DesignClass homeClass,Method m, RoleClassifier object) {
     	StringBuffer sb = new StringBuffer();
     	if(m.isIterative() && object instanceof SDObject) {
     		sb.append("for(int i=0;i<10;i++){").append(LINE_SEPARATOR);
@@ -768,6 +875,20 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     		sb.append("    ");
     	}
     	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
+    		Vector attributes = homeClass.getAttributes();
+    		boolean parameterExists = false;
+    		Attribute attribute;
+    		for(int i=0;i<attributes.size();i++) {
+    			attribute= (Attribute) attributes.get(i);
+    			out.println(attribute.getName().toLowerCase());
+    			out.println(m.getReturnParameter().toString().toLowerCase());
+    			if(attribute.getName().toLowerCase().equals(m.getReturnParameter().toString().toLowerCase())){
+    				parameterExists = true;
+    			}
+    		}
+    		if(!parameterExists) {
+    			sb.append(m.getReturnTypeAsString() + " ");
+    		}
     		sb.append(m.getReturnParameter() + " = ");
     	}
     	if (object instanceof SDObject){
