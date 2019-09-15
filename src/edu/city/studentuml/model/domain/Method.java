@@ -277,7 +277,22 @@ public class Method implements Serializable, IXMLCustomStreamable {
     public void addCalledMethod (DesignClass homeClass, Method m, DesignClass calledClass, RoleClassifier object, boolean isReflective) {
     	//create a string with the call message for the method
     	StringBuffer sb = new StringBuffer();
+    	boolean parameterExists = false;
+    	Attribute attribute;
+    	Vector attributes = homeClass.getAttributes();
+    	
     	if (m.getName().equals("create")) {
+    		for(int i=0;i<attributes.size();i++) {
+    			attribute= (Attribute) attributes.get(i);
+    			out.println(attribute.getName().toLowerCase());
+    			out.println(m.getReturnParameter().toString().toLowerCase());
+    			if(attribute.getName().toLowerCase().equals(object.getName().toLowerCase())){
+    				parameterExists = true;
+    			}
+    		}
+    		if(!parameterExists) {
+    			sb.append(calledClass.getName()+" ");
+    		}
     		if( object instanceof SDObject) {
 	    		sb.append(object.getName()).append(" = ");
 	    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
@@ -297,9 +312,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
 	    		sb.append("    ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
-	    		Vector attributes = homeClass.getAttributes();
-	    		boolean parameterExists = false;
-	    		Attribute attribute;
+	    		parameterExists=false;
 	    		for(int i=0;i<attributes.size();i++) {
 	    			attribute= (Attribute) attributes.get(i);
 	    			out.println(attribute.getName().toLowerCase());

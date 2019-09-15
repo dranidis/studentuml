@@ -469,6 +469,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	Interface interfs = null;
     	boolean hasLifeline=false;
     	boolean firstSD=true;
+    	boolean sdNotRun=true;
     	Method headMethod=null;
     	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
     	for (int y = 0; y < projectDiagrams.size(); y++) {
@@ -482,6 +483,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   dc = ((ClassGR) currEl).getDesignClass();
                   dc.setExtendClass(null);
                   dc.resetImplementInterfaces();
+                  if(sdNotRun) {
+                  dc.resetSDMethods();
+                  dc.clearCalledMethods();
+                  }
               }
               if (currEl instanceof AssociationClassGR) {
                   AssociationClassGR acgr = (AssociationClassGR) currEl;
@@ -599,6 +604,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             	  }else if(aggregation.getClassB() instanceof Interface) {
             		  interfs= (Interface) aggregation.getClassB();
             	  }
+            	  out.println("Direction: " + aggregation.getDirection());
+            	  out.println("Label: " + aggregation.getLabelDirection());
         		  if(aggregation.getDirection()==1) {
         			  out.println("A->B");
             		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
@@ -676,6 +683,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	  //sort by rank and add Methods of Message Calls
     	  if(currDiagram instanceof SDModel) {
     		  firstSD=false;
+    		  sdNotRun=false;
     		  List<Method> headMethods= new ArrayList<Method>();
     		  for (int i = 0; i < projectElements.size(); i++) {
     			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
@@ -804,14 +812,14 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                              	      dcObject = (MultiObject) sdm.getSource();
                                  }
                     			List<String> calledMethods = dc2.getCalledMethods();
-                    			for (int i=0;i<calledMethods.size();i++) {
+                    			 /*for (int i=0;i<calledMethods.size();i++) {
                     				if(calledMethods.get(i).contains(headMethod.getName())) {
                     					headMethod.setReturnParameter(returnParameter);
                     					calledMethods.set(i,generateCalledMethod(dc2,headMethod,dcObject));
                     					dc2.replaceCalledMethod(i, calledMethods.get(i));
                     				}
-                    			} 
-                    			if(headMethods.size() > 1) {
+                    			} */ 
+                    			if(headMethods.size() > 0) {
 	                    			Vector targetSdMethods = dc2.getSDMethods();
 	                    			for (int i=0;i<targetSdMethods.size();i++) {
 	                    				Method checkMethod = (Method) targetSdMethods.get(i);
