@@ -468,14 +468,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	DesignClass dc2 = null;
     	Interface interfs = null;
     	boolean hasLifeline=false;
-    	boolean firstSD=true;
-    	boolean sdNotRun=true;
     	Method headMethod=null;
+    	DiagramModel currDiagram;
+    	Vector projectElements;
     	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
     	for (int y = 0; y < projectDiagrams.size(); y++) {
-    	  DiagramModel currDiagram = (DiagramModel) projectDiagrams.get(y);	
-    	  Vector projectElements = currDiagram.getGraphicalElements();
-    	  HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
+    	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
+    	  projectElements = currDiagram.getGraphicalElements();
     	  
     	  for (int i = 0; i < projectElements.size(); i++) {
               GraphicalElement currEl = (GraphicalElement) projectElements.get(i);
@@ -483,10 +482,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   dc = ((ClassGR) currEl).getDesignClass();
                   dc.setExtendClass(null);
                   dc.resetImplementInterfaces();
-                  if(sdNotRun) {
-                  dc.resetSDMethods();
-                  dc.clearCalledMethods();
-                  }
               }
               if (currEl instanceof AssociationClassGR) {
                   AssociationClassGR acgr = (AssociationClassGR) currEl;
@@ -513,7 +508,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	  genFilesCount++;
                   }  
               }
-              if (currEl instanceof AssociationGR) {
+              if (currEl instanceof AssociationGR && !(currEl instanceof AggregationGR)) {
             	  Association association = ((AssociationGR) currEl).getAssociation();
             	  if(association.getRoleA().getName()==null || association.getRoleA().getName().equals("")) {
             		  association.getRoleA().setName(association.getClassA().getName().toLowerCase());
@@ -585,7 +580,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 		  out.println("Biderectional association not applicable in interfaces");
                 	  }
             	  }	   
-              }
+              }else
               if (currEl instanceof AggregationGR) {
             	  Aggregation aggregation = ((AggregationGR) currEl).getAggregation();
             	  if(aggregation.getRoleA().getName()==null || aggregation.getRoleA().getName().equals("")) {
@@ -604,8 +599,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             	  }else if(aggregation.getClassB() instanceof Interface) {
             		  interfs= (Interface) aggregation.getClassB();
             	  }
-            	  out.println("Direction: " + aggregation.getDirection());
-            	  out.println("Label: " + aggregation.getLabelDirection());
         		  if(aggregation.getDirection()==1) {
         			  out.println("A->B");
             		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
@@ -625,7 +618,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  }
             		  
         		  }else
-        		  if(aggregation.getDirection()==2) {
+        		  if(aggregation.getDirection()==2 || aggregation.getDirection()==0) {
         			  out.println("B->A");
             		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
             			  if(aggregation.getClassA() instanceof DesignClass) {
@@ -643,7 +636,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             			  }
             		  }
         		  }else
-        		   if(aggregation.getDirection()==3 || aggregation.getDirection()==0) {
+        		   if(aggregation.getDirection()==3) {
                 	  out.println("Bi");
                 	  if(aggregation.getClassA() instanceof DesignClass && aggregation.getClassB() instanceof DesignClass) {
 	            		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
@@ -660,14 +653,18 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 		  out.println("Biderectional association not applicable in interfaces");
                 	  }
             	  }	   
-              }
+              } 
               if (currEl instanceof SDObjectGR) {
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
-                  if (firstSD) {
-	                  dc.resetSDMethods();
-	                  dc.clearCalledMethods();
-                  }    
-              }    
+                  dc.resetSDMethods();
+                  dc.clearCalledMethods();
+                      
+              } 
+              if (currEl instanceof MultiObjectGR) {
+                  dc = ((MultiObjectGR) currEl).getMultiObject().getDesignClass();
+	              dc.resetSDMethods();
+	              dc.clearCalledMethods();    
+              }
               if (dc!=null) {
 	              if(dcToGenerate.isEmpty()) {
 	            	  dcToGenerate.add(dc);
@@ -680,16 +677,20 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	             }
             }
           }
+    	}
+    	for (int y = 0; y < projectDiagrams.size(); y++) {
+      	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
+      	  projectElements = currDiagram.getGraphicalElements();
+      	  HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
     	  //sort by rank and add Methods of Message Calls
     	  if(currDiagram instanceof SDModel) {
-    		  firstSD=false;
-    		  sdNotRun=false;
     		  List<Method> headMethods= new ArrayList<Method>();
     		  for (int i = 0; i < projectElements.size(); i++) {
     			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
     			  if (currElSD instanceof SDMessageGR) {
     				  SDMessage sdmx = ((SDMessageGR) currElSD).getMessage();
     				  SDMessages.put(sdmx,sdmx.getRank());
+    				  out.println(i);
     			  }  
     		  }
     		  if(!SDMessages.isEmpty()) {
@@ -711,22 +712,29 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                     }               	  
                      if (sdm instanceof CreateMessage) {
                   	   Method createMethod = new Method("create");
-                  	   createMethod.setPriority(sdm.getRank());
-                  	   dc.addSDMethod(createMethod);
+                  	   Method constructor = new Method(dc.getName());
+                  	   constructor.setPriority(sdm.getRank());
+                  	   //dc.addSDMethod(createMethod);
+                  	   if(!dc.getSDMethods().contains(constructor) && (sdm.getTarget() instanceof SDObject)) {
+                  		 dc.addSDMethod(constructor);  
+                  	   }
+                  	   
                   	   if(dc2 !=null) {
                   		 if(headMethods.size() > 0) {
 	                		   headMethod=headMethods.get(headMethods.size()-1);
 	                	   }
-  	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  	                	   dc2.addCalledMethod(createMethod, dc,dcObject);
+                  		   dc2 = (DesignClass) sdm.getSource().getClassifier();
+  	                	   dc2.addCalledMethod(constructor, dc,dcObject);
   	                	   if(hasLifeline && headMethod!=null) {  
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
  	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
- 	                			  methodToChange.addCalledMethod(dc2,createMethod, dc, dcObject,false);
+ 	                			  methodToChange.addCalledMethod(dc2,constructor, dc, dcObject,false);
  	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
  	                		   }
   	                	   }
                   	   }
+                  	   hasLifeline=true;
+                  	   headMethods.add(constructor);
                      }
                      if (sdm instanceof CallMessage) {
                   	   CallMessage cm = (CallMessage) sdm;
@@ -748,7 +756,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   		   }
                   		   sdMethod.setReturnType(new DataType(returnValue));
   	                	   sdMethod.setPriority(cm.getRank());
-  	                	   dc.addSDMethod(sdMethod);
+  	                	   if(!(cm.getTarget() instanceof MultiObject && !cm.isIterative())){
+  	                		   dc.addSDMethod(sdMethod);
+  	                	   }
   	                	   sdMethod.setIterative(cm.isIterative());
   	                	   out.println("AddedSDMethod: " + sdMethod);
   	                	   if (dc2 != null) {
@@ -811,8 +821,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                                  }else if (sdm.getSource() instanceof MultiObject) {
                              	      dcObject = (MultiObject) sdm.getSource();
                                  }
-                    			List<String> calledMethods = dc2.getCalledMethods();
-                    			 /*for (int i=0;i<calledMethods.size();i++) {
+                    			 /*List<String> calledMethods = dc2.getCalledMethods();
+                    			 for (int i=0;i<calledMethods.size();i++) {
                     				if(calledMethods.get(i).contains(headMethod.getName())) {
                     					headMethod.setReturnParameter(returnParameter);
                     					calledMethods.set(i,generateCalledMethod(dc2,headMethod,dcObject));

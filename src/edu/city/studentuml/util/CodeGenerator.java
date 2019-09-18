@@ -312,6 +312,7 @@ public class CodeGenerator {
         StringBuffer sb = new StringBuffer();
         Vector classMethods = new Vector();
         Vector classSDMethods = new Vector();
+        String className = "";
         boolean first;
         
         if( obj instanceof DesignClass) {
@@ -331,7 +332,7 @@ public class CodeGenerator {
 	            }
 			
 			sb.append(LINE_SEPARATOR);
-			
+			className=cls.getName();
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
 			
@@ -340,6 +341,7 @@ public class CodeGenerator {
         if (obj instanceof Interface) {
 	        Interface interfs = (Interface) obj;	
 	        classMethods = interfs.getMethods();
+	        className = interfs.getName();
         }
         if (!classMethods.isEmpty() || !classSDMethods.isEmpty()) {
             sb.append(LINE_SEPARATOR);
@@ -364,7 +366,7 @@ public class CodeGenerator {
 	            sb.append(INDENT).append("//Generated Method");
 	            sb.append(LINE_SEPARATOR);
 			    sb.append(INDENT);
-		        sb.append(generateOperation(classSDMethod));
+		        sb.append(generateOperation(classSDMethod,className));
 	
 	            if (lfBeforeCurly) {
 	                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -400,7 +402,7 @@ public class CodeGenerator {
 			         sb.append(INDENT).append("//Generated Method");
 			         sb.append(LINE_SEPARATOR);
 					 sb.append(INDENT);
-					 sb.append(generateOperation(classMethod));
+					 sb.append(generateOperation(classMethod,className));
 	
 			            if (lfBeforeCurly) {
 			                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -420,7 +422,7 @@ public class CodeGenerator {
         return sb;
     }
     
-    public String generateOperation(Method op) {
+    public String generateOperation(Method op,String className) {
  
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
@@ -429,8 +431,10 @@ public class CodeGenerator {
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // return type
-        if(op.getReturnTypeAsString()=="VOID") {
+        if(op.getReturnTypeAsString()=="VOID" && !nameStr.equals(className)) {
         	sb.append("void").append(' ');
+        }else if(nameStr.equals(className)){
+        	//constructor
         }else {
          sb.append(op.getReturnTypeAsString()).append(' ');
         } 

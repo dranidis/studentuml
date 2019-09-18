@@ -281,7 +281,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	Attribute attribute;
     	Vector attributes = homeClass.getAttributes();
     	
-    	if (m.getName().equals("create")) {
+    	if (m.getName().equals(calledClass.getName())) {
     		for(int i=0;i<attributes.size();i++) {
     			attribute= (Attribute) attributes.get(i);
     			out.println(attribute.getName().toLowerCase());
