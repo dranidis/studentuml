@@ -32,6 +32,7 @@ import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
@@ -39,6 +40,8 @@ import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
+
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -690,7 +693,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     			  if (currElSD instanceof SDMessageGR) {
     				  SDMessage sdmx = ((SDMessageGR) currElSD).getMessage();
     				  SDMessages.put(sdmx,sdmx.getRank());
-    				  out.println(i);
     			  }  
     		  }
     		  if(!SDMessages.isEmpty()) {
@@ -711,14 +713,45 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   	  dcObject = (MultiObject) sdm.getTarget();
                     }               	  
                      if (sdm instanceof CreateMessage) {
-                  	   Method createMethod = new Method("create");
                   	   Method constructor = new Method(dc.getName());
                   	   constructor.setPriority(sdm.getRank());
-                  	   //dc.addSDMethod(createMethod);
                   	   if(!dc.getSDMethods().contains(constructor) && (sdm.getTarget() instanceof SDObject)) {
                   		 dc.addSDMethod(constructor);  
                   	   }
-                  	   
+                  	   //check note for parameters
+	                   for (int p = 0; p < projectElements.size(); p++) {
+	           			  GraphicalElement currElCR = (GraphicalElement) projectElements.get(p);
+	           			  if (currElCR instanceof UMLNoteGR) {
+	           				  UMLNoteGR note = (UMLNoteGR) currElCR;
+	           				  out.println(note.getText());
+	           				  if(note.getConnectedElement() instanceof CreateMessageGR && !note.getText().equals("") && note.getText() != null) {
+	           				   SDMessage crmsg= ((CreateMessageGR)note.getConnectedElement()).getMessage();
+	           				   if(sdm==crmsg) {
+		           				   DesignClass createdClass = (DesignClass)crmsg.getTarget().getClassifier();
+		           				   Vector createdClassMethods = createdClass.getSDMethods();
+		           				   for(int m=0; m<createdClassMethods.size(); m++) {
+		           					   Method checkConstructor = (Method) createdClassMethods.get(m);
+		           					   if(checkConstructor.getName().equals(constructor.getName())){
+		           						   if(note.getText().contains("(") && note.getText().contains(")")) {
+		           							   String text = note.getText().substring(note.getText().indexOf("(")+1, note.getText().indexOf(")"));
+		           							   String parametersText[] = text.split(",");
+		           							   for(String pt:parametersText) {
+		           								   String parameterText[] = pt.split("\\s+");
+		           								   if(parameterText.length==2) {
+		           									   DataType dt = new DataType(parameterText[0]);
+		           									   checkConstructor.addParameter(new MethodParameter(parameterText[1],dt));
+		           								   }
+		           							   }
+		           							   
+		           						   }
+		           						   out.println(checkConstructor);
+		           						  createdClass.replaceSDMethod(m, checkConstructor);
+		           					   }
+		           				   }
+	           				   }
+	           				  }		   
+	           			  }  
+	           		    }
                   	   if(dc2 !=null) {
                   		 if(headMethods.size() > 0) {
 	                		   headMethod=headMethods.get(headMethods.size()-1);
@@ -861,7 +894,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                      }
     			}
     		  }
+    		  
     	  }
+    	  
     	  if (dc!=null) {
         	 if(dcToGenerate.contains(dc)){
         	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
@@ -898,8 +933,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     		Attribute attribute;
     		for(int i=0;i<attributes.size();i++) {
     			attribute= (Attribute) attributes.get(i);
-    			out.println(attribute.getName().toLowerCase());
-    			out.println(m.getReturnParameter().toString().toLowerCase());
     			if(attribute.getName().toLowerCase().equals(m.getReturnParameter().toString().toLowerCase())){
     				parameterExists = true;
     			}

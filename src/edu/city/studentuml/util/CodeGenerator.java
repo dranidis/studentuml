@@ -121,7 +121,7 @@ public class CodeGenerator {
         		while((line=br.readLine()) != null) {
         			doesNotExist = true;
         			if(line.contains(" class ") || line.contains(" interface ") || line.contains("//") || line.trim().isEmpty() || line.contains("}") 
-        					|| line.contains("{") || line.contains("return") || line.contains("import")) {
+        					|| line.contains("{") || line.contains("return") || line.contains("import") || line.contains("this.")) {
         				doesNotExist = false;
         			}
         			if(cls!=null) {
@@ -366,7 +366,7 @@ public class CodeGenerator {
 	            sb.append(INDENT).append("//Generated Method");
 	            sb.append(LINE_SEPARATOR);
 			    sb.append(INDENT);
-		        sb.append(generateOperation(classSDMethod,className));
+		        sb.append(generateOperation(classSDMethod,obj));
 	
 	            if (lfBeforeCurly) {
 	                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -376,7 +376,7 @@ public class CodeGenerator {
 	            sb.append('{');
 	
 	            sb.append(LINE_SEPARATOR);
-				sb.append(generateMethodBody(classSDMethod));
+				sb.append(generateMethodBody(classSDMethod,obj));
 				sb.append(INDENT);
 				sb.append("}").append(LINE_SEPARATOR);
 	
@@ -402,7 +402,7 @@ public class CodeGenerator {
 			         sb.append(INDENT).append("//Generated Method");
 			         sb.append(LINE_SEPARATOR);
 					 sb.append(INDENT);
-					 sb.append(generateOperation(classMethod,className));
+					 sb.append(generateOperation(classMethod,obj));
 	
 			            if (lfBeforeCurly) {
 			                sb.append(LINE_SEPARATOR).append(INDENT);
@@ -412,7 +412,7 @@ public class CodeGenerator {
 			            sb.append('{');
 	
 			            sb.append(LINE_SEPARATOR);
-						sb.append(generateMethodBody(classMethod));
+						sb.append(generateMethodBody(classMethod,obj));
 						sb.append(INDENT);
 						sb.append("}").append(LINE_SEPARATOR);
 						first = false;
@@ -422,12 +422,17 @@ public class CodeGenerator {
         return sb;
     }
     
-    public String generateOperation(Method op,String className) {
+    public String generateOperation(Method op,Object obj) {
  
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
         nameStr = op.getName();
-       
+        String className="";
+        if(obj instanceof DesignClass) {
+        	className=((DesignClass) obj).getName();
+        }else if(obj instanceof Interface) {
+        	className=((Interface) obj).getName();
+        }
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // return type
@@ -459,10 +464,15 @@ public class CodeGenerator {
         return sb.toString();
     }
     
-    private String generateMethodBody(Method op) {
+    private String generateMethodBody(Method op,Object obj) {
     	
     	StringBuffer sb = new StringBuffer();
     	List<String> calledMethods = op.getCalledMethods();
+    	Vector attributes = new Vector<>();
+    	boolean isGetter = false;
+    	if(obj instanceof DesignClass) {
+    		attributes = ((DesignClass)obj).getAttributes();
+    	}
 		if (!calledMethods.isEmpty()) {
 			sb.append(LINE_SEPARATOR);
             sb.append(INDENT+INDENT).append("// Generated called Methods");
@@ -475,10 +485,27 @@ public class CodeGenerator {
         
         if (op != null) {
         	Type returnType = op.getReturnType();
-
+        	String attribute;
+        	for(Object attr:attributes) {
+        		attribute = ((Attribute)attr).getName();
+        		String attributeCapitalized = attribute.substring(0,1).toUpperCase()+attribute.substring(1);
+        		if(op.getName().equals("set"+attributeCapitalized) && op.getParameters().size()>0) {
+        			sb.append(INDENT+INDENT).append("//Generated setter");
+        			sb.append(LINE_SEPARATOR);
+        			sb.append(INDENT+INDENT).append("this."+attribute+" = "+op.getParameter(0).getName()+";");
+        			sb.append(LINE_SEPARATOR);
+        		}
+        		if(op.getName().equals("get"+attributeCapitalized)) {
+        			sb.append(INDENT+INDENT).append("//Generated getter");
+        			sb.append(LINE_SEPARATOR);
+        			sb.append(INDENT+INDENT).append("return this."+attribute+";");
+        			sb.append(LINE_SEPARATOR);
+        			isGetter=true;
+        		}
+        	}
             // pick out return type
         	if (returnType != null) {
-        		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID")) {
+        		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID") && !isGetter) {
         			sb.append(INDENT + INDENT + "// Generated Return").append(LINE_SEPARATOR);
         			sb.append(INDENT + generateDefaultReturnStatement(returnType));
         		}  
