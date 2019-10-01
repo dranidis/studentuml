@@ -40,7 +40,6 @@ import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
-import edu.city.studentuml.model.graphical.UMLNoteGR;
 
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -715,43 +714,16 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                      if (sdm instanceof CreateMessage) {
                   	   Method constructor = new Method(dc.getName());
                   	   constructor.setPriority(sdm.getRank());
-                  	   if(!dc.getSDMethods().contains(constructor) && (sdm.getTarget() instanceof SDObject)) {
-                  		 dc.addSDMethod(constructor);  
+                  	   Vector constructorParameters = ((CreateMessage) sdm).getSDMethodParameters();
+                  	   if (!constructorParameters.isEmpty() && constructorParameters!=null) {
+                  		   constructor.setParameters(constructorParameters);
+                  	   }else {
+                  		   constructor.setParameters(new Vector());
                   	   }
-                  	   //check note for parameters
-	                   for (int p = 0; p < projectElements.size(); p++) {
-	           			  GraphicalElement currElCR = (GraphicalElement) projectElements.get(p);
-	           			  if (currElCR instanceof UMLNoteGR) {
-	           				  UMLNoteGR note = (UMLNoteGR) currElCR;
-	           				  out.println(note.getText());
-	           				  if(note.getConnectedElement() instanceof CreateMessageGR && !note.getText().equals("") && note.getText() != null) {
-	           				   SDMessage crmsg= ((CreateMessageGR)note.getConnectedElement()).getMessage();
-	           				   if(sdm==crmsg) {
-		           				   DesignClass createdClass = (DesignClass)crmsg.getTarget().getClassifier();
-		           				   Vector createdClassMethods = createdClass.getSDMethods();
-		           				   for(int m=0; m<createdClassMethods.size(); m++) {
-		           					   Method checkConstructor = (Method) createdClassMethods.get(m);
-		           					   if(checkConstructor.getName().equals(constructor.getName())){
-		           						   if(note.getText().contains("(") && note.getText().contains(")")) {
-		           							   String text = note.getText().substring(note.getText().indexOf("(")+1, note.getText().indexOf(")"));
-		           							   String parametersText[] = text.split(",");
-		           							   for(String pt:parametersText) {
-		           								   String parameterText[] = pt.split("\\s+");
-		           								   if(parameterText.length==2) {
-		           									   DataType dt = new DataType(parameterText[0]);
-		           									   checkConstructor.addParameter(new MethodParameter(parameterText[1],dt));
-		           								   }
-		           							   }
-		           							   
-		           						   }
-		           						   out.println(checkConstructor);
-		           						  createdClass.replaceSDMethod(m, checkConstructor);
-		           					   }
-		           				   }
-	           				   }
-	           				  }		   
-	           			  }  
-	           		    }
+                  	   if(!dc.getSDMethods().contains(constructor) && (sdm.getTarget() instanceof SDObject)) {
+                  		 dc.addSDMethod(constructor);
+                  	   }
+
                   	   if(dc2 !=null) {
                   		 if(headMethods.size() > 0) {
 	                		   headMethod=headMethods.get(headMethods.size()-1);
@@ -760,9 +732,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   dc2.addCalledMethod(constructor, dc,dcObject);
   	                	   if(hasLifeline && headMethod!=null) {  
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
- 	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
- 	                			  methodToChange.addCalledMethod(dc2,constructor, dc, dcObject,false);
- 	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+  	                	
+  	                			dc2=addToHeadMethod(dc,dc2,headMethod,constructor,false,dcObject);
  	                		   }
   	                	   }
                   	   }
@@ -802,14 +773,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 		                	   }
 		                	   if(hasLifeline && headMethod!=null) {
 		                		 if (cm.isReflective() && dc2.getSDMethods().contains(headMethod)) {
-		                			Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			methodToChange.addCalledMethod(dc2,sdMethod, dc, dcObject, cm.isReflective());
-		                			dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	
+		         
+		                			 dc2=addToHeadMethod(dc,dc2,headMethod,sdMethod,cm.isReflective(),dcObject);
 	                			  }
 		                		  if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
-		                			 Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
-		                			 methodToChange.addCalledMethod(dc2,sdMethod, dc, dcObject,cm.isReflective());
-		                			 dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+		               
+		                			 dc2=addToHeadMethod(dc,dc2,headMethod,sdMethod,cm.isReflective(),dcObject);
 		                		  }
 		                	   }
   	                	   }
@@ -831,9 +800,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   dc2.addCalledMethod(destroyMethod, dc,dcObject);
   	                	 if(hasLifeline && headMethod!=null) {
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
- 	                			  Method methodToChange = (Method) dc2.getSDMethods().get(dc2.getSDMethods().indexOf(headMethod));
- 	                			  methodToChange.addCalledMethod(dc2,destroyMethod, dc, dcObject,false);
- 	                			  dc2.replaceSDMethod(dc2.getSDMethods().indexOf(headMethod), methodToChange);	                			  
+  	                			
+  	                			dc2=addToHeadMethod(dc,dc2,headMethod,destroyMethod,false,dcObject);
  	                	   }
   	                	 }	 
                   	   }   
@@ -854,14 +822,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                                  }else if (sdm.getSource() instanceof MultiObject) {
                              	      dcObject = (MultiObject) sdm.getSource();
                                  }
-                    			 /*List<String> calledMethods = dc2.getCalledMethods();
-                    			 for (int i=0;i<calledMethods.size();i++) {
-                    				if(calledMethods.get(i).contains(headMethod.getName())) {
-                    					headMethod.setReturnParameter(returnParameter);
-                    					calledMethods.set(i,generateCalledMethod(dc2,headMethod,dcObject));
-                    					dc2.replaceCalledMethod(i, calledMethods.get(i));
-                    				}
-                    			} */ 
+            
                     			if(headMethods.size() > 0) {
 	                    			Vector targetSdMethods = dc2.getSDMethods();
 	                    			for (int i=0;i<targetSdMethods.size();i++) {
@@ -971,5 +932,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     		temp.put(aa.getKey(), aa.getValue());
     	}
     	return temp;
+    }
+    
+    public DesignClass addToHeadMethod(DesignClass targetClass,DesignClass sourceClass,Method headMethod,Method sdMethod,boolean isReflective, RoleClassifier targetObject) {
+    	Method methodToChange = (Method) sourceClass.getSDMethods().get(sourceClass.getSDMethods().indexOf(headMethod));
+		methodToChange.addCalledMethod(sourceClass,sdMethod, targetClass, targetObject, isReflective);
+		sourceClass.replaceSDMethod(sourceClass.getSDMethods().indexOf(headMethod), methodToChange);
+		return sourceClass;
     }
 }

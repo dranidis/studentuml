@@ -632,7 +632,12 @@ public final class ObjectFactory {
 
     public static IXMLCustomStreamable newmessageparameter(Object parent, Element stream, XMLStreamer streamer) {
         MessageParameter m = new MessageParameter(stream.getAttribute("name"));
-        ((CallMessage) parent).addParameter(m);//FIXME: PACKAGE
+        if(parent instanceof CallMessage) {
+         ((CallMessage) parent).addParameter(m);//FIXME: PACKAGE
+        }
+        if(parent instanceof CreateMessage) {
+         ((CreateMessage) parent).addParameter(m);	
+        }
         return m;
     }
 

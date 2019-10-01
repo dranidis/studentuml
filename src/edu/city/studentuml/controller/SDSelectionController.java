@@ -3,6 +3,7 @@ package edu.city.studentuml.controller;
 //~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
@@ -14,7 +15,9 @@ import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.view.gui.CallMessageEditor;
+import edu.city.studentuml.view.gui.CreateMessageEditor;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.view.gui.MultiObjectEditor;
@@ -30,6 +33,7 @@ import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
 import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
+import edu.city.studentuml.util.undoredo.EditCreateMessageEdit;
 import edu.city.studentuml.util.undoredo.EditMultiObjectEdit;
 import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.util.undoredo.MultiObjectEdit;
@@ -61,6 +65,8 @@ public class SDSelectionController extends SelectionController {
             editReturnMessage((ReturnMessageGR) selectedElement);
         } else if (selectedElement instanceof UMLNoteGR) {
             editUMLNote((UMLNoteGR) selectedElement);
+        } else if (selectedElement instanceof CreateMessageGR) {
+        	editCreateMessage((CreateMessageGR) selectedElement);
         }
     }
 
@@ -302,5 +308,32 @@ public class SDSelectionController extends SelectionController {
         }
         parentComponent.getUndoSupport().postEdit(edit);
         model.removeGraphicalElement(selectedElement);
+    }
+    //new edit create method 
+    public void editCreateMessage(CreateMessageGR messageGR) {
+        CreateMessageEditor createMessageEditor = new CreateMessageEditor(messageGR);
+        CreateMessage message = messageGR.getCreateMessage();
+
+        CreateMessage undoCreateMessage = message.clone();
+
+        // if user presses cancel don't do anything
+        if (!createMessageEditor.showDialog(parentComponent, "Create Message Editor")) {
+            return;
+        }
+
+
+        Vector parameters = createMessageEditor.getParameters();
+        Iterator iterator = parameters.iterator();
+        message.setParameters(new Vector());
+        while (iterator.hasNext()) {
+            message.addParameter((MessageParameter) iterator.next());
+        }
+
+        // UNDO/REDO
+        UndoableEdit edit = new EditCreateMessageEdit(message, undoCreateMessage, model);
+        parentComponent.getUndoSupport().postEdit(edit);
+
+        model.modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
     }
 }

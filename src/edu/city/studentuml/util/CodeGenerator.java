@@ -1,12 +1,10 @@
 package edu.city.studentuml.util;
 
-import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
@@ -38,7 +36,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import static java.lang.System.out;
-import org.w3c.dom.Element;
 import com.sun.istack.internal.logging.Logger;
 
 //@author Spyros Maniopoulos
@@ -76,8 +73,6 @@ public class CodeGenerator {
         if (!path.endsWith(File.separator)) {
             sbPath.append(File.separator);
         }
-
-        String packagePath = name;
         
         String pathname = sbPath.toString() + filename;
       
@@ -300,7 +295,6 @@ public class CodeGenerator {
 			sb.append(interfs.getName());    	
         }
         
-		// add type parameters
 		
         // add opening brace
         sb.append(lfBeforeCurly ? (LINE_SEPARATOR + "{") : " {");
