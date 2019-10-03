@@ -659,13 +659,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               if (currEl instanceof SDObjectGR) {
                   dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
                   dc.resetSDMethods();
-                  dc.clearCalledMethods();
                       
               } 
               if (currEl instanceof MultiObjectGR) {
                   dc = ((MultiObjectGR) currEl).getMultiObject().getDesignClass();
-	              dc.resetSDMethods();
-	              dc.clearCalledMethods();    
+	              dc.resetSDMethods();    
               }
               if (dc!=null) {
 	              if(dcToGenerate.isEmpty()) {
@@ -729,7 +727,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                		   headMethod=headMethods.get(headMethods.size()-1);
 	                	   }
                   		   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  	                	   dc2.addCalledMethod(constructor, dc,dcObject);
+  	                	  
   	                	   if(hasLifeline && headMethod!=null) {  
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                	
@@ -767,7 +765,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                	   out.println("AddedSDMethod: " + sdMethod);
   	                	   if (dc2 != null) {
   	                		 dc2 = (DesignClass) sdm.getSource().getClassifier();
-		                	  // dc2.addCalledMethod(sdMethod, dc,dcObject);
+		                	  
 		                	   if(headMethods.size() > 0) {
 		                		   headMethod=headMethods.get(headMethods.size()-1);
 		                	   }
@@ -797,7 +795,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	                		   headMethod=headMethods.get(headMethods.size()-1);
 	                	   }
   	                	   dc2 = (DesignClass) sdm.getSource().getClassifier();
-  	                	   dc2.addCalledMethod(destroyMethod, dc,dcObject);
+  	                	 
   	                	 if(hasLifeline && headMethod!=null) {
   	                		 if(!dc.getSDMethods().contains(headMethod) && dc2.getSDMethods().contains(headMethod)) {
   	                			

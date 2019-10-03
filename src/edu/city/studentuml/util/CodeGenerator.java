@@ -97,7 +97,6 @@ public class CodeGenerator {
         		Vector classAttributes = new Vector();
         		Vector methods = new Vector();
         		Vector sdMethods = new Vector();
-        		List<String> calledMethods = new ArrayList<String>();
         		int fileIndex=0;
         		boolean doesNotExist = true;
         		if(classObject instanceof DesignClass) {
@@ -105,7 +104,6 @@ public class CodeGenerator {
         			classAttributes = cls.getAttributes();
         			methods = cls.getMethods();
         			sdMethods = cls.getSDMethods();
-        			calledMethods = cls.getCalledMethods();
         		}
         		if(classObject instanceof Interface) {
         			Interface infs = (Interface) classObject;
@@ -461,21 +459,13 @@ public class CodeGenerator {
     private String generateMethodBody(Method op,Object obj) {
     	
     	StringBuffer sb = new StringBuffer();
-    	List<String> calledMethods = op.getCalledMethods();
+    	
     	Vector attributes = new Vector<>();
     	boolean isGetter = false;
     	if(obj instanceof DesignClass) {
     		attributes = ((DesignClass)obj).getAttributes();
     	}
-		if (!calledMethods.isEmpty()) {
-			sb.append(LINE_SEPARATOR);
-            sb.append(INDENT+INDENT).append("// Generated called Methods");
-            sb.append(LINE_SEPARATOR);
-		}
-		for (int i=0;i<calledMethods.size();i++) {
-			sb.append(INDENT+INDENT).append(calledMethods.get(i));
-			sb.append(LINE_SEPARATOR);
-		}
+		sb.append(generateCalledMethods(op));
         
         if (op != null) {
         	Type returnType = op.getReturnType();
@@ -553,9 +543,7 @@ public class CodeGenerator {
     }
     
     private String generateAttribute(Attribute attr, boolean update) {
-        //if (isFileGeneration) {
-        //    update = true; // always "documented" if we generate file.
-        //}
+   
         StringBuffer sb = new StringBuffer(80);
         sb.append(generateCoreAttribute(attr));
         sb.append(";");
@@ -607,19 +595,19 @@ public class CodeGenerator {
         return lfBeforeCurly;
     }
 	
-    public String generateCalledMethods(DesignClass cls) {
+    public String generateCalledMethods(Method op) {
     	 StringBuffer sb = new StringBuffer();
-    	 List<String> calledMethods = cls.getCalledMethods();
-			if (!calledMethods.isEmpty()) {
-				sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("//Generated called Methods");
-	            sb.append(LINE_SEPARATOR);
-			}
-			for (int i=0; i<calledMethods.size();i++) {
-				sb.append(INDENT).append(calledMethods.get(i));
-				sb.append(LINE_SEPARATOR);
-			}
-			return sb.toString();
+    	 List<String> calledMethods = op.getCalledMethods();
+    	 if (!calledMethods.isEmpty()) {
+ 			sb.append(LINE_SEPARATOR);
+             sb.append(INDENT+INDENT).append("// Generated called Methods");
+             sb.append(LINE_SEPARATOR);
+ 		}
+ 		for (int i=0;i<calledMethods.size();i++) {
+ 			sb.append(INDENT+INDENT).append(calledMethods.get(i));
+ 			sb.append(LINE_SEPARATOR);
+ 		}
+		return sb.toString();
     	 
     }
 }

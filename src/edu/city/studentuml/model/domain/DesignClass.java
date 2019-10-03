@@ -26,8 +26,7 @@ public class DesignClass extends AbstractClass {
     private AbstractClass extendClass;
     private List<Interface> implementInterfaces = new ArrayList();
     private Vector sdMethods = new Vector();
-    private List<String> calledMethods = new ArrayList<String>();
-    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -175,65 +174,12 @@ public class DesignClass extends AbstractClass {
     public Vector getSDMethods() {
     	return this.sdMethods;
     }
-    
-    public void addCalledMethod (Method m, DesignClass calledClass, RoleClassifier object) {
-    	//create a string with the call message for the method
-    	StringBuffer sb = new StringBuffer();
-    	if (m.getName().equals("create")) {
-    		if( object instanceof SDObject) {
-	    		sb.append(calledClass.getName()+" "+object.getName()).append(" = ");
-	    		sb.append("new ").append(calledClass.getName()+"("+")"+";");
-    		}else if (object instanceof MultiObject) {
-    		  	sb.append("List<"+calledClass.getName()+"> "+object.getName()+"= new ArrayList<"+calledClass.getName()+">();");
-    		}
-    	}else if(m.getName().equals("destroy") && object instanceof SDObject) {
-    		sb.append(object.getName() + ".destroy()").append(";");
-    	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
-    		sb.append(object.getName() + " = null").append(";");
-    	}else {
-	    	if(m.isIterative() && object instanceof SDObject) {
-	    		sb.append("for(int i=0;i<length;i++){").append(LINE_SEPARATOR);
-	    		sb.append("   ");
-	    	}else if (m.isIterative() && object instanceof MultiObject) {
-	    		sb.append("for(int i=0;i<"+object.getName()+".size();i++) {").append(LINE_SEPARATOR);
-	    		sb.append("   ");
-	    	}
-	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
-	    		sb.append(m.getReturnType().getName()+ " " + m.getReturnParameter() + " = ");
-	    	}
-	    	if (calledClass.getName().equals(this.getName()) && object instanceof SDObject) {
-	    		sb.append("this").append(".");
-	    	}else if (object instanceof SDObject){
-	    		sb.append(object.getName()).append(".");
-	    	}else if (object instanceof MultiObject) {
-	    		sb.append(object.getName()).append("[i].");
-	    	}
-	    	sb.append(m.getName()).append("(");
-	    	sb.append(m.getParametersAsString());
-	    	sb.append(");");
-	    	if(m.isIterative()) {
-	    		sb.append(LINE_SEPARATOR).append(" ");
-	    		sb.append(" }");
-	    	}
-    	}	
-    	this.calledMethods.add(sb.toString());
-    }
-    
-    public List<String> getCalledMethods(){
-    	return this.calledMethods;
-    }
-    
-    public void clearCalledMethods() {
-    	this.calledMethods.clear();
-    }
+  
     
     public void replaceSDMethod(int index,Method newSDMethod) {
     	this.sdMethods.set(index,newSDMethod);
     }
     
-    public void replaceCalledMethod(int index,String newCallMethod) {
-    	this.calledMethods.set(index,newCallMethod);
-    }
     
     
 }
