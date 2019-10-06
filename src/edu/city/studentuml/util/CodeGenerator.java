@@ -49,9 +49,6 @@ public class CodeGenerator {
     private boolean isUpdate = false;
     private static final String INDENT = "  ";
     
-    public CodeGenerator () {
-    	
-    }
     
     public String generateFile(boolean isInUpdateMode,Object classObject, String path,UMLProject umlproject) {
     	String name = null;
