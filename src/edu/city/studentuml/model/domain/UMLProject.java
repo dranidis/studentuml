@@ -532,10 +532,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         			  out.println("A->B");
             		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
             			  if(association.getClassB() instanceof DesignClass) {
-            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">")));
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("List<"+dc2.getName()+">")));
             			  }
             			  if(association.getClassB() instanceof Interface) {
-            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("List<"+interfs.getName()+">")));
             			  }
             		  }else {
             			  if(association.getClassB() instanceof DesignClass) {
@@ -551,10 +551,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         			  out.println("B->A");
             		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
             			  if(association.getClassA() instanceof DesignClass) {
-            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">")));  
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("List<"+dc.getName()+">")));  
             			  }
             			  if(association.getClassB() instanceof Interface) {
-            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("List<"+interfs.getName()+">")));
             			  }  
             		  }else {
             			  if(association.getClassA() instanceof DesignClass) {
@@ -569,12 +569,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	  out.println("Bi");
                 	  if(association.getClassA() instanceof DesignClass && association.getClassB() instanceof DesignClass) {
 	            		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
-	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
+	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("List<"+dc2.getName()+">"))); 
 	            		  }else {
 	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType(dc2.getName())));  
 	            		  }
 	            		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
-	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">"))); 
+	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("List<"+dc.getName()+">"))); 
 	            		  }else {
 	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(dc.getName())));  
 	            		  }
@@ -605,10 +605,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         			  out.println("A->B");
             		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
             			  if(aggregation.getClassB() instanceof DesignClass) {
-            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">")));
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("List<"+dc2.getName()+">")));
             			  }
             			  if(aggregation.getClassB() instanceof Interface) {
-            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("List<"+interfs.getName()+">")));
             			  }
             		  }else {
             			  if(aggregation.getClassB() instanceof DesignClass) {
@@ -624,10 +624,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         			  out.println("B->A");
             		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
             			  if(aggregation.getClassA() instanceof DesignClass) {
-            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">")));  
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("List<"+dc.getName()+">")));  
             			  }
             			  if(aggregation.getClassB() instanceof Interface) {
-            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+interfs.getName()+">")));
+            				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("List<"+interfs.getName()+">")));
             			  }  
             		  }else {
             			  if(aggregation.getClassA() instanceof DesignClass) {
@@ -642,12 +642,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                 	  out.println("Bi");
                 	  if(aggregation.getClassA() instanceof DesignClass && aggregation.getClassB() instanceof DesignClass) {
 	            		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
-	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("Collection<"+dc2.getName()+">"))); 
+	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("List<"+dc2.getName()+">"))); 
 	            		  }else {
 	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType(dc2.getName())));  
 	            		  }
 	            		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
-	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("Collection<"+dc.getName()+">"))); 
+	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("List<"+dc.getName()+">"))); 
 	            		  }else {
 	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType(dc.getName())));  
 	            		  }

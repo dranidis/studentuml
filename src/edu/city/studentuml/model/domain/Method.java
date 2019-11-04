@@ -290,8 +290,11 @@ public class Method implements Serializable, IXMLCustomStreamable {
     				parameterExists = true;
     			}
     		}
-    		if(!parameterExists) {
+    		if(!parameterExists && object instanceof SDObject) {
     			sb.append(calledClass.getName()+" ");
+    		}
+    		if(!parameterExists && object instanceof MultiObject) {
+    			sb.append("List<"+ calledClass.getName()+ "> ");
     		}
     		if( object instanceof SDObject) {
 	    		sb.append(object.getName()).append(" = ");
