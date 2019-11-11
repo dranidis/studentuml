@@ -309,10 +309,10 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	}else {
 	    	if(m.isIterative() && object instanceof SDObject) {
 	    		sb.append("for(int i=0;i<10;i++){").append(LINE_SEPARATOR);
-	    		sb.append("    ");
+	    		sb.append("     ");
 	    	}else if (m.isIterative() && object instanceof MultiObject) {
 	    		sb.append("for(" + calledClass.getName() + " obj : "+object.getName()+") {").append(LINE_SEPARATOR);
-	    		sb.append("    ");
+	    		sb.append("     ");
 	    	}
 	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
 	    		parameterExists=false;

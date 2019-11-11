@@ -881,10 +881,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	StringBuffer sb = new StringBuffer();
     	if(m.isIterative() && object instanceof SDObject) {
     		sb.append("for(int i=0;i<10;i++){").append(LINE_SEPARATOR);
-    		sb.append("    ");
+    		sb.append("     ");
     	}else if (m.isIterative() && object instanceof MultiObject) {
     		sb.append("for(" + object.getClassifier().getName() + " obj : "+object.getName()+") {").append(LINE_SEPARATOR);
-    		sb.append("    ");
+    		sb.append("     ");
     	}
     	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
     		Vector attributes = homeClass.getAttributes();
