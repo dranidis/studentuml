@@ -696,11 +696,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     		  SDMessages = sortByValue(SDMessages);
     		  for (Map.Entry<SDMessage,Integer> SDMessage : SDMessages.entrySet()) {
     			  SDMessage sdm = SDMessage.getKey();
-    	           if (sdm.getTarget().getClassifier() instanceof DesignClass) {
+    	           if (sdm.getTarget() != null && sdm.getTarget().getClassifier() instanceof DesignClass) {
                   	 dc = (DesignClass) sdm.getTarget().getClassifier();
                     }
                     dc2 = null;
-                    if (sdm.getSource().getClassifier() instanceof DesignClass) {
+                    if (sdm.getSource() != null && sdm.getSource().getClassifier() instanceof DesignClass) {
                   	  dc2 = (DesignClass) sdm.getSource().getClassifier();
                     }
                     RoleClassifier dcObject = null;

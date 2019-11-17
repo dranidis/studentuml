@@ -456,20 +456,38 @@ public class CodeGenerator {
     private String generateMethodBody(Method op,Object obj) {
     	
     	StringBuffer sb = new StringBuffer();
-    	
+    	DesignClass dcx= null;
     	Vector attributes = new Vector<>();
+    	Vector parameters = new Vector<>();
     	boolean isGetter = false;
     	if(obj instanceof DesignClass) {
-    		attributes = ((DesignClass)obj).getAttributes();
+    		dcx=(DesignClass)obj;
+    		attributes = dcx.getAttributes();
     	}
 		sb.append(generateCalledMethods(op));
         
-        if (op != null) {
+        if (op != null && dcx!=null) {
         	Type returnType = op.getReturnType();
         	String attribute;
+        	String parameter;
+        	if(op.getName().equals(dcx.getName()) && op.getParameters().size()>0) {
+        		sb.append(LINE_SEPARATOR);
+        		sb.append(INDENT+INDENT).append("//Generated constructor setter");
+    			sb.append(LINE_SEPARATOR);
+        	}
         	for(Object attr:attributes) {
         		attribute = ((Attribute)attr).getName();
         		String attributeCapitalized = attribute.substring(0,1).toUpperCase()+attribute.substring(1);
+        		if(op.getName().equals(dcx.getName()) && op.getParameters().size()>0) {
+        			parameters=op.getParameters();
+            		for(Object param:parameters) {
+            			parameter = ((MethodParameter)param).getName();
+            			if(parameter.equals(attribute)) {
+            				sb.append(INDENT+INDENT).append("this."+attribute+" = "+parameter+";");
+                			sb.append(LINE_SEPARATOR);	
+            			}
+            		}
+            	}
         		if(op.getName().equals("set"+attributeCapitalized) && op.getParameters().size()>0) {
         			sb.append(INDENT+INDENT).append("//Generated setter");
         			sb.append(LINE_SEPARATOR);
