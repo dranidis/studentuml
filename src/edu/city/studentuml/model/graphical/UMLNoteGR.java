@@ -251,10 +251,7 @@ public class UMLNoteGR extends GraphicalElement implements IXMLCustomStreamable 
 
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(to));
     }
-    
-    public GraphicalElement getConnectedElement() {
-    	return this.to;
-    }
+
 }
 
 
