@@ -10,7 +10,6 @@ import edu.city.studentuml.util.XMLStreamer;
 
 import static java.lang.System.out;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -31,7 +30,6 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
     public void streamFromXML(Element node, XMLStreamer streamer,
             Object instance) {
-        // TODO Auto-generated method stub
     	parameters.clear();
     	try {
         streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
@@ -41,7 +39,6 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         
