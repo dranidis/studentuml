@@ -36,13 +36,13 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import static java.lang.System.out;
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Logger;
 
 //@author Spyros Maniopoulos
 
 public class CodeGenerator {
 	
-	public static final Logger LOG = Logger.getLogger(UMLProject.class);
+	public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     private boolean isFileGeneration=true;

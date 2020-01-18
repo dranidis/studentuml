@@ -70,7 +70,6 @@ import static java.lang.System.out;
 
 import org.w3c.dom.Element;
 
-import com.sun.istack.internal.logging.Logger;
 
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
 
