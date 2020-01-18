@@ -243,7 +243,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         associationClassDialog = new JDialog(owner, true);
         associationClassDialog.getContentPane().add(this);
         associationClassDialog.setTitle(title);
-        associationClassDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        associationClassDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         associationClassDialog.pack();
         associationClassDialog.setResizable(false);
         associationClassDialog.setLocationRelativeTo(owner);
@@ -258,7 +258,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         nameField.setText(a.getName());
 
         // initialize the direction combo box
-        if (a.getDirection() == AbstractAssociationClass.BIDIRECTIONAL) {
+        if (a.getDirection() == AbstractAssociationClass.BIDIRECTIONAL_FIX) {
             directionComboBox.setSelectedIndex(0);
         } else if (a.getDirection() == AbstractAssociationClass.AB) {
             directionComboBox.setSelectedIndex(1);
@@ -332,7 +332,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
 
     public int getDirection() {
         if (directionComboBox.getSelectedIndex() == 0) {
-            return AbstractAssociationClass.BIDIRECTIONAL;
+            return AbstractAssociationClass.BIDIRECTIONAL_FIX;
         } else if (directionComboBox.getSelectedIndex() == 1) {
             return AbstractAssociationClass.AB;
         } else {

@@ -175,7 +175,6 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             drawArrowHeadsReflective(g);
 
-
             g.setPaint(Color.black);
 
             // draw the association name string
@@ -225,6 +224,9 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
         } else if (association.getDirection() == Association.BA) {
             drawAssociationArrowHead(getXA(), getYA(), getAngleRoleB(), g);
+        } else if (association.getDirection() == Association.BIDIRECTIONAL_FIX) {
+            drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
+            drawAssociationArrowHead(getXA(), getYA(), getAngleRoleB(), g);
         }
     }
 
@@ -232,6 +234,9 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         if (association.getDirection() == Association.AB) {
             drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
         } else if (association.getDirection() == Association.BA) {
+            drawAssociationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(), Math.PI / 2, g);
+        } else if (association.getDirection() == Association.BIDIRECTIONAL_FIX) {
+            drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
             drawAssociationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(), Math.PI / 2, g);
         }
     }

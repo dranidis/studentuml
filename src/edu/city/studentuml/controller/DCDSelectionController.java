@@ -279,6 +279,13 @@ public class DCDSelectionController extends SelectionController {
         if (edit instanceof CompositeDeleteEdit) {
             CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
         }
+        synchronized (this) {
+            for (Object o : model.getGraphicalElements()) {
+                if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
+                    model.removeGraphicalElement((UMLNoteGR) o);
+                }
+            }
+        }
         parentComponent.getUndoSupport().postEdit(edit);
         model.removeGraphicalElement(selectedElement);
     }

@@ -194,7 +194,13 @@ public class UCDSelectionController extends SelectionController {
     @Override
     public void deleteElement(GraphicalElement selectedElement) {
         UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
-
+        synchronized (this) {
+            for (Object o : model.getGraphicalElements()) {
+                if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
+                    model.removeGraphicalElement((UMLNoteGR) o);
+                }
+            }
+        }
         model.removeGraphicalElement(selectedElement);
         parentComponent.setSelectionMode();
 

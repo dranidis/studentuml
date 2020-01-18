@@ -57,29 +57,29 @@ public class Application extends JApplet implements Observer, KeyListener {
 
     private static Application instance;
     /* private JRadioButtonMenuItem advancedModeRadioButtonMenuItem;
-    private JRadioButtonMenuItem simpleModeRadioButtonMenuItem;
-    private ButtonGroup bgroup;
-    private JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem;
-    private JMenuItem newDesignClassMenuItem;
-    private JMenuItem newConceptualClassMenuItem;
-    private JMenuItem newSequenceDiagramMenuItem;
-    private JMenuItem newSystemSequenceMenuItem;
-    private JCheckBoxMenuItem showFactsTabCheckBoxMenuItem;
-    private JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem;
-    private JMenu preferencesMenu;
-    private JMenuItem reloadRulesMenuItem;
-    private JMenuItem resizeDrawingAreaMenuItem;
-    private JMenuItem exitMenuItem;
-    private JMenuItem exportToImageMenuItem;
-    private JMenuItem openProjectMenuItem;
-    private JMenuItem saveProjectAsMenuItem;
-    private JMenuItem saveProjectMenuItem;
-    private JMenuItem newProjectMenuItem;
-    private JMenu helpMenu;
-    private JMenu createMenu;
-    private JMenu editMenu;
-    private JMenu fileMenu;
-    private JMenuBar menuBar; */
+     private JRadioButtonMenuItem simpleModeRadioButtonMenuItem;
+     private ButtonGroup bgroup;
+     private JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem;
+     private JMenuItem newDesignClassMenuItem;
+     private JMenuItem newConceptualClassMenuItem;
+     private JMenuItem newSequenceDiagramMenuItem;
+     private JMenuItem newSystemSequenceMenuItem;
+     private JCheckBoxMenuItem showFactsTabCheckBoxMenuItem;
+     private JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem;
+     private JMenu preferencesMenu;
+     private JMenuItem reloadRulesMenuItem;
+     private JMenuItem resizeDrawingAreaMenuItem;
+     private JMenuItem exitMenuItem;
+     private JMenuItem exportToImageMenuItem;
+     private JMenuItem openProjectMenuItem;
+     private JMenuItem saveProjectAsMenuItem;
+     private JMenuItem saveProjectMenuItem;
+     private JMenuItem newProjectMenuItem;
+     private JMenu helpMenu;
+     private JMenu createMenu;
+     private JMenu editMenu;
+     private JMenu fileMenu;
+     private JMenuBar menuBar; */
     private JButton repairButton;
     private JPanel repairPanel;
     private JPanel panel;
@@ -196,7 +196,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         desktopPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
         toolbar = new ProjectToolBar();
         getContentPane().add(toolbar, BorderLayout.NORTH);
-        
+
         // initialize a new project
         umlProject = UMLProject.getInstance();
         umlProject.becomeObserver();
@@ -214,10 +214,10 @@ public class Application extends JApplet implements Observer, KeyListener {
         splitPane = new JSplitPane();
         //splitPane.setBackground(UIManager.getColor("window"));
         /*
-        splitPane.setDividerSize(5);
-        splitPane.add(treePane, JSplitPane.LEFT);
-        splitPane.add(desktopPane, JSplitPane.RIGHT);
-        splitPane.setDividerLocation(160);
+         splitPane.setDividerSize(5);
+         splitPane.add(treePane, JSplitPane.LEFT);
+         splitPane.add(desktopPane, JSplitPane.RIGHT);
+         splitPane.setDividerLocation(160);
          */
 
         splitPane_1 = new JSplitPane();
@@ -226,13 +226,12 @@ public class Application extends JApplet implements Observer, KeyListener {
         splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
         /*
-        splitPane_1.setOneTouchExpandable(true);
+         splitPane_1.setOneTouchExpandable(true);
 
-        BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane_1.getUI();
-        BasicSplitPaneDivider divider = ui.getDivider();
-        JButton button = (JButton)divider.getComponent(1);
-        button.doClick(); */
-
+         BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane_1.getUI();
+         BasicSplitPaneDivider divider = ui.getDivider();
+         JButton button = (JButton)divider.getComponent(1);
+         button.doClick(); */
         getContentPane().add(splitPane_1, BorderLayout.CENTER);
         splitPane_1.setLeftComponent(desktopPane);
 
@@ -364,8 +363,8 @@ public class Application extends JApplet implements Observer, KeyListener {
     // NEW SOLUTION TO EXERCISE
     public void newSolution() {
         /* umlProject = new UMLProject();
-        umlProject.becomeObserver();
-        umlProject.addObserver(this); */
+         umlProject.becomeObserver();
+         umlProject.addObserver(this); */
 
         umlProject.clear();
 
@@ -383,14 +382,14 @@ public class Application extends JApplet implements Observer, KeyListener {
     // STARTS A UML PROJECT IN SANDBOX MODE
     public void newProject() {
         /* if (!closeProject()) {
-        return;
-        }
+         return;
+         }
 
-        if(umlProject != null)
-        umlProject.clear();
-        umlProject = new UMLProject();
-        umlProject.becomeObserver();
-        umlProject.addObserver(this); */
+         if(umlProject != null)
+         umlProject.clear();
+         umlProject = new UMLProject();
+         umlProject.becomeObserver();
+         umlProject.addObserver(this); */
 
         umlProject.clear();
         umlProject.setUser(username);
@@ -416,16 +415,15 @@ public class Application extends JApplet implements Observer, KeyListener {
             String resultString = resultNode.getTextContent().trim();
 
             /* if (!resultString.equals("success"))
-            {
-            JOptionPane.showMessageDialog(this, "Requested node does not exist",
-            "Error", JOptionPane.ERROR_MESSAGE);
+             {
+             JOptionPane.showMessageDialog(this, "Requested node does not exist",
+             "Error", JOptionPane.ERROR_MESSAGE);
 
-            umlProject.setMode(Mode.SANDBOX);
-            newProject();
+             umlProject.setMode(Mode.SANDBOX);
+             newProject();
 
-            return false;
-            } */
-
+             return false;
+             } */
             boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
             checkTreeManager.getSelectionModel().clearSelection();
@@ -446,11 +444,9 @@ public class Application extends JApplet implements Observer, KeyListener {
             String comment = commentNode.getTextContent().trim();
 
             /* Node authoridNode = doc.getElementsByTagName("authorid").item(0);
-            int authorid = Integer.valueOf(authoridNode.getTextContent().trim()); */
-
+             int authorid = Integer.valueOf(authoridNode.getTextContent().trim()); */
             Node authorNameNode = doc.getElementsByTagName("authornickname").item(0);
             String authorName = authorNameNode.getTextContent().trim();
-
 
             Node isprivateNode = doc.getElementsByTagName("isprivate").item(0);
             String isprivateString = isprivateNode.getTextContent().trim();
@@ -492,13 +488,12 @@ public class Application extends JApplet implements Observer, KeyListener {
             umlProject.setComment(comment);
 
             /* String infoString = "Node Id: " + umlProject.getParentid() + "\nExercise Id: " + umlProject.getExid()
-            + "\nNode Type: " + umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle()
-            + "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName
-            + "\nIs Private: " + (isprivate?"Yes":"No"); */
+             + "\nNode Type: " + umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle()
+             + "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName
+             + "\nIs Private: " + (isprivate?"Yes":"No"); */
 
             /* JOptionPane.showMessageDialog(null, infoString,
-            "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
-
+             "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
             setSaved(true);
             umlProject.becomeObserver();
             umlProject.addObserver(this);
@@ -509,8 +504,8 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             // Set the top internal frame (selected) to the one specified by user
             try {
-                DiagramInternalFrame frameToBeSelected =
-                        umlProject.getDiagramModel(Integer.valueOf(diagramno) - 1).getFrame();
+                DiagramInternalFrame frameToBeSelected
+                        = umlProject.getDiagramModel(Integer.valueOf(diagramno) - 1).getFrame();
 
                 // desktopPane.setSelectedFrame(selectedFrame);
                 frameToBeSelected.setSelected(true);
@@ -620,7 +615,6 @@ public class Application extends JApplet implements Observer, KeyListener {
                     statusStrings, nodeTypeStrings);
 
             // solutionInput.setStatus(0);
-
             if (JOptionPane.showOptionDialog(this, solutionInput, "Your solution info", JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE, null, null, null) != JOptionPane.OK_OPTION) {
                 JOptionPane.showMessageDialog(this, "Solution saving was canceled!",
@@ -632,7 +626,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             nodeType = solutionInput.getNodeType();
             title = solutionInput.getTitle();
             comment = solutionInput.getComment();
-
 
             // THIS IS NOT ONLY BECAUSE THE API EXPECTS A NON-EMPTY TITLE
             // BUT ALSO BECAUSE TITLES HAVE TO HAVE ACTUAL TEXT (NOT JUST WHITESPACES)
@@ -647,7 +640,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             if (comment == null || comment.equals("")) {
                 comment = " ";
             }
-
 
             savePrivate = solutionInput.isPrivate();
 
@@ -671,7 +663,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             return;
         }
 
-
         // TRY-CATCH BLOCK WITH THE ACTUAL API CALLS
         // DONE IN TWO PARTS: (1) SAVING NODE and (2) SAVING PIC(S)
         try {
@@ -691,14 +682,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
 
             /* // DISPLAY SAVING RESULT
-            Node resultNode = saveNodeResponse.getElementsByTagName("result").item(0);
-            String result = resultNode.getTextContent().trim();
+             Node resultNode = saveNodeResponse.getElementsByTagName("result").item(0);
+             String result = resultNode.getTextContent().trim();
 
-            if (result.equals("success"))
-            {
+             if (result.equals("success"))
+             {
 
-            } */
-
+             } */
             // (2) SAVING PICS
             Vector diagramModels = umlProject.getDiagramModels();
             DiagramModel diagramModel;
@@ -818,30 +808,44 @@ public class Application extends JApplet implements Observer, KeyListener {
     // this method creates a new empty diagram within
     // the appropriate internal frame, depending on the type integer
     public void createNewInternalFrame(int type) {
-
-        if (type == DiagramModel.SSD) {
-            String modelName = JOptionPane.showInputDialog("System Sequence Diagram Name: ");
-            SSDModel model = new SSDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.SD) {
-            String modelName = JOptionPane.showInputDialog("Sequence Diagram Name: ");
-            SDModel model = new SDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.CCD) {
-            String modelName = JOptionPane.showInputDialog("Conceptual Class Diagram Name: ");
-            CCDModel model = new CCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
-        } else if (type == DiagramModel.DCD) {
-            String modelName = JOptionPane.showInputDialog("Design Class Diagram Name: ");
-            DCDModel model = new DCDModel(modelName, umlProject);
-            model.addObserver(this);
-            addInternalFrame(model);
+        String dialogText;
+        DiagramModel model;
+        switch (type) {
+            case DiagramModel.SSD:
+                dialogText = "System Sequence Diagram Name :";
+                break;
+            case DiagramModel.SD:
+                dialogText = "Sequence Diagram Name: ";
+                break;
+            case DiagramModel.CCD:
+                dialogText = "Conceptual Class Diagram Name: ";
+                break;
+            case DiagramModel.DCD:
+                dialogText = "Design Class Diagram Name: ";
+                break;
+            default:
+                dialogText = "";
         }
+        String modelName = JOptionPane.showInputDialog(dialogText);
+        if ((modelName != null) && (modelName.length() > 0)) {
+            if (type == DiagramModel.SSD) {
+                model = new SSDModel(modelName, umlProject);
 
-        setSaved(false);
+            } else if (type == DiagramModel.SD) {
+                model = new SDModel(modelName, umlProject);
+
+            } else if (type == DiagramModel.CCD) {
+                model = new CCDModel(modelName, umlProject);
+
+            } else if (type == DiagramModel.DCD) {
+                model = new DCDModel(modelName, umlProject);
+            } else {
+                return;
+            }
+            model.addObserver(this);
+            addInternalFrame(model);
+            setSaved(false);
+        }
     }
 
     public void addInternalFrame(DiagramModel model) {
@@ -968,14 +972,14 @@ public class Application extends JApplet implements Observer, KeyListener {
 
     // exports the diagram in the selected internal frame to an image file
 	/* public void exportImage() {
-    JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+     JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
 
-    if (selectedFrame != null) {
-    DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
+     if (selectedFrame != null) {
+     DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
 
-    ImageExporter.exportToImage(view, this);
-    }
-    } */
+     ImageExporter.exportToImage(view, this);
+     }
+     } */
     // sets the size in pixels of the drawing area of the selected internal
     // frame (diagram)
     public void resizeView() {
@@ -1080,20 +1084,19 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             /* ImageIcon newIcon = new ImageIcon(Application.class.getResource("images/new.gif"));
 
-            newButton = new JButton(newIcon);
-            newButton.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-            newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4)));
-            }
-            public void mouseExited(MouseEvent e) {
-            newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            }
-            });
-            newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            newButton.setToolTipText("New Project");
-            newButton.addActionListener(this);
-            add(newButton); */
-
+             newButton = new JButton(newIcon);
+             newButton.addMouseListener(new MouseAdapter() {
+             public void mouseEntered(MouseEvent e) {
+             newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4)));
+             }
+             public void mouseExited(MouseEvent e) {
+             newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+             }
+             });
+             newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+             newButton.setToolTipText("New Project");
+             newButton.addActionListener(this);
+             add(newButton); */
             ImageIcon openIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "open.gif"));
             openButton = new JButton(openIcon);
             openButton.addMouseListener(new MouseAdapter() {
@@ -1202,21 +1205,20 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             /* ImageIcon exportIcon = new ImageIcon(Application.class.getResource("images/export.gif"));
 
-            exportButton = new JButton(exportIcon);
-            exportButton.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-            exportButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4)));
-            }
-            public void mouseExited(MouseEvent e) {
-            exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            }
-            });
-            exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            exportButton.setToolTipText("Export to image");
-            exportButton.addActionListener(this);
+             exportButton = new JButton(exportIcon);
+             exportButton.addMouseListener(new MouseAdapter() {
+             public void mouseEntered(MouseEvent e) {
+             exportButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4)));
+             }
+             public void mouseExited(MouseEvent e) {
+             exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+             }
+             });
+             exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+             exportButton.setToolTipText("Export to image");
+             exportButton.addActionListener(this);
 
-            add(exportButton); */
-
+             add(exportButton); */
             ImageIcon resizeIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
 
             resizeButton = new JButton(resizeIcon);
@@ -1309,14 +1311,14 @@ public class Application extends JApplet implements Observer, KeyListener {
             } else if (event.getSource() == saveButton) {
                 saveSolution();
                 /* } else if (event.getSource() == saveAsButton) {
-                saveProjectAs(); */
+                 saveProjectAs(); */
                 /* } else if (event.getSource() == exportButton) {
-                exportImage(); */
+                 exportImage(); */
             } else if (event.getSource() == resizeButton) {
                 resizeView();
             } /* else if (event.getSource() == validateSD_DCDButton) {
-            validateSD_DCD();
-            } */ else if (event.getSource() == reloadRulesButton) {
+             validateSD_DCD();
+             } */ else if (event.getSource() == reloadRulesButton) {
                 SystemWideObjectNamePool.getInstance().reloadRules();
             } else if (event.getSource() == helpButton) {
                 try {
@@ -1358,29 +1360,28 @@ public class Application extends JApplet implements Observer, KeyListener {
             System.out.println(fExid + "->" + fNodeid);
 
             /* if (isPrivate) {
-            nodeid = "";
-            exid = "";
+             nodeid = "";
+             exid = "";
 
-            newProject();
-            umlProject.setMode(Mode.SANDBOX);
-            } else {
+             newProject();
+             umlProject.setMode(Mode.SANDBOX);
+             } else {
 
-            nodeid = fNodeid;
-            exid = fExid;
-            if (nodeid != null && !nodeid.equals(""))
-            {
-            loadSolution();
-            umlProject.setMode(Mode.NEW_STEP);
-            }
-            // NEW SOLUTION, start a new project as solution to given exercise
-            else if (exid != null && !exid.equals(""))
-            {
-            newSolution();
-            umlProject.setMode(Mode.NEW_SOLUTION);
-            }
-            // SANDBOX MODE, start a new project without an exercise
-            } */
-
+             nodeid = fNodeid;
+             exid = fExid;
+             if (nodeid != null && !nodeid.equals(""))
+             {
+             loadSolution();
+             umlProject.setMode(Mode.NEW_STEP);
+             }
+             // NEW SOLUTION, start a new project as solution to given exercise
+             else if (exid != null && !exid.equals(""))
+             {
+             newSolution();
+             umlProject.setMode(Mode.NEW_SOLUTION);
+             }
+             // SANDBOX MODE, start a new project without an exercise
+             } */
             try {
                 Document doc = serverInterface.getNode(Integer.valueOf(fNodeid));
 
@@ -1388,16 +1389,15 @@ public class Application extends JApplet implements Observer, KeyListener {
                 String resultString = resultNode.getTextContent().trim();
 
                 /* if (!resultString.equals("success"))
-                {
-                JOptionPane.showMessageDialog(this, "Requested node does not exist",
-                "Error", JOptionPane.ERROR_MESSAGE);
+                 {
+                 JOptionPane.showMessageDialog(this, "Requested node does not exist",
+                 "Error", JOptionPane.ERROR_MESSAGE);
 
-                umlProject.setMode(Mode.SANDBOX);
-                newProject();
+                 umlProject.setMode(Mode.SANDBOX);
+                 newProject();
 
-                return false;
-                } */
-
+                 return false;
+                 } */
                 boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
                 checkTreeManager.getSelectionModel().clearSelection();
@@ -1526,22 +1526,22 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
 
             /* public void mouseClicked(MouseEvent e)
-            {
-            JTree tree = (JTree) component;
-            TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-            if (path != null)
-            {
-            if ( path.getPathCount() == 3)
-            {
-            Object o = path.getLastPathComponent();
-            TreeModel model = tree.getModel();
-            if (model.isLeaf(o))
-            {
-            // a leaf was clicked; handle it
-            }
-            }
-            }
-            } */
+             {
+             JTree tree = (JTree) component;
+             TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+             if (path != null)
+             {
+             if ( path.getPathCount() == 3)
+             {
+             Object o = path.getLastPathComponent();
+             TreeModel model = tree.getModel();
+             if (model.isLeaf(o))
+             {
+             // a leaf was clicked; handle it
+             }
+             }
+             }
+             } */
             private void showMenu(MouseEvent e) {
                 TreePath path = ((JTree) component).getSelectionPath();
                 if (path != null) {
@@ -1562,25 +1562,24 @@ public class Application extends JApplet implements Observer, KeyListener {
         });
 
         /* component.addMouseMotionListener(new MouseMotionAdapter() {
-        public void mouseMoved(MouseEvent e)
-        {
-        int cursor = Cursor.DEFAULT_CURSOR;
+         public void mouseMoved(MouseEvent e)
+         {
+         int cursor = Cursor.DEFAULT_CURSOR;
 
-        JTree tree = (JTree)component;
-        TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-        if (path != null)
-        {
-        if ( path.getPathCount() == 3)
-        {
-        // hovering over a leaf; set the cursor
-        cursor = Cursor.HAND_CURSOR;
-        }
-        }
+         JTree tree = (JTree)component;
+         TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+         if (path != null)
+         {
+         if ( path.getPathCount() == 3)
+         {
+         // hovering over a leaf; set the cursor
+         cursor = Cursor.HAND_CURSOR;
+         }
+         }
 
-        tree.setCursor(new Cursor(cursor));
-        }
-        }); */
-
+         tree.setCursor(new Cursor(cursor));
+         }
+         }); */
     }
 
     private void showRepairButton(final Component component, final JButton button) {
