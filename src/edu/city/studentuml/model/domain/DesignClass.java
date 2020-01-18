@@ -7,15 +7,10 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.lang.*;
-import java.util.*;
 
 import org.w3c.dom.Element;
 
