@@ -279,8 +279,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
     	if (m.getName().equals(calledClass.getName())) {
     		for(int i=0;i<attributes.size();i++) {
     			attribute= (Attribute) attributes.get(i);
-    			out.println(attribute.getName().toLowerCase());
-    			out.println(m.getReturnParameter().toString().toLowerCase());
     			if(attribute.getName().toLowerCase().equals(object.getName().toLowerCase())){
     				parameterExists = true;
     			}
@@ -313,8 +311,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
 	    		parameterExists=false;
 	    		for(int i=0;i<attributes.size();i++) {
 	    			attribute= (Attribute) attributes.get(i);
-	    			out.println(attribute.getName().toLowerCase());
-	    			out.println(m.getReturnParameter().toString().toLowerCase());
 	    			if(attribute.getName().toLowerCase().equals(m.getReturnParameter().toString().toLowerCase())){
 	    				parameterExists = true;
 	    			}

@@ -42,6 +42,10 @@ import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.view.gui.ApplicationFrame;
 
 public class UMLProjectTest {
+	
+	String filepath = "test";
+	String fullpath = filepath + File.separator + "test.xml";
+	String javapath = filepath + File.separator + filepath + File.separator;
 
 	@Test
 	public void testGenerateClassFromDCD() {
@@ -49,7 +53,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -57,14 +61,14 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
 		currDiagram.addGraphicalElement(new ClassGR(dc1,new Point(1,10)));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -91,7 +95,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -99,14 +103,14 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		Interface int1 = new Interface("Int1");
 		currDiagram.addGraphicalElement(new InterfaceGR(int1,new Point(1,10)));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Int1.java");
+		File f = new File(javapath+"Int1.java");
 		boolean interfaceExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -133,7 +137,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -141,14 +145,14 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
 		currDiagram.addGraphicalElement(new SDObjectGR(new SDObject("sd1",dc1),1));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -175,7 +179,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -183,7 +187,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -201,7 +205,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm,1));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean methodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -228,7 +232,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -236,7 +240,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		SDModel currDiagram2 = new SDModel("sd2",umlProject);
@@ -262,7 +266,7 @@ public class UMLProjectTest {
 		currDiagram2.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm2,1));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean method1Exists = false;
 		boolean method2Exists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -293,7 +297,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -301,7 +305,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DesignClass dc1 = new DesignClass("Class1");
 		DesignClass dc2 = new DesignClass("Class2");
@@ -323,7 +327,7 @@ public class UMLProjectTest {
 		sdDiagram.addGraphicalElement(new CallMessageGR(sd1GR,sd2GR,cm,1));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean sdMethodExists = false;
 		boolean dcdMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
@@ -354,7 +358,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -362,7 +366,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -389,7 +393,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new CallMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -416,7 +420,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -424,7 +428,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -451,7 +455,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new CallMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -478,7 +482,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -486,7 +490,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -511,7 +515,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new CreateMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -538,7 +542,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -546,7 +550,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		SDModel currDiagram = new SDModel("sd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -571,7 +575,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new DestroyMessageGR(sd2GR,sd3GR,cm2,2));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean calledMethodExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -598,7 +602,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -606,7 +610,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
@@ -619,7 +623,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -627,7 +631,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -640,7 +644,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new GeneralizationGR(adcgr,dc1gr,new Generalization(adc,dc1)));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -667,7 +671,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -675,7 +679,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -687,7 +691,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new RealizationGR(dc1gr,int1gr,new Realization(dc1,int1)));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -714,7 +718,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -722,7 +726,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -738,7 +742,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new RealizationGR(dc1gr,int2gr,new Realization(dc1,int2)));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean classExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -765,7 +769,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -773,7 +777,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -792,7 +796,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new AssociationGR(dc1GR,dc2GR,AtoB));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class1.java");
+		File f = new File(javapath+"Class1.java");
 		boolean parameterExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -819,7 +823,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -827,7 +831,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -846,7 +850,7 @@ public class UMLProjectTest {
 		currDiagram.addGraphicalElement(new AssociationGR(dc1GR,dc2GR,BtoA));
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
-		File f = new File("C:\\test\\test\\Class2.java");
+		File f = new File(javapath+"Class2.java");
 		boolean parameterExists = false;
 		if (!f.isDirectory() && f.exists()) {
         	try {
@@ -873,7 +877,7 @@ public class UMLProjectTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -881,7 +885,7 @@ public class UMLProjectTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		DCDModel currDiagram = new DCDModel("dcd1",umlProject);
 		DesignClass dc1 = new DesignClass("Class1");
@@ -901,7 +905,7 @@ public class UMLProjectTest {
 		af.saveProject();
 		int generatedFiles = umlProject.generateCode(false);
 		int parameterExists = 0;
-		File f = new File("C:\\test\\test\\Class1.java");		
+		File f = new File(javapath+"Class1.java");		
 		if (!f.isDirectory() && f.exists()) {
         	try {
         		String line = null;
@@ -918,7 +922,7 @@ public class UMLProjectTest {
         		ex.printStackTrace();
         	}   	
 		}
-		File f2 = new File("C:\\test\\test\\Class2.java");		
+		File f2 = new File(javapath+"Class2.java");		
 		if (!f2.isDirectory() && f2.exists()) {
         	try {
         		String line2 = null;

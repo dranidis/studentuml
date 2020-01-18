@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="test/" kind="src" path="test"/>
+	<classpathentry kind="src" path="test/test"/>
+	<classpathentry kind="lib" path="lib/builtinsLib.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-2.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/jlogic.jar"/>
+	<classpathentry kind="lib" path="lib/lipstikLF-RC2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -22,6 +22,9 @@ import edu.city.studentuml.util.CodeGenerator;
 import edu.city.studentuml.view.gui.ApplicationFrame;
 
 public class CodeGeneratorTest {
+	
+	String filepath = "test";
+	String fullpath = filepath + File.separator + "test.xml";
 
 	@Test
 	public void testGenerateClassFile() {
@@ -29,7 +32,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -37,7 +40,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		af.saveProject();
@@ -55,7 +58,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -63,7 +66,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new Interface("Int1");
 		af.saveProject();
@@ -81,7 +84,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -89,7 +92,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		af.saveProject();
@@ -123,7 +126,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -131,7 +134,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new Interface("Int1");
 		af.saveProject();
@@ -165,7 +168,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -173,7 +176,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc= (DesignClass) classObject;
@@ -209,7 +212,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -217,7 +220,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc= (DesignClass) classObject;
@@ -254,7 +257,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -262,7 +265,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc= (DesignClass) classObject;
@@ -300,7 +303,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -308,7 +311,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -348,7 +351,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -356,7 +359,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -396,7 +399,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -404,7 +407,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -441,7 +444,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -449,7 +452,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -493,7 +496,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -501,7 +504,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -545,7 +548,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -553,7 +556,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -597,7 +600,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -605,7 +608,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -648,7 +651,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -656,7 +659,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = new DesignClass("Class1");
 		DesignClass dc = (DesignClass) classObject;
@@ -703,7 +706,7 @@ public class CodeGeneratorTest {
 		ApplicationFrame af = new ApplicationFrame(studentUMLFrame);
 		UMLProject umlProject = UMLProject.getInstance();
 		umlProject.clear();
-		File file = new File("C:\\test");
+		File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
                 System.out.println("Directory is created!");
@@ -711,7 +714,7 @@ public class CodeGeneratorTest {
                 System.out.println("Directory cannot be Created!");
             }
         }
-		umlProject.setFilepath("C:\\test\\test.xml");
+		umlProject.setFilepath(fullpath);
 		umlProject.setFilename("test.xml");
 		Object classObject = null;
 		af.saveProject();
