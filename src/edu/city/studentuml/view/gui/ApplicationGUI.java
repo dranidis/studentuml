@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -1264,7 +1266,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         private JButton sdButton;
         private JButton dcdButton;
         private JButton adButton;
-        // private JButton forwardEngineerButton;
+        private JButton forwardEngineerButton;
         private JButton resizeButton;
         private JButton helpButton;
         JButton reloadRulesButton;
@@ -1573,6 +1575,59 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             add(reloadRulesButton);
 
             addSeparator();
+            
+            ImageIcon forwardEngineerIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
+            Image img2 = forwardEngineerIcon.getImage();
+            Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
+            forwardEngineerIcon.setImage(imgScaled2);
+            forwardEngineerButton = new JButton(forwardEngineerIcon);
+            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            forwardEngineerButton.setToolTipText("Generate Code");
+            forwardEngineerButton.addMouseListener(new MouseAdapter() {
+
+                public void mouseEntered(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                }
+
+                public void mouseExited(MouseEvent e) {
+                	forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+                }
+            });
+            forwardEngineerButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                	JCheckBox checkBox = new JCheckBox("Update Current Files",false);
+                	String message = "Do you Want to Generate Code? \n"
+                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
+                            + "Design (first) and Sequence Diagrams!";
+                	Object[] params= {message, checkBox};
+                	//0 for yes and 1 for no
+                	int codeGenerationConfirm = JOptionPane.showConfirmDialog(
+                		    frame,
+                		    params,
+                            "Code Generation",
+                		    JOptionPane.YES_NO_OPTION);
+                	boolean update = checkBox.isSelected();
+                	if (codeGenerationConfirm == 0) {
+                		int genFilesCount = umlProject.generateCode(update);
+                		if (genFilesCount>0) {
+                			JOptionPane.showMessageDialog(frame,
+                			"Success!! \n" +
+                			"You have generated " + genFilesCount + " files in\n" +
+                			umlProject.getFilepath().replace(".xml", File.separator),
+                			"Code Generator",JOptionPane.INFORMATION_MESSAGE);		
+                		}else {
+                			JOptionPane.showMessageDialog(frame,
+                        			"No Input - New Files Not Generated",
+                					"Code Generator",JOptionPane.INFORMATION_MESSAGE);
+                		}
+                	}
+                }
+            });
+            add(forwardEngineerButton);
+            
+            addSeparator();
+
 
             ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();

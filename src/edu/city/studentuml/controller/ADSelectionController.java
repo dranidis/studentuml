@@ -13,6 +13,7 @@ import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
+import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
@@ -24,6 +25,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
+import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
@@ -31,6 +33,7 @@ import edu.city.studentuml.util.undoredo.RemoveEditFactory;
 import edu.city.studentuml.view.gui.ActionNodeEditor;
 import edu.city.studentuml.view.gui.ActivityNodeEditor;
 import edu.city.studentuml.view.gui.ControlFlowEditor;
+import edu.city.studentuml.view.gui.DecisionNodeEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
@@ -187,7 +190,9 @@ public class ADSelectionController extends SelectionController {
             editObjectNode((ObjectNodeGR) nodeComponentGR);
         } else if (nodeComponentGR instanceof ActivityNodeGR) {
             editActivityNode((ActivityNodeGR) nodeComponentGR);
-        } else {
+        } else if (nodeComponentGR instanceof DecisionNodeGR) {
+            editDecisionNode((DecisionNodeGR) nodeComponentGR);
+        }else {
             java.lang.System.err.println("Error in editNode(node)");
         }
     }
@@ -283,7 +288,32 @@ public class ADSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
-    private void editUMLNote(UMLNoteGR noteGR) {
+
+    private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
+        DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);
+        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getNodeComponent();
+
+        // show the control flow editor dialog and check whether the user has pressed cancel
+        if (!decisionNodeEditor.showDialog(parentComponent, "Decision Node Editor")) {
+            return;
+        }
+
+        // Undo/Redo
+        DecisionNode undoDecisionNode = (DecisionNode) decisionNode.clone();
+
+        String decisionName = decisionNodeEditor.getActionName();
+        decisionNode.setName(decisionName);
+
+        // Undo/Redo
+        UndoableEdit edit = new EditDecisionNodeEdit(decisionNode, undoDecisionNode, model);
+        parentComponent.getUndoSupport().postEdit(edit);
+
+        // set observable model to changed in order to notify its views
+        model.modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+    }
+    
+    	private void editUMLNote(UMLNoteGR noteGR) {
         UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
 
         // Undo/Redo [edit note]

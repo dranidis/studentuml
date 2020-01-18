@@ -4,6 +4,8 @@ package edu.city.studentuml.model.domain;
 //Author: Ervin Ramollari
 //SDMessage.java
 import java.io.Serializable;
+import java.util.Vector;
+import static java.lang.System.out;
 
 public abstract class SDMessage implements Serializable {
 
@@ -11,6 +13,7 @@ public abstract class SDMessage implements Serializable {
     // instead it is set by the diagram model
     protected RoleClassifier source;    // message originating from this object
     protected RoleClassifier target;    // message directed to this object
+    private String returnParameter = "x";
 
     public SDMessage(RoleClassifier from, RoleClassifier to) {
         source = from;
@@ -35,6 +38,15 @@ public abstract class SDMessage implements Serializable {
 
     public boolean isReflective() {
         return (source == target);
+    }
+    
+    
+    public void setReturnParameter (String newParameter) {
+    	this.returnParameter = newParameter;
+    }
+    
+    public String getReturnParameter () {
+    	return this.returnParameter;
     }
 
     // the sd message subclasses should define a toString() method

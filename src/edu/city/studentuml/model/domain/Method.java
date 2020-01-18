@@ -7,8 +7,17 @@ import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import static java.lang.System.out;
 
 import org.w3c.dom.Element;
 
@@ -26,6 +35,11 @@ public class Method implements Serializable, IXMLCustomStreamable {
     private int visibility;    // 1 = private, 2 = public, 3 = protected
     private Type returnType;
     private NotifierVector parameters;
+    private int priority = 0 ;
+    private String returnParameter = "x";
+    private List<String> calledMethods = new ArrayList<String>();
+    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+    private boolean iterative = false;
 
     public Method(GenericOperation go) {
         genericOperation = go;
@@ -141,6 +155,16 @@ public class Method implements Serializable, IXMLCustomStreamable {
             return "#";
         }
     }
+    
+    public String getVisibilityAsString() {
+        if (visibility == PRIVATE) {
+            return "private";
+        } else if (visibility == PUBLIC) {
+            return "public";
+        } else {
+            return "protected";
+        }
+    }
 
     public String getNameString() {
         return getName();
@@ -219,4 +243,131 @@ public class Method implements Serializable, IXMLCustomStreamable {
 
         return copyMethod;
     }
+    
+    public String getParametersAsString() {
+    	String allParameters = "";
+    	for (int i=0;i<parameters.size();i++) {
+    		MethodParameter parameter = (MethodParameter) parameters.get(i);
+    		allParameters += parameter.getName();
+    		if (i+2 <= parameters.size()) {
+    			allParameters += ",";
+    		}
+    	}
+    	return allParameters;
+    }
+    
+    public void setPriority(int mtdPriority)
+    {
+    	this.priority = mtdPriority;
+    }
+    
+    public int getPriority()
+    {
+    	return this.priority;
+    }
+    
+    public void setReturnParameter (String newParameter) {
+    	this.returnParameter = newParameter;
+    }
+    
+    public String getReturnParameter () {
+    	return this.returnParameter;
+    }
+    
+    public void addCalledMethod (DesignClass homeClass, Method m, DesignClass calledClass, RoleClassifier object, boolean isReflective) {
+    	//create a string with the call message for the method
+    	StringBuffer sb = new StringBuffer();
+    	boolean parameterExists = false;
+    	Attribute attribute;
+    	Vector attributes = homeClass.getAttributes();
+    	
+    	if (m.getName().equals(calledClass.getName())) {
+    		for(int i=0;i<attributes.size();i++) {
+    			attribute= (Attribute) attributes.get(i);
+    			out.println(attribute.getName().toLowerCase());
+    			out.println(m.getReturnParameter().toString().toLowerCase());
+    			if(attribute.getName().toLowerCase().equals(object.getName().toLowerCase())){
+    				parameterExists = true;
+    			}
+    		}
+    		if(!parameterExists && object instanceof SDObject) {
+    			sb.append(calledClass.getName()+" ");
+    		}
+    		if(!parameterExists && object instanceof MultiObject) {
+    			sb.append("List<"+ calledClass.getName()+ "> ");
+    		}
+    		if( object instanceof SDObject) {
+	    		sb.append(object.getName()).append(" = ");
+	    		sb.append("new ").append(calledClass.getName()+"("+m.getParametersAsString()+")"+";");
+    		}else if (object instanceof MultiObject) {
+    		  	sb.append(object.getName()+" = new ArrayList<"+calledClass.getName()+">();");
+    		}
+    	}else if(m.getName().equals("destroy") && object instanceof SDObject) {
+    		sb.append(object.getName() + ".destroy()").append(";");
+    	}else if(m.getName().equals("destroy") && object instanceof MultiObject) {
+    		sb.append(object.getName() + " = null").append(";");
+    	}else {
+	    	if(m.isIterative() && object instanceof SDObject) {
+	    		sb.append("for(int i=0;i<10;i++){").append(LINE_SEPARATOR);
+	    		sb.append("     ");
+	    	}else if (m.isIterative() && object instanceof MultiObject) {
+	    		sb.append("for(" + calledClass.getName() + " obj : "+object.getName()+") {").append(LINE_SEPARATOR);
+	    		sb.append("     ");
+	    	}
+	    	if (!m.getReturnType().getName().equals("void") && !m.getReturnType().getName().equals("VOID")) {
+	    		parameterExists=false;
+	    		for(int i=0;i<attributes.size();i++) {
+	    			attribute= (Attribute) attributes.get(i);
+	    			out.println(attribute.getName().toLowerCase());
+	    			out.println(m.getReturnParameter().toString().toLowerCase());
+	    			if(attribute.getName().toLowerCase().equals(m.getReturnParameter().toString().toLowerCase())){
+	    				parameterExists = true;
+	    			}
+	    		}
+	    		if(!parameterExists) {
+	    			sb.append(m.getReturnTypeAsString() + " ");
+	    		}
+	    		sb.append(m.getReturnParameter() + " = ");
+	    	}
+	    	if (isReflective && object instanceof SDObject) {
+	    		sb.append("this").append(".");
+	    	}else if (object instanceof SDObject){
+	    		sb.append(object.getName()).append(".");
+	    	}else if (object instanceof MultiObject && m.isIterative()) {
+	    		sb.append("obj.");
+	    	}else if (object instanceof MultiObject && !m.isIterative()) {
+	    		sb.append(object.getName() + ".");
+	    	}
+	    	sb.append(m.getName()).append("(");
+	    	sb.append(m.getParametersAsString());
+	    	sb.append(");");
+	    	if(m.isIterative()) {
+	    		sb.append(LINE_SEPARATOR).append(" ");
+	    		sb.append("   }");
+	    	}
+    	}	
+    	this.calledMethods.add(sb.toString());
+    }
+    
+    public List<String> getCalledMethods(){
+    	//sort by rank and return list of call messages
+    	return this.calledMethods;
+    }
+    
+    public void clearCalledMethods() {
+    	this.calledMethods.clear();
+    }
+    
+    public void replaceCalledMethod(int index,String newCallMethod) {
+    	this.calledMethods.set(index,newCallMethod);
+    }
+    
+    public boolean isIterative() {
+        return iterative;
+    }
+
+    public void setIterative(boolean i) {
+        iterative = i;
+    }
+    
 }
