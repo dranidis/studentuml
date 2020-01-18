@@ -8,14 +8,8 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import static java.lang.System.out;
 
@@ -244,6 +238,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
         return copyMethod;
     }
     
+    // TODO: User StringBuilder
     public String getParametersAsString() {
     	String allParameters = "";
     	for (int i=0;i<parameters.size();i++) {
