@@ -4,8 +4,6 @@ package edu.city.studentuml.model.domain;
 //Author: Ervin Ramollari
 //SDMessage.java
 import java.io.Serializable;
-import java.util.Vector;
-import static java.lang.System.out;
 
 public abstract class SDMessage implements Serializable {
 
