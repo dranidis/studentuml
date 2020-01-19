@@ -1,7 +1,6 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
-import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
