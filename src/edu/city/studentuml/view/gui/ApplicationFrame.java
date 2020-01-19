@@ -8,6 +8,8 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 import java.io.File;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
@@ -20,6 +22,8 @@ import javax.swing.JOptionPane;
  * @author draganbisercic
  */
 public class ApplicationFrame extends ApplicationGUI {
+    
+    private Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static String applicationName = "StudentUML";
     private JFileChooser xmlFileChooser;
@@ -87,6 +91,7 @@ public class ApplicationFrame extends ApplicationGUI {
     }
 
     private void setFileName(String name) {
+        logger.log(Level.INFO, "Set fileName and projectName to: {0}", name);
         umlProject.setFilename(name);
         umlProject.setName(name);
         frame.setTitle(applicationName + " - " + name);
@@ -130,13 +135,15 @@ public class ApplicationFrame extends ApplicationGUI {
         umlProject.projectChanged();
         
         setFilePath(file);
-        setFileName(file.substring(file.lastIndexOf('\\') + 1));
-        /* throws error
+//        setFileName(file.substring(file.lastIndexOf('\\') + 1));
+        setFileName(file.substring(file.lastIndexOf(File.separatorChar) + 1));
+
+//        /* throws error
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
-        */
+//        */
         return true;
     }
 
@@ -158,7 +165,8 @@ public class ApplicationFrame extends ApplicationGUI {
         } else {
             umlProject.getInstance().streamToXML(path);
             setFilePath(path);
-            setFileName(path.substring(path.lastIndexOf('\\') + 1));
+//            setFileName(path.substring(path.lastIndexOf('\\') + 1));
+            setFileName(path.substring(path.lastIndexOf(File.separatorChar) + 1));
             setSaved(true);
             pref.put("DEFAULT_PATH", path);
         }
