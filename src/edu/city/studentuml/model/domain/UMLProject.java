@@ -146,6 +146,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
+        projectSaved = false;
         setChanged();
         notifyObservers();
     }

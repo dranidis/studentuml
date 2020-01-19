@@ -1176,6 +1176,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     protected void setSaved(boolean projectSaved) {
+        umlProject.setSaved(projectSaved);
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }

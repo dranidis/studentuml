@@ -7,6 +7,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 import java.io.File;
 import java.util.Observable;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -17,6 +18,8 @@ import javax.swing.JOptionPane;
  * @author draganbisercic
  */
 public class ApplicationFrame extends ApplicationGUI {
+    
+    Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static String applicationName = "StudentUML";
     private JFileChooser xmlFileChooser;
@@ -116,7 +119,6 @@ public class ApplicationFrame extends ApplicationGUI {
 
         umlProject.loadFromXML(file);
 
-        setSaved(true);
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         repositoryTreeView.setUMLProject(umlProject);
@@ -129,6 +131,9 @@ public class ApplicationFrame extends ApplicationGUI {
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
+        setSaved(true);
+        logger.info("Opened project");
+
         return true;
     }
 
