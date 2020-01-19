@@ -3,7 +3,6 @@ import static org.junit.Assert.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Vector;
 
 import org.junit.Test;
 
@@ -16,7 +15,6 @@ import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.CodeGenerator;
 import edu.city.studentuml.view.gui.ApplicationFrame;

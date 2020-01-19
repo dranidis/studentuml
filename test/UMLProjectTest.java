@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Vector;
 
 import org.junit.Test;
 
@@ -21,9 +20,7 @@ import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Realization;
-import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.Role;
-import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -32,10 +29,8 @@ import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
-import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
