@@ -166,7 +166,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void create() {
         initializeRules();
-        addObserver();
+        SystemWideObjectNamePool.getInstance().addObserver(this);
         createUMLProject();
         setUserId();
         createLookAndFeel();
@@ -181,11 +181,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         // set the rule file and construct the consistency checker
         SystemWideObjectNamePool.getInstance().init(currentRuleFile);
-    }
-
-    private void addObserver() {
-        // observe when changes occur
-        SystemWideObjectNamePool.getInstance().addObserver(this);
     }
 
     /*
