@@ -87,7 +87,6 @@ public class ApplicationFrame extends ApplicationGUI {
         }
         SystemWideObjectNamePool.getInstance().clear();
         SystemWideObjectNamePool.getInstance().reload();
-        SystemWideObjectNamePool.umlProject = umlProject;
     }
 
     private void setFileName(String name) {

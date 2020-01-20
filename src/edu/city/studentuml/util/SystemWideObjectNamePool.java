@@ -1,6 +1,6 @@
 package edu.city.studentuml.util;
 
-import edu.city.studentuml.model.domain.UMLProject;
+//import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.validation.ConsistencyChecker;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.gui.CollectionTreeModel;
@@ -16,7 +16,6 @@ public class SystemWideObjectNamePool extends Observable {
     private static SystemWideObjectNamePool ref = null;
     private String ruleFile = null;
     private static String selectedRule = null;
-    public static UMLProject umlProject = null;
     private ConsistencyChecker consistencyChecker = null;
     private boolean runtimeChecking = true;
     private static HashSet<String> messageTypes = new HashSet<String>();

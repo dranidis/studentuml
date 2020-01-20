@@ -227,8 +227,6 @@ public class ApplicationApplet extends ApplicationGUI {
         umlProject.setExid(0);
         umlProject.setParentid(0);
         umlProject.setMode(Mode.SANDBOX);
-
-        SystemWideObjectNamePool.umlProject = umlProject;
     }
 
     @Override

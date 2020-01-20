@@ -190,7 +190,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         umlProject = UMLProject.getInstance();
         umlProject.becomeObserver();
         umlProject.addObserver(this);
-        SystemWideObjectNamePool.umlProject = umlProject;
     }
 
     /*
