@@ -44,7 +44,12 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected UndoableEditSupport undoSupport;
 
     public DiagramInternalFrame(String title) {
-        super(title, true, true, false, true);
+//        String title, boolean resizable,
+//                      boolean closable,
+//                      boolean maximizable,
+//                      boolean iconifiable)
+//        super(title, true, true, false, true);
+        super(title, true, false, true, true);
         popup = new JPopupMenu();
         addRename();
         ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
