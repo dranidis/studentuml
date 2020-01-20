@@ -853,7 +853,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dialogText = "Activity Diagram Name: ";
                 break;
             default:
-                dialogText = "";
+                throw new RuntimeException("Unknown diagram (int) type: " + type);
         }
         String modelName = JOptionPane.showInputDialog(dialogText);
         if ((modelName != null) && (modelName.length() > 0)) {
