@@ -52,6 +52,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         super(title, true, false, true, true);
         popup = new JPopupMenu();
         addRename();
+        addDelete();
         ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
@@ -97,12 +98,36 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         popup.add(rename);
     }
 
+    private void addDelete() {
+        JMenuItem delete = new JMenuItem("Delete");
+        ActionListener deleteListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (event.getActionCommand().equals("Delete")) {
+                    deleteDiagram();
+                }
+            }
+        };
+        delete.addActionListener(deleteListener);
+        popup.add(delete);
+    }
+
     private void renameDiagram() {
         String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:");
         if (newName != null && !newName.equals("")) {
             newName = model.getDiagramName().substring(0, model.getDiagramName().indexOf(":")) + ": " + newName;
             model.setName(newName);
             setTitle(newName);
+        }
+    }
+    
+    private void deleteDiagram() {
+        int response = JOptionPane.showConfirmDialog(this,
+            "This action will delete all the diagram data.\nAre you sure to proceed?",
+            "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        if (response == JOptionPane.YES_OPTION) {
+            // the action (defined in ApplicationGUI will remove the diagram from the model
+            doDefaultCloseAction();
         }
     }
 

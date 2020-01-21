@@ -1044,17 +1044,10 @@ public class Application extends JApplet implements Observer, KeyListener {
         }
 
         public void internalFrameClosing(InternalFrameEvent event) {
-            int response = JOptionPane.showConfirmDialog(Application.this,
-                    "Closing this window will discard the diagram data.\nAre you sure to proceed?",
-                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
-            if (response == JOptionPane.YES_OPTION) {
-                //boolean checking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
-                //SystemWideObjectNamePool.getInstance().setRuntimeChecking( false);
-                removeInternalFrame((DiagramInternalFrame) event.getSource());
-                //SystemWideObjectNamePool.getInstance().setRuntimeChecking( checking);
-                //SystemWideObjectNamePool.getInstance().reload();
-            }
+            // closing a frame removes the diagram from the model
+            // closing is only possible from the popup menu "Delete" on the diagram
+            // top bar.
+            removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
 
