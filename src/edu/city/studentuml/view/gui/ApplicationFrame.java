@@ -182,12 +182,11 @@ public class ApplicationFrame extends ApplicationGUI {
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
         }
-        boolean exists = (xmlFileChooser.getSelectedFile().exists());
-        if (exists) {
+        if (xmlFileChooser.getSelectedFile().exists()) {
             int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?", "Confirm",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (existsResponse == JOptionPane.NO_OPTION || existsResponse == JOptionPane.CLOSED_OPTION) {
-                xmlFileChooser.setSelectedFile(new File(getFileName()));
+                return;
             }
         }
         String fileName = xmlFileChooser.getSelectedFile().getName();
@@ -200,6 +199,8 @@ public class ApplicationFrame extends ApplicationGUI {
 
         setFilePath(filePath);
         setFileName(fileName);
+        
+        logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
         umlProject.getInstance().streamToXML(getFilePath());
         setSaved(true);
