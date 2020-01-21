@@ -1117,13 +1117,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         public void internalFrameClosing(InternalFrameEvent event) {
-            int response = JOptionPane.showConfirmDialog(ApplicationGUI.this,
-                    "Closing this window will discard the diagram data.\nAre you sure to proceed?",
-                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
-            if (response == JOptionPane.YES_OPTION) {
-                removeInternalFrame((DiagramInternalFrame) event.getSource());
-            }
+            // closing a frame removes the diagram from the model
+            // closing is only possible from the popup menu "Delete" on the diagram
+            // top bar.
+            removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
 
