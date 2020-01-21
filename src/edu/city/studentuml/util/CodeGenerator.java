@@ -24,141 +24,138 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 //@author Spyros Maniopoulos
-
 public class CodeGenerator {
-	
-	public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
+
+    public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-    private boolean isFileGeneration=true;
+    private boolean isFileGeneration = true;
     private boolean isUpdate = false;
     private static final String INDENT = "  ";
-    
-    
-    public String generateFile(boolean isInUpdateMode,Object classObject, String path,UMLProject umlproject) {
-    	String name = null;
-    	if ( classObject instanceof DesignClass) {
-    		DesignClass cls = (DesignClass) classObject;
-    		name = cls.getName();
-    	}
-    	if ( classObject instanceof Interface) {
-    		Interface interfs = (Interface) classObject;
-    		name = interfs.getName();
-    	}
-        if (name == null || name.length() == 0 || path==null) {
+
+    public String generateFile(boolean isInUpdateMode, Object classObject, String path, UMLProject umlproject) {
+        String name = null;
+        if (classObject instanceof DesignClass) {
+            DesignClass cls = (DesignClass) classObject;
+            name = cls.getName();
+        }
+        if (classObject instanceof Interface) {
+            Interface interfs = (Interface) classObject;
+            name = interfs.getName();
+        }
+        if (name == null || name.length() == 0 || path == null) {
             return null;
         }
-       // Object classifier = modelElement;
-        path =  path + File.separator + umlproject.getName().substring(0,umlproject.getName().lastIndexOf("."));
+        // Object classifier = modelElement;
+        path = path + File.separator + umlproject.getName().substring(0, umlproject.getName().lastIndexOf("."));
         String filename = name + ".java";
         StringBuilder sbPath = new StringBuilder(path);
         if (!path.endsWith(File.separator)) {
             sbPath.append(File.separator);
         }
-        
+
         String pathname = sbPath.toString() + filename;
-      
+
         //now decide whether file exist and need an update or is to be
         //newly generated
         BufferedWriter fos = null;
         File f = new File(pathname);
-        Map<Integer,String> oldLines = new HashMap<Integer,String>();
+        Map<Integer, String> oldLines = new HashMap<Integer, String>();
         String line = null;
         if (!f.isDirectory() && !f.exists()) {
-        	if (!Paths.get(path).toFile().isDirectory()) {
-            if (!f.getParentFile().mkdir()) {
-                LOG.severe(" could not make directory " + path);
-                return null;
+            if (!Paths.get(path).toFile().isDirectory()) {
+                if (!f.getParentFile().mkdir()) {
+                    LOG.severe(" could not make directory " + path);
+                    return null;
+                }
             }
-          }
-        	isFileGeneration = true;
-        }  
-        if (!f.isDirectory() && f.exists() && isInUpdateMode) {
-        	try {
-        		DesignClass cls = null;
-        		Vector classAttributes = new Vector();
-        		Vector methods = new Vector();
-        		Vector sdMethods = new Vector();
-        		int fileIndex=0;
-        		boolean doesNotExist = true;
-        		if(classObject instanceof DesignClass) {
-        			cls = (DesignClass) classObject;
-        			classAttributes = cls.getAttributes();
-        			methods = cls.getMethods();
-        			sdMethods = cls.getSDMethods();
-        		}
-        		if(classObject instanceof Interface) {
-        			Interface infs = (Interface) classObject;
-        			methods = infs.getMethods();
-        		}
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			doesNotExist = true;
-        			if(line.contains(" class ") || line.contains(" interface ") || line.contains("//") || line.trim().isEmpty() || line.contains("}") 
-        					|| line.contains("{") || line.contains("return") || line.contains("import") || line.contains("this.")) {
-        				doesNotExist = false;
-        			}
-        			if(cls!=null) {
-        				if(line.contains(cls.getName())) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<classAttributes.size();i++) {
-        				Attribute classAttribute = (Attribute) classAttributes.get(i);
-        				if (line.contains(classAttribute.getName() + ";")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<methods.size();i++) {
-        				Method method = (Method) methods.get(i);
-        				if (line.contains(method.getName()+"(")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<sdMethods.size();i++) {
-        				Method sdMethod = (Method) sdMethods.get(i);
-        				if (line.contains(sdMethod.getName()+"(")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<sdMethods.size();i++) {
-        				Method sdMethod = (Method) sdMethods.get(i);
-        				List<String> calledMethodsInMethod = sdMethod.getCalledMethods();
-        				for(int y=0;y<calledMethodsInMethod.size();y++) {
-        					String calledMethodInMethod = calledMethodsInMethod.get(y);
-        					if(calledMethodInMethod.contains(".")) {
-        						calledMethodInMethod=calledMethodInMethod.substring(calledMethodInMethod.lastIndexOf(".")+1,calledMethodInMethod.lastIndexOf("("));
-            				}
-	        				if (line.contains(calledMethodInMethod)) {
-	        					doesNotExist = false;
-	        				}
-        				}	
-        			}
-        			if(doesNotExist) {
-        				isUpdate=true; //set true to enable updating
-        				oldLines.put(fileIndex,line);
-        			}
-        			fileIndex++;
-        		}	
-        		fr.close();
-        		br.close();
-        		
-        		
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-        		
+            isFileGeneration = true;
         }
-       
+        if (!f.isDirectory() && f.exists() && isInUpdateMode) {
+            try {
+                DesignClass cls = null;
+                Vector classAttributes = new Vector();
+                Vector methods = new Vector();
+                Vector sdMethods = new Vector();
+                int fileIndex = 0;
+                boolean doesNotExist = true;
+                if (classObject instanceof DesignClass) {
+                    cls = (DesignClass) classObject;
+                    classAttributes = cls.getAttributes();
+                    methods = cls.getMethods();
+                    sdMethods = cls.getSDMethods();
+                }
+                if (classObject instanceof Interface) {
+                    Interface infs = (Interface) classObject;
+                    methods = infs.getMethods();
+                }
+                FileReader fr = new FileReader(f);
+                BufferedReader br = new BufferedReader(fr);
+                while ((line = br.readLine()) != null) {
+                    doesNotExist = true;
+                    if (line.contains(" class ") || line.contains(" interface ") || line.contains("//") || line.trim().isEmpty() || line.contains("}")
+                            || line.contains("{") || line.contains("return") || line.contains("import") || line.contains("this.")) {
+                        doesNotExist = false;
+                    }
+                    if (cls != null) {
+                        if (line.contains(cls.getName())) {
+                            doesNotExist = false;
+                        }
+                    }
+                    for (int i = 0; i < classAttributes.size(); i++) {
+                        Attribute classAttribute = (Attribute) classAttributes.get(i);
+                        if (line.contains(classAttribute.getName() + ";")) {
+                            doesNotExist = false;
+                        }
+                    }
+                    for (int i = 0; i < methods.size(); i++) {
+                        Method method = (Method) methods.get(i);
+                        if (line.contains(method.getName() + "(")) {
+                            doesNotExist = false;
+                        }
+                    }
+                    for (int i = 0; i < sdMethods.size(); i++) {
+                        Method sdMethod = (Method) sdMethods.get(i);
+                        if (line.contains(sdMethod.getName() + "(")) {
+                            doesNotExist = false;
+                        }
+                    }
+                    for (int i = 0; i < sdMethods.size(); i++) {
+                        Method sdMethod = (Method) sdMethods.get(i);
+                        List<String> calledMethodsInMethod = sdMethod.getCalledMethods();
+                        for (int y = 0; y < calledMethodsInMethod.size(); y++) {
+                            String calledMethodInMethod = calledMethodsInMethod.get(y);
+                            if (calledMethodInMethod.contains(".")) {
+                                calledMethodInMethod = calledMethodInMethod.substring(calledMethodInMethod.lastIndexOf(".") + 1, calledMethodInMethod.lastIndexOf("("));
+                            }
+                            if (line.contains(calledMethodInMethod)) {
+                                doesNotExist = false;
+                            }
+                        }
+                    }
+                    if (doesNotExist) {
+                        isUpdate = true; //set true to enable updating
+                        oldLines.put(fileIndex, line);
+                    }
+                    fileIndex++;
+                }
+                fr.close();
+                br.close();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
         //String pathname = path + filename;
         // TODO: package, project basepath
         LOG.info("Generating " + f.getPath());
         String header = generateHeader();
-        String src = generateClassifier(classObject); 
+        String src = generateClassifier(classObject);
         try {
-          fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
-          	fos.write(header);
+            fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+            fos.write(header);
             fos.write(src);
         } catch (IOException exp) {
             LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
@@ -172,49 +169,50 @@ public class CodeGenerator {
                 LOG.severe("FAILED: " + f.getPath());
             }
         }
-        if(isUpdate) {
-        	try {
-	        	FileReader fr2 = new FileReader(f);
-	    		BufferedReader br2 = new BufferedReader(fr2);
-	    		int currLine = 0;
-	    		int extrlines = 0;
-	    		List<String> lines = new ArrayList<String>();
-	    		while((line=br2.readLine()) != null) {
-		        	for (Map.Entry<Integer,String> oldLine : oldLines.entrySet()) {
-		        		if(currLine==(oldLine.getKey())) {
-		        			if(line.trim().isEmpty()) {
-		        				line = line.replace(line, oldLine.getValue());
-		        			}else {
-		        				lines.add(oldLine.getValue());
-		        			}
-		        		}	
-		        	}	
-		        	lines.add(line);
-		        	currLine++;
-	    		}
-	    		br2.close();
-	    		fr2.close();
-	    		BufferedWriter fos2 = new BufferedWriter(new FileWriter(f));
-	    		for(String s:lines) {
-	    			fos2.write(s);
-	    			fos2.write(LINE_SEPARATOR);
-	    		}
-	    		fos2.close();
-        	}catch (IOException e) {
-        		e.printStackTrace();
-        	}
-        }    
-          
+        if (isUpdate) {
+            try {
+                FileReader fr2 = new FileReader(f);
+                BufferedReader br2 = new BufferedReader(fr2);
+                int currLine = 0;
+                int extrlines = 0;
+                List<String> lines = new ArrayList<String>();
+                while ((line = br2.readLine()) != null) {
+                    for (Map.Entry<Integer, String> oldLine : oldLines.entrySet()) {
+                        if (currLine == (oldLine.getKey())) {
+                            if (line.trim().isEmpty()) {
+                                line = line.replace(line, oldLine.getValue());
+                            } else {
+                                lines.add(oldLine.getValue());
+                            }
+                        }
+                    }
+                    lines.add(line);
+                    currLine++;
+                }
+                br2.close();
+                fr2.close();
+                BufferedWriter fos2 = new BufferedWriter(new FileWriter(f));
+                for (String s : lines) {
+                    fos2.write(s);
+                    fos2.write(LINE_SEPARATOR);
+                }
+                fos2.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return pathname;
     }
-    
+
     private String generateHeader() {
-    	StringBuffer imports = new StringBuffer();
-    	imports.append(LINE_SEPARATOR);
-    	imports.append("import java.util.*;").append(LINE_SEPARATOR);
-    	imports.append(LINE_SEPARATOR);
-    	return imports.toString();
+        StringBuffer imports = new StringBuffer();
+        imports.append(LINE_SEPARATOR);
+        imports.append("import java.util.*;").append(LINE_SEPARATOR);
+        imports.append(LINE_SEPARATOR);
+        return imports.toString();
     }
+
     private String generateClassifier(Object cls) {
         StringBuffer returnValue = new StringBuffer();
         StringBuffer start = generateClassifierStart(cls);
@@ -233,7 +231,7 @@ public class CodeGenerator {
         }
         return returnValue.toString();
     }
-    
+
     public StringBuffer generateClassifierStart(Object obj) {
         String sClassifierKeyword;
         StringBuffer sb = new StringBuffer(80);
@@ -241,81 +239,80 @@ public class CodeGenerator {
         sb.append("public ");
         // add base class/interface
         if (obj instanceof DesignClass) {
-	        sClassifierKeyword = "class";
-	        DesignClass cls = (DesignClass) obj;
-	        String classStereotype = cls.getStereotype();
-	        if (classStereotype != null && !classStereotype.isEmpty()){
-	        	sb.append(classStereotype.toLowerCase()).append(" ");
-	        }
-	     // add classifier keyword and classifier name
-	        
-	        sb.append(sClassifierKeyword).append(" ");
-			sb.append(cls.getName());
-	        // add extended class
-			if (cls.getExtendClass() != null) {
-				sb.append(" ").append("extends");
-				sb.append(" ").append(cls.getExtendClass().getName());
-			}
-			 // add implemented interfaces, if needed
-			if (!cls.getImplementInterfaces().isEmpty()) {
-				sb.append(" ").append("implements");
-				sb.append(" ");
-				List <Interface> implementInterfaces = cls.getImplementInterfaces();
-				for (int i=0;i<implementInterfaces.size();i++) {
-					sb.append(implementInterfaces.get(i).getName());
-					if( i != implementInterfaces.size()-1) {
-						sb.append(",");
-					}
-				}
-			}
+            sClassifierKeyword = "class";
+            DesignClass cls = (DesignClass) obj;
+            String classStereotype = cls.getStereotype();
+            if (classStereotype != null && !classStereotype.isEmpty()) {
+                sb.append(classStereotype.toLowerCase()).append(" ");
+            }
+            // add classifier keyword and classifier name
+
+            sb.append(sClassifierKeyword).append(" ");
+            sb.append(cls.getName());
+            // add extended class
+            if (cls.getExtendClass() != null) {
+                sb.append(" ").append("extends");
+                sb.append(" ").append(cls.getExtendClass().getName());
+            }
+            // add implemented interfaces, if needed
+            if (!cls.getImplementInterfaces().isEmpty()) {
+                sb.append(" ").append("implements");
+                sb.append(" ");
+                List<Interface> implementInterfaces = cls.getImplementInterfaces();
+                for (int i = 0; i < implementInterfaces.size(); i++) {
+                    sb.append(implementInterfaces.get(i).getName());
+                    if (i != implementInterfaces.size() - 1) {
+                        sb.append(",");
+                    }
+                }
+            }
         } else if (obj instanceof Interface) {
-        	sClassifierKeyword = "interface";
-        	Interface interfs = (Interface) obj;
-        	sb.append(sClassifierKeyword).append(" ");
-			sb.append(interfs.getName());    	
+            sClassifierKeyword = "interface";
+            Interface interfs = (Interface) obj;
+            sb.append(sClassifierKeyword).append(" ");
+            sb.append(interfs.getName());
         }
-        
-		
+
         // add opening brace
         sb.append(lfBeforeCurly ? (LINE_SEPARATOR + "{") : " {");
 
         return sb;
     }
-    
+
     private StringBuffer generateClassifierBody(Object obj) {
         StringBuffer sb = new StringBuffer();
         Vector classMethods = new Vector();
         Vector classSDMethods = new Vector();
         String className = "";
         boolean first;
-        
-        if( obj instanceof DesignClass) {
-	        DesignClass cls = (DesignClass) obj;	
-	        Vector classAttributes = cls.getAttributes();
-	
-	        if (!classAttributes.isEmpty()) {
-	            sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("// Generated Attributes");
-	            sb.append(LINE_SEPARATOR);
-	        }
-	        
-			for (int i = 0; i < classAttributes.size(); i++) {
-			    sb.append(INDENT);
-	            Attribute classAttribute = (Attribute) classAttributes.get(i);         
-	            sb.append(generateAttribute(classAttribute, false));
-	            }
-			
-			sb.append(LINE_SEPARATOR);
-			className=cls.getName();
-			classMethods = cls.getMethods();
-			classSDMethods = cls.getSDMethods();
-			
+
+        if (obj instanceof DesignClass) {
+            DesignClass cls = (DesignClass) obj;
+            Vector classAttributes = cls.getAttributes();
+
+            if (!classAttributes.isEmpty()) {
+                sb.append(LINE_SEPARATOR);
+                sb.append(INDENT).append("// Generated Attributes");
+                sb.append(LINE_SEPARATOR);
+            }
+
+            for (int i = 0; i < classAttributes.size(); i++) {
+                sb.append(INDENT);
+                Attribute classAttribute = (Attribute) classAttributes.get(i);
+                sb.append(generateAttribute(classAttribute, false));
+            }
+
+            sb.append(LINE_SEPARATOR);
+            className = cls.getName();
+            classMethods = cls.getMethods();
+            classSDMethods = cls.getSDMethods();
+
         }
         // add operations
         if (obj instanceof Interface) {
-	        Interface interfs = (Interface) obj;	
-	        classMethods = interfs.getMethods();
-	        className = interfs.getName();
+            Interface interfs = (Interface) obj;
+            classMethods = interfs.getMethods();
+            className = interfs.getName();
         }
         if (!classMethods.isEmpty() || !classSDMethods.isEmpty()) {
             sb.append(LINE_SEPARATOR);
@@ -323,100 +320,100 @@ public class CodeGenerator {
             sb.append(LINE_SEPARATOR);
         }
 
-		first = true;
-		for (int x = 0; x < classSDMethods.size(); x++) {
-			Method classSDMethod = (Method) classSDMethods.get(x); 
-			if (!classSDMethod.getName().equals("create") && !classSDMethod.getName().equals("destroy")) {
-				for (int y = 0; y < classMethods.size(); y++) {
-					Method classMethod =  (Method) classMethods.get(y); 
-					if (classSDMethod.getName().equals(classMethod.getName())) {
-						classSDMethod.setVisibility(classMethod.getVisibility());
-					}
-				}
-			    if (first) {
-		                 //   sb.append(LINE_SEPARATOR);
-		                }
-			    sb.append(LINE_SEPARATOR);
-	            sb.append(INDENT).append("//Generated Method");
-	            sb.append(LINE_SEPARATOR);
-			    sb.append(INDENT);
-		        sb.append(generateOperation(classSDMethod,obj));
-	
-	            if (lfBeforeCurly) {
-	                sb.append(LINE_SEPARATOR).append(INDENT);
-	            } else {
-	                sb.append(' ');
-	            }
-	            sb.append('{');
-	
-	            sb.append(LINE_SEPARATOR);
-				sb.append(generateMethodBody(classSDMethod,obj));
-				sb.append(INDENT);
-				sb.append("}").append(LINE_SEPARATOR);
-	
-		    first = false;
-		   } 
+        first = true;
+        for (int x = 0; x < classSDMethods.size(); x++) {
+            Method classSDMethod = (Method) classSDMethods.get(x);
+            if (!classSDMethod.getName().equals("create") && !classSDMethod.getName().equals("destroy")) {
+                for (int y = 0; y < classMethods.size(); y++) {
+                    Method classMethod = (Method) classMethods.get(y);
+                    if (classSDMethod.getName().equals(classMethod.getName())) {
+                        classSDMethod.setVisibility(classMethod.getVisibility());
+                    }
+                }
+                if (first) {
+                    //   sb.append(LINE_SEPARATOR);
+                }
+                sb.append(LINE_SEPARATOR);
+                sb.append(INDENT).append("//Generated Method");
+                sb.append(LINE_SEPARATOR);
+                sb.append(INDENT);
+                sb.append(generateOperation(classSDMethod, obj));
+
+                if (lfBeforeCurly) {
+                    sb.append(LINE_SEPARATOR).append(INDENT);
+                } else {
+                    sb.append(' ');
+                }
+                sb.append('{');
+
+                sb.append(LINE_SEPARATOR);
+                sb.append(generateMethodBody(classSDMethod, obj));
+                sb.append(INDENT);
+                sb.append("}").append(LINE_SEPARATOR);
+
+                first = false;
+            }
         }
-		first = true;
-		for (int x = 0; x < classMethods.size(); x++) {
-			Method classMethod = (Method) classMethods.get(x);
-			boolean equal = false;
-			for (int y = 0; y < classSDMethods.size(); y++) {
-				Method tempMethod =  (Method) classSDMethods.get(y); 
-				if (classMethod.getName().equals(tempMethod.getName())) {
-					equal = true;
-				}
-			}
-			if (!equal) {
-				if (!classMethod.getName().equals("create") && !classMethod.getName().equals("destroy")) {
-					 if (first) {
-		                  //  sb.append(LINE_SEPARATOR);
-		                }
-					 sb.append(LINE_SEPARATOR);
-			         sb.append(INDENT).append("//Generated Method");
-			         sb.append(LINE_SEPARATOR);
-					 sb.append(INDENT);
-					 sb.append(generateOperation(classMethod,obj));
-	
-			            if (lfBeforeCurly) {
-			                sb.append(LINE_SEPARATOR).append(INDENT);
-			            } else {
-			                sb.append(' ');
-			            }
-			            sb.append('{');
-	
-			            sb.append(LINE_SEPARATOR);
-						sb.append(generateMethodBody(classMethod,obj));
-						sb.append(INDENT);
-						sb.append("}").append(LINE_SEPARATOR);
-						first = false;
-				}
-			}
-		}   	
+        first = true;
+        for (int x = 0; x < classMethods.size(); x++) {
+            Method classMethod = (Method) classMethods.get(x);
+            boolean equal = false;
+            for (int y = 0; y < classSDMethods.size(); y++) {
+                Method tempMethod = (Method) classSDMethods.get(y);
+                if (classMethod.getName().equals(tempMethod.getName())) {
+                    equal = true;
+                }
+            }
+            if (!equal) {
+                if (!classMethod.getName().equals("create") && !classMethod.getName().equals("destroy")) {
+                    if (first) {
+                        //  sb.append(LINE_SEPARATOR);
+                    }
+                    sb.append(LINE_SEPARATOR);
+                    sb.append(INDENT).append("//Generated Method");
+                    sb.append(LINE_SEPARATOR);
+                    sb.append(INDENT);
+                    sb.append(generateOperation(classMethod, obj));
+
+                    if (lfBeforeCurly) {
+                        sb.append(LINE_SEPARATOR).append(INDENT);
+                    } else {
+                        sb.append(' ');
+                    }
+                    sb.append('{');
+
+                    sb.append(LINE_SEPARATOR);
+                    sb.append(generateMethodBody(classMethod, obj));
+                    sb.append(INDENT);
+                    sb.append("}").append(LINE_SEPARATOR);
+                    first = false;
+                }
+            }
+        }
         return sb;
     }
-    
-    public String generateOperation(Method op,Object obj) {
- 
+
+    public String generateOperation(Method op, Object obj) {
+
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
         nameStr = op.getName();
-        String className="";
-        if(obj instanceof DesignClass) {
-        	className=((DesignClass) obj).getName();
-        }else if(obj instanceof Interface) {
-        	className=((Interface) obj).getName();
+        String className = "";
+        if (obj instanceof DesignClass) {
+            className = ((DesignClass) obj).getName();
+        } else if (obj instanceof Interface) {
+            className = ((Interface) obj).getName();
         }
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // return type
-        if(op.getReturnTypeAsString()=="VOID" && !nameStr.equals(className)) {
-        	sb.append("void").append(' ');
-        }else if(nameStr.equals(className)){
-        	//constructor
-        }else {
-         sb.append(op.getReturnTypeAsString()).append(' ');
-        } 
+        if (op.getReturnTypeAsString() == "VOID" && !nameStr.equals(className)) {
+            sb.append("void").append(' ');
+        } else if (nameStr.equals(className)) {
+            //constructor
+        } else {
+            sb.append(op.getReturnTypeAsString()).append(' ');
+        }
 
         // name and params
         Vector params = op.getParameters();
@@ -437,68 +434,68 @@ public class CodeGenerator {
 
         return sb.toString();
     }
-    
-    private String generateMethodBody(Method op,Object obj) {
-    	
-    	StringBuffer sb = new StringBuffer();
-    	DesignClass dcx= null;
-    	Vector attributes = new Vector<>();
-    	Vector parameters = new Vector<>();
-    	boolean isGetter = false;
-    	if(obj instanceof DesignClass) {
-    		dcx=(DesignClass)obj;
-    		attributes = dcx.getAttributes();
-    	}
-		sb.append(generateCalledMethods(op));
-        
-        if (op != null && dcx!=null) {
-        	Type returnType = op.getReturnType();
-        	String attribute;
-        	String parameter;
-        	if(op.getName().equals(dcx.getName()) && op.getParameters().size()>0) {
-        		sb.append(LINE_SEPARATOR);
-        		sb.append(INDENT+INDENT).append("//Generated constructor setter");
-    			sb.append(LINE_SEPARATOR);
-        	}
-        	for(Object attr:attributes) {
-        		attribute = ((Attribute)attr).getName();
-        		String attributeCapitalized = attribute.substring(0,1).toUpperCase()+attribute.substring(1);
-        		if(op.getName().equals(dcx.getName()) && op.getParameters().size()>0) {
-        			parameters=op.getParameters();
-            		for(Object param:parameters) {
-            			parameter = ((MethodParameter)param).getName();
-            			if(parameter.equals(attribute)) {
-            				sb.append(INDENT+INDENT).append("this."+attribute+" = "+parameter+";");
-                			sb.append(LINE_SEPARATOR);	
-            			}
-            		}
-            	}
-        		if(op.getName().equals("set"+attributeCapitalized) && op.getParameters().size()>0) {
-        			sb.append(INDENT+INDENT).append("//Generated setter");
-        			sb.append(LINE_SEPARATOR);
-        			sb.append(INDENT+INDENT).append("this."+attribute+" = "+op.getParameter(0).getName()+";");
-        			sb.append(LINE_SEPARATOR);
-        		}
-        		if(op.getName().equals("get"+attributeCapitalized)) {
-        			sb.append(INDENT+INDENT).append("//Generated getter");
-        			sb.append(LINE_SEPARATOR);
-        			sb.append(INDENT+INDENT).append("return this."+attribute+";");
-        			sb.append(LINE_SEPARATOR);
-        			isGetter=true;
-        		}
-        	}
+
+    private String generateMethodBody(Method op, Object obj) {
+
+        StringBuffer sb = new StringBuffer();
+        DesignClass dcx = null;
+        Vector attributes = new Vector<>();
+        Vector parameters = new Vector<>();
+        boolean isGetter = false;
+        if (obj instanceof DesignClass) {
+            dcx = (DesignClass) obj;
+            attributes = dcx.getAttributes();
+        }
+        sb.append(generateCalledMethods(op));
+
+        if (op != null && dcx != null) {
+            Type returnType = op.getReturnType();
+            String attribute;
+            String parameter;
+            if (op.getName().equals(dcx.getName()) && op.getParameters().size() > 0) {
+                sb.append(LINE_SEPARATOR);
+                sb.append(INDENT + INDENT).append("//Generated constructor setter");
+                sb.append(LINE_SEPARATOR);
+            }
+            for (Object attr : attributes) {
+                attribute = ((Attribute) attr).getName();
+                String attributeCapitalized = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+                if (op.getName().equals(dcx.getName()) && op.getParameters().size() > 0) {
+                    parameters = op.getParameters();
+                    for (Object param : parameters) {
+                        parameter = ((MethodParameter) param).getName();
+                        if (parameter.equals(attribute)) {
+                            sb.append(INDENT + INDENT).append("this." + attribute + " = " + parameter + ";");
+                            sb.append(LINE_SEPARATOR);
+                        }
+                    }
+                }
+                if (op.getName().equals("set" + attributeCapitalized) && op.getParameters().size() > 0) {
+                    sb.append(INDENT + INDENT).append("//Generated setter");
+                    sb.append(LINE_SEPARATOR);
+                    sb.append(INDENT + INDENT).append("this." + attribute + " = " + op.getParameter(0).getName() + ";");
+                    sb.append(LINE_SEPARATOR);
+                }
+                if (op.getName().equals("get" + attributeCapitalized)) {
+                    sb.append(INDENT + INDENT).append("//Generated getter");
+                    sb.append(LINE_SEPARATOR);
+                    sb.append(INDENT + INDENT).append("return this." + attribute + ";");
+                    sb.append(LINE_SEPARATOR);
+                    isGetter = true;
+                }
+            }
             // pick out return type
-        	if (returnType != null) {
-        		if(!returnType.getName().equals("void") && !returnType.getName().equals("VOID") && !isGetter) {
-        			sb.append(INDENT + INDENT + "// Generated Return").append(LINE_SEPARATOR);
-        			sb.append(INDENT + generateDefaultReturnStatement(returnType));
-        		}  
+            if (returnType != null) {
+                if (!returnType.getName().equals("void") && !returnType.getName().equals("VOID") && !isGetter) {
+                    sb.append(INDENT + INDENT + "// Generated Return").append(LINE_SEPARATOR);
+                    sb.append(INDENT + generateDefaultReturnStatement(returnType));
+                }
             }
         }
-        
+
         return sb.toString();
     }
-    
+
     private String generateDefaultReturnStatement(Type type) {
         if (type == null) {
             return "";
@@ -531,83 +528,82 @@ public class CodeGenerator {
         }
         return INDENT + "return null;" + LINE_SEPARATOR;
     }
-    
-    
+
     private String generateParameter(MethodParameter parameter) {
         StringBuffer sb = new StringBuffer(20);
         sb.append(parameter.getTypeAsString());
-	    sb.append(' ');
+        sb.append(' ');
         sb.append(parameter.getName());
         //TODO: initial value
         return sb.toString();
     }
-    
+
     private String generateAttribute(Attribute attr, boolean update) {
-   
+
         StringBuffer sb = new StringBuffer(80);
         sb.append(generateCoreAttribute(attr));
         sb.append(";");
-        if(!update) {
-        	sb.append(LINE_SEPARATOR);
+        if (!update) {
+            sb.append(LINE_SEPARATOR);
         }
 
         return sb.toString();
     }
-    
+
     public String generateCoreAttribute(Attribute attr) {
         StringBuffer sb = new StringBuffer(80);
         sb.append(attr.getVisibilityName()).append(' ');
         sb.append(attr.getType()).append(' ');
         sb.append(attr.getName());
-   
+
         return sb.toString();
     }
-    
+
     private StringBuffer generateClassifierEnd(Object obj) {
         StringBuffer sb = new StringBuffer();
         String classifierkeyword;
-        if(obj instanceof DesignClass) {
-        	classifierkeyword = "class";
-        	DesignClass cls = (DesignClass) obj;
-        	sb.append(LINE_SEPARATOR);
-    		sb.append("//end of ").append(classifierkeyword);
-    		sb.append(" ").append(cls.getName());
-        	
+        if (obj instanceof DesignClass) {
+            classifierkeyword = "class";
+            DesignClass cls = (DesignClass) obj;
+            sb.append(LINE_SEPARATOR);
+            sb.append("//end of ").append(classifierkeyword);
+            sb.append(" ").append(cls.getName());
+
         }
-        if(obj instanceof Interface) {
-        	classifierkeyword = "interface";
-        	Interface interfs = (Interface) obj;
-        	sb.append(LINE_SEPARATOR);
-    		sb.append("//end of ").append(classifierkeyword);
-    		sb.append(" ").append(interfs.getName());
-        	
+        if (obj instanceof Interface) {
+            classifierkeyword = "interface";
+            Interface interfs = (Interface) obj;
+            sb.append(LINE_SEPARATOR);
+            sb.append("//end of ").append(classifierkeyword);
+            sb.append(" ").append(interfs.getName());
+
         }
-		sb.append(LINE_SEPARATOR);
+        sb.append(LINE_SEPARATOR);
         sb.append("}");
         return sb;
     }
-    
+
     public void setLfBeforeCurly(boolean beforeCurl) {
         lfBeforeCurly = beforeCurl;
     }
-    
+
     public boolean isLfBeforeCurly() {
         return lfBeforeCurly;
     }
-	
+
     public String generateCalledMethods(Method op) {
-    	 StringBuffer sb = new StringBuffer();
-    	 List<String> calledMethods = op.getCalledMethods();
-    	 if (!calledMethods.isEmpty()) {
- 			sb.append(LINE_SEPARATOR);
-             sb.append(INDENT+INDENT).append("// Generated called Methods");
-             sb.append(LINE_SEPARATOR);
- 		}
- 		for (int i=0;i<calledMethods.size();i++) {
- 			sb.append(INDENT+INDENT).append(calledMethods.get(i));
- 			sb.append(LINE_SEPARATOR);
- 		}
-		return sb.toString();
-    	 
+        StringBuffer sb = new StringBuffer();
+        List<String> calledMethods = op.getCalledMethods();
+        if (!calledMethods.isEmpty()) {
+            sb.append(LINE_SEPARATOR);
+            sb.append(INDENT + INDENT).append("// Generated called Methods");
+            sb.append(LINE_SEPARATOR);
+        }
+        for (int i = 0; i < calledMethods.size(); i++) {
+            sb.append(INDENT + INDENT).append(calledMethods.get(i));
+            sb.append(LINE_SEPARATOR);
+        }
+        return sb.toString();
+
     }
 }
