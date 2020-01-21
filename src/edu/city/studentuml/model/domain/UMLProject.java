@@ -67,11 +67,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import static java.lang.System.out;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
+    
+    Logger logger = Logger.getLogger(UMLProject.class.getSimpleName());
 
     private static UMLProject ref = null;
     private NotifierVector diagramModels;
@@ -164,8 +167,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void setSaved(Boolean saved) {
         projectSaved = saved;
-        setChanged();
-        notifyObservers();
+        projectChanged();
     }
 
     public void addDiagram(DiagramModel dm) {
@@ -185,6 +187,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void update(Observable observable, Object object) {
+        String objString = "null";
+        if (object != null) {
+            objString = object.getClass().getSimpleName();
+        }
+        logger.info("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
         projectChanged();
     }
 

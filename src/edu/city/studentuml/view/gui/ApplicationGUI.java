@@ -39,6 +39,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -75,6 +76,8 @@ import javax.swing.tree.TreePath;
  * @author draganbisercic
  */
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
+    
+    Logger logger = Logger.getLogger(ApplicationGUI.class.getSimpleName());
 
     protected static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -782,6 +785,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void update(Observable observable, Object object) {
+        String objString = "null";
+        if (object != null) {
+            objString = object.getClass().getSimpleName();
+        }
+        logger.info("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
 
@@ -875,7 +883,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else {
                 return;
             }
-            model.addObserver(this);
+            // is this necessary?
+            // It is already observing UMLProject
+            // that observer the models.
+//            model.addObserver(this);
+            
             addInternalFrame(model);
             setSaved(false);
         }
