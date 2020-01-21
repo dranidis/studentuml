@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
@@ -38,6 +39,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected DiagramView view;
     protected boolean isActive = false;
     protected boolean isIconified = false;
+    
+    protected AbstractDrawingToolbar toolbar;
 
     // Undo/Redo
     protected UndoManager undoManager;
@@ -175,13 +178,23 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         return model;
     }
 
-    public abstract boolean getSelectionMode();
+    public boolean getSelectionMode() {
+        return toolbar.getSelectionMode();
+    }
 
-    public abstract void setSelectionMode();
+    public void setSelectionMode() {
+        String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
+        System.out.println("SELECT_LAST: " + selectLast);
+        if(selectLast.equals("FALSE")) {
+            toolbar.setSelectionMode();
+        }
+    };
 
     public UndoableEditSupport getUndoSupport() {
         return undoSupport;
     }
 
-    public abstract void refreshUndoRedoButtons();
+    public void refreshUndoRedoButtons() {
+        toolbar.refreshUndoRedoButtons();
+    }
 }

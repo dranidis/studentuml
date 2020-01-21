@@ -32,7 +32,6 @@ import javax.swing.border.LineBorder;
 
 public class DCDInternalFrame extends DiagramInternalFrame {
 
-    private DrawingToolbar toolbar;
     private boolean advancedMode;
 
     public DCDInternalFrame(DCDModel dcdModel, boolean advancedMode) {
@@ -57,23 +56,11 @@ public class DCDInternalFrame extends DiagramInternalFrame {
 
         setSize(550, 450);
 
-        toolbar.dependencyButton.setVisible(advancedMode);
+//        toolbar.dependencyButton.setVisible(advancedMode);
         this.advancedMode = advancedMode;
     }
 
-    public boolean getSelectionMode() {
-        return toolbar.getSelectionMode();
-    }
-
-    public void setSelectionMode() {
-        toolbar.setSelectionMode();
-    }
-
-    public void refreshUndoRedoButtons() {
-        toolbar.refreshUndoRedoButtons();
-    }
-
-    private class DrawingToolbar extends JToolBar implements ActionListener {
+   private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
         private Vector buttons;
         private DCDInternalFrame parent;
@@ -423,7 +410,7 @@ public class DCDInternalFrame extends DiagramInternalFrame {
             }
         }
 
-        private void refreshUndoRedoButtons() {
+        void refreshUndoRedoButtons() {
             undoButton.setToolTipText(undoManager.getUndoPresentationName());
             undoButton.setEnabled(undoManager.canUndo());
 
@@ -437,7 +424,7 @@ public class DCDInternalFrame extends DiagramInternalFrame {
     }
 
     public void setAdvancedMode(boolean advancedMode) {
-        toolbar.dependencyButton.setVisible(advancedMode);
+//        toolbar.dependencyButton.setVisible(advancedMode);
         this.advancedMode = advancedMode;
     }
 }

@@ -39,6 +39,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -75,6 +77,8 @@ import javax.swing.tree.TreePath;
  * @author draganbisercic
  */
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
+
+    Logger logger = Logger.getLogger(ApplicationGUI.class.getSimpleName());
 
     protected static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -138,6 +142,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
 
     public ApplicationGUI(StudentUMLFrame frame) {
+        Preferences.userRoot().put("SELECT_LAST", "TRUE");
+        String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
+        selectLast = Preferences.userRoot().get("SELECT_LAST", "");
+        logger.info("SELECT_LAST:" + selectLast);
         isApplet = false;
         this.frame = frame;
         instance = this;
