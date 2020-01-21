@@ -192,9 +192,10 @@ public class UCDModel extends DiagramModel {
                 element.setSelected(false);
             }
         }
-
-        selected.clear();
-        modelChanged();
+        if (!selected.isEmpty()) {
+            selected.clear();
+            modelChanged();
+        }
     }
 
     public void clear() {
