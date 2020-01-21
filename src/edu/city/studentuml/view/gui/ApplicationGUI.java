@@ -396,7 +396,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (showRuleEditorCheckBoxMenuItem.isSelected() && ruleEditorTabPlacement == -1) {
                     ruleEditorTabPlacement = tabbedPane.getTabCount();
                     tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
-
+                    tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
                 } else {
                     tabbedPane.remove(ruleEditorTabPlacement);
                     ruleEditorTabPlacement = -1;
@@ -415,7 +415,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (showFactsTabCheckBoxMenuItem.isSelected() && factsTreeTabPlacement == -1) {
                     factsTreeTabPlacement = tabbedPane.getTabCount();
                     tabbedPane.insertTab("Facts", null, scrollPane_f, null, tabbedPane.getTabCount());
-
+                    tabbedPane.setSelectedIndex(factsTreeTabPlacement);
                 } else {
                     tabbedPane.remove(factsTreeTabPlacement);
                     factsTreeTabPlacement = -1;
