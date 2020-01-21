@@ -201,7 +201,6 @@ public class Application extends JApplet implements Observer, KeyListener {
         umlProject = UMLProject.getInstance();
         umlProject.becomeObserver();
         umlProject.addObserver(this);
-        SystemWideObjectNamePool.umlProject = umlProject;
 
         centralRepository = umlProject.getCentralRepository();
         repositoryTreeView = new RepositoryTreeView();
@@ -398,8 +397,6 @@ public class Application extends JApplet implements Observer, KeyListener {
         umlProject.setExid(0);
         umlProject.setParentid(0);
         umlProject.setMode(Mode.SANDBOX);
-
-        SystemWideObjectNamePool.umlProject = umlProject;
 
         // setFileName("New Project");
         // SystemWideObjectNamePool.getInstance().clear();

@@ -166,7 +166,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void create() {
         initializeRules();
-        addObserver();
+        SystemWideObjectNamePool.getInstance().addObserver(this);
         createUMLProject();
         setUserId();
         createLookAndFeel();
@@ -183,11 +183,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         SystemWideObjectNamePool.getInstance().init(currentRuleFile);
     }
 
-    private void addObserver() {
-        // observe when changes occur
-        SystemWideObjectNamePool.getInstance().addObserver(this);
-    }
-
     /*
      * initializes a new project
      */
@@ -195,7 +190,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         umlProject = UMLProject.getInstance();
         umlProject.becomeObserver();
         umlProject.addObserver(this);
-        SystemWideObjectNamePool.umlProject = umlProject;
     }
 
     /*
@@ -859,7 +853,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dialogText = "Activity Diagram Name: ";
                 break;
             default:
-                dialogText = "";
+                throw new RuntimeException("Unknown diagram (int) type: " + type);
         }
         String modelName = JOptionPane.showInputDialog(dialogText);
         if ((modelName != null) && (modelName.length() > 0)) {

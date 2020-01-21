@@ -1,6 +1,7 @@
 package edu.city.studentuml.applet;
 
 // Author: Igor Janevski, Ervin Ramollari;
+import edu.city.studentuml.model.domain.UMLProject;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
@@ -254,7 +255,8 @@ public class ServerInterface {
         Vector toRemove = new Vector();
 
         for (int i = 0; i < statuses.getLength(); i++) {
-            if (SystemWideObjectNamePool.umlProject.getParentid() > 0) {
+//            if (SystemWideObjectNamePool.umlProject.getParentid() > 0) {
+            if (UMLProject.getInstance().getParentid() > 0) {
 
                 //statuses.item(i).getParentNode().removeChild(statuses.item(i));
                 toRemove.add(statuses.item(i));
@@ -283,7 +285,8 @@ public class ServerInterface {
         NodeList statuses = result.getElementsByTagName("type");
         Vector toRemove = new Vector();
         for (int i = 0; i < statuses.getLength(); i++) {
-            if (SystemWideObjectNamePool.umlProject.getParentid() == 0) {
+//            if (SystemWideObjectNamePool.umlProject.getParentid() == 0) {
+            if (UMLProject.getInstance().getParentid() == 0) {
                 toRemove.add(statuses.item(i));
             }
         }

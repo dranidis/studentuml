@@ -14,8 +14,11 @@ import java.util.Vector;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 
 public class ConsistencyChecker {
+    
+    Logger logger = Logger.getLogger(ConsistencyChecker.class.getName());
 
     private RuleBasedSystemGenerator rbsg = new RuleBasedSystemGenerator();
     protected RuleBasedEngine rbs = new RuleBasedEngine();
@@ -26,8 +29,8 @@ public class ConsistencyChecker {
     public ConsistencyChecker(String location) {
         //loadRules("rules/rules.txt");
         loadRules(location);
-        System.out.println(location + " (ConsistencyChecker constructor)");
-        System.out.println("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
+        logger.info(location + " (ConsistencyChecker constructor)");
+        logger.info("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
     }
 
     /*
