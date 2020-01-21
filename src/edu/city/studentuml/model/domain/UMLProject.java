@@ -138,13 +138,17 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void becomeObserver() {
-        DiagramModel model;
-        Iterator iterator = diagramModels.iterator();
-
-        while (iterator.hasNext()) {
-            model = (DiagramModel) iterator.next();
-            model.addObserver(this);
-        }
+        /**
+         * Is it necessary to observe the models, since it already
+         * observes the repository?
+         */
+//        DiagramModel model;
+//        Iterator iterator = diagramModels.iterator();
+//
+//        while (iterator.hasNext()) {
+//            model = (DiagramModel) iterator.next();
+//            model.addObserver(this);
+//        }
 
         repository.addObserver(this);
     }
