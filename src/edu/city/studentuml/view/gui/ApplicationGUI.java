@@ -950,16 +950,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * opens appropriate frames based on a vector of diagram model objects
      */
-    private void openFrames(Vector diagramModels) {
-        DiagramModel model;
-        Iterator iterator = diagramModels.iterator();
-
-        while (iterator.hasNext()) {
-            model = (DiagramModel) iterator.next();
-            model.addObserver(this);
-            addInternalFrame(model);
-        }
-    }
+//    private void openFrames(Vector diagramModels) {
+//        DiagramModel model;
+//        Iterator iterator = diagramModels.iterator();
+//
+//        while (iterator.hasNext()) {
+//            model = (DiagramModel) iterator.next();
+//            model.addObserver(this);
+//            addInternalFrame(model);
+//        }
+//    }
 
     /*
      * closes all existing internal frames (diagrams) in the application
@@ -1169,6 +1169,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     protected void setSaved(boolean projectSaved) {
+        umlProject.setSaved(projectSaved);
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }

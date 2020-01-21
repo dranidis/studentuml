@@ -1,7 +1,6 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
-import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -11,7 +10,6 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -126,8 +124,7 @@ public class ApplicationFrame extends ApplicationGUI {
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
         
         umlProject.loadFromXML(file);
-        
-        setSaved(true);
+
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         repositoryTreeView.setUMLProject(umlProject);
@@ -142,7 +139,12 @@ public class ApplicationFrame extends ApplicationGUI {
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
+
 //        */
+
+        setSaved(true);
+        logger.info("Opened project");
+
         return true;
     }
 
