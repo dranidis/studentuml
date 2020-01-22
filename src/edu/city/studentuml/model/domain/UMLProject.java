@@ -157,7 +157,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void setSaved(Boolean saved) {
         projectSaved = saved;
-        projectChanged();
+        /**
+         * Why is projectChagend called when we save a project?
+         * to update the title?
+         */
+//        projectChanged();
+        setChanged();
+        notifyObservers();
     }
 
     public void addDiagram(DiagramModel dm) {
