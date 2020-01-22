@@ -184,7 +184,6 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     public void setSelectionMode() {
         String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
-        System.out.println("SELECT_LAST: " + selectLast);
         if(selectLast.equals("FALSE")) {
             toolbar.setSelectionMode();
         }
