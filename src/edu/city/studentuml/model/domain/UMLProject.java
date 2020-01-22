@@ -156,6 +156,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void setSaved(Boolean saved) {
+        logger.info("Observers: " + this.countObservers());
         projectSaved = saved;
         /**
          * Why is projectChagend called when we save a project?
@@ -183,6 +184,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
+        logger.info("Observers: " + this.countObservers());
         projectSaved = false;
         setChanged();
         notifyObservers();

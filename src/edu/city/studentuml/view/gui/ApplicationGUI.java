@@ -823,8 +823,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             objString = object.getClass().getSimpleName();
         }
         logger.info("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
-        setSaveMenuActionEnabled(!umlProject.isSaved());
-        toolbar.setSaveActionEnabled(!umlProject.isSaved());
 
         if (object != null && object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
@@ -854,6 +852,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             if (factsTree != null) {
                 factsTree.setModel(facts);
             }
+            
+            umlProject.setSaved(false);
+            setSaveActionState();
         }
     }
 
@@ -922,7 +923,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 //            model.addObserver(this);
             
             addInternalFrame(model);
-            setSaved(false);
+            /**
+             * setSaved is called within addInternalFrame
+             */
+//            setSaveActionState(false);
         }
     }
 
@@ -1064,7 +1068,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             vetoException.printStackTrace();
         }
 
-        setSaved(false);
+        setSaveActionState();
     }
 
     /*
@@ -1077,7 +1081,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.dispose();
         desktopPane.remove(frame);
         openFrameCounter--;
-        setSaved(false);
+        setSaveActionState();
     }
 
     /*
@@ -1213,8 +1217,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
     }
 
-    protected void setSaved(boolean projectSaved) {
-        umlProject.setSaved(projectSaved);
+    protected void setSaveActionState() {
+        /**
+         * UMLproject already knows whether it is saved
+         */
+//        umlProject.setSaveActionState(projectSaved);
+
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }
