@@ -16,7 +16,6 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.ApplicationGUI;
@@ -32,7 +31,6 @@ import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
@@ -42,20 +40,11 @@ import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
 
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -63,10 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
-import static java.lang.System.out;
 
 import org.w3c.dom.Element;
 
@@ -505,7 +491,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
                   String genPath = javaGenerator.generateFile(isInUpdateMode,interfs,projectPath,this);
-                  out.println("Generated in: " + genPath);
                   if(genPath!=null) {
                 	  genFilesCount++;
                   }  
@@ -529,7 +514,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  interfs= (Interface) association.getClassB();
             	  }
         		  if(association.getDirection()==1) {
-        			  out.println("A->B");
             		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
             			  if(association.getClassB() instanceof DesignClass) {
             				  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("List<"+dc2.getName()+">")));
@@ -548,7 +532,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  
         		  }else
         		  if(association.getDirection()==2) {
-        			  out.println("B->A");
             		  if(association.getRoleA().getMultiplicity() !=null && association.getRoleA().getMultiplicity().contains("*")) {
             			  if(association.getClassA() instanceof DesignClass) {
             				  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType("List<"+dc.getName()+">")));  
@@ -566,7 +549,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  }
         		  }else
         		   if(association.getDirection()==3 || association.getDirection()==0) {
-                	  out.println("Bi");
                 	  if(association.getClassA() instanceof DesignClass && association.getClassB() instanceof DesignClass) {
 	            		  if(association.getRoleB().getMultiplicity() !=null && association.getRoleB().getMultiplicity().contains("*")) {
 	            			  dc.addAttribute(new Attribute(association.getRoleB().getName(),new DataType("List<"+dc2.getName()+">"))); 
@@ -579,7 +561,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	            			  dc2.addAttribute(new Attribute(association.getRoleA().getName(),new DataType(dc.getName())));  
 	            		  }
                 	  }else {
-                		  out.println("Biderectional association not applicable in interfaces");
+//                		  out.println("Biderectional association not applicable in interfaces");
                 	  }
             	  }	   
               }else
@@ -602,7 +584,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  interfs= (Interface) aggregation.getClassB();
             	  }
         		  if(aggregation.getDirection()==1) {
-        			  out.println("A->B");
             		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
             			  if(aggregation.getClassB() instanceof DesignClass) {
             				  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("List<"+dc2.getName()+">")));
@@ -621,7 +602,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  
         		  }else
         		  if(aggregation.getDirection()==2 || aggregation.getDirection()==0) {
-        			  out.println("B->A");
             		  if(aggregation.getRoleA().getMultiplicity() !=null && aggregation.getRoleA().getMultiplicity().contains("*")) {
             			  if(aggregation.getClassA() instanceof DesignClass) {
             				  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType("List<"+dc.getName()+">")));  
@@ -639,7 +619,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             		  }
         		  }else
         		   if(aggregation.getDirection()==3) {
-                	  out.println("Bi");
                 	  if(aggregation.getClassA() instanceof DesignClass && aggregation.getClassB() instanceof DesignClass) {
 	            		  if(aggregation.getRoleB().getMultiplicity() !=null && aggregation.getRoleB().getMultiplicity().contains("*")) {
 	            			  dc.addAttribute(new Attribute(aggregation.getRoleB().getName(),new DataType("List<"+dc2.getName()+">"))); 
@@ -652,7 +631,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	            			  dc2.addAttribute(new Attribute(aggregation.getRoleA().getName(),new DataType(dc.getName())));  
 	            		  }
                 	  }else {
-                		  out.println("Biderectional association not applicable in interfaces");
+//                		  out.println("Biderectional association not applicable in interfaces");
                 	  }
             	  }	   
               } 
@@ -762,7 +741,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
   	                		   dc.addSDMethod(sdMethod);
   	                	   }
   	                	   sdMethod.setIterative(cm.isIterative());
-  	                	   out.println("AddedSDMethod: " + sdMethod);
   	                	   if (dc2 != null) {
   	                		 dc2 = (DesignClass) sdm.getSource().getClassifier();
 		                	  
@@ -868,7 +846,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
 	    	String projectPath = new File(this.getFilepath()).getParent();
 	        String genPath = javaGenerator.generateFile(isInUpdateMode,dci,projectPath,this);
-	        out.println("Generated in: " + genPath);
 		    if(genPath!=null) {
 		    	genFilesCount++;
 		    }

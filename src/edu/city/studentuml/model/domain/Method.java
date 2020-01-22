@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import static java.lang.System.out;
 
 import org.w3c.dom.Element;
 

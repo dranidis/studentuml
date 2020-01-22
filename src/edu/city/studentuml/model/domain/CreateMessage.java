@@ -8,16 +8,18 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
-import static java.lang.System.out;
 
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
-	
-	 private NotifierVector parameters;
+
+    Logger logger = Logger.getLogger(CreateMessage.class.getName());
+
+    private NotifierVector parameters;
 
     public CreateMessage(RoleClassifier from, RoleClassifier to) {
         super(from, to);
@@ -25,27 +27,28 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public String toString() {
-        return getRank() + ": create("+getParametersString()+")";
+        return getRank() + ": create(" + getParametersString() + ")";
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer,
             Object instance) {
-    	parameters.clear();
-    	try {
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
-    	}catch(Exception e) {
-    		out.println("No parameters");
-    	}
+        parameters.clear();
+        try {
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+        } catch (Exception e) {
+            logger.severe("No parameters");
+            e.printStackTrace();
+        }
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
-        
+
         streamer.streamObjects(streamer.addChild(node, "parameters"), parameters.iterator());
 
     }
-    
+
     public void addParameter(MessageParameter p) {
         parameters.add(p);
     }
@@ -81,7 +84,7 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
         return null;
     }
-    
+
     public String getParametersString() {
         String parametersString = "";
         Iterator iterator = parameters.iterator();
@@ -102,7 +105,7 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
         return parametersString;
     }
-    
+
     public Vector getSDMethodParameters() {
         Iterator iterator = parameters.iterator();
         MessageParameter param;
@@ -110,18 +113,19 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
         while (iterator.hasNext()) {
             param = (MessageParameter) iterator.next();
-            String [] parameterStr = param.getName().split("\\s+");
+            String[] parameterStr = param.getName().split("\\s+");
             try {
-            	Type parameterType = new DataType (parameterStr[0]);
-	    		String parameter = parameterStr[1];
-	    		methodParameters.add(new MethodParameter(parameter,parameterType));
-            }catch(ArrayIndexOutOfBoundsException e) {
-            	out.println("Wrong Parameter");
-            } 
+                Type parameterType = new DataType(parameterStr[0]);
+                String parameter = parameterStr[1];
+                methodParameters.add(new MethodParameter(parameter, parameterType));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                logger.severe("Wrong Parameter");
+                e.printStackTrace();
+            }
         }
         return methodParameters;
     }
-    
+
     public CreateMessage clone() {
         CreateMessage copyCreateMessage = new CreateMessage(getSource(), getTarget());
 
