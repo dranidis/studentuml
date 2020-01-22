@@ -185,8 +185,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void initializeRules() {
-        simpleRulesFile = getResource(Constants.RULES_DIR + "simplerules.txt");
-        advancedRulesFile = getResource(Constants.RULES_DIR + "advancedrules.txt");
+        simpleRulesFile = getResource(Constants.RULES_SIMPLE);
+        advancedRulesFile = getResource(Constants.RULES_ADVANCED);
         currentRuleFile = advancedRulesFile;
 
         // set the rule file and construct the consistency checker
