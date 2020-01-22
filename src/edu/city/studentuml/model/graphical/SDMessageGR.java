@@ -48,6 +48,8 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public void draw(Graphics2D g) {
+        int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
+
         SDMessage message = getMessage();
 
         Stroke originalStroke = g.getStroke();
@@ -93,7 +95,7 @@ public abstract class SDMessageGR extends GraphicalElement {
             int textX = (lineWidth - (int) bounds.getWidth()) / 2 - (int) bounds.getX();
             int messageStartX = Math.min(getStartingX(), getEndingX());
 
-            g.drawString(messageText, messageStartX + textX, getY() - 5);
+            g.drawString(messageText, messageStartX + textX, getY() - messageDY);
         } else // handle reflective message rendering 'ad-hoc'
         {
             //Stroke originalStroke = g.getStroke();
@@ -118,7 +120,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             String messageText = message.toString();
 
-            g.drawString(messageText, getStartingX() + 5, getY() - 5);
+            g.drawString(messageText, getStartingX() + 5, getY() - messageDY);
 
 
         }
