@@ -40,6 +40,7 @@ import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -139,8 +140,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected int openFrameCounter = 0;
     public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
+    private JCheckBoxMenuItem selectLastCheckBoxMenuItem;
 
     public ApplicationGUI(StudentUMLFrame frame) {
+        if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
+            Preferences.userRoot().put("SELECT_LAST", "TRUE");
+        }
+        String selectLast = Preferences.userRoot().get("SELECT_LAST", "");
+        logger.info("SELECT_LAST:" + selectLast);
         isApplet = false;
         this.frame = frame;
         instance = this;
@@ -178,8 +185,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void initializeRules() {
-        simpleRulesFile = getResource(Constants.RULES_DIR + "simplerules.txt");
-        advancedRulesFile = getResource(Constants.RULES_DIR + "advancedrules.txt");
+        simpleRulesFile = getResource(Constants.RULES_SIMPLE);
+        advancedRulesFile = getResource(Constants.RULES_ADVANCED);
         currentRuleFile = advancedRulesFile;
 
         // set the rule file and construct the consistency checker
@@ -365,9 +372,31 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void createPreferencesSubmenu() {
         preferencesMenu = new JMenu();
-        preferencesMenu.setText("Preferences ->");
+        preferencesMenu.setText("Preferences");
         editMenu.add(preferencesMenu);
 
+        selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
+        selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");
+        selectLastCheckBoxMenuItem.setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
+                + " the need to select it again. <br>"
+                + "If this is disabled the selection is always reset to the selection arrow.</html>");
+        selectLastCheckBoxMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (selectLastCheckBoxMenuItem.isSelected()) {
+                    Preferences.userRoot().put("SELECT_LAST", "TRUE");
+                } else {
+                    Preferences.userRoot().put("SELECT_LAST", "FALSE");
+                }
+            }
+        });
+        
+        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals("TRUE") ? true : false;
+        selectLastCheckBoxMenuItem.setSelected(selectLastPref);
+        preferencesMenu.add(selectLastCheckBoxMenuItem);
+
+        preferencesMenu.addSeparator();
+        
         enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
         enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
@@ -399,7 +428,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (showRuleEditorCheckBoxMenuItem.isSelected() && ruleEditorTabPlacement == -1) {
                     ruleEditorTabPlacement = tabbedPane.getTabCount();
                     tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
-
+                    tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
                 } else {
                     tabbedPane.remove(ruleEditorTabPlacement);
                     ruleEditorTabPlacement = -1;
@@ -418,7 +447,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (showFactsTabCheckBoxMenuItem.isSelected() && factsTreeTabPlacement == -1) {
                     factsTreeTabPlacement = tabbedPane.getTabCount();
                     tabbedPane.insertTab("Facts", null, scrollPane_f, null, tabbedPane.getTabCount());
-
+                    tabbedPane.setSelectedIndex(factsTreeTabPlacement);
                 } else {
                     tabbedPane.remove(factsTreeTabPlacement);
                     factsTreeTabPlacement = -1;
@@ -962,16 +991,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * opens appropriate frames based on a vector of diagram model objects
      */
-    private void openFrames(Vector diagramModels) {
-        DiagramModel model;
-        Iterator iterator = diagramModels.iterator();
-
-        while (iterator.hasNext()) {
-            model = (DiagramModel) iterator.next();
-            model.addObserver(this);
-            addInternalFrame(model);
-        }
-    }
+//    private void openFrames(Vector diagramModels) {
+//        DiagramModel model;
+//        Iterator iterator = diagramModels.iterator();
+//
+//        while (iterator.hasNext()) {
+//            model = (DiagramModel) iterator.next();
+//            model.addObserver(this);
+//            addInternalFrame(model);
+//        }
+//    }
 
     /*
      * closes all existing internal frames (diagrams) in the application
@@ -1181,6 +1210,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     protected void setSaved(boolean projectSaved) {
+        umlProject.setSaved(projectSaved);
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }

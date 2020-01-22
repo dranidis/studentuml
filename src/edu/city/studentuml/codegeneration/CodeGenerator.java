@@ -1,4 +1,4 @@
-package edu.city.studentuml.util;
+package edu.city.studentuml.codegeneration;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignClass;
@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //@author Spyros Maniopoulos
@@ -49,7 +50,9 @@ public class CodeGenerator {
             return null;
         }
        // Object classifier = modelElement;
-        path =  path + File.separator + umlproject.getName().substring(0,umlproject.getName().lastIndexOf("."));
+       String uname = umlproject.getFilename();
+
+        path =  path + File.separator + uname.substring(0, uname.lastIndexOf("."));
         String filename = name + ".java";
         StringBuilder sbPath = new StringBuilder(path);
         if (!path.endsWith(File.separator)) {
@@ -153,7 +156,7 @@ public class CodeGenerator {
        
         //String pathname = path + filename;
         // TODO: package, project basepath
-        LOG.info("Generating " + f.getPath());
+        LOG.log(Level.FINE, "Generating " + f.getPath());
         String header = generateHeader();
         String src = generateClassifier(classObject); 
         try {

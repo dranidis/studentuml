@@ -8,14 +8,16 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
-import static java.lang.System.out;
 
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public class CallMessage extends SDMessage implements IXMLCustomStreamable {
+    
+    Logger logger = Logger.getLogger(CallMessage.class.getName());
 
     private GenericOperation genericOperation;
     private boolean iterative;
@@ -207,7 +209,8 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 	    		String parameter = parameterStr[1];
 	    		methodParameters.add(new MethodParameter(parameter,parameterType));
             }catch(ArrayIndexOutOfBoundsException e) {
-            	out.println("Wrong Parameter");
+            	logger.info("Wrong Parameter");
+                e.printStackTrace();
             } 
         }
         return methodParameters;
