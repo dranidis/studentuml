@@ -39,6 +39,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -75,6 +77,8 @@ import javax.swing.tree.TreePath;
  * @author draganbisercic
  */
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
+
+    Logger logger = Logger.getLogger(ApplicationGUI.class.getSimpleName());
 
     protected static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -136,8 +140,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected int openFrameCounter = 0;
     public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
+    private JCheckBoxMenuItem selectLastCheckBoxMenuItem;
 
     public ApplicationGUI(StudentUMLFrame frame) {
+        if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
+            Preferences.userRoot().put("SELECT_LAST", "TRUE");
+        }
+        String selectLast = Preferences.userRoot().get("SELECT_LAST", "");
+        logger.info("SELECT_LAST:" + selectLast);
         isApplet = false;
         this.frame = frame;
         instance = this;
@@ -362,9 +372,29 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void createPreferencesSubmenu() {
         preferencesMenu = new JMenu();
-        preferencesMenu.setText("Preferences ->");
+        preferencesMenu.setText("Preferences");
         editMenu.add(preferencesMenu);
 
+        selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
+        selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");
+        selectLastCheckBoxMenuItem.setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
+                + "the need to select it again. If this is disabled the the selection is always reset to the selection arrow.</html>");
+        selectLastCheckBoxMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (selectLastCheckBoxMenuItem.isSelected()) {
+                    Preferences.userRoot().put("SELECT_LAST", "TRUE");
+                } else {
+                    Preferences.userRoot().put("SELECT_LAST", "FALSE");
+                }
+            }
+        });
+        
+        selectLastCheckBoxMenuItem.setSelected(true);
+        preferencesMenu.add(selectLastCheckBoxMenuItem);
+
+        preferencesMenu.addSeparator();
+        
         enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
         enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");

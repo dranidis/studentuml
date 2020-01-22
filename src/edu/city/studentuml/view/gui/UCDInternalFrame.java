@@ -34,7 +34,6 @@ import javax.swing.border.LineBorder;
  */
 public class UCDInternalFrame extends DiagramInternalFrame {
 
-    private DrawingToolbar toolbar;
     private UseCaseResizeWithCoveredElementsController resizeController;
 
     public UCDInternalFrame(UCDModel ucdModel) {
@@ -81,22 +80,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
         resizeController.setSelectionMode(getSelectionMode());
     }
 
-    @Override
-    public boolean getSelectionMode() {
-        return toolbar.getSelectionMode();
-    }
-
-    @Override
-    public void setSelectionMode() {
-        toolbar.setSelectionMode();
-    }
-
-    @Override
-    public void refreshUndoRedoButtons() {
-        toolbar.refreshUndoRedoButtons();
-    }
-
-    private class DrawingToolbar extends JToolBar implements ActionListener {
+    private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
         private Vector buttons;
         private UCDInternalFrame parent;
@@ -429,7 +413,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
             }
         }
 
-        private void refreshUndoRedoButtons() {
+        void refreshUndoRedoButtons() {
             undoButton.setToolTipText(undoManager.getUndoPresentationName());
             undoButton.setEnabled(undoManager.canUndo());
 

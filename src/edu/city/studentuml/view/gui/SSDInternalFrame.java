@@ -32,8 +32,6 @@ import javax.swing.border.LineBorder;
  */
 public class SSDInternalFrame extends DiagramInternalFrame {
 
-    private DrawingToolbar toolbar;
-
     public SSDInternalFrame(SSDModel ssdModel) {
         super(ssdModel.getDiagramName());
         model = ssdModel;
@@ -57,19 +55,7 @@ public class SSDInternalFrame extends DiagramInternalFrame {
         setSize(550, 450);
     }
 
-    public boolean getSelectionMode() {
-        return toolbar.getSelectionMode();
-    }
-
-    public void setSelectionMode() {
-        toolbar.setSelectionMode();
-    }
-
-    public void refreshUndoRedoButtons() {
-        toolbar.refreshUndoRedoButtons();
-    }
-
-    private class DrawingToolbar extends JToolBar implements ActionListener {
+   private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
         private Vector buttons;
         private JToggleButton selectionButton;
@@ -320,7 +306,7 @@ public class SSDInternalFrame extends DiagramInternalFrame {
             }
         }
 
-        private void refreshUndoRedoButtons() {
+        void refreshUndoRedoButtons() {
             undoButton.setToolTipText(undoManager.getUndoPresentationName());
             undoButton.setEnabled(undoManager.canUndo());
 

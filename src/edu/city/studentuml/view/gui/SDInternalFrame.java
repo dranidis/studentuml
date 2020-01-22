@@ -32,8 +32,6 @@ import javax.swing.border.LineBorder;
 
 public class SDInternalFrame extends DiagramInternalFrame {
 
-    private DrawingToolbar toolbar;
-
     public SDInternalFrame(SDModel sdModel) {
         super(sdModel.getDiagramName());
         model = sdModel;
@@ -57,19 +55,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
         setSize(550, 450);
     }
 
-    public boolean getSelectionMode() {
-        return toolbar.getSelectionMode();
-    }
-
-    public void setSelectionMode() {
-        toolbar.setSelectionMode();
-    }
-
-    public void refreshUndoRedoButtons() {
-        toolbar.refreshUndoRedoButtons();
-    }
-
-    private class DrawingToolbar extends JToolBar implements ActionListener {
+    private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
         private JToggleButton actorButton;
         private Vector buttons;
@@ -380,7 +366,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
             }
         }
 
-        private void refreshUndoRedoButtons() {
+        void refreshUndoRedoButtons() {
             undoButton.setToolTipText(undoManager.getUndoPresentationName());
             undoButton.setEnabled(undoManager.canUndo());
 
