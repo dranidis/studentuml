@@ -162,7 +162,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void addDiagram(DiagramModel dm) {
         diagramModels.add(dm);
-        dm.addObserver(this);
+        /**
+         * is it necessary to observe the diagram?
+         * It already observer the CentralRepository.
+         */
+//        dm.addObserver(this);
+        
         setSaved(false);
     }
 
