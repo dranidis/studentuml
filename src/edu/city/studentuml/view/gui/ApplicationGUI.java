@@ -378,7 +378,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
         selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");
         selectLastCheckBoxMenuItem.setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
-                + "the need to select it again. If this is disabled the the selection is always reset to the selection arrow.</html>");
+                + " the need to select it again. <br>"
+                + "If this is disabled the selection is always reset to the selection arrow.</html>");
         selectLastCheckBoxMenuItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -390,7 +391,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
         });
         
-        selectLastCheckBoxMenuItem.setSelected(true);
+        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals("TRUE") ? true : false;
+        selectLastCheckBoxMenuItem.setSelected(selectLastPref);
         preferencesMenu.add(selectLastCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();
