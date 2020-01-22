@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
@@ -38,15 +39,23 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected DiagramView view;
     protected boolean isActive = false;
     protected boolean isIconified = false;
+    
+    protected AbstractDrawingToolbar toolbar;
 
     // Undo/Redo
     protected UndoManager undoManager;
     protected UndoableEditSupport undoSupport;
 
     public DiagramInternalFrame(String title) {
-        super(title, true, true, false, true);
+//        String title, boolean resizable,
+//                      boolean closable,
+//                      boolean maximizable,
+//                      boolean iconifiable)
+//        super(title, true, true, false, true);
+        super(title, true, false, true, true);
         popup = new JPopupMenu();
         addRename();
+        addDelete();
         ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
@@ -92,12 +101,36 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         popup.add(rename);
     }
 
+    private void addDelete() {
+        JMenuItem delete = new JMenuItem("Delete");
+        ActionListener deleteListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (event.getActionCommand().equals("Delete")) {
+                    deleteDiagram();
+                }
+            }
+        };
+        delete.addActionListener(deleteListener);
+        popup.add(delete);
+    }
+
     private void renameDiagram() {
         String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:");
         if (newName != null && !newName.equals("")) {
             newName = model.getDiagramName().substring(0, model.getDiagramName().indexOf(":")) + ": " + newName;
             model.setName(newName);
             setTitle(newName);
+        }
+    }
+    
+    private void deleteDiagram() {
+        int response = JOptionPane.showConfirmDialog(this,
+            "This action will delete all the diagram data.\nAre you sure to proceed?",
+            "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        if (response == JOptionPane.YES_OPTION) {
+            // the action (defined in ApplicationGUI will remove the diagram from the model
+            doDefaultCloseAction();
         }
     }
 
@@ -145,13 +178,22 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         return model;
     }
 
-    public abstract boolean getSelectionMode();
+    public boolean getSelectionMode() {
+        return toolbar.getSelectionMode();
+    }
 
-    public abstract void setSelectionMode();
+    public void setSelectionMode() {
+        String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
+        if(selectLast.equals("FALSE")) {
+            toolbar.setSelectionMode();
+        }
+    };
 
     public UndoableEditSupport getUndoSupport() {
         return undoSupport;
     }
 
-    public abstract void refreshUndoRedoButtons();
+    public void refreshUndoRedoButtons() {
+        toolbar.refreshUndoRedoButtons();
+    }
 }

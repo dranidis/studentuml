@@ -1,7 +1,6 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
-import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -11,7 +10,6 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -87,7 +85,6 @@ public class ApplicationFrame extends ApplicationGUI {
         }
         SystemWideObjectNamePool.getInstance().clear();
         SystemWideObjectNamePool.getInstance().reload();
-        SystemWideObjectNamePool.umlProject = umlProject;
     }
 
     private void setFileName(String name) {
@@ -127,8 +124,7 @@ public class ApplicationFrame extends ApplicationGUI {
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
         
         umlProject.loadFromXML(file);
-        
-        setSaved(true);
+
         umlProject.becomeObserver();
         umlProject.addObserver(this);
         repositoryTreeView.setUMLProject(umlProject);
@@ -143,7 +139,12 @@ public class ApplicationFrame extends ApplicationGUI {
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
+
 //        */
+
+        setSaved(true);
+        logger.info("Opened project");
+
         return true;
     }
 
@@ -181,12 +182,11 @@ public class ApplicationFrame extends ApplicationGUI {
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
         }
-        boolean exists = (xmlFileChooser.getSelectedFile().exists());
-        if (exists) {
+        if (xmlFileChooser.getSelectedFile().exists()) {
             int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?", "Confirm",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (existsResponse == JOptionPane.NO_OPTION || existsResponse == JOptionPane.CLOSED_OPTION) {
-                xmlFileChooser.setSelectedFile(new File(getFileName()));
+                return;
             }
         }
         String fileName = xmlFileChooser.getSelectedFile().getName();
@@ -199,6 +199,8 @@ public class ApplicationFrame extends ApplicationGUI {
 
         setFilePath(filePath);
         setFileName(fileName);
+        
+        logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
         umlProject.getInstance().streamToXML(getFilePath());
         setSaved(true);

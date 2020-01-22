@@ -4,6 +4,8 @@ import edu.city.studentuml.view.gui.DocumentSizeFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -43,7 +45,11 @@ public class RuleEditor extends JPanel {
                 return false;
             }
         };
-        //textPane.setEditable( false);//FIXME: STAVI GO NA KRAJ TRUE
+        /**
+         * TODO: disabled till save is fixed
+         */
+        textPane.setEditable(false);//FIXME: STAVI GO NA KRAJ TRUE
+        
         textPane.setCaretPosition(0);
         textPane.setMargin(new Insets(5, 5, 5, 5));
         StyledDocument styledDoc = textPane.getStyledDocument();
@@ -207,6 +213,9 @@ public class RuleEditor extends JPanel {
         inputMap.put(key, DefaultEditorKit.pasteAction);
 
         //Ctrl-s save
+        /**
+         * needs fixing!
+         */
         Action save = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -232,32 +241,35 @@ public class RuleEditor extends JPanel {
     }
 
     protected void initDocument() {
-        /* BufferedReader objBrIn;
+        BufferedReader objBrIn;
         try {
-        objBrIn = new BufferedReader(new FileReader(new File("rules/" + currentRuleFile)));
-        String strTemp;
-        StringBuffer strOut = new StringBuffer();
+            URL url = new URL(currentRuleFile);
+            URLConnection conn = url.openConnection();
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
 
-        while ((strTemp = objBrIn.readLine()) != null) {
-        strOut.append(strTemp).append(newline);
-        }
-        SimpleAttributeSet attrs = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(attrs, "Courier New");
-        StyleConstants.setFontSize(attrs, 14);
+            objBrIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String strTemp;
+            StringBuffer strOut = new StringBuffer();
 
-        textPane.setCharacterAttributes( attrs, true);
-        textPane.setText(strOut.toString());
+            while ((strTemp = objBrIn.readLine()) != null) {
+                strOut.append(strTemp).append(newline);
+            }
+            SimpleAttributeSet attrs = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(attrs, "Courier New");
+            StyleConstants.setFontSize(attrs, 11);
 
-        objBrIn.close();
+            textPane.setCharacterAttributes(attrs, true);
+            textPane.setText(strOut.toString());
+
+            objBrIn.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        catch( FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        }
-        catch( IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        } */
     }
 
     //The following two methods allow us to find an

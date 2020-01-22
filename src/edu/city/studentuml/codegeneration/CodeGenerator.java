@@ -1,4 +1,4 @@
-package edu.city.studentuml.util;
+package edu.city.studentuml.codegeneration;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignClass;
@@ -7,10 +7,6 @@ import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.util.NotifierVector;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,23 +15,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
-import static java.lang.System.out;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //@author Spyros Maniopoulos
@@ -64,7 +50,9 @@ public class CodeGenerator {
             return null;
         }
        // Object classifier = modelElement;
-        path =  path + File.separator + umlproject.getName().substring(0,umlproject.getName().lastIndexOf("."));
+       String uname = umlproject.getFilename();
+
+        path =  path + File.separator + uname.substring(0, uname.lastIndexOf("."));
         String filename = name + ".java";
         StringBuilder sbPath = new StringBuilder(path);
         if (!path.endsWith(File.separator)) {
@@ -168,7 +156,7 @@ public class CodeGenerator {
        
         //String pathname = path + filename;
         // TODO: package, project basepath
-        LOG.info("Generating " + f.getPath());
+        LOG.log(Level.FINE, "Generating " + f.getPath());
         String header = generateHeader();
         String src = generateClassifier(classObject); 
         try {

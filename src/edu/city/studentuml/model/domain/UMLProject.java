@@ -21,7 +21,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.CodeGenerator;
+import edu.city.studentuml.codegeneration.CodeGenerator;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -180,6 +180,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
+        projectSaved = false;
         setChanged();
         notifyObservers();
     }

@@ -151,8 +151,10 @@ public abstract class SelectionController {
                 // check if the event is a popup trigger event
                 managePopup(event);
             } else {
-                selectedElements.clear();
-                model.clearSelected();
+                if(!selectedElements.isEmpty()) {
+                    selectedElements.clear();
+                    model.clearSelected();
+                }
                 lastPressed = null;
             }
         }

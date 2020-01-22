@@ -1,9 +1,6 @@
 package edu.city.studentuml.frame;
 
-import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.view.gui.ApplicationFrame;
-import edu.city.studentuml.view.gui.ApplicationGUI;
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 /**
@@ -27,7 +24,6 @@ public class StudentUMLFrame extends JFrame {
     }
 
     public static void main(String args[]) {
-        StudentUMLFrame f = StudentUMLFrame.getInstance();
-        ApplicationGUI applicationGUI = new ApplicationFrame(f);
+        new ApplicationFrame(StudentUMLFrame.getInstance());
     }
 }
