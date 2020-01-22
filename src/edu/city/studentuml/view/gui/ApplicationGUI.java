@@ -198,7 +198,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      */
     private void createUMLProject() {
         umlProject = UMLProject.getInstance();
-        umlProject.becomeObserver();
+/**
+ * it already is
+ */
+//        umlProject.becomeObserver();
         /**
          * ApplicationGUI seems to use only the SystemWideObjectNamePool for its job
          * Try to remove observing umlProject.

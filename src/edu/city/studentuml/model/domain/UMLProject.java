@@ -120,9 +120,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
+        logger.info("CLEARING project");
         projectChanged();
     }
 
+    /**
+     * remove method?
+     */
     public void becomeObserver() {
         /**
          * Is it necessary to observe the models, since it already
@@ -136,6 +140,9 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 //            model.addObserver(this);
 //        }
 
+/**
+ * It is already!
+ */
         repository.addObserver(this);
     }
 
@@ -184,7 +191,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
-        logger.info("Observers: " + this.countObservers());
         projectSaved = false;
         setChanged();
         notifyObservers();
@@ -200,6 +206,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void loadFromXML(String filename) {
+        logger.info("Loading from XML: " + filename);
+
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFile(filename);
@@ -210,6 +218,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         streamer.finishedParsing();
 
+        logger.info(".......end from XML: \n" + filename);
         projectChanged();
     }
     // Embed4Auto
@@ -226,6 +235,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         streamer.finishedParsing();
 
+        logger.info("Loading from URL: " + url);
         projectChanged();
     }
 
@@ -241,6 +251,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         SystemWideObjectNamePool.getInstance().done();
         streamer.finishedParsing();
 
+        logger.info("Loading from XMLString: " + xmlString);
         projectChanged();
     }
 

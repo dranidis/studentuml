@@ -37,8 +37,11 @@ import org.xml.sax.SAXException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 
 public class XMLStreamer {
+    
+    Logger logger = Logger.getLogger(XMLStreamer.class.getName());
 
     private Document doc = null;
     private boolean fromFile = false;
@@ -261,7 +264,7 @@ public class XMLStreamer {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {
                 IXMLCustomStreamable object = ObjectFactory.newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
-                System.out.println(((Element) child).getAttribute("class"));
+                logger.info(((Element) child).getAttribute("class") + " " + object.getClass().getSimpleName());
                 if (object != null) {
                     object.streamFromXML((Element) child, this, object);
                 }
