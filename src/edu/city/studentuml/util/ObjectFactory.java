@@ -273,6 +273,7 @@ public final class ObjectFactory {
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
+        java.lang.System.out.println("NotifierObjects : " + notifierObjects);
 
         try {
             ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
