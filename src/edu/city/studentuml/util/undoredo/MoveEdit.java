@@ -8,6 +8,8 @@ package edu.city.studentuml.util.undoredo;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -15,29 +17,41 @@ import javax.swing.undo.CannotUndoException;
 /**
  *
  * @author draganbisercic
+ * @author dimitrisdranidis
+ * 
  */
 public class MoveEdit extends AbstractUndoableEdit {
 
-    private GraphicalElement element;
     private DiagramModel model;
 
-    // these are for move undo and redo
-    private Point2D undoCoordinates;
-    private Point2D redoCoordinates;
+    /**
+     * The displacement vector expressed as a point
+     */
+    private Point2D movementVector = new Point2D.Double();
 
-    public MoveEdit(GraphicalElement element, DiagramModel model, Point2D undoCoordinates, Point2D redoCoordinates) {
+    /**
+     * The list of elements that are being moved.
+     */
+    protected List<GraphicalElement> selectedElements = new ArrayList<>();
+    
+    public MoveEdit(List<GraphicalElement> selectedElements, DiagramModel model, Point2D undoCoordinates, Point2D redoCoordinates) {
         this.model = model;
-        this.element = element;
-        this.undoCoordinates = new Point2D.Double(undoCoordinates.getX(), undoCoordinates.getY());
-        this.redoCoordinates = new Point2D.Double(redoCoordinates.getX(), redoCoordinates.getY());
+        for(GraphicalElement element:selectedElements) {
+            this.selectedElements.add(element);
+        }
+        movementVector.setLocation(new Point2D.Double(redoCoordinates.getX() - undoCoordinates.getX(), redoCoordinates.getY() - undoCoordinates.getY()));
     }
 
     public void undo() throws CannotUndoException {
-        model.moveGraphicalElement(element, (int)undoCoordinates.getX(), (int)undoCoordinates.getY());
+        for(GraphicalElement element:selectedElements) {
+            model.moveGraphicalElement(element, element.getX() - (int)movementVector.getX(), element.getY() - (int)movementVector.getY());
+        }
     }
 
     public void redo() throws CannotRedoException {
-        model.moveGraphicalElement(element, (int)redoCoordinates.getX(), (int)redoCoordinates.getY());
+        for(GraphicalElement element:selectedElements) {
+            model.moveGraphicalElement(element, element.getX() + (int)movementVector.getX(), element.getY() + (int)movementVector.getY());
+        }
     }
 
     public boolean canUndo() {
