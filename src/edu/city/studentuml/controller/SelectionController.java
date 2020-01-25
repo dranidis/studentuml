@@ -173,7 +173,7 @@ public abstract class SelectionController {
                 redoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
                 if (redoCoordinates.getX() != undoCoordinates.getX()
                         || redoCoordinates.getY() != undoCoordinates.getY()) {
-                    UndoableEdit edit = new MoveEdit(lastPressed, model, undoCoordinates, redoCoordinates);
+                    UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                     parentComponent.getUndoSupport().postEdit(edit);
                 }
 
