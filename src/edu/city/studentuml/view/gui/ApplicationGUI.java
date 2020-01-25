@@ -24,8 +24,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -36,7 +34,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
@@ -72,7 +69,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.tree.TreePath;
 
 /**
@@ -1242,7 +1238,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
          */
 //        umlProject.setSaveActionState(projectSaved);
         logger.info("setting save buttons");
-        setSaveMenuActionEnabled(!umlProject.isSaved());
+        saveProjectMenuItem.setEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }
 
@@ -1252,10 +1248,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else {
             return umlProject.isSaved();
         }
-    }
-
-    protected void setSaveMenuActionEnabled(boolean enabled) {
-        saveProjectMenuItem.setEnabled(enabled);
     }
 
     public JTree getMessageTree() {
