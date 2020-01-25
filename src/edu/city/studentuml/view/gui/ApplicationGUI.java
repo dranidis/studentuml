@@ -34,7 +34,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
@@ -77,7 +76,7 @@ import javax.swing.tree.TreePath;
  * @author draganbisercic
  */
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
-
+    
     Logger logger = Logger.getLogger(ApplicationGUI.class.getSimpleName());
 
     protected static boolean isApplet = false;
@@ -198,8 +197,15 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      */
     private void createUMLProject() {
         umlProject = UMLProject.getInstance();
-        umlProject.becomeObserver();
-        umlProject.addObserver(this);
+/**
+ * it already is
+ */
+//        umlProject.becomeObserver();
+        /**
+         * ApplicationGUI seems to use only the SystemWideObjectNamePool for its job
+         * Try to remove observing umlProject.
+         */
+//        umlProject.addObserver(this);
     }
 
     /*
@@ -814,8 +820,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void update(Observable observable, Object object) {
-        setSaveMenuActionEnabled(!umlProject.isSaved());
-        toolbar.setSaveActionEnabled(!umlProject.isSaved());
+        String objString = "null";
+        if (object != null) {
+            objString = object.getClass().getSimpleName();
+        }
+        logger.info("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
 
         if (object != null && object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
@@ -845,6 +854,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             if (factsTree != null) {
                 factsTree.setModel(facts);
             }
+            
+            umlProject.setSaved(false);
+            setSaveActionState();
         }
     }
 
@@ -907,9 +919,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else {
                 return;
             }
-            model.addObserver(this);
+            // is this necessary?
+            // It is already observing UMLProject
+            // that observer the models.
+//            model.addObserver(this);
+            
             addInternalFrame(model);
-            setSaved(false);
+            /**
+             * setSaved is called within addInternalFrame
+             */
+//            setSaveActionState(false);
         }
     }
 
@@ -1037,7 +1056,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         model.setFrame(f);
-
         f.addInternalFrameListener(new DiagramInternalFrameListener());
         desktopPane.add(f);
         //f.setLocation(xOffset * openFrameCounter, yOffset * openFrameCounter);
@@ -1051,7 +1069,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             vetoException.printStackTrace();
         }
 
-        setSaved(false);
+        setSaveActionState();
     }
 
     /*
@@ -1064,7 +1082,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.dispose();
         desktopPane.remove(frame);
         openFrameCounter--;
-        setSaved(false);
+        setSaveActionState();
     }
 
     /*
@@ -1127,18 +1145,30 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
 
         public void internalFrameActivated(InternalFrameEvent e) {
+            logger.info("Activated");
+            umlProject.setSaved(false);
+            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
         public void internalFrameDeActivated(InternalFrameEvent e) {
+            logger.info("DeActivated");
+            umlProject.setSaved(false);
+            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
         }
 
         public void internalFrameIconified(InternalFrameEvent e) {
+            logger.info("Iconified");
+            umlProject.setSaved(false);
+            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
         public void internalFrameDeIconified(InternalFrameEvent e) {
+            logger.info("Deiconified");
+            umlProject.setSaved(false);
+            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);
         }
 
@@ -1146,10 +1176,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             // closing a frame removes the diagram from the model
             // closing is only possible from the popup menu "Delete" on the diagram
             // top bar.
+            umlProject.setSaved(false);
+            setSaveActionState();
             removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
-
+        
     /*
      * Prompts the user to save changes, closes the project, and finally exits application
      */
@@ -1200,10 +1232,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
     }
 
-    protected void setSaved(boolean projectSaved) {
-        umlProject.setSaved(projectSaved);
-        setSaveMenuActionEnabled(!umlProject.isSaved());
-        toolbar.setSaveActionEnabled(!umlProject.isSaved());
+    /*
+     * This method used to deactivate the save button
+     * when the project was already saved and no changes for saving
+     * were present.
+     * 
+     * It is preferred to have the save button always active!
+     * 
+     */
+    protected void setSaveActionState() {
+//        logger.info("setting save buttons");
+//        saveProjectMenuItem.setEnabled(!umlProject.isSaved());
+//        toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }
 
     protected boolean isSaved() {
@@ -1212,10 +1252,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else {
             return umlProject.isSaved();
         }
-    }
-
-    protected void setSaveMenuActionEnabled(boolean enabled) {
-        saveProjectMenuItem.setEnabled(enabled);
     }
 
     public JTree getMessageTree() {

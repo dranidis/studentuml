@@ -84,6 +84,10 @@ public class SystemWideObjectNamePool extends Observable {
         }
     }
 
+    public boolean isLoading() {
+        return loading > 0;
+    }
+    
     public boolean pushToUndoStack() {
         if (loading > 0) {
             return false;

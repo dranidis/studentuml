@@ -194,8 +194,10 @@ public class ADModel extends DiagramModel {
             }
         }
 
-        selected.clear();
-        modelChanged();
+        if (!selected.isEmpty()) {
+            selected.clear();
+            modelChanged();
+        }
     }
 
     @Override

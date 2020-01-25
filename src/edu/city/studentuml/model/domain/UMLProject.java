@@ -53,11 +53,14 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
+    
+    Logger logger = Logger.getLogger(UMLProject.class.getSimpleName());
 
     private static UMLProject ref = null;
     private NotifierVector diagramModels;
@@ -117,18 +120,29 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
+        logger.info("CLEARING project");
         projectChanged();
     }
 
+    /**
+     * remove method?
+     */
     public void becomeObserver() {
-        DiagramModel model;
-        Iterator iterator = diagramModels.iterator();
+        /**
+         * Is it necessary to observe the models, since it already
+         * observes the repository?
+         */
+//        DiagramModel model;
+//        Iterator iterator = diagramModels.iterator();
+//
+//        while (iterator.hasNext()) {
+//            model = (DiagramModel) iterator.next();
+//            model.addObserver(this);
+//        }
 
-        while (iterator.hasNext()) {
-            model = (DiagramModel) iterator.next();
-            model.addObserver(this);
-        }
-
+/**
+ * It is already!
+ */
         repository.addObserver(this);
     }
 
@@ -149,16 +163,30 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void setSaved(Boolean saved) {
+        if (SystemWideObjectNamePool.getInstance().isLoading()) {
+            logger.info("...................................................loading");
+            return;
+        }
         projectSaved = saved;
+        /**
+         * Why is projectChagend called when we save a project?
+         * to update the title?
+         */
+//        projectChanged();
         setChanged();
         notifyObservers();
     }
 
     public void addDiagram(DiagramModel dm) {
         diagramModels.add(dm);
-        dm.addObserver(this);
-        setSaved(false);
-    }
+        /**
+         * is it necessary to observe the diagram?
+         * It already observer the CentralRepository.
+         */
+//        dm.addObserver(this);
+        
+            setSaved(false);
+        }
 
     public void removeDiagram(DiagramModel dm) {
         diagramModels.remove(dm);
@@ -166,16 +194,25 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
-        projectSaved = false;
-        setChanged();
-        notifyObservers();
+        setSaved(false);
+//        projectSaved = false;
+//        logger.info("Observers: " + countObservers());
+//        setChanged();
+//        notifyObservers();
     }
 
     public void update(Observable observable, Object object) {
+        String objString = "null";
+        if (object != null) {
+            objString = object.getClass().getSimpleName();
+        }
+        logger.info("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
         projectChanged();
     }
 
     public void loadFromXML(String filename) {
+        logger.info("Loading from XML: " + filename);
+
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFile(filename);
@@ -186,6 +223,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         streamer.finishedParsing();
 
+        logger.info(".......end from XML: \n" + filename);
         projectChanged();
     }
     // Embed4Auto
@@ -202,6 +240,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         streamer.finishedParsing();
 
+        logger.info("Loading from URL: " + url);
         projectChanged();
     }
 
@@ -217,6 +256,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         SystemWideObjectNamePool.getInstance().done();
         streamer.finishedParsing();
 
+        logger.info("Loading from XMLString: " + xmlString);
         projectChanged();
     }
 

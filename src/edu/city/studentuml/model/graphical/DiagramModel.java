@@ -20,10 +20,13 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
+    
+    Logger logger = Logger.getLogger(DiagramModel.class.getSimpleName());
 
     public static final int UCD = 0;
     public static final int SSD = 1;
@@ -45,6 +48,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public DiagramModel(String name, UMLProject umlp) {
+        logger.info("New model: " + name);
         diagramName = name;
         graphicalElements = new NotifierVector();
         selected = null;
@@ -130,9 +134,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             element = (GraphicalElement) iterator.next();
             element.setSelected(false);
         }
-
-        selected.clear();
-        modelChanged();
+        if (!selected.isEmpty()) {
+            selected.clear();
+            modelChanged();
+        }
         //SystemWideObjectNamePool.getInstance().reload();
     }
 

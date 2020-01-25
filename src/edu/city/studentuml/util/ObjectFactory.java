@@ -202,7 +202,7 @@ public final class ObjectFactory {
         DiagramModel model = new UCDModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
@@ -225,7 +225,7 @@ public final class ObjectFactory {
         DiagramModel model = new CCDModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
@@ -247,7 +247,7 @@ public final class ObjectFactory {
         DiagramModel model = new SSDModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
@@ -269,10 +269,11 @@ public final class ObjectFactory {
         DiagramModel model = new DCDModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
+        java.lang.System.out.println("NotifierObjects : " + notifierObjects);
 
         try {
             ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
@@ -291,7 +292,7 @@ public final class ObjectFactory {
         DiagramModel model = new SDModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);
@@ -312,7 +313,7 @@ public final class ObjectFactory {
         DiagramModel model = new ADModel(stream.getAttribute("name"), u);
         Rectangle R = readRect(stream.getAttribute("framex"));
 
-        model.addObserver(ApplicationGUI.getInstance());
+//        model.addObserver(ApplicationGUI.getInstance());
         ApplicationGUI.getInstance().addInternalFrame(model, R);
 
         ObjectFactory.notifierObjects.put(model, stream);

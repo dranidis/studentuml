@@ -139,7 +139,7 @@ public class ApplicationApplet extends ApplicationGUI {
             /* JOptionPane.showMessageDialog(null, infoString,
             "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
 
-            setSaved(true);
+            setSaveActionState();
             umlProject.becomeObserver();
             umlProject.addObserver(this);
             repositoryTreeView.setUMLProject(umlProject);
@@ -317,7 +317,7 @@ public class ApplicationApplet extends ApplicationGUI {
 
                 umlProject.loadFromXMLString(solution);
 
-                setSaved(true);
+                setSaveActionState();
                 umlProject.becomeObserver();
                 umlProject.addObserver(this);
                 repositoryTreeView.setUMLProject(umlProject);
@@ -489,7 +489,7 @@ public class ApplicationApplet extends ApplicationGUI {
                     "Solution successfully " + (savePrivate ? "saved!" : "shared!"),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
-            setSaved(true);
+            setSaveActionState();
 
         } catch (APICallException ace) {
             JOptionPane.showMessageDialog(

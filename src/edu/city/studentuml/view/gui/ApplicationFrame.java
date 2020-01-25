@@ -42,9 +42,12 @@ public class ApplicationFrame extends ApplicationGUI {
     @Override
     public void update(Observable observable, Object object) {
         super.update(observable, object);
-
+        updateTitle();
+    }
+    
+    private void updateTitle() {
         String title = applicationName + " - " + umlProject.getName();
-        if (!title.endsWith(" *") & !umlProject.isSaved()) {
+        if (!title.endsWith(" *") && !umlProject.isSaved()) {
             title = title + " *";
         }
         frame.setTitle(title);
@@ -76,15 +79,29 @@ public class ApplicationFrame extends ApplicationGUI {
             umlProject.clear();
         }
         //umlProject = new UMLProject();
-        umlProject.becomeObserver();
-        umlProject.addObserver(this);
+        /**
+         * already performed
+         */
+//        umlProject.becomeObserver();
+        /**
+         * does not need to observe umlProject
+         */
+//        umlProject.addObserver(this);
+
         umlProject.setUser(DESKTOP_USER);
-        String projectName = JOptionPane.showInputDialog("Enter project name: ");
-        if ((projectName != null) && (projectName.length() > 0)) {
-            setFileName(projectName + ".xml");
-        }
+//        String projectName = JOptionPane.showInputDialog("Enter project name: ");
+//        if ((projectName != null) && (projectName.length() > 0)) {
+//            setFileName(projectName + ".xml");
+//        }
         SystemWideObjectNamePool.getInstance().clear();
         SystemWideObjectNamePool.getInstance().reload();
+        
+        umlProject.setSaved(true);
+        setSaveActionState();
+//        updateTitle();
+        frame.setTitle(applicationName + " - New Project");
+
+        logger.info("New project");
     }
 
     private void setFileName(String name) {
@@ -125,8 +142,15 @@ public class ApplicationFrame extends ApplicationGUI {
         
         umlProject.loadFromXML(file);
 
-        umlProject.becomeObserver();
-        umlProject.addObserver(this);
+        /**
+         * already performed
+         */
+//        umlProject.becomeObserver();
+        /**
+         * ApplicationGUI does not need to observe the umlProject.
+         */
+//        umlProject.addObserver(this);
+
         repositoryTreeView.setUMLProject(umlProject);
         umlProject.projectChanged();
         
@@ -142,7 +166,9 @@ public class ApplicationFrame extends ApplicationGUI {
 
 //        */
 
-        setSaved(true);
+        umlProject.setSaved(true);
+        setSaveActionState();
+        updateTitle();
         logger.info("Opened project");
 
         return true;
@@ -168,7 +194,10 @@ public class ApplicationFrame extends ApplicationGUI {
             setFilePath(path);
 //            setFileName(path.substring(path.lastIndexOf('\\') + 1));
             setFileName(path.substring(path.lastIndexOf(File.separatorChar) + 1));
-            setSaved(true);
+            
+            umlProject.setSaved(true);
+
+            setSaveActionState();
             pref.put("DEFAULT_PATH", path);
         }
     }
@@ -203,7 +232,10 @@ public class ApplicationFrame extends ApplicationGUI {
         logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
         umlProject.getInstance().streamToXML(getFilePath());
-        setSaved(true);
+        
+        umlProject.setSaved(true);
+        
+        setSaveActionState();
         pref.put("DEFAULT_PATH", filePath);
     }
 
