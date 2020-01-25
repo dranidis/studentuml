@@ -1232,14 +1232,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
     }
 
+    /*
+     * This method used to deactivate the save button
+     * when the project was already saved and no changes for saving
+     * were present.
+     * 
+     * It is preferred to have the save button always active!
+     * 
+     */
     protected void setSaveActionState() {
-        /**
-         * UMLproject already knows whether it is saved
-         */
-//        umlProject.setSaveActionState(projectSaved);
-        logger.info("setting save buttons");
-        saveProjectMenuItem.setEnabled(!umlProject.isSaved());
-        toolbar.setSaveActionEnabled(!umlProject.isSaved());
+//        logger.info("setting save buttons");
+//        saveProjectMenuItem.setEnabled(!umlProject.isSaved());
+//        toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }
 
     protected boolean isSaved() {
