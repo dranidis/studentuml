@@ -51,11 +51,14 @@ import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.beans.PropertyVetoException;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -63,12 +66,16 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 public class RepositoryTreeView extends JPanel implements Observer {
+    
+    private Logger logger = Logger.getLogger(RepositoryTreeView.class.getName());
 
     private DefaultMutableTreeNode datamodelnode;
     private DefaultMutableTreeNode diagrammodelnode;
@@ -92,6 +99,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         add(tree);
         datamodelnode = addObject("Data Model");
         diagrammodelnode = addObject("Diagram Model");
+        tree.addTreeSelectionListener(new RepositoryTreeSelectionListener());
     }
 
     public void setUMLProject(UMLProject prj) {
@@ -540,6 +548,34 @@ public class RepositoryTreeView extends JPanel implements Observer {
         while (stok.hasMoreTokens()) {
             int token = row + Integer.parseInt(stok.nextToken());
             tree.expandRow(token);
+        }
+    }
+    
+            
+    private class RepositoryTreeSelectionListener implements TreeSelectionListener {
+        public void valueChanged(TreeSelectionEvent e) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                               tree.getLastSelectedPathComponent();
+
+        /* if nothing is selected */ 
+            if (node == null) return;
+
+        /* retrieve the node that was selected */ 
+            Object nodeInfo = node.getUserObject();
+            logger.info(nodeInfo.getClass().getName());
+            
+            if (DiagramModel.class.isAssignableFrom(nodeInfo.getClass())) {
+                logger.info("Diagram model selected");
+                DiagramModel dm = (DiagramModel) nodeInfo;
+                try {
+                    DiagramInternalFrame frame = dm.getFrame();
+                    frame.setIcon(false);
+                    frame.moveToFront();
+                    frame.show();
+                } catch (PropertyVetoException ex) {
+                    Logger.getLogger(RepositoryTreeView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 }
