@@ -2,9 +2,9 @@ package edu.city.studentuml.controller;
 
 //~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.MessageParameter;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.domain.SDObject;
@@ -27,6 +27,7 @@ import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
@@ -246,10 +247,10 @@ public class SDSelectionController extends SelectionController {
     }
 
     public void editCallMessage(CallMessageGR messageGR) {
-        CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR);
-        CallMessage message = messageGR.getCallMessage();
+        CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
+        TypedCallMessage message = messageGR.getCallMessage();
 
-        CallMessage undoCallMessage = message.clone();
+        TypedCallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
         if (!callMessageEditor.showDialog(parentComponent, "Call Message Editor")) {
@@ -259,12 +260,13 @@ public class SDSelectionController extends SelectionController {
         message.setName(callMessageEditor.getName());
         message.setIterative(callMessageEditor.isIterative());
         message.setReturnValue(callMessageEditor.getReturnValue());
+        message.setReturnType(callMessageEditor.getReturnType());
 
         Vector parameters = callMessageEditor.getParameters();
         Iterator iterator = parameters.iterator();
         message.setParameters(new Vector());
         while (iterator.hasNext()) {
-            message.addParameter((MessageParameter) iterator.next());
+            message.addParameter((MethodParameter) iterator.next());
         }
 
         // UNDO/REDO

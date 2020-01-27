@@ -264,7 +264,7 @@ public class XMLStreamer {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {
                 IXMLCustomStreamable object = ObjectFactory.newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
-                logger.info(((Element) child).getAttribute("class") + " " + object.getClass().getSimpleName());
+//                logger.info(((Element) child).getAttribute("class") + " " + object.getClass().getSimpleName());
                 if (object != null) {
                     object.streamFromXML((Element) child, this, object);
                 }

@@ -1,11 +1,8 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
-import java.util.Vector;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -16,13 +13,13 @@ import javax.swing.undo.CannotUndoException;
  */
 public class EditCallMessageEdit extends AbstractUndoableEdit {
 
-    private CallMessage originalCallMessage;
-    private CallMessage undoCallMessage;
-    private CallMessage redoCallMessage;
+    private TypedCallMessage originalCallMessage;
+    private TypedCallMessage undoCallMessage;
+    private TypedCallMessage redoCallMessage;
     private DiagramModel model;
 
     // constructor for class
-    public EditCallMessageEdit(CallMessage originalCallMessage, CallMessage newCallMessage, DiagramModel model) {
+    public EditCallMessageEdit(TypedCallMessage originalCallMessage, TypedCallMessage newCallMessage, DiagramModel model) {
         this.originalCallMessage = originalCallMessage;
         this.undoCallMessage = newCallMessage.clone();
         this.redoCallMessage = originalCallMessage.clone();
@@ -37,10 +34,11 @@ public class EditCallMessageEdit extends AbstractUndoableEdit {
         edit(originalCallMessage, redoCallMessage);
     }
 
-    private void edit(CallMessage original, CallMessage change) {
+    private void edit(TypedCallMessage original, TypedCallMessage change) {
         original.setName(change.getName());
         original.setIterative(change.isIterative());
         original.setReturnValue(change.getReturnValue());
+        original.setReturnType(change.getReturnType());
 
         original.setParameters(change.getParameters());
 

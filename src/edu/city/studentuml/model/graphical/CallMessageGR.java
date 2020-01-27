@@ -4,6 +4,8 @@ package edu.city.studentuml.model.graphical;
 //Author: Ervin Ramollari
 //CallMessageGR.java
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.SDMessage;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -15,7 +17,7 @@ import org.w3c.dom.Element;
 
 public class CallMessageGR extends SDMessageGR implements IXMLCustomStreamable {
 
-    public CallMessageGR(RoleClassifierGR from, RoleClassifierGR to, CallMessage message, int y) {
+    public CallMessageGR(RoleClassifierGR from, RoleClassifierGR to, TypedCallMessage message, int y) {
         super(from, to, message, y);
     }
 
@@ -33,8 +35,8 @@ public class CallMessageGR extends SDMessageGR implements IXMLCustomStreamable {
         }
     }
 
-    public CallMessage getCallMessage() {
-        return (CallMessage) getMessage();
+    public TypedCallMessage getCallMessage() {
+        return (TypedCallMessage) getMessage();
     }
 
 

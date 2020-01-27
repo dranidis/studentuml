@@ -62,6 +62,7 @@ import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.model.domain.UCAssociation;
 import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.model.domain.UCExtend;
@@ -114,10 +115,13 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public final class ObjectFactory {
+    
+    private static Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
     //A list of objects to be passed to the finished parsing event
     public static final HashMap notifierObjects = new HashMap();
@@ -157,6 +161,7 @@ public final class ObjectFactory {
             return null;
         }
         String methodName = "new" + c.getSimpleName().toLowerCase();
+        logger.info(methodName);
         try {
             Method m = ObjectFactory.class.getMethod(methodName, new Class[]{Object.class, Element.class, XMLStreamer.class});
             Object result = m.invoke(ObjectFactory.class, new Object[]{parent, stream, streamer});
@@ -531,7 +536,7 @@ public final class ObjectFactory {
     }
 
     public static IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer) {
-        CallMessage sd = (CallMessage) streamer.readObjectByID(stream, "message", null);
+        TypedCallMessage sd = (TypedCallMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifierGR to = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -621,12 +626,12 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newcallmessage(Object parent, Element stream, XMLStreamer streamer) {
+    public static IXMLCustomStreamable newtypedcallmessage(Object parent, Element stream, XMLStreamer streamer) {
         GenericOperation go = (GenericOperation) streamer.readObjectByID(stream, "operation", null);
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
-        CallMessage a = new CallMessage(from, to, go);
+        TypedCallMessage a = new TypedCallMessage(from, to, go);
 
         return a;
     }
@@ -940,7 +945,13 @@ public final class ObjectFactory {
 
     public static IXMLCustomStreamable newmethodparameter(Object parent, Element stream, XMLStreamer streamer) {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
-        ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
+        if (parent instanceof Method) {
+            ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
+        } else if (parent instanceof TypedCallMessage) {
+            ((TypedCallMessage) parent).addParameter(m);
+        } else {
+            java.lang.System.err.println("::::::trying to stream method parameter but dont know where?");
+        }
         return m;
     }
 

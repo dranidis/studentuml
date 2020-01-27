@@ -190,7 +190,7 @@ public class ApplicationFrame extends ApplicationGUI {
             // if no file has yet been chosen, prompt via method saveProjectAs
             saveProjectAs();
         } else {
-            umlProject.getInstance().streamToXML(path);
+            umlProject.streamToXML(path);
             setFilePath(path);
 //            setFileName(path.substring(path.lastIndexOf('\\') + 1));
             setFileName(path.substring(path.lastIndexOf(File.separatorChar) + 1));

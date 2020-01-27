@@ -4,14 +4,16 @@ package edu.city.studentuml.view.gui;
 //Author: Ervin Ramollari
 //CallMessageEditor.java
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.Type;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -25,6 +27,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -66,9 +69,17 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     private JPanel sourcePanel;
     private JLabel targetLabel;
     private JPanel targetPanel;
+    private JComboBox typeComboBox;
+    private JLabel typeLabel;
+    
+    private Vector types;
+    private final CentralRepository repository;
 
-    public CallMessageEditor(CallMessageGR mGR) {
+    public CallMessageEditor(CallMessageGR mGR, CentralRepository cr) {
         messageGR = mGR;
+        
+        repository = cr;
+        
         setLayout(new BorderLayout());
         sourceLabel = new JLabel();
 
@@ -105,6 +116,12 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         namePanel.add(iterativeCheckBox);
         returnValueLabel = new JLabel("Return Value: ");
         returnValueField = new JTextField(15);
+        
+        types = repository.getTypes();
+        typeLabel = new JLabel("Return Type: ");
+        typeComboBox = new JComboBox(types);
+        
+        
         returnValuePanel = new JPanel();
 
         FlowLayout returnValueLayout = new FlowLayout();
@@ -113,6 +130,10 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         returnValuePanel.setLayout(returnValueLayout);
         returnValuePanel.add(returnValueLabel);
         returnValuePanel.add(returnValueField);
+        
+        returnValuePanel.add(typeLabel);
+        returnValuePanel.add(typeComboBox);
+        
         fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(3, 1));
         fieldsPanel.add(roleClassifiersPanel);
@@ -184,7 +205,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        CallMessage message = messageGR.getCallMessage();
+        TypedCallMessage message = messageGR.getCallMessage();
         RoleClassifier source = message.getSource();
         RoleClassifier target = message.getTarget();
         String sourceText = "";
@@ -237,6 +258,19 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             returnValueField.setText(message.getReturnValue().getName());
         }
 
+        // initialize the type combo box
+        if (message == null || message.getReturnType() == null) {
+            typeComboBox.setSelectedIndex(0);
+        } else {
+            for (int i = 0; i < types.size(); i++) {
+                if ((((Type) types.get(i)).toString()).equals(message.getReturnType().getName())) {
+                    typeComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+
         // initialize the list of parameters
         if (message != null) {
 
@@ -283,6 +317,10 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         } else {
             return null;
         }
+    }
+
+    public Type getReturnType() {
+        return (Type) typeComboBox.getSelectedItem();
     }
 
     public Vector getParameters() {

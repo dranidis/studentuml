@@ -5,6 +5,7 @@ package edu.city.studentuml.controller;
 //AddCallMessageController.java
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.GenericOperation;
+import edu.city.studentuml.model.domain.TypedCallMessage;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -81,7 +82,7 @@ public class AddCallMessageController extends AddElementController {
     }
 
     public void addCallMessage(RoleClassifierGR source, RoleClassifierGR target, int y) {
-        CallMessage message = new CallMessage(source.getRoleClassifier(), target.getRoleClassifier(),
+        TypedCallMessage message = new TypedCallMessage(source.getRoleClassifier(), target.getRoleClassifier(),
                 new GenericOperation(""));
         CallMessageGR messageGR = new CallMessageGR(source, target, message, y);
 
