@@ -9,6 +9,7 @@ import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -77,6 +78,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         super.addGraphicalElement(m);
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
+        orderChanged = true;
         messagesChanged();
         restoreMessagesDistances();
         SystemWideObjectNamePool.getInstance().reload();
@@ -388,6 +390,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     private void validateInOut() {
         if(!orderChanged) 
             return;
+        
         for(RoleClassifierGR sdObject: roleClassifiers) {
             sdObject.clearInOutStacks();
         }
@@ -396,14 +399,19 @@ public abstract class AbstractSDModel extends DiagramModel {
         obj.setActiveIn();
         
         for(SDMessageGR message:messages) {
+            message.outlineColor = Color.BLACK;
             System.out.println(message.message + ": " + message.source + " -> " + message.target);
             boolean validated;
-            if (message instanceof CallMessageGR) {
+            if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
                 validated = message.source.validateOut(message.target);
+                if (!validated) message.outlineColor = Color.RED;
                 validated = message.target.validateIn(message.source);
+                if (!validated) message.outlineColor = Color.RED;
             } else if (message instanceof ReturnMessageGR) {
                 validated = message.source.validateOutReturn(message.target);
+                if (!validated) message.outlineColor = Color.RED;
                 validated = message.target.validateInReturn(message.source);
+                if (!validated) message.outlineColor = Color.RED;
             }
         }
         orderChanged = false;
