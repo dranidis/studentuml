@@ -3,8 +3,12 @@ package edu.city.studentuml.model.graphical;
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //RoleClassifierGR.java
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.RoleClassifier;
+import edu.city.studentuml.model.domain.SDObject;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Stack;
 
 //the inherited startingPoint refers ot the x coordinate of the center
@@ -141,5 +145,13 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     void clearInOutStacks() {
         in.clear();
         out.clear();
+    }
+
+    /**
+     * Adds a dummy object in the in stack to make the object have the focus
+     * and avoid error in the validation
+     */
+    void setActiveIn() {
+        in.push(new SDObjectGR(new SDObject("void", new DesignClass("Void")), 0));
     }
 }

@@ -392,6 +392,9 @@ public abstract class AbstractSDModel extends DiagramModel {
             sdObject.clearInOutStacks();
         }
         
+        RoleClassifierGR obj = messages.get(0).source;
+        obj.setActiveIn();
+        
         for(SDMessageGR message:messages) {
             System.out.println(message.message + ": " + message.source + " -> " + message.target);
             boolean validated;
