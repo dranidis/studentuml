@@ -19,13 +19,14 @@ import java.util.Vector;
 public abstract class AbstractSDModel extends DiagramModel {
 
     // minimum distance that can be kept between messages
-    public static final int MINIMUM_MESSAGE_DISTANCE = 30;
+    public static final int MINIMUM_MESSAGE_DISTANCE = 10;
     // minimum distance that can be kept between role classifiers
     public static final int MINIMUM_RC_DISTANCE = 60;
     // clone list of role classifiers and messages that is maintained for
     // consistency purposes, ordering, etc.
-    protected Vector roleClassifiers;
-    protected Vector messages;
+    protected NotifierVector<RoleClassifierGR> roleClassifiers;
+    protected NotifierVector<SDMessageGR> messages;
+    private boolean orderChanged = false;
 
     public AbstractSDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -145,6 +146,8 @@ public abstract class AbstractSDModel extends DiagramModel {
     public final void messagesChanged() {
         sortMessages();
         updateLifelineLengths();
+        
+        validateInOut();
     }
 
     // sort the role classifiers list according to their x position
@@ -177,6 +180,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 message2 = (SDMessageGR) messages.elementAt(element + 1);
 
                 if (message1.getY() > message2.getY()) {
+                    orderChanged = true;
                     swap(messages, element, element + 1);
                 }
             }
@@ -379,5 +383,26 @@ public abstract class AbstractSDModel extends DiagramModel {
     public void removeReturnMessage(ReturnMessageGR returnMessage) {
         repository.removeSDMessage(returnMessage.getMessage());
         messages.remove(returnMessage);
+    }
+
+    private void validateInOut() {
+        if(!orderChanged) 
+            return;
+        for(RoleClassifierGR sdObject: roleClassifiers) {
+            sdObject.clearInOutStacks();
+        }
+        
+        for(SDMessageGR message:messages) {
+            System.out.println(message.message + ": " + message.source + " -> " + message.target);
+            boolean validated;
+            if (message instanceof CallMessageGR) {
+                validated = message.source.validateOut(message.target);
+                validated = message.target.validateIn(message.source);
+            } else if (message instanceof ReturnMessageGR) {
+                validated = message.source.validateOutReturn(message.target);
+                validated = message.target.validateInReturn(message.source);
+            }
+        }
+        orderChanged = false;
     }
 }

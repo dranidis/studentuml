@@ -5,6 +5,7 @@ package edu.city.studentuml.model.graphical;
 //RoleClassifierGR.java
 import edu.city.studentuml.model.domain.RoleClassifier;
 import java.awt.Point;
+import java.util.Stack;
 
 //the inherited startingPoint refers ot the x coordinate of the center
 //and to the y coordinate of the top most point
@@ -19,6 +20,12 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     protected int endingY;
     // the role classifier concept this graphical element refers to
     protected RoleClassifier roleClassifier;
+    
+    /**
+     * stacks keeping ingoing and outgoing messages for SD validation
+     */
+    Stack<RoleClassifierGR> in = new Stack<>();
+    Stack<RoleClassifierGR> out = new Stack<>();
 
     // of the x and y coordinates, x is significant
     public RoleClassifierGR(RoleClassifier rc, int x) {
@@ -52,5 +59,87 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     // all role classifiers respond to drag and drop events by moving only horizontally
     public void move(int x, int y) {
         startingPoint.setLocation(x, startingPoint.getY());
+    }
+
+    boolean validateOut(RoleClassifierGR target) {
+        if( in.size() > out.size()) {
+            out.push(target);
+            return true;
+        } else {
+            System.out.println(this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus");
+            showStacks();
+            return false;
+        }
+    }
+
+    boolean validateIn(RoleClassifierGR source) {
+        if( in.size() == out.size()) {
+            in.push(source);
+            return true;
+        } else {
+            System.out.println(this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus");
+            showStacks();
+            return false;
+        }
+    }
+
+    boolean validateOutReturn(RoleClassifierGR target) {
+        if( in.size() > out.size() ) {
+            RoleClassifierGR origFrom = in.peek();
+            if (origFrom == target) {
+                in.pop();
+                return true;
+            } else {
+                System.out.println(this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
+                        origFrom.getRoleClassifier().getName() + " was the original caller.");
+                showStacks();
+                return false;
+            }
+        } else {
+            System.out.println(this.getRoleClassifier().getName() + " Cannot return. It does not have the focus");
+            showStacks();
+            return false;
+        }
+    }
+
+    boolean validateInReturn(RoleClassifierGR source) {
+        if(out.isEmpty()) {
+            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages");
+            showStacks();
+            return false;
+        }
+        if( in.size() == out.size() ) {
+            RoleClassifierGR origTo = out.peek();
+            if (origTo == source) {
+                out.pop();
+                return true;
+            } else {
+                System.out.println(this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
+                        " Expecting from " + origTo.getRoleClassifier().getName());
+                showStacks();
+                return false;
+            }
+        } else {
+            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus");
+            showStacks();
+            return false;
+        }
+    }
+
+    private void showStacks() {
+        System.out.print("[");
+        for(RoleClassifierGR m: in) {
+            System.out.print(m.getRoleClassifier().getName());
+        }
+        System.out.print("] - [");
+        for(RoleClassifierGR m: out) {
+            System.out.print(m.getRoleClassifier().getName());
+        }
+        System.out.println("]");
+    }
+
+    void clearInOutStacks() {
+        in.clear();
+        out.clear();
     }
 }
