@@ -423,8 +423,9 @@ public abstract class AbstractSDModel extends DiagramModel {
                 message.source.addActivationHeight(message.getY() + 5);
             else
                 message.source.addActivationHeight(message.getY());
-            if(message.source ==  message.target)
-                message.target.addActivationHeight(message.getY());
+            
+            if(message instanceof CreateMessageGR)
+                message.target.addActivationHeight(message.getY() + ((CreateMessageGR) message).target.getHeight() / 2);
             else
                 message.target.addActivationHeight(message.getY());
         }
