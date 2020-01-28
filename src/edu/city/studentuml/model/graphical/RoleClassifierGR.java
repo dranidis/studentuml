@@ -9,6 +9,10 @@ import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 //the inherited startingPoint refers ot the x coordinate of the center
@@ -28,8 +32,14 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     /**
      * stacks keeping ingoing and outgoing messages for SD validation
      */
-    Stack<RoleClassifierGR> in = new Stack<>();
-    Stack<RoleClassifierGR> out = new Stack<>();
+    private Stack<RoleClassifierGR> in = new Stack<>();
+    private Stack<RoleClassifierGR> out = new Stack<>();
+    /**
+     * store all the Ys of messages
+     * and the activation depth at that Y
+    */
+    protected List<Integer> messageYs = new ArrayList<>();
+    protected Map<Integer, Integer> activationAt =  new HashMap<>();
 
     // of the x and y coordinates, x is significant
     public RoleClassifierGR(RoleClassifier rc, int x) {
@@ -145,6 +155,8 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     void clearInOutStacks() {
         in.clear();
         out.clear();
+        messageYs.clear();
+        activationAt.clear();
     }
 
     /**
@@ -153,5 +165,25 @@ public abstract class RoleClassifierGR extends GraphicalElement {
      */
     void setActiveIn() {
         in.push(new SDObjectGR(new SDObject("void", new DesignClass("Void")), 0));
+    }
+    
+
+
+    void addActivationHeight(int y) {
+        messageYs.add(y);
+        /*
+        store size of in stack at the specific time
+        */
+        activationAt.put(y, in.size());
+    }
+
+    int acticationAtY(int y) {
+        if (activationAt.get(y) != null)
+            return activationAt.get(y);
+        for(int i=0; i< messageYs.size() - 1; i++) {
+            if (y >= messageYs.get(i) && y < messageYs.get(i+1))
+                return activationAt.get(messageYs.get(i));
+        }
+        return 0;
     }
 }

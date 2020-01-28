@@ -388,15 +388,17 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     private void validateInOut() {
-        if(!orderChanged) 
-            return;
+//        if(!orderChanged) 
+//            return;
         
         for(RoleClassifierGR sdObject: roleClassifiers) {
             sdObject.clearInOutStacks();
         }
         
-        RoleClassifierGR obj = messages.get(0).source;
-        obj.setActiveIn();
+        if(messages.size() > 0) {
+            RoleClassifierGR obj = messages.get(0).source;
+            obj.setActiveIn();
+        }
         
         for(SDMessageGR message:messages) {
             message.outlineColor = Color.BLACK;
@@ -404,15 +406,27 @@ public abstract class AbstractSDModel extends DiagramModel {
             boolean validated;
             if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
                 validated = message.source.validateOut(message.target);
-                if (!validated) message.outlineColor = Color.RED;
+                if (!validated) 
+                    message.outlineColor = Color.RED;
                 validated = message.target.validateIn(message.source);
-                if (!validated) message.outlineColor = Color.RED;
+                if (!validated) 
+                    message.outlineColor = Color.RED;
             } else if (message instanceof ReturnMessageGR) {
                 validated = message.source.validateOutReturn(message.target);
-                if (!validated) message.outlineColor = Color.RED;
+                if (!validated) 
+                    message.outlineColor = Color.RED;
                 validated = message.target.validateInReturn(message.source);
-                if (!validated) message.outlineColor = Color.RED;
+                if (!validated) 
+                    message.outlineColor = Color.RED;
             }
+            if(message.source ==  message.target)
+                message.source.addActivationHeight(message.getY() + 5);
+            else
+                message.source.addActivationHeight(message.getY());
+            if(message.source ==  message.target)
+                message.target.addActivationHeight(message.getY());
+            else
+                message.target.addActivationHeight(message.getY());
         }
         orderChanged = false;
     }

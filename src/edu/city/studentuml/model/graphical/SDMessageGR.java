@@ -40,7 +40,14 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public int getStartingX() {
-        return (source.getX() + source.getWidth() / 2);
+        int offset = 0;
+        int barWidth = 8;
+        if (source == target) 
+            offset = source.acticationAtY(getY()) * barWidth/2;
+        else
+            offset = (source.acticationAtY(getY())) * barWidth/2;
+            
+        return (source.getX() + source.getWidth() / 2) + offset;
     }
 
     public int getEndingX() {
