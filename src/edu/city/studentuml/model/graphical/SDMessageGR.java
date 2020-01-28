@@ -3,6 +3,7 @@ package edu.city.studentuml.model.graphical;
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //SDMessageGR.java
+import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -63,14 +64,13 @@ public abstract class SDMessageGR extends GraphicalElement {
 
 
         int startingX = getStartingX();
-        int offsetX = 0;
         int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
-        offsetX = (source.acticationAtY(getY())) * barWidth/2;
-        startingX += offsetX;
+        startingX += (source.acticationAtY(getY())) * barWidth/2;
 
         int endingX = getEndingX();
-        int offsetY = (target.acticationAtY(getY()) - 1) * barWidth/2;
-        endingX += offsetY;
+        if (!(message instanceof CreateMessage)) {
+            endingX += (target.acticationAtY(getY()) - 1) * barWidth/2;
+        }
 
         
         if (!message.isReflective()) {
@@ -78,10 +78,13 @@ public abstract class SDMessageGR extends GraphicalElement {
             boolean forward = (getEndingX() > getStartingX());
             if(!forward) 
                 startingX -= barWidth;
+            
+            if (!(message instanceof CreateMessage)) {
             if(forward)
                 endingX -= barWidth/2;
             else
-                endingX += barWidth/2;
+                endingX += barWidth/2;                
+            }
 
             g.setStroke(getStroke());
             g.drawLine(startingX, getY(), endingX, getY());
