@@ -186,9 +186,10 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXM
     }
     
     private void drawBar(Graphics2D g, ActivationBar bar) {
-        int startingX = getX() + width / 2 + (bar.depth - 1) * 4 - 4;
+        int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
+        int startingX = getX() + width / 2 + (bar.depth - 1) * barWidth/2 - barWidth/2;
         int startingY = bar.fromY;
-        int width = 8;
+        int width = barWidth;
         int height = bar.toY - bar.fromY;
 
         g.setPaint(getFillColor());
