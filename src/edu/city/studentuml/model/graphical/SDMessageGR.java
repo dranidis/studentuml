@@ -40,14 +40,7 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public int getStartingX() {
-        int offset = 0;
-        int barWidth = 8;
-        if (source == target) 
-            offset = source.acticationAtY(getY()) * barWidth/2;
-        else
-            offset = (source.acticationAtY(getY())) * barWidth/2;
-            
-        return (source.getX() + source.getWidth() / 2) + offset;
+        return (source.getX() + source.getWidth() / 2);
     }
 
     public int getEndingX() {
@@ -68,25 +61,43 @@ public abstract class SDMessageGR extends GraphicalElement {
             g.setPaint(outlineColor);
         }
 
+
+        int startingX = getStartingX();
+        int offsetX = 0;
+        int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
+        offsetX = (source.acticationAtY(getY())) * barWidth/2;
+        startingX += offsetX;
+
+        int endingX = getEndingX();
+        int offsetY = (target.acticationAtY(getY()) - 1) * barWidth/2;
+        endingX += offsetY;
+
+        
         if (!message.isReflective()) {
             //Stroke originalStroke = g.getStroke();
+            boolean forward = (getEndingX() > getStartingX());
+            if(!forward) 
+                startingX -= barWidth;
+            if(forward)
+                endingX -= barWidth/2;
+            else
+                endingX += barWidth/2;
 
             g.setStroke(getStroke());
-            g.drawLine(getStartingX(), getY(), getEndingX(), getY());
+            g.drawLine(startingX, getY(), endingX, getY());
 
             // restore the original stroke
             g.setStroke(originalStroke);
 
             // the arrowhead points to the right if the target role classifier
             // is further to the right (greater x)
-            boolean forward = (getEndingX() > getStartingX());
 
-            drawMessageArrow(getEndingX(), getY(), forward, g);
+            drawMessageArrow(endingX, getY(), forward, g);
 
             // handle extra-rendering for destroy messages
             if (this instanceof DestroyMessageGR) {
-                g.drawLine(getEndingX() - 15, getY() - 20, getEndingX() + 15, getY() + 20);
-                g.drawLine(getEndingX() - 15, getY() + 20, getEndingX() + 15, getY() - 20);
+                g.drawLine(endingX - 15, getY() - 20, endingX + 15, getY() + 20);
+                g.drawLine(endingX - 15, getY() + 20, endingX + 15, getY() - 20);
             }
 
             g.setPaint(outlineColor);
@@ -98,9 +109,9 @@ public abstract class SDMessageGR extends GraphicalElement {
             FontRenderContext frc = g.getFontRenderContext();
             TextLayout layout = new TextLayout(messageText, messageFont, frc);
             Rectangle2D bounds = layout.getBounds();
-            int lineWidth = Math.abs(getStartingX() - getEndingX());
+            int lineWidth = Math.abs(startingX - endingX);
             int textX = (lineWidth - (int) bounds.getWidth()) / 2 - (int) bounds.getX();
-            int messageStartX = Math.min(getStartingX(), getEndingX());
+            int messageStartX = Math.min(startingX, endingX);
 
             g.drawString(messageText, messageStartX + textX, getY() - messageDY);
         } else // handle reflective message rendering 'ad-hoc'
@@ -111,15 +122,19 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             GeneralPath path = new GeneralPath();
 
-            path.moveTo(getStartingX(), getY());
-            path.lineTo(getStartingX() + 40, getY());
-            path.lineTo(getStartingX() + 40, getY() + 15);
-            path.lineTo(getStartingX(), getY() + 15);
+            if(this instanceof CallMessageGR)
+                path.moveTo(startingX - barWidth/2, getY());
+            else
+                path.moveTo(startingX + barWidth/2, getY());
+            
+            path.lineTo(startingX + 40, getY());
+            path.lineTo(startingX + 40, getY() + 15);
+            path.lineTo(startingX, getY() + 15);
             g.draw(path);
 
             // restore the original stroke
             g.setStroke(originalStroke);
-            drawMessageArrow(getStartingX(), getY() + 15, false, g);
+            drawMessageArrow(startingX, getY() + 15, false, g);
             g.setPaint(outlineColor);
 
             // draw the message string by calling the polymorphic method toString()
@@ -127,7 +142,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             String messageText = message.toString();
 
-            g.drawString(messageText, getStartingX() + 5, getY() - messageDY);
+            g.drawString(messageText, startingX + 5, getY() - messageDY);
 
 
         }
