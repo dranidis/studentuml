@@ -5,12 +5,14 @@ package edu.city.studentuml.controller;
 //AddCallMessageController.java
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.GenericOperation;
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
@@ -85,10 +87,17 @@ public class AddCallMessageController extends AddElementController {
                 new GenericOperation(""));
         CallMessageGR messageGR = new CallMessageGR(source, target, message, y);
 
-        UndoableEdit edit = new AddEdit(messageGR, diagramModel);
+        ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
+        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + 30);
+        
+        /**
+         * fix undo
+         */
+        UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
 
         // handle the rest of addition details to the diagram model
         diagramModel.addGraphicalElement(messageGR);
+        diagramModel.addGraphicalElement(returnMessageGR);
 
         parentFrame.setSelectionMode();
 

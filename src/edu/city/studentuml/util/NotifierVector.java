@@ -2,7 +2,7 @@ package edu.city.studentuml.util;
 
 import java.util.Vector;
 
-public class NotifierVector extends Vector {
+public class NotifierVector<T> extends Vector<T> {
 
     public static NotifierVector from(Vector v) {
         NotifierVector newVector = new NotifierVector();
@@ -14,7 +14,7 @@ public class NotifierVector extends Vector {
         return newVector;
     }
 
-    public synchronized boolean add(Object o) {
+    public synchronized boolean add(T o) {
         synchronized (this) {
             SystemWideObjectNamePool.getInstance().objectAdded(o);
             return super.add(o);
@@ -22,7 +22,7 @@ public class NotifierVector extends Vector {
     }
 
     @Override
-    public synchronized void insertElementAt(Object o, int index) {
+    public synchronized void insertElementAt(T o, int index) {
         synchronized (this) {
             SystemWideObjectNamePool.getInstance().objectAdded(o);
             super.insertElementAt(o, index);
@@ -36,7 +36,7 @@ public class NotifierVector extends Vector {
         }
     }
 
-    public synchronized Object remove(int index) {
+    public synchronized T remove(int index) {
         synchronized (this) {
             SystemWideObjectNamePool.getInstance().objectRemoved(this.get(index));
             return super.remove(index);
