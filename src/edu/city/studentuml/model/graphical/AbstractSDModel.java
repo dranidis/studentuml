@@ -402,7 +402,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         
         for(SDMessageGR message:messages) {
             message.outlineColor = Color.BLACK;
-            System.out.println(message.message + ": " + message.source + " -> " + message.target);
+//            System.out.println(message.message + ": " + message.source + " -> " + message.target);
             boolean validated;
             if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
                 validated = message.source.validateOut(message.target);
