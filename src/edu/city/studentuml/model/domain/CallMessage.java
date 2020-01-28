@@ -96,7 +96,9 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     public String toString() {
         String text = "";
 
-        text += getRank() + (isIterative() ? "*" : "") + ": ";
+//        text += getRank();
+        text += (isIterative() ? "*" : ""); 
+//        text +=  ": ";
 
         if ((returnValue != null) && !returnValue.equals("")) {
             text += returnValue.toString() + " := ";
@@ -108,6 +110,8 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
             text += getParametersString();
             text += ")";
         }
+        if(text.equals(""))
+            text = " ";
 
         return text;
     }

@@ -27,7 +27,10 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public String toString() {
-        return getRank() + ": create(" + getParametersString() + ")";
+        String text = "";
+//        text += getRank() + ": ";
+        text += "create(" + getParametersString() + ")";
+        return text;
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer,
