@@ -104,12 +104,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JMenuItem renameProject;
     protected JMenuItem reloadRulesMenuItem;
     protected JMenu preferencesMenu;
-    protected JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem;
-    protected JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem;
-    protected JCheckBoxMenuItem showFactsTabCheckBoxMenuItem;
     protected ButtonGroup bgroup;
-    protected JRadioButtonMenuItem simpleModeRadioButtonMenuItem;
-    protected JRadioButtonMenuItem advancedModeRadioButtonMenuItem;
     protected JMenu createMenu;
     protected JMenuItem newUseCaseMenuItem;
     protected JMenuItem newSystemSequenceMenuItem;
@@ -141,8 +136,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected int openFrameCounter = 0;
     public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
-    private JCheckBoxMenuItem selectLastCheckBoxMenuItem;
-    private JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem;
 
     public ApplicationGUI(StudentUMLFrame frame) {
         if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
@@ -386,7 +379,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         preferencesMenu.setText("Preferences");
         editMenu.add(preferencesMenu);
 
-        selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
+        JCheckBoxMenuItem selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
         selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");
         selectLastCheckBoxMenuItem.setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
                 + " the need to select it again. <br>"
@@ -408,7 +401,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         preferencesMenu.addSeparator();
         
-        showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
+
+        JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
         showTypesInSDCheckBoxMenuItem.setText("Show types in messages in Sequence Diagrams");
         showTypesInSDCheckBoxMenuItem.setToolTipText("");
         showTypesInSDCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -438,7 +432,38 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         preferencesMenu.addSeparator();
                 
-        enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
+        JCheckBoxMenuItem showReturnsSDCheckBoxMenuItem = new JCheckBoxMenuItem();
+        showReturnsSDCheckBoxMenuItem.setText("Show return arrows in Sequence Diagrams");
+        showReturnsSDCheckBoxMenuItem.setToolTipText("");
+        showReturnsSDCheckBoxMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (showReturnsSDCheckBoxMenuItem.isSelected()) {
+                    Preferences.userRoot().put("SHOW_RETURN_SD", "TRUE");
+                } else {
+                    Preferences.userRoot().put("SHOW_RETURN_SD", "FALSE");
+                }
+                Vector sdFrames = getInternalFramesOfType(DiagramModel.SD);
+                for (int i = 0; i < sdFrames.size(); i++) {
+                    System.out.println("REPAINT : ");
+                    ((SDInternalFrame) sdFrames.get(i)).repaint();
+                }               
+                sdFrames = getInternalFramesOfType(DiagramModel.SSD);
+                for (int i = 0; i < sdFrames.size(); i++) {
+                    System.out.println("REPAINT : ");
+                    ((SSDInternalFrame) sdFrames.get(i)).repaint();
+                }               
+            }
+        });
+        
+        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
+        showReturnsSDCheckBoxMenuItem.setSelected(showReturnPref);
+        preferencesMenu.add(showReturnsSDCheckBoxMenuItem);
+        
+        
+        preferencesMenu.addSeparator();
+                
+        JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
         enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
         enableRuntimeConsistencyCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -460,7 +485,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         enableRuntimeConsistencyCheckBoxMenuItem.setSelected(true);
         preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
 
-        showRuleEditorCheckBoxMenuItem = new JCheckBoxMenuItem();
+        JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem = new JCheckBoxMenuItem();
         showRuleEditorCheckBoxMenuItem.setText("Show Rule Editor Tab");
         showRuleEditorCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the rule editor tab that enables the user<br/> to edit the rules on which the consistency checking is being based</html>");
         showRuleEditorCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -479,7 +504,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         });
         preferencesMenu.add(showRuleEditorCheckBoxMenuItem);
 
-        showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
+        JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
         showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
         showFactsTabCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the fact's tab</html>");
         showFactsTabCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -500,7 +525,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         preferencesMenu.addSeparator();
 
-        simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
+        JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
         simpleModeRadioButtonMenuItem.setToolTipText("<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
         simpleModeRadioButtonMenuItem.addActionListener(new ActionListener() {
 
@@ -522,7 +547,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         });
         preferencesMenu.add(simpleModeRadioButtonMenuItem);
 
-        advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
+        JRadioButtonMenuItem advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
         advancedModeRadioButtonMenuItem.setToolTipText("<html>Enables <b>dependency relationship</b> in DCD's and takes<br/> in consideration <b>object visibility</b> in consistency checks.</html>");
         advancedModeRadioButtonMenuItem.addActionListener(new ActionListener() {
 

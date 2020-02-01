@@ -26,7 +26,12 @@ public class ReturnMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public String toString() {
-        return getRank() + ": " + name;
+        String text = "";
+//        text += getRank() + ": ";
+        text += name;
+        if (text.equals(""))
+            text = " ";
+        return text;
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {

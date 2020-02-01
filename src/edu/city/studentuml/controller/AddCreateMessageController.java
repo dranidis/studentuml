@@ -4,12 +4,14 @@ package edu.city.studentuml.controller;
 //Author: Ervin Ramollari
 //AddCreateMessageController.java
 import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.view.gui.SDInternalFrame;
 import edu.city.studentuml.model.graphical.SDObjectGR;
@@ -80,9 +82,13 @@ public class AddCreateMessageController extends AddElementController {
         CreateMessage message = new CreateMessage(source.getRoleClassifier(), target.getRoleClassifier());
         CreateMessageGR messageGR = new CreateMessageGR(source, target, message, y);
 
-        UndoableEdit edit = new AddEdit(messageGR, diagramModel);
+        ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
+        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + 30);
+
+        UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
 
         diagramModel.addGraphicalElement(messageGR);
+        diagramModel.addGraphicalElement(returnMessageGR);
         if (parentFrame instanceof SDInternalFrame) {
             ((SDInternalFrame) parentFrame).setSelectionMode();
         }

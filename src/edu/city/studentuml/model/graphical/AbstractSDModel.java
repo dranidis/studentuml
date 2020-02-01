@@ -9,6 +9,7 @@ import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -19,13 +20,14 @@ import java.util.Vector;
 public abstract class AbstractSDModel extends DiagramModel {
 
     // minimum distance that can be kept between messages
-    public static final int MINIMUM_MESSAGE_DISTANCE = 30;
+    public static final int MINIMUM_MESSAGE_DISTANCE = 10;
     // minimum distance that can be kept between role classifiers
     public static final int MINIMUM_RC_DISTANCE = 60;
     // clone list of role classifiers and messages that is maintained for
     // consistency purposes, ordering, etc.
-    protected Vector roleClassifiers;
-    protected Vector messages;
+    protected NotifierVector<RoleClassifierGR> roleClassifiers;
+    protected NotifierVector<SDMessageGR> messages;
+    private boolean orderChanged = false;
 
     public AbstractSDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -76,6 +78,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         super.addGraphicalElement(m);
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
+        orderChanged = true;
         messagesChanged();
         restoreMessagesDistances();
         SystemWideObjectNamePool.getInstance().reload();
@@ -145,6 +148,8 @@ public abstract class AbstractSDModel extends DiagramModel {
     public final void messagesChanged() {
         sortMessages();
         updateLifelineLengths();
+        
+        validateInOut();
     }
 
     // sort the role classifiers list according to their x position
@@ -177,6 +182,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 message2 = (SDMessageGR) messages.elementAt(element + 1);
 
                 if (message1.getY() > message2.getY()) {
+                    orderChanged = true;
                     swap(messages, element, element + 1);
                 }
             }
@@ -379,5 +385,50 @@ public abstract class AbstractSDModel extends DiagramModel {
     public void removeReturnMessage(ReturnMessageGR returnMessage) {
         repository.removeSDMessage(returnMessage.getMessage());
         messages.remove(returnMessage);
+    }
+
+    private void validateInOut() {
+//        if(!orderChanged) 
+//            return;
+        
+        for(RoleClassifierGR sdObject: roleClassifiers) {
+            sdObject.clearInOutStacks();
+        }
+        
+        if(messages.size() > 0) {
+            RoleClassifierGR obj = messages.get(0).source;
+            obj.setActiveIn();
+        }
+        
+        for(SDMessageGR message:messages) {
+            message.outlineColor = Color.BLACK;
+//            System.out.println(message.message + ": " + message.source + " -> " + message.target);
+            boolean validated;
+            if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
+                validated = message.source.validateOut(message.target);
+                if (!validated) 
+                    message.outlineColor = Color.RED;
+                validated = message.target.validateIn(message.source);
+                if (!validated) 
+                    message.outlineColor = Color.RED;
+            } else if (message instanceof ReturnMessageGR) {
+                validated = message.source.validateOutReturn(message.target);
+                if (!validated) 
+                    message.outlineColor = Color.RED;
+                validated = message.target.validateInReturn(message.source);
+                if (!validated) 
+                    message.outlineColor = Color.RED;
+            }
+            if(message.source ==  message.target)
+                message.source.addActivationHeight(message.getY() + 5);
+            else
+                message.source.addActivationHeight(message.getY());
+            
+            if(message instanceof CreateMessageGR)
+                message.target.addActivationHeight(message.getY() + ((CreateMessageGR) message).target.getHeight() / 2);
+            else
+                message.target.addActivationHeight(message.getY());
+        }
+        orderChanged = false;
     }
 }
