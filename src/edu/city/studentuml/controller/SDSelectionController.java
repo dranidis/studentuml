@@ -3,7 +3,7 @@ package edu.city.studentuml.controller;
 //~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.MessageParameter;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
@@ -313,7 +313,7 @@ public class SDSelectionController extends SelectionController {
     }
     //new edit create method 
     public void editCreateMessage(CreateMessageGR messageGR) {
-        CreateMessageEditor createMessageEditor = new CreateMessageEditor(messageGR);
+        CreateMessageEditor createMessageEditor = new CreateMessageEditor(messageGR, model.getCentralRepository());
         CreateMessage message = messageGR.getCreateMessage();
 
         CreateMessage undoCreateMessage = message.clone();
@@ -328,7 +328,7 @@ public class SDSelectionController extends SelectionController {
         Iterator iterator = parameters.iterator();
         message.setParameters(new Vector());
         while (iterator.hasNext()) {
-            message.addParameter((MessageParameter) iterator.next());
+            message.addParameter((MethodParameter) iterator.next());
         }
 
         // UNDO/REDO

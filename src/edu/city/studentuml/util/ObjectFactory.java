@@ -867,8 +867,11 @@ public final class ObjectFactory extends Observable {
             ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
         } else if (parent instanceof CallMessage) {
             ((CallMessage) parent).addParameter(m);
+        } else if (parent instanceof CreateMessage) {
+            ((CreateMessage) parent).addParameter(m);
         } else {
             java.lang.System.err.println("::::::trying to stream method parameter but dont know where?");
+            throw new RuntimeException();
         }
         return m;
     }

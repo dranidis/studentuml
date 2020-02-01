@@ -6,13 +6,14 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.repository.CentralRepository;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -29,7 +30,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -64,9 +64,14 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
     private JPanel sourcePanel;
     private JLabel targetLabel;
     private JPanel targetPanel;
+    
+    private final CentralRepository repository;
 
-    public CreateMessageEditor(CreateMessageGR mGR) {
+    public CreateMessageEditor(CreateMessageGR mGR,  CentralRepository cr) {
         messageGR = mGR;
+        
+        repository = cr;
+        
         setLayout(new BorderLayout());
         sourceLabel = new JLabel();
 
@@ -242,18 +247,30 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
     }
 
     public Vector cloneParameters(Vector originalParameters) {
+//        Iterator iterator = originalParameters.iterator();
+//        Vector copyOfParameters = new Vector();
+//        MethodParameter originalParameter;
+//        MethodParameter copyOfParameter;
+//
+//        while (iterator.hasNext()) {
+//            originalParameter = (MethodParameter) iterator.next();
+//            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
+//            copyOfParameters.add(copyOfParameter);
+//        }
+//
+//        return copyOfParameters;
+        
         Iterator iterator = originalParameters.iterator();
         Vector copyOfParameters = new Vector();
-        MessageParameter originalParameter;
-        MessageParameter copyOfParameter;
+        MethodParameter originalParameter;
 
         while (iterator.hasNext()) {
-            originalParameter = (MessageParameter) iterator.next();
-            copyOfParameter = new MessageParameter(new String(originalParameter.getName()));
-            copyOfParameters.add(copyOfParameter);
+            originalParameter = (MethodParameter) iterator.next();
+            copyOfParameters.add(originalParameter.clone());
         }
 
-        return copyOfParameters;
+        return copyOfParameters;        
+        
     }
 
     public void updateParametersList() {
@@ -278,31 +295,55 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
     }
 
     public void addParameter() {
-        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
+//        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
+//
+//        if (parameterName == null) {    // user pressed cancel
+//            return;
+//        }
+//
+//        MessageParameter parameter = new MessageParameter(parameterName);
+//
+//        parameters.add(parameter);
+//        updateParametersList();
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
 
-        if (parameterName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        MessageParameter parameter = new MessageParameter(parameterName);
+        MethodParameter parameter = new MethodParameter(parameterEditor.getName(), parameterEditor.getType());
 
         parameters.add(parameter);
-        updateParametersList();
+        updateParametersList();   
     }
 
     public void editParameter() {
+//        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
+//            return;
+//        }
+//
+//        MessageParameter parameter = (MessageParameter) parameters.elementAt(parametersList.getSelectedIndex());
+//        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
+//
+//        if (newName == null) {    // user pressed cancel
+//            return;
+//        }
+//
+//        parameter.setName(newName);
+//        updateParametersList();
         if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
             return;
         }
 
-        MessageParameter parameter = (MessageParameter) parameters.elementAt(parametersList.getSelectedIndex());
-        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
+        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(parameter, repository);
 
-        if (newName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        parameter.setName(newName);
+        parameter.setName(parameterEditor.getName());
+        parameter.setType(parameterEditor.getType());
         updateParametersList();
     }
 

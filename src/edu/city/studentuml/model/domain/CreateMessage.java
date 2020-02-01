@@ -19,11 +19,11 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
     Logger logger = Logger.getLogger(CreateMessage.class.getName());
 
-    private NotifierVector parameters;
+    private NotifierVector<MethodParameter> parameters;
 
     public CreateMessage(RoleClassifier from, RoleClassifier to) {
         super(from, to);
-        parameters = new NotifierVector();
+        parameters = new NotifierVector<>();
     }
 
     public String toString() {
@@ -49,19 +49,19 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
 
     }
 
-    public void addParameter(MessageParameter p) {
+    public void addParameter(MethodParameter p) {
         parameters.add(p);
     }
 
-    public void removeParameter(MessageParameter p) {
+    public void removeParameter(MethodParameter p) {
         parameters.remove(p);
     }
 
-    public Vector getParameters() {
+    public Vector<MethodParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Vector param) {
+    public void setParameters(Vector<MethodParameter> param) {
         parameters.clear();
         parameters = NotifierVector.from(param);
     }
@@ -70,12 +70,12 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
         parameters.clear();
     }
 
-    public MessageParameter getParameterByName(String name) {
+    public MethodParameter getParameterByName(String name) {
         Iterator iterator = parameters.iterator();
-        MessageParameter param;
+        MethodParameter param;
 
         while (iterator.hasNext()) {
-            param = (MessageParameter) iterator.next();
+            param = (MethodParameter) iterator.next();
 
             if (param.getName().equals(name)) {
                 return param;
@@ -88,11 +88,11 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
     public String getParametersString() {
         String parametersString = "";
         Iterator iterator = parameters.iterator();
-        MessageParameter parameter;
+        MethodParameter parameter;
         int i = 0;    // keeps track if it is the first iteration
 
         while (iterator.hasNext()) {
-            parameter = (MessageParameter) iterator.next();
+            parameter = (MethodParameter) iterator.next();
 
             if (i == 0) {
                 parametersString += parameter.toString();
@@ -130,9 +130,9 @@ public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
         CreateMessage copyCreateMessage = new CreateMessage(getSource(), getTarget());
 
         Iterator iterator = parameters.iterator();
-        MessageParameter parameter;
+        MethodParameter parameter;
         while (iterator.hasNext()) {
-            parameter = (MessageParameter) iterator.next();
+            parameter = (MethodParameter) iterator.next();
             copyCreateMessage.addParameter(parameter.clone());
         }
 
