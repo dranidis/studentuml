@@ -63,7 +63,6 @@ public class XMLStreamer {
     public void loadString(String xmlString) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();
@@ -180,15 +179,6 @@ public class XMLStreamer {
         }
     }
 
-    public void finishedParsing() {
-        Iterator i = ObjectFactory.getInstance().notifierObjects.keySet().iterator();
-        while (i.hasNext()) {
-            Object o = i.next();
-            Element e = (Element) ObjectFactory.getInstance().notifierObjects.get(o);
-            ObjectFactory.getInstance().finishedParsing(o, e);
-        }
-    }
-
     public Element getNodeById(Element parent, String id) {
         if (parent == null) {
             parent = doc.getDocumentElement();
@@ -276,7 +266,6 @@ public class XMLStreamer {
     public void loadFromString(String data) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();
@@ -350,7 +339,6 @@ public class XMLStreamer {
         fromFile = true;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();

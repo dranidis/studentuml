@@ -108,10 +108,8 @@ import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Observable;
 
 import org.w3c.dom.Element;
@@ -122,9 +120,6 @@ public final class ObjectFactory extends Observable {
     public static ObjectFactory getInstance() {
         return instance;
     }
-
-    //A list of objects to be passed to the finished parsing event
-    public final HashMap notifierObjects = new HashMap();
 
     public IXMLCustomStreamable newInstance(String className, Object parent, Element stream, XMLStreamer streamer) {
         // THIS IS QUICK HACK; SHOULD BE CHANGED IF TIME ALLOWS
@@ -205,8 +200,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new UCDModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
     }
@@ -216,8 +209,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new CCDModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
     }
@@ -227,8 +218,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new SSDModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
     }
@@ -238,8 +227,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new DCDModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
     }
@@ -249,8 +236,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new SDModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
     }
@@ -259,8 +244,6 @@ public final class ObjectFactory extends Observable {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new ADModel(stream.getAttribute("name"), u);
         
-        notifierObjects.put(model, stream);
-
         notifyApplicationGUI(model, stream);
         return model;
 
@@ -878,18 +861,6 @@ public final class ObjectFactory extends Observable {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
         ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
         return m;
-    }
-
-    public void finishedParsing(Object o, Element e) {
-        if (o instanceof DiagramModel) {
-            try {
-                ((DiagramModel) o).getFrame().setSelected(Boolean.parseBoolean(e.getAttribute("selected")));
-                ((DiagramModel) o).getFrame().setIcon(Boolean.parseBoolean(e.getAttribute("iconified")));
-            } catch (PropertyVetoException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-        }
     }
 
     // AD

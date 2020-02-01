@@ -866,14 +866,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             FrameProperties fp = (FrameProperties) object;
             addInternalFrame(fp.model, fp.R);
 
-//            try {
-//                // TODO: refactor
-//                ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
-//                ((DiagramInternalFrame) fp.model.getFrame()).setIcon(fp.iconified);
-//            } catch (PropertyVetoException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }            
+            try {
+                // TODO: refactor
+                ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
+                ((DiagramInternalFrame) fp.model.getFrame()).setIcon(fp.iconified);
+            } catch (PropertyVetoException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }            
         }
     }
 
