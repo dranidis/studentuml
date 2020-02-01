@@ -12,6 +12,7 @@ import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
@@ -57,7 +58,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     private JPanel namePanel;
     private boolean ok;
     private JButton okButton;
-    private Vector parameters;
+    private Vector<MethodParameter> parameters;
     private JPanel parametersButtonsPanel;
     private JList parametersList;
     private JPanel parametersPanel;
@@ -284,15 +285,15 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         updateParametersList();
     }
 
-    public Vector cloneParameters(Vector originalParameters) {
+    public Vector cloneParameters(Vector<MethodParameter> originalParameters) {
         Iterator iterator = originalParameters.iterator();
         Vector copyOfParameters = new Vector();
-        MessageParameter originalParameter;
-        MessageParameter copyOfParameter;
+        MethodParameter originalParameter;
+        MethodParameter copyOfParameter;
 
         while (iterator.hasNext()) {
-            originalParameter = (MessageParameter) iterator.next();
-            copyOfParameter = new MessageParameter(new String(originalParameter.getName()));
+            originalParameter = (MethodParameter) iterator.next();
+            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
             copyOfParameters.add(copyOfParameter);
         }
 
@@ -334,7 +335,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             return;
         }
 
-        MessageParameter parameter = new MessageParameter(parameterName);
+        MethodParameter parameter = new MethodParameter(parameterName);
 
         parameters.add(parameter);
         updateParametersList();
@@ -345,7 +346,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             return;
         }
 
-        MessageParameter parameter = (MessageParameter) parameters.elementAt(parametersList.getSelectedIndex());
+        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
         String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
 
         if (newName == null) {    // user pressed cancel

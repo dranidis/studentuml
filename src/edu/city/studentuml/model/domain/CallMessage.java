@@ -54,11 +54,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         parameters.remove(p);
     }
 
-    public Vector getParameters() {
+    public Vector<MethodParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Vector param) {
+    public void setParameters(Vector<MethodParameter> param) {
         parameters.clear();
         parameters = NotifierVector.from(param);
     }
