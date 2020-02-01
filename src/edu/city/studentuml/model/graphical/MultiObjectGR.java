@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 
-public class MultiObjectGR extends RoleClassifierGR implements IXMLCustomStreamable {
+public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStreamable {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
@@ -113,22 +113,6 @@ public class MultiObjectGR extends RoleClassifierGR implements IXMLCustomStreama
                 startingX + underlineX + (int) bounds.getWidth() + 2, startingY
                 + underlineY + 2);
 
-        // draw the dashed lifeline below the name box
-        if (isSelected()) {
-            g.setPaint(highlightColor);
-        } else {
-            g.setPaint(outlineColor);
-        }
-
-        // Stroke originalStroke = g.getStroke();
-        float dashes[] = {8}; // the pattern of dashes for drawing the
-        // realization line
-
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
-        g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
     }
 
     // Calculates the width of the name box as it appears on the screen.
