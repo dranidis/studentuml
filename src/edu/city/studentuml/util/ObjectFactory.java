@@ -1,7 +1,6 @@
 package edu.city.studentuml.util;
 
 //import edu.city.studentuml.applet.Application;
-import edu.city.studentuml.view.gui.ApplicationGUI;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -11,7 +10,6 @@ import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
@@ -114,15 +112,21 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Observable;
 
 import org.w3c.dom.Element;
 
-public final class ObjectFactory {
+public final class ObjectFactory extends Observable {
+    private static ObjectFactory instance = new ObjectFactory();
+    protected ObjectFactory() {}
+    public static ObjectFactory getInstance() {
+        return instance;
+    }
 
     //A list of objects to be passed to the finished parsing event
-    public static final HashMap notifierObjects = new HashMap();
+    public final HashMap notifierObjects = new HashMap();
 
-    public static IXMLCustomStreamable newInstance(String className, Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newInstance(String className, Object parent, Element stream, XMLStreamer streamer) {
         // THIS IS QUICK HACK; SHOULD BE CHANGED IF TIME ALLOWS
         String modelGraphicalPackageName = "edu.city.studentuml.model.graphical.";
         String modelDomainPackageName = "edu.city.studentuml.model.domain.";
@@ -152,14 +156,14 @@ public final class ObjectFactory {
         }
     }
 
-    public static IXMLCustomStreamable newInstance(Class c, Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newInstance(Class c, Object parent, Element stream, XMLStreamer streamer) {
         if (c == null) {
             return null;
         }
         String methodName = "new" + c.getSimpleName().toLowerCase();
         try {
             Method m = ObjectFactory.class.getMethod(methodName, new Class[]{Object.class, Element.class, XMLStreamer.class});
-            Object result = m.invoke(ObjectFactory.class, new Object[]{parent, stream, streamer});
+            Object result = m.invoke(this, new Object[]{parent, stream, streamer});
             if (result instanceof IXMLCustomStreamable) {
 
                 String thisID = stream.getAttribute("internalid");
@@ -186,7 +190,7 @@ public final class ObjectFactory {
         return null;
     }
 
-    public static Rectangle readRect(String val) {
+    public Rectangle readRect(String val) {
         if (val == null) {
             return null;
         }
@@ -197,141 +201,73 @@ public final class ObjectFactory {
         return null;
     }
 
-    public static IXMLCustomStreamable newucdmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucdmodel(Object parent, Element stream, XMLStreamer streamer) {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new UCDModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
-
     }
 
-    public static IXMLCustomStreamable newccdmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newccdmodel(Object parent, Element stream, XMLStreamer streamer) {
 
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new CCDModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
     }
 
-    public static IXMLCustomStreamable newssdmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newssdmodel(Object parent, Element stream, XMLStreamer streamer) {
 
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new SSDModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
     }
 
-    public static IXMLCustomStreamable newdcdmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdcdmodel(Object parent, Element stream, XMLStreamer streamer) {
 
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new DCDModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-        java.lang.System.out.println("NotifierObjects : " + notifierObjects);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
     }
 
-    public static IXMLCustomStreamable newsdmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsdmodel(Object parent, Element stream, XMLStreamer streamer) {
 
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new SDModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
     }
 
-    public static IXMLCustomStreamable newadmodel(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newadmodel(Object parent, Element stream, XMLStreamer streamer) {
         UMLProject u = (UMLProject) parent;
         DiagramModel model = new ADModel(stream.getAttribute("name"), u);
-        Rectangle R = readRect(stream.getAttribute("framex"));
+        
+        notifierObjects.put(model, stream);
 
-//        model.addObserver(ApplicationGUI.getInstance());
-        ApplicationGUI.getInstance().addInternalFrame(model, R);
-
-        ObjectFactory.notifierObjects.put(model, stream);
-
-        try {
-            ((DiagramInternalFrame) model.getFrame()).setSelected(Boolean.parseBoolean(stream.getAttribute("selected")));
-            ((DiagramInternalFrame) model.getFrame()).setIcon(Boolean.parseBoolean(stream.getAttribute("iconified")));
-        } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        notifyApplicationGUI(model, stream);
         return model;
 
     }
 
     // UCD
-    public static IXMLCustomStreamable newucactorgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucactorgr(Object parent, Element stream, XMLStreamer streamer) {
         Actor actor = (Actor) streamer.readObjectByID(stream, "ucActor", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -349,7 +285,7 @@ public final class ObjectFactory {
         return actorGR;
     }
     
-    public static IXMLCustomStreamable newsystemgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsystemgr(Object parent, Element stream, XMLStreamer streamer) {
         System s = (System) streamer.readObjectByID(stream, "system", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -367,7 +303,7 @@ public final class ObjectFactory {
         return systemGR;
     }
     
-    public static IXMLCustomStreamable newusecasegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newusecasegr(Object parent, Element stream, XMLStreamer streamer) {
         UseCase uc = (UseCase) streamer.readObjectByID(stream, "useCase", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -385,12 +321,12 @@ public final class ObjectFactory {
         return useCaseGR;
     }
 
-    public static IXMLCustomStreamable newusecase(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newusecase(Object parent, Element stream, XMLStreamer streamer) {
         UseCase uc = new UseCase(stream.getAttribute("name"));
         return uc;
     }
 
-    public static IXMLCustomStreamable newucassociationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucassociationgr(Object parent, Element stream, XMLStreamer streamer) {
         UCAssociation association = (UCAssociation) streamer.readObjectByID(stream, "link", null);
         UCActorGR actor = (UCActorGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         UseCaseGR useCase = (UseCaseGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -402,7 +338,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newucassociation(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucassociation(Object parent, Element stream, XMLStreamer streamer) {
         Actor actor = (Actor) streamer.readObjectByID(stream, "from", null);
         UseCase useCase = (UseCase) streamer.readObjectByID(stream, "to", null);
 
@@ -410,7 +346,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newucincludegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucincludegr(Object parent, Element stream, XMLStreamer streamer) {
         UCInclude include = (UCInclude) streamer.readObjectByID(stream, "link", null);
         UseCaseGR from = (UseCaseGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         UseCaseGR to = (UseCaseGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -422,7 +358,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newucinclude(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucinclude(Object parent, Element stream, XMLStreamer streamer) {
         UseCase from = (UseCase) streamer.readObjectByID(stream, "from", null);
         UseCase to = (UseCase) streamer.readObjectByID(stream, "to", null);
 
@@ -430,7 +366,7 @@ public final class ObjectFactory {
         return include;
     }
 
-    public static IXMLCustomStreamable newucgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
         UCGeneralization generalization = (UCGeneralization) streamer.readObjectByID(stream, "link", null);
         UCDComponentGR from = (UCDComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         UCDComponentGR to = (UCDComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -447,7 +383,7 @@ public final class ObjectFactory {
         return generalizationGR;
     }
 
-    public static IXMLCustomStreamable newucgeneralization(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucgeneralization(Object parent, Element stream, XMLStreamer streamer) {
         UCDComponent from = (UCDComponent) streamer.readObjectByID(stream, "from", null);
         UCDComponent to = (UCDComponent) streamer.readObjectByID(stream, "to", null);
 
@@ -461,7 +397,7 @@ public final class ObjectFactory {
         return generalization;
     }
 
-    public static IXMLCustomStreamable newucextendgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucextendgr(Object parent, Element stream, XMLStreamer streamer) {
         UCExtend extend = (UCExtend) streamer.readObjectByID(stream, "link", null);
         UseCaseGR from = (UseCaseGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         UseCaseGR to = (UseCaseGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -473,7 +409,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newucextend(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newucextend(Object parent, Element stream, XMLStreamer streamer) {
         UseCase from = (UseCase) streamer.readObjectByID(stream, "from", null);
         UseCase to = (UseCase) streamer.readObjectByID(stream, "to", null);
 
@@ -481,7 +417,7 @@ public final class ObjectFactory {
         return extend;
     }
 
-    public static IXMLCustomStreamable newextensionpoint(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newextensionpoint(Object parent, Element stream, XMLStreamer streamer) {
         ExtensionPoint ext = new ExtensionPoint(stream.getAttribute("name"));
         if (parent instanceof UCExtend) {
             UCExtend extend = (UCExtend) parent;
@@ -492,7 +428,7 @@ public final class ObjectFactory {
     }
 
     // SSD and SD
-    public static IXMLCustomStreamable newsdobjectgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsdobjectgr(Object parent, Element stream, XMLStreamer streamer) {
         SDObject sd = (SDObject) streamer.readObjectByID(stream, "sdobject", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         SDObjectGR sdObjectGR = new SDObjectGR(sd, x);
@@ -500,7 +436,7 @@ public final class ObjectFactory {
         return sdObjectGR;
     }
 
-    public static IXMLCustomStreamable newactorinstancegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactorinstancegr(Object parent, Element stream, XMLStreamer streamer) {
         ActorInstance sd = (ActorInstance) streamer.readObjectByID(stream, "actor", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         ActorInstanceGR actorGR = new ActorInstanceGR(sd, x);
@@ -513,7 +449,7 @@ public final class ObjectFactory {
         return actorGR;
     }
 
-    public static IXMLCustomStreamable newsysteminstancegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsysteminstancegr(Object parent, Element stream, XMLStreamer streamer) {
         SystemInstance sd = (SystemInstance) streamer.readObjectByID(stream, "systeminstance", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         SystemInstanceGR systemGR = new SystemInstanceGR(sd, x);
@@ -522,7 +458,7 @@ public final class ObjectFactory {
         return systemGR;
     }
 
-    public static IXMLCustomStreamable newmultiobjectgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmultiobjectgr(Object parent, Element stream, XMLStreamer streamer) {
         MultiObject sd = (MultiObject) streamer.readObjectByID(stream, "multiobject", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         MultiObjectGR multiObjectGR = new MultiObjectGR(sd, x);
@@ -530,7 +466,7 @@ public final class ObjectFactory {
         return multiObjectGR;
     }
 
-    public static IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer) {
         CallMessage sd = (CallMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
@@ -549,7 +485,7 @@ public final class ObjectFactory {
         return cg;
     }
 
-    public static IXMLCustomStreamable newreturnmessagegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newreturnmessagegr(Object parent, Element stream, XMLStreamer streamer) {
         ReturnMessage sd = (ReturnMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
@@ -568,7 +504,7 @@ public final class ObjectFactory {
         return cg;
     }
 
-    public static IXMLCustomStreamable newcreatemessagegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcreatemessagegr(Object parent, Element stream, XMLStreamer streamer) {
         CreateMessage sd = (CreateMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
@@ -582,7 +518,7 @@ public final class ObjectFactory {
         return cg;
     }
 
-    public static IXMLCustomStreamable newdestroymessagegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdestroymessagegr(Object parent, Element stream, XMLStreamer streamer) {
         DestroyMessage sd = (DestroyMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
@@ -596,7 +532,7 @@ public final class ObjectFactory {
         return cg;
     }
 
-    public static IXMLCustomStreamable newdestroymessage(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdestroymessage(Object parent, Element stream, XMLStreamer streamer) {
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
         DestroyMessage a = new DestroyMessage(from, to);
@@ -604,7 +540,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newcreatemessage(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcreatemessage(Object parent, Element stream, XMLStreamer streamer) {
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
         CreateMessage a = new CreateMessage(from, to);
@@ -612,7 +548,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newreturnmessage(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newreturnmessage(Object parent, Element stream, XMLStreamer streamer) {
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
@@ -621,7 +557,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newcallmessage(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcallmessage(Object parent, Element stream, XMLStreamer streamer) {
         GenericOperation go = (GenericOperation) streamer.readObjectByID(stream, "operation", null);
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -631,7 +567,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newmessageparameter(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmessageparameter(Object parent, Element stream, XMLStreamer streamer) {
         MessageParameter m = new MessageParameter(stream.getAttribute("name"));
         if(parent instanceof CallMessage) {
          ((CallMessage) parent).addParameter(m);//FIXME: PACKAGE
@@ -642,34 +578,34 @@ public final class ObjectFactory {
         return m;
     }
 
-    public static IXMLCustomStreamable newgenericoperation(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newgenericoperation(Object parent, Element stream, XMLStreamer streamer) {
         return new GenericOperation(stream.getAttribute("name"));
     }
 
-    public static IXMLCustomStreamable newactorinstance(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactorinstance(Object parent, Element stream, XMLStreamer streamer) {
         //Actor base = (Actor)SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("actor"));
         Actor base = (Actor) streamer.readObjectByID(stream, "actor", null);
         ActorInstance a = new ActorInstance(stream.getAttribute("name"), base);
         return a;
     }
 
-    public static IXMLCustomStreamable newsysteminstance(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsysteminstance(Object parent, Element stream, XMLStreamer streamer) {
         System base = (System) streamer.readObjectByID(stream, "system", null);
         SystemInstance s = new SystemInstance(stream.getAttribute("name"), base);
         return s;
     }
 
-    public static IXMLCustomStreamable newactor(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactor(Object parent, Element stream, XMLStreamer streamer) {
         Actor base = new Actor(stream.getAttribute("name"));
         return base;
     }
 
-    public static IXMLCustomStreamable newsystem(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsystem(Object parent, Element stream, XMLStreamer streamer) {
         System base = new System(stream.getAttribute("name"));
         return base;
     }
 
-    public static IXMLCustomStreamable newsdobject(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newsdobject(Object parent, Element stream, XMLStreamer streamer) {
         DesignClass base = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("designclass"));
         if (base == null) {
             base = (DesignClass) streamer.readObjectByID(stream, "designclass", null);
@@ -679,7 +615,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newmultiobject(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmultiobject(Object parent, Element stream, XMLStreamer streamer) {
         DesignClass base = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("designclass"));
         if (base == null) {
             base = (DesignClass) streamer.readObjectByID(stream, "designclass", null);
@@ -690,7 +626,7 @@ public final class ObjectFactory {
     }
 
     // CCD and DCD
-    public static IXMLCustomStreamable newinterfacegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newinterfacegr(Object parent, Element stream, XMLStreamer streamer) {
         Interface interfaceObject = (Interface) streamer.readObjectByID(stream, "interface", null);
         Point p = new Point(10, 10);
         InterfaceGR interfaceq = new InterfaceGR(interfaceObject, p);
@@ -698,7 +634,7 @@ public final class ObjectFactory {
         return interfaceq;
     }
 
-    public static IXMLCustomStreamable newclassgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newclassgr(Object parent, Element stream, XMLStreamer streamer) {
         DesignClass dc = (DesignClass) streamer.readObjectByID(stream, "designclass", null);
         Point p = new Point(10, 10);
         ClassGR classg = new ClassGR(dc, p);
@@ -706,7 +642,7 @@ public final class ObjectFactory {
         return classg;
     }
 
-    public static IXMLCustomStreamable newconceptualclassgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newconceptualclassgr(Object parent, Element stream, XMLStreamer streamer) {
         ConceptualClass cc = (ConceptualClass) streamer.readObjectByID(stream, "conceptualclass", null);
         Point p = new Point(10, 10);
         ConceptualClassGR classg = new ConceptualClassGR(cc, p);
@@ -714,7 +650,7 @@ public final class ObjectFactory {
         return classg;
     }
 
-    public static IXMLCustomStreamable newumlnotegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newumlnotegr(Object parent, Element stream, XMLStreamer streamer) {
         GraphicalElement to = (GraphicalElement) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
         Point p = new Point(10, 10);
 
@@ -724,7 +660,7 @@ public final class ObjectFactory {
         return note;
     }
 
-    public static IXMLCustomStreamable newdependencygr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdependencygr(Object parent, Element stream, XMLStreamer streamer) {
         Dependency dependency = (Dependency) streamer.readObjectByID(stream, "dependency", null);
         ClassGR classA = (ClassGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classa"));
         ClassGR classB = (ClassGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classb"));
@@ -735,7 +671,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newassociationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newassociationgr(Object parent, Element stream, XMLStreamer streamer) {
         Association association = (Association) streamer.readObjectByID(stream, "association", null);
         ClassifierGR classA = (ClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classa"));
         ClassifierGR classB = (ClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classb"));
@@ -751,7 +687,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newassociationclassgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newassociationclassgr(Object parent, Element stream, XMLStreamer streamer) {
         AbstractAssociationClass associationClass = (AbstractAssociationClass) streamer.readObjectByID(stream, "associationclass", null);
 
         ClassifierGR classA = (ClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classa"));
@@ -768,7 +704,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newaggregationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newaggregationgr(Object parent, Element stream, XMLStreamer streamer) {
         Aggregation aggregation = (Aggregation) streamer.readObjectByID(stream, "aggregation", null);
         ClassifierGR whole = (ClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classa"));
         ClassifierGR part = (ClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classb"));
@@ -784,7 +720,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newrealizationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newrealizationgr(Object parent, Element stream, XMLStreamer streamer) {
         Realization realization = (Realization) streamer.readObjectByID(stream, "realization", null);
 
         ClassGR classA = (ClassGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classa"));
@@ -796,7 +732,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
         Generalization generalization = (Generalization) streamer.readObjectByID(stream, "generalization", null);
 
         AbstractClassGR base = (AbstractClassGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("base"));
@@ -818,7 +754,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newgeneralization(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newgeneralization(Object parent, Element stream, XMLStreamer streamer) {
         AbstractClass base = (AbstractClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("base"));
         AbstractClass superclass = (AbstractClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("super"));
 
@@ -832,7 +768,7 @@ public final class ObjectFactory {
         return g;
     }
 
-    public static IXMLCustomStreamable newaggregation(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newaggregation(Object parent, Element stream, XMLStreamer streamer) {
         Role whole = (Role) streamer.readObjectByID(stream, "rolea", null);
         Role part = (Role) streamer.readObjectByID(stream, "roleb", null);
 
@@ -840,7 +776,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newassociation(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newassociation(Object parent, Element stream, XMLStreamer streamer) {
         Role roleA = (Role) streamer.readObjectByID(stream, "rolea", null);
         Role roleB = (Role) streamer.readObjectByID(stream, "roleb", null);
 
@@ -848,7 +784,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newdesignassociationclass(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdesignassociationclass(Object parent, Element stream, XMLStreamer streamer) {
         Role roleA = (Role) streamer.readObjectByID(stream, "rolea", null);
         Role roleB = (Role) streamer.readObjectByID(stream, "roleb", null);
 
@@ -856,7 +792,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newconceptualassociationclass(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newconceptualassociationclass(Object parent, Element stream, XMLStreamer streamer) {
         Role roleA = (Role) streamer.readObjectByID(stream, "rolea", null);
         Role roleB = (Role) streamer.readObjectByID(stream, "roleb", null);
 
@@ -864,7 +800,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newdependency(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdependency(Object parent, Element stream, XMLStreamer streamer) {
         DesignClass from = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         DesignClass to = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
@@ -872,7 +808,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newrealization(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newrealization(Object parent, Element stream, XMLStreamer streamer) {
         DesignClass classA = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("a"));
         Interface classB = (Interface) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("b"));
 
@@ -880,35 +816,35 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newrole(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newrole(Object parent, Element stream, XMLStreamer streamer) {
         Role a = new Role((Classifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("classifier")));
         return a;
 
     }
 
-    public static IXMLCustomStreamable newdesignclass(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdesignclass(Object parent, Element stream, XMLStreamer streamer) {
         GenericClass gc = (GenericClass) streamer.readObjectByID(stream, "generic", null);
         DesignClass dc = new DesignClass(gc);
         return dc;
     }
 
-    public static IXMLCustomStreamable newconceptualclass(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newconceptualclass(Object parent, Element stream, XMLStreamer streamer) {
         GenericClass gc = (GenericClass) streamer.readObjectByID(stream, "generic", null);
         ConceptualClass cc = new ConceptualClass(gc);
         return cc;
     }
 
-    public static IXMLCustomStreamable newinterface(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newinterface(Object parent, Element stream, XMLStreamer streamer) {
         Interface gc = new Interface(stream.getAttribute("name"));
         return gc;
     }
 
-    public static IXMLCustomStreamable newgenericclass(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newgenericclass(Object parent, Element stream, XMLStreamer streamer) {
         GenericClass gc = new GenericClass(stream.getAttribute("name"));
         return gc;
     }
 
-    public static IXMLCustomStreamable newattribute(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newattribute(Object parent, Element stream, XMLStreamer streamer) {
         Attribute a = new Attribute(stream.getAttribute("name"));
 
         if (parent instanceof ConceptualClass) {
@@ -924,7 +860,7 @@ public final class ObjectFactory {
         return a;
     }
 
-    public static IXMLCustomStreamable newmethod(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmethod(Object parent, Element stream, XMLStreamer streamer) {
         edu.city.studentuml.model.domain.Method m = new edu.city.studentuml.model.domain.Method(stream.getAttribute("name"));//FIXME: PACKAGE
         if (parent instanceof Interface) {
             ((Interface) parent).addMethod(m);
@@ -938,13 +874,13 @@ public final class ObjectFactory {
         return m;
     }
 
-    public static IXMLCustomStreamable newmethodparameter(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmethodparameter(Object parent, Element stream, XMLStreamer streamer) {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
         ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
         return m;
     }
 
-    public static void finishedParsing(Object o, Element e) {
+    public void finishedParsing(Object o, Element e) {
         if (o instanceof DiagramModel) {
             try {
                 ((DiagramModel) o).getFrame().setSelected(Boolean.parseBoolean(e.getAttribute("selected")));
@@ -957,7 +893,7 @@ public final class ObjectFactory {
     }
 
     // AD
-    public static IXMLCustomStreamable newinitialnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newinitialnodegr(Object parent, Element stream, XMLStreamer streamer) {
         InitialNode initialNode = (InitialNode) streamer.readObjectByID(stream, "initialnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -974,13 +910,13 @@ public final class ObjectFactory {
         return initialNodeGR;
     }
 
-    public static IXMLCustomStreamable newinitialnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newinitialnode(Object parent, Element stream, XMLStreamer streamer) {
 //        InitialNode n = new InitialNode(stream.getAttribute("name"));
         InitialNode n = new InitialNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newactivityfinalnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactivityfinalnodegr(Object parent, Element stream, XMLStreamer streamer) {
         ActivityFinalNode activityFinalNode = (ActivityFinalNode) streamer.readObjectByID(stream, "activityfinalnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -997,13 +933,13 @@ public final class ObjectFactory {
         return activityFinalNodeGR;
     }
 
-    public static IXMLCustomStreamable newactivityfinalnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactivityfinalnode(Object parent, Element stream, XMLStreamer streamer) {
 //        ActivityFinalNode n = new ActivityFinalNode(stream.getAttribute("name"));
         ActivityFinalNode n = new ActivityFinalNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newflowfinalnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newflowfinalnodegr(Object parent, Element stream, XMLStreamer streamer) {
         FlowFinalNode flowFinalNode = (FlowFinalNode) streamer.readObjectByID(stream, "flowfinalnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1020,13 +956,13 @@ public final class ObjectFactory {
         return flowFinalNodeGR;
     }
 
-    public static IXMLCustomStreamable newflowfinalnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newflowfinalnode(Object parent, Element stream, XMLStreamer streamer) {
 //        FlowFinalNode n = new FlowFinalNode(stream.getAttribute("name"));
         FlowFinalNode n = new FlowFinalNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newactionnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactionnodegr(Object parent, Element stream, XMLStreamer streamer) {
         ActionNode actionNode = (ActionNode) streamer.readObjectByID(stream, "actionnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1043,12 +979,12 @@ public final class ObjectFactory {
         return actionNodeGR;
     }
 
-    public static IXMLCustomStreamable newactionnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactionnode(Object parent, Element stream, XMLStreamer streamer) {
         ActionNode n = new ActionNode(stream.getAttribute("name"));
         return n;
     }
 
-    public static IXMLCustomStreamable newmergenodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmergenodegr(Object parent, Element stream, XMLStreamer streamer) {
         MergeNode mergeNode = (MergeNode) streamer.readObjectByID(stream, "mergenode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1065,13 +1001,13 @@ public final class ObjectFactory {
         return mergeNodeGR;
     }
 
-    public static IXMLCustomStreamable newmergenode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newmergenode(Object parent, Element stream, XMLStreamer streamer) {
 //        MergeNode n = new MergeNode(stream.getAttribute("name"));
         MergeNode n = new MergeNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newdecisionnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdecisionnodegr(Object parent, Element stream, XMLStreamer streamer) {
         DecisionNode decisionNode = (DecisionNode) streamer.readObjectByID(stream, "decisionnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1088,13 +1024,13 @@ public final class ObjectFactory {
         return decisionNodeGR;
     }
 
-    public static IXMLCustomStreamable newdecisionnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newdecisionnode(Object parent, Element stream, XMLStreamer streamer) {
 //        DecisionNode n = new DecisionNode(stream.getAttribute("name"));
         DecisionNode n = new DecisionNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newforknodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newforknodegr(Object parent, Element stream, XMLStreamer streamer) {
         ForkNode forkNode = (ForkNode) streamer.readObjectByID(stream, "forknode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1111,13 +1047,13 @@ public final class ObjectFactory {
         return forkNodeGR;
     }
 
-    public static IXMLCustomStreamable newforknode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newforknode(Object parent, Element stream, XMLStreamer streamer) {
 //        ForkNode n = new ForkNode(stream.getAttribute("name"));
         ForkNode n = new ForkNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newjoinnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newjoinnodegr(Object parent, Element stream, XMLStreamer streamer) {
         JoinNode joinNode = (JoinNode) streamer.readObjectByID(stream, "joinnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1134,13 +1070,13 @@ public final class ObjectFactory {
         return joinNodeGR;
     }
 
-    public static IXMLCustomStreamable newjoinnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newjoinnode(Object parent, Element stream, XMLStreamer streamer) {
 //        JoinNode n = new JoinNode(stream.getAttribute("name"));
         JoinNode n = new JoinNode();
         return n;
     }
 
-    public static IXMLCustomStreamable newobjectnodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newobjectnodegr(Object parent, Element stream, XMLStreamer streamer) {
         ObjectNode objectNode = (ObjectNode) streamer.readObjectByID(stream, "objectnode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1157,14 +1093,14 @@ public final class ObjectFactory {
         return objectNodeGR;
     }
 
-    public static IXMLCustomStreamable newobjectnode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newobjectnode(Object parent, Element stream, XMLStreamer streamer) {
 //        ObjectNode n = new ObjectNode(stream.getAttribute("name"));
         ObjectNode n = new ObjectNode();
         n.setName(stream.getAttribute("name"));
         return n;
     }
 
-    public static IXMLCustomStreamable newstate(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newstate(Object parent, Element stream, XMLStreamer streamer) {
         State s = new State(stream.getAttribute("name"));
         if (parent instanceof ObjectNode) {
             ObjectNode node = (ObjectNode) parent;
@@ -1173,7 +1109,7 @@ public final class ObjectFactory {
         return s;
     }
 
-    public static IXMLCustomStreamable newactivitynodegr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactivitynodegr(Object parent, Element stream, XMLStreamer streamer) {
         ActivityNode activityNode = (ActivityNode) streamer.readObjectByID(stream, "activitynode", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
@@ -1190,14 +1126,14 @@ public final class ObjectFactory {
         return activityNodeGR;
     }
 
-    public static IXMLCustomStreamable newactivitynode(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newactivitynode(Object parent, Element stream, XMLStreamer streamer) {
 //        ActivityNode n = new ActivityNode(stream.getAttribute("name"));
         ActivityNode n = new ActivityNode();
         n.setName(stream.getAttribute("name"));
         return n;
     }
 
-    public static IXMLCustomStreamable newcontrolflowgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcontrolflowgr(Object parent, Element stream, XMLStreamer streamer) {
         ControlFlow controlFlow = (ControlFlow) streamer.readObjectByID(stream, "controlflow", null);
         NodeComponentGR source = (NodeComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("source"));
         NodeComponentGR target = (NodeComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("target"));
@@ -1211,7 +1147,7 @@ public final class ObjectFactory {
         return controlFlowGR;
     }
 
-    public static IXMLCustomStreamable newcontrolflow(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcontrolflow(Object parent, Element stream, XMLStreamer streamer) {
         NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, "source", null);
         NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, "target", null);
 
@@ -1219,7 +1155,7 @@ public final class ObjectFactory {
         return flow;
     }
 
-    public static IXMLCustomStreamable newobjectflowgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newobjectflowgr(Object parent, Element stream, XMLStreamer streamer) {
         ObjectFlow objectFlow = (ObjectFlow) streamer.readObjectByID(stream, "objectflow", null);
         NodeComponentGR source = (NodeComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("source"));
         NodeComponentGR target = (NodeComponentGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("target"));
@@ -1233,7 +1169,7 @@ public final class ObjectFactory {
         return objectFlowGR;
     }
 
-    public static IXMLCustomStreamable newobjectflow(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newobjectflow(Object parent, Element stream, XMLStreamer streamer) {
         NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, "source", null);
         NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, "target", null);
 
@@ -1241,7 +1177,7 @@ public final class ObjectFactory {
         return flow;
     }
 
-    public static IXMLCustomStreamable newendpointgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newendpointgr(Object parent, Element stream, XMLStreamer streamer) {
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
         EndPointGR p = new EndPointGR(x, y);
@@ -1252,7 +1188,7 @@ public final class ObjectFactory {
         return p;
     }
 
-    public static IXMLCustomStreamable newpointgr(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newpointgr(Object parent, Element stream, XMLStreamer streamer) {
         int x = Integer.parseInt(stream.getAttribute("x"));
         int y = Integer.parseInt(stream.getAttribute("y"));
         PointGR p = new PointGR(x, y);
@@ -1261,5 +1197,15 @@ public final class ObjectFactory {
             edge.addPoint(p);
         }
         return p;
+    }
+
+    private void notifyApplicationGUI(DiagramModel model, Element stream) {
+        Rectangle R = readRect(stream.getAttribute("framex"));
+        boolean selected = Boolean.parseBoolean(stream.getAttribute("selected"));
+        boolean iconified = Boolean.parseBoolean(stream.getAttribute("iconified"));
+        
+        FrameProperties frameProperties = new FrameProperties(model, R, selected, iconified);
+        setChanged();
+        notifyObservers(frameProperties);
     }
 }

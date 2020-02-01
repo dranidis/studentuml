@@ -63,7 +63,7 @@ public class XMLStreamer {
     public void loadString(String xmlString) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.notifierObjects.clear();
+        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();
@@ -181,11 +181,11 @@ public class XMLStreamer {
     }
 
     public void finishedParsing() {
-        Iterator i = ObjectFactory.notifierObjects.keySet().iterator();
+        Iterator i = ObjectFactory.getInstance().notifierObjects.keySet().iterator();
         while (i.hasNext()) {
             Object o = i.next();
-            Element e = (Element) ObjectFactory.notifierObjects.get(o);
-            ObjectFactory.finishedParsing(o, e);
+            Element e = (Element) ObjectFactory.getInstance().notifierObjects.get(o);
+            ObjectFactory.getInstance().finishedParsing(o, e);
         }
     }
 
@@ -249,7 +249,7 @@ public class XMLStreamer {
     public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) {
         Element child = getNodeById(node, id);
         if (child != null) {
-            IXMLCustomStreamable object = ObjectFactory.newInstance(((Element) child).getAttribute("class"), parent, (Element) child, this);
+            IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance(((Element) child).getAttribute("class"), parent, (Element) child, this);
             if (object != null) {
                 object.streamFromXML((Element) child, this, object);
                 return object;
@@ -263,7 +263,7 @@ public class XMLStreamer {
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {
-                IXMLCustomStreamable object = ObjectFactory.newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
+                IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
                 logger.info(((Element) child).getAttribute("class") + " " + object.getClass().getSimpleName());
                 if (object != null) {
                     object.streamFromXML((Element) child, this, object);
@@ -276,7 +276,7 @@ public class XMLStreamer {
     public void loadFromString(String data) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.notifierObjects.clear();
+        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();
@@ -350,7 +350,7 @@ public class XMLStreamer {
         fromFile = true;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        ObjectFactory.notifierObjects.clear();
+        ObjectFactory.getInstance().notifierObjects.clear();
 
         try {
             builder = factory.newDocumentBuilder();
