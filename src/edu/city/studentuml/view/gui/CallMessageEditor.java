@@ -4,15 +4,16 @@ package edu.city.studentuml.view.gui;
 //Author: Ervin Ramollari
 //CallMessageEditor.java
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -31,7 +32,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -43,7 +43,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
 
     private JButton addParameterButton;
     private JPanel bottomPanel;
-    private JDialog callMessageDialog;
+    private JDialog messageDialog;
     private JButton cancelButton;
     private JPanel centerPanel;
     private JButton deleteParameterButton;
@@ -57,7 +57,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     private JPanel namePanel;
     private boolean ok;
     private JButton okButton;
-    private Vector parameters;
+    private Vector<MethodParameter> parameters;
     private JPanel parametersButtonsPanel;
     private JList parametersList;
     private JPanel parametersPanel;
@@ -74,8 +74,14 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     
     private Vector types;
     private final CentralRepository repository;
+    private boolean createMode;
 
     public CallMessageEditor(CallMessageGR mGR, CentralRepository cr) {
+        
+        if (mGR instanceof CreateMessageGR) {
+            createMode = true;
+        }
+        
         messageGR = mGR;
         
         repository = cr;
@@ -137,8 +143,12 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(3, 1));
         fieldsPanel.add(roleClassifiersPanel);
-        fieldsPanel.add(namePanel);
-        fieldsPanel.add(returnValuePanel);
+        
+        if(!createMode) {
+            fieldsPanel.add(namePanel);
+            fieldsPanel.add(returnValuePanel);
+        }
+        
         parametersList = new JList();
         parametersList.setFixedCellWidth(300);
         parametersList.setVisibleRowCount(4);
@@ -181,6 +191,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public boolean showDialog(Component parent, String title) {
+        System.out.println("TITLE : " + title);
         ok = false;
 
         // find the owner frame
@@ -192,20 +203,20 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         }
 
-        callMessageDialog = new JDialog(owner, true);
-        callMessageDialog.getContentPane().add(this);
-        callMessageDialog.setTitle(title);
-        callMessageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        callMessageDialog.pack();
-        callMessageDialog.setResizable(false);
-        callMessageDialog.setLocationRelativeTo(owner);
-        callMessageDialog.show();
+        messageDialog = new JDialog(owner, true);
+        messageDialog.getContentPane().add(this);
+        messageDialog.setTitle(title);
+        messageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        messageDialog.pack();
+        messageDialog.setResizable(false);
+        messageDialog.setLocationRelativeTo(owner);
+        messageDialog.show();
 
         return ok;
     }
 
     public void initialize() {
-        TypedCallMessage message = messageGR.getCallMessage();
+        CallMessage message = messageGR.getCallMessage();
         RoleClassifier source = message.getSource();
         RoleClassifier target = message.getTarget();
         String sourceText = "";
@@ -284,16 +295,14 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         updateParametersList();
     }
 
-    public Vector cloneParameters(Vector originalParameters) {
+    public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
         Iterator iterator = originalParameters.iterator();
         Vector copyOfParameters = new Vector();
-        MessageParameter originalParameter;
-        MessageParameter copyOfParameter;
+        MethodParameter originalParameter;
 
         while (iterator.hasNext()) {
-            originalParameter = (MessageParameter) iterator.next();
-            copyOfParameter = new MessageParameter(new String(originalParameter.getName()));
-            copyOfParameters.add(copyOfParameter);
+            originalParameter = (MethodParameter) iterator.next();
+            copyOfParameters.add(originalParameter.clone());
         }
 
         return copyOfParameters;
@@ -328,16 +337,16 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void addParameter() {
-        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
 
-        if (parameterName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        MessageParameter parameter = new MessageParameter(parameterName);
+        MethodParameter parameter = new MethodParameter(parameterEditor.getName(), parameterEditor.getType());
 
         parameters.add(parameter);
-        updateParametersList();
+        updateParametersList();        
     }
 
     public void editParameter() {
@@ -345,14 +354,15 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             return;
         }
 
-        MessageParameter parameter = (MessageParameter) parameters.elementAt(parametersList.getSelectedIndex());
-        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
+        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(parameter, repository);
 
-        if (newName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        parameter.setName(newName);
+        parameter.setName(parameterEditor.getName());
+        parameter.setType(parameterEditor.getType());
         updateParametersList();
     }
 
@@ -367,10 +377,10 @@ public class CallMessageEditor extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            callMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
-            callMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
         } else if (event.getSource() == addParameterButton) {
             addParameter();
         } else if (event.getSource() == editParameterButton) {

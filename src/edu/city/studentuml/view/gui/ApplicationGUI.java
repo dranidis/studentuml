@@ -142,6 +142,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
     private JCheckBoxMenuItem selectLastCheckBoxMenuItem;
+    private JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem;
 
     public ApplicationGUI(StudentUMLFrame frame) {
         if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
@@ -407,6 +408,36 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         preferencesMenu.addSeparator();
         
+        showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
+        showTypesInSDCheckBoxMenuItem.setText("Show types in messages in Sequence Diagrams");
+        showTypesInSDCheckBoxMenuItem.setToolTipText("");
+        showTypesInSDCheckBoxMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (showTypesInSDCheckBoxMenuItem.isSelected()) {
+                    Preferences.userRoot().put("SHOW_TYPES_SD", "TRUE");
+                } else {
+                    Preferences.userRoot().put("SHOW_TYPES_SD", "FALSE");
+                }
+                Vector sdFrames = getInternalFramesOfType(DiagramModel.SD);
+                for (int i = 0; i < sdFrames.size(); i++) {
+                    System.out.println("REPAINT : ");
+                    ((SDInternalFrame) sdFrames.get(i)).repaint();
+                }               
+                sdFrames = getInternalFramesOfType(DiagramModel.SSD);
+                for (int i = 0; i < sdFrames.size(); i++) {
+                    System.out.println("REPAINT : ");
+                    ((SSDInternalFrame) sdFrames.get(i)).repaint();
+                }               
+            }
+        });
+        
+        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE") ? true : false;
+        showTypesInSDCheckBoxMenuItem.setSelected(showTypesSDPref);
+        preferencesMenu.add(showTypesInSDCheckBoxMenuItem);
+
+        preferencesMenu.addSeparator();
+                
         enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
         enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");

@@ -13,7 +13,7 @@ import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
-public class CreateMessageGR extends SDMessageGR implements IXMLCustomStreamable {
+public class CreateMessageGR extends CallMessageGR implements IXMLCustomStreamable {
 
     public CreateMessageGR(RoleClassifierGR from, RoleClassifierGR to, CreateMessage message, int y) {
         super(from, to, message, y);
@@ -31,7 +31,8 @@ public class CreateMessageGR extends SDMessageGR implements IXMLCustomStreamable
     }
 
     public Stroke getStroke() {
-        return new BasicStroke();
+        float dashes[] = {8};
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
 
     public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {

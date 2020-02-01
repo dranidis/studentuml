@@ -60,7 +60,7 @@ import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.UCAssociation;
 import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.model.domain.UCExtend;
@@ -454,7 +454,7 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer) {
-        TypedCallMessage sd = (TypedCallMessage) streamer.readObjectByID(stream, "message", null);
+        CallMessage sd = (CallMessage) streamer.readObjectByID(stream, "message", null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifierGR to = (RoleClassifierGR) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
@@ -544,26 +544,26 @@ public final class ObjectFactory extends Observable {
         return a;
     }
 
-    public IXMLCustomStreamable newtypedcallmessage(Object parent, Element stream, XMLStreamer streamer) {
+    public IXMLCustomStreamable newcallmessage(Object parent, Element stream, XMLStreamer streamer) {
         GenericOperation go = (GenericOperation) streamer.readObjectByID(stream, "operation", null);
         RoleClassifier from = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
         RoleClassifier to = (RoleClassifier) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
-        TypedCallMessage a = new TypedCallMessage(from, to, go);
+        CallMessage a = new CallMessage(from, to, go);
 
         return a;
     }
 
-    public IXMLCustomStreamable newmessageparameter(Object parent, Element stream, XMLStreamer streamer) {
-        MessageParameter m = new MessageParameter(stream.getAttribute("name"));
-        if(parent instanceof CallMessage) {
-         ((CallMessage) parent).addParameter(m);//FIXME: PACKAGE
-        }
-        if(parent instanceof CreateMessage) {
-         ((CreateMessage) parent).addParameter(m);	
-        }
-        return m;
-    }
+//    public IXMLCustomStreamable newmessageparameter(Object parent, Element stream, XMLStreamer streamer) {
+//        MethodParameter m = new MethodParameter(stream.getAttribute("name"));
+//        if(parent instanceof CallMessage) {
+//         ((CallMessage) parent).addParameter(m);//FIXME: PACKAGE
+//        }
+//        if(parent instanceof CreateMessage) {
+//         ((CreateMessage) parent).addParameter(m);	
+//        }
+//        return m;
+//    }
 
     public IXMLCustomStreamable newgenericoperation(Object parent, Element stream, XMLStreamer streamer) {
         return new GenericOperation(stream.getAttribute("name"));
@@ -865,10 +865,13 @@ public final class ObjectFactory extends Observable {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
         if (parent instanceof Method) {
             ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
-        } else if (parent instanceof TypedCallMessage) {
-            ((TypedCallMessage) parent).addParameter(m);
+        } else if (parent instanceof CallMessage) {
+            ((CallMessage) parent).addParameter(m);
+        } else if (parent instanceof CreateMessage) {
+            ((CreateMessage) parent).addParameter(m);
         } else {
             java.lang.System.err.println("::::::trying to stream method parameter but dont know where?");
+            throw new RuntimeException();
         }
         return m;
     }

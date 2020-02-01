@@ -3,7 +3,6 @@ package edu.city.studentuml.controller;
 //~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
@@ -15,7 +14,6 @@ import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.view.gui.CallMessageEditor;
-import edu.city.studentuml.view.gui.CreateMessageEditor;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
@@ -27,7 +25,7 @@ import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
@@ -60,14 +58,15 @@ public class SDSelectionController extends SelectionController {
             editMultiObject((MultiObjectGR) selectedElement);
         } else if (selectedElement instanceof ActorInstanceGR) {
             editActorInstance((ActorInstanceGR) selectedElement);
-        } else if (selectedElement instanceof CallMessageGR) {
-            editCallMessage((CallMessageGR) selectedElement);
         } else if (selectedElement instanceof ReturnMessageGR) {
             editReturnMessage((ReturnMessageGR) selectedElement);
         } else if (selectedElement instanceof UMLNoteGR) {
             editUMLNote((UMLNoteGR) selectedElement);
         } else if (selectedElement instanceof CreateMessageGR) {
         	editCreateMessage((CreateMessageGR) selectedElement);
+        // callMessage should be after create since create is a subclass
+        } else if (selectedElement instanceof CallMessageGR) {
+            editCallMessage((CallMessageGR) selectedElement);
         }
     }
 
@@ -248,9 +247,9 @@ public class SDSelectionController extends SelectionController {
 
     public void editCallMessage(CallMessageGR messageGR) {
         CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
-        TypedCallMessage message = messageGR.getCallMessage();
+        CallMessage message = messageGR.getCallMessage();
 
-        TypedCallMessage undoCallMessage = message.clone();
+        CallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
         if (!callMessageEditor.showDialog(parentComponent, "Call Message Editor")) {
@@ -313,7 +312,7 @@ public class SDSelectionController extends SelectionController {
     }
     //new edit create method 
     public void editCreateMessage(CreateMessageGR messageGR) {
-        CreateMessageEditor createMessageEditor = new CreateMessageEditor(messageGR);
+        CallMessageEditor createMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
         CreateMessage message = messageGR.getCreateMessage();
 
         CreateMessage undoCreateMessage = message.clone();
@@ -328,7 +327,7 @@ public class SDSelectionController extends SelectionController {
         Iterator iterator = parameters.iterator();
         message.setParameters(new Vector());
         while (iterator.hasNext()) {
-            message.addParameter((MessageParameter) iterator.next());
+            message.addParameter((MethodParameter) iterator.next());
         }
 
         // UNDO/REDO
