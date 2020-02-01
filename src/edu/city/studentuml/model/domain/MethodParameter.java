@@ -6,6 +6,7 @@ package edu.city.studentuml.model.domain;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
+import java.util.prefs.Preferences;
 
 import org.w3c.dom.Element;
 
@@ -64,8 +65,9 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
 
     public String toString() {
         String parameterString = getName();
+        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE") ? true : false;
 
-        if (type != null) {
+        if (type != null && showTypesSDPref) {
             parameterString = parameterString + " : " + getTypeName();
         }
 

@@ -31,7 +31,8 @@ public class CreateMessageGR extends CallMessageGR implements IXMLCustomStreamab
     }
 
     public Stroke getStroke() {
-        return new BasicStroke();
+        float dashes[] = {8};
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
 
     public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
