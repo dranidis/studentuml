@@ -21,6 +21,7 @@ import java.awt.geom.Rectangle2D;
  * @author  Kristi
  */
 public abstract class SDMessageGR extends GraphicalElement {
+    protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
     // the message concept this graphical element refers to
     protected SDMessage message;
@@ -41,11 +42,17 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public int getStartingX() {
-        return (source.getX() + source.getWidth() / 2);
+        int startingX = source.getX() + source.getWidth() / 2;
+        startingX += (source.acticationAtY(getY())) * barWidth/2;
+        return startingX;
     }
 
     public int getEndingX() {
-        return (target.getX() + target.getWidth() / 2);
+        int endingX = target.getX() + target.getWidth() / 2;
+        if (!(message instanceof CreateMessage)) {
+            endingX += (target.acticationAtY(getY()) - 1) * barWidth/2;
+        }        
+        return endingX;
     }
 
     public void draw(Graphics2D g) {
@@ -62,20 +69,12 @@ public abstract class SDMessageGR extends GraphicalElement {
             g.setPaint(outlineColor);
         }
 
-
         int startingX = getStartingX();
-        int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
-        startingX += (source.acticationAtY(getY())) * barWidth/2;
-
         int endingX = getEndingX();
-        if (!(message instanceof CreateMessage)) {
-            endingX += (target.acticationAtY(getY()) - 1) * barWidth/2;
-        }
-
         
         if (!message.isReflective()) {
             //Stroke originalStroke = g.getStroke();
-            boolean forward = (getEndingX() > getStartingX());
+            boolean forward = (endingX > startingX);
             if(!forward) 
                 startingX -= barWidth;
             

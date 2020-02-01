@@ -20,7 +20,7 @@ class ConstantsGR {
         parameters = new HashMap<>();
         parameters.put("SDMessageGR", new HashMap<>());
         parameters.get("SDMessageGR").put("messageDY", 3);
-        parameters.get("SDMessageGR").put("barWidth", 8);
+        parameters.get("SDMessageGR").put("barWidth", 12);
     }
 
     static ConstantsGR getInstance() {
