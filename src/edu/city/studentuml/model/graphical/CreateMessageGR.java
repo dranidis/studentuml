@@ -13,7 +13,7 @@ import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
-public class CreateMessageGR extends SDMessageGR implements IXMLCustomStreamable {
+public class CreateMessageGR extends CallMessageGR implements IXMLCustomStreamable {
 
     public CreateMessageGR(RoleClassifierGR from, RoleClassifierGR to, CreateMessage message, int y) {
         super(from, to, message, y);

@@ -4,7 +4,6 @@ package edu.city.studentuml.controller;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.domain.SDObject;
@@ -15,7 +14,6 @@ import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.view.gui.CallMessageEditor;
-import edu.city.studentuml.view.gui.CreateMessageEditor;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
@@ -60,14 +58,15 @@ public class SDSelectionController extends SelectionController {
             editMultiObject((MultiObjectGR) selectedElement);
         } else if (selectedElement instanceof ActorInstanceGR) {
             editActorInstance((ActorInstanceGR) selectedElement);
-        } else if (selectedElement instanceof CallMessageGR) {
-            editCallMessage((CallMessageGR) selectedElement);
         } else if (selectedElement instanceof ReturnMessageGR) {
             editReturnMessage((ReturnMessageGR) selectedElement);
         } else if (selectedElement instanceof UMLNoteGR) {
             editUMLNote((UMLNoteGR) selectedElement);
         } else if (selectedElement instanceof CreateMessageGR) {
         	editCreateMessage((CreateMessageGR) selectedElement);
+        // callMessage should be after create since create is a subclass
+        } else if (selectedElement instanceof CallMessageGR) {
+            editCallMessage((CallMessageGR) selectedElement);
         }
     }
 
@@ -313,7 +312,7 @@ public class SDSelectionController extends SelectionController {
     }
     //new edit create method 
     public void editCreateMessage(CreateMessageGR messageGR) {
-        CreateMessageEditor createMessageEditor = new CreateMessageEditor(messageGR, model.getCentralRepository());
+        CallMessageEditor createMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
         CreateMessage message = messageGR.getCreateMessage();
 
         CreateMessage undoCreateMessage = message.clone();

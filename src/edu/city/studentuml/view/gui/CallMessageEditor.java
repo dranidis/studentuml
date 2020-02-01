@@ -13,6 +13,7 @@ import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -73,8 +74,14 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     
     private Vector types;
     private final CentralRepository repository;
+    private boolean createMode;
 
     public CallMessageEditor(CallMessageGR mGR, CentralRepository cr) {
+        
+        if (mGR instanceof CreateMessageGR) {
+            createMode = true;
+        }
+        
         messageGR = mGR;
         
         repository = cr;
@@ -136,8 +143,12 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(3, 1));
         fieldsPanel.add(roleClassifiersPanel);
-        fieldsPanel.add(namePanel);
-        fieldsPanel.add(returnValuePanel);
+        
+        if(!createMode) {
+            fieldsPanel.add(namePanel);
+            fieldsPanel.add(returnValuePanel);
+        }
+        
         parametersList = new JList();
         parametersList.setFixedCellWidth(300);
         parametersList.setVisibleRowCount(4);
@@ -180,6 +191,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public boolean showDialog(Component parent, String title) {
+        System.out.println("TITLE : " + title);
         ok = false;
 
         // find the owner frame

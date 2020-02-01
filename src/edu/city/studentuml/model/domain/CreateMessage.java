@@ -15,14 +15,14 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
-public class CreateMessage extends SDMessage implements IXMLCustomStreamable {
+public class CreateMessage extends CallMessage implements IXMLCustomStreamable {
 
     Logger logger = Logger.getLogger(CreateMessage.class.getName());
 
     private NotifierVector<MethodParameter> parameters;
 
     public CreateMessage(RoleClassifier from, RoleClassifier to) {
-        super(from, to);
+        super(from, to, new GenericOperation("create"));
         parameters = new NotifierVector<>();
     }
 
