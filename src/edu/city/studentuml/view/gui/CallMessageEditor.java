@@ -285,16 +285,14 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         updateParametersList();
     }
 
-    public Vector cloneParameters(Vector<MethodParameter> originalParameters) {
+    public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
         Iterator iterator = originalParameters.iterator();
         Vector copyOfParameters = new Vector();
         MethodParameter originalParameter;
-        MethodParameter copyOfParameter;
 
         while (iterator.hasNext()) {
             originalParameter = (MethodParameter) iterator.next();
-            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
-            copyOfParameters.add(copyOfParameter);
+            copyOfParameters.add(originalParameter.clone());
         }
 
         return copyOfParameters;
@@ -329,31 +327,57 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void addParameter() {
-        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
+//        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
+//
+//        if (parameterName == null) {    // user pressed cancel
+//            return;
+//        }
+//
+//        MethodParameter parameter = new MethodParameter(parameterName);
+//
+//        parameters.add(parameter);
+//        updateParametersList();
+//        
+        
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
 
-        if (parameterName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        MethodParameter parameter = new MethodParameter(parameterName);
+        MethodParameter parameter = new MethodParameter(parameterEditor.getName(), parameterEditor.getType());
 
         parameters.add(parameter);
-        updateParametersList();
+        updateParametersList();        
     }
 
     public void editParameter() {
+//        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
+//            return;
+//        }
+//
+//        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
+//        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
+//
+//        if (newName == null) {    // user pressed cancel
+//            return;
+//        }
+//
+//        parameter.setName(newName);
+//        updateParametersList();
         if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
             return;
         }
 
         MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
-        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
+        MethodParameterEditor parameterEditor = new MethodParameterEditor(parameter, repository);
 
-        if (newName == null) {    // user pressed cancel
+        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
             return;
         }
 
-        parameter.setName(newName);
+        parameter.setName(parameterEditor.getName());
+        parameter.setType(parameterEditor.getType());
         updateParametersList();
     }
 
