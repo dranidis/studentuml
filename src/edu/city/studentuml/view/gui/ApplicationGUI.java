@@ -12,6 +12,8 @@ import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.FrameProperties;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
@@ -157,6 +159,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        
+        ObjectFactory.getInstance().addObserver(this);
     }
 
     public ApplicationGUI(StudentUMLApplet applet) {
@@ -857,6 +861,19 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             
             umlProject.setSaved(false);
             setSaveActionState();
+        }
+        if (object != null && object instanceof FrameProperties) {
+            FrameProperties fp = (FrameProperties) object;
+            addInternalFrame(fp.model, fp.R);
+
+            try {
+                // TODO: refactor
+                ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
+                ((DiagramInternalFrame) fp.model.getFrame()).setIcon(fp.iconified);
+            } catch (PropertyVetoException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }            
         }
     }
 

@@ -221,8 +221,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        streamer.finishedParsing();
-
         logger.info(".......end from XML: \n" + filename);
         projectChanged();
     }
@@ -238,8 +236,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        streamer.finishedParsing();
-
         logger.info("Loading from URL: " + url);
         projectChanged();
     }
@@ -254,7 +250,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         Element e = streamer.getNodeById(null, "project");
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
-        streamer.finishedParsing();
 
         logger.info("Loading from XMLString: " + xmlString);
         projectChanged();
