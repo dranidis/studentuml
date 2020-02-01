@@ -11,7 +11,7 @@ import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
@@ -205,7 +205,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        TypedCallMessage message = messageGR.getCallMessage();
+        CallMessage message = messageGR.getCallMessage();
         RoleClassifier source = message.getSource();
         RoleClassifier target = message.getTarget();
         String sourceText = "";

@@ -2,7 +2,7 @@ package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -32,9 +32,9 @@ public class LeafDeleteEdit extends DeleteEditComponent {
         if(element instanceof CreateMessageGR) {
             ((CreateMessageGR)element).refreshTargetPosition();
         }
-        if (o instanceof TypedCallMessage) {
-            TypedCallMessage message = (TypedCallMessage) o;
-            TypedCallMessage original = ((CallMessageGR) element).getCallMessage();
+        if (o instanceof CallMessage) {
+            CallMessage message = (CallMessage) o;
+            CallMessage original = ((CallMessageGR) element).getCallMessage();
             original.setName(message.getName());
             original.setIterative(message.isIterative());
             original.setReturnValue(message.getReturnValue());

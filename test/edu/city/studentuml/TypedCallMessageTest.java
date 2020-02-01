@@ -11,7 +11,7 @@ import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
@@ -73,7 +73,7 @@ public class TypedCallMessageTest {
     //
      @Test
      public void addMessage() {
-        new ApplicationFrame(StudentUMLFrame.getInstance());
+//        new ApplicationFrame(StudentUMLFrame.getInstance());
         
         SDModel currDiagram = new SDModel("sd1", umlProject);
         DesignClass dc1 = new DesignClass("Class1");
@@ -82,7 +82,7 @@ public class TypedCallMessageTest {
         SDObject sd2 = new SDObject("sd2", dc2);
 
         GenericOperation mtd1 = new GenericOperation("mtd1");
-        TypedCallMessage cm = new TypedCallMessage(sd1, sd2, mtd1);
+        CallMessage cm = new CallMessage(sd1, sd2, mtd1);
         cm.setReturnValue(new MessageReturnValue("c"));
         cm.setReturnType(dc1);
         cm.addParameter(new MethodParameter("par", dc2));
@@ -95,7 +95,7 @@ public class TypedCallMessageTest {
 
         Vector sds = umlProject.getCentralRepository().getSDMessages();
         for(Object o: sds) {
-            TypedCallMessage m = (TypedCallMessage) o;
+            CallMessage m = (CallMessage) o;
             if (m.getName().equals("mtd1")) {
                 assertEquals(dc1.getName(), m.getReturnType().getName());
             }
@@ -108,7 +108,7 @@ public class TypedCallMessageTest {
 
         sds = umlProject.getCentralRepository().getSDMessages();
         for(Object o: sds) {
-            TypedCallMessage m = (TypedCallMessage) o;
+            CallMessage m = (CallMessage) o;
             if (m.getName().equals("mtd1")) {
                 assertEquals(dc1.getName(), m.getReturnType().getName());
             }
@@ -120,7 +120,7 @@ public class TypedCallMessageTest {
         boolean found = false;
         sds = umlProject.getCentralRepository().getSDMessages();
         for(Object o: sds) {
-            TypedCallMessage m = (TypedCallMessage) o;
+            CallMessage m = (CallMessage) o;
             if (m.getName().equals("mtd1")) {
                 found = true;
                 assertNotNull(m.getReturnType());

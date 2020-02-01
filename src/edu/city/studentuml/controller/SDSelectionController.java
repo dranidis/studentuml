@@ -27,7 +27,7 @@ import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
@@ -248,9 +248,9 @@ public class SDSelectionController extends SelectionController {
 
     public void editCallMessage(CallMessageGR messageGR) {
         CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
-        TypedCallMessage message = messageGR.getCallMessage();
+        CallMessage message = messageGR.getCallMessage();
 
-        TypedCallMessage undoCallMessage = message.clone();
+        CallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
         if (!callMessageEditor.showDialog(parentComponent, "Call Message Editor")) {

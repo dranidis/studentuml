@@ -10,7 +10,7 @@ import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.model.domain.TypedCallMessage;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
@@ -181,9 +181,9 @@ public class SSDSelectionController extends SelectionController {
 
     public void editCallMessage(CallMessageGR messageGR) {
         CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
-        TypedCallMessage message = messageGR.getCallMessage();
+        CallMessage message = messageGR.getCallMessage();
 
-        TypedCallMessage undoCallMessage = message.clone();
+        CallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
         if (!callMessageEditor.showDialog(parentComponent, "Call Message Editor")) {
