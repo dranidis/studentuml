@@ -40,7 +40,7 @@ import javax.swing.border.TitledBorder;
 public class CreateMessageEditor extends JPanel implements ActionListener{
 	private JButton addParameterButton;
     private JPanel bottomPanel;
-    private JDialog createMessageDialog;
+    private JDialog messageDialog;
     private JButton cancelButton;
     private JPanel centerPanel;
     private JButton deleteParameterButton;
@@ -174,14 +174,14 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
             owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         }
 
-        createMessageDialog = new JDialog(owner, true);
-        createMessageDialog.getContentPane().add(this);
-        createMessageDialog.setTitle(title);
-        createMessageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        createMessageDialog.pack();
-        createMessageDialog.setResizable(false);
-        createMessageDialog.setLocationRelativeTo(owner);
-        createMessageDialog.show();
+        messageDialog = new JDialog(owner, true);
+        messageDialog.getContentPane().add(this);
+        messageDialog.setTitle(title);
+        messageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        messageDialog.pack();
+        messageDialog.setResizable(false);
+        messageDialog.setLocationRelativeTo(owner);
+        messageDialog.show();
 
         return ok;
     }
@@ -246,20 +246,8 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
         updateParametersList();
     }
 
-    public Vector cloneParameters(Vector originalParameters) {
-//        Iterator iterator = originalParameters.iterator();
-//        Vector copyOfParameters = new Vector();
-//        MethodParameter originalParameter;
-//        MethodParameter copyOfParameter;
-//
-//        while (iterator.hasNext()) {
-//            originalParameter = (MethodParameter) iterator.next();
-//            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
-//            copyOfParameters.add(copyOfParameter);
-//        }
-//
-//        return copyOfParameters;
-        
+    public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
+       
         Iterator iterator = originalParameters.iterator();
         Vector copyOfParameters = new Vector();
         MethodParameter originalParameter;
@@ -295,16 +283,6 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
     }
 
     public void addParameter() {
-//        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
-//
-//        if (parameterName == null) {    // user pressed cancel
-//            return;
-//        }
-//
-//        MessageParameter parameter = new MessageParameter(parameterName);
-//
-//        parameters.add(parameter);
-//        updateParametersList();
         MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
 
         if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
@@ -318,19 +296,6 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
     }
 
     public void editParameter() {
-//        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
-//            return;
-//        }
-//
-//        MessageParameter parameter = (MessageParameter) parameters.elementAt(parametersList.getSelectedIndex());
-//        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
-//
-//        if (newName == null) {    // user pressed cancel
-//            return;
-//        }
-//
-//        parameter.setName(newName);
-//        updateParametersList();
         if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
             return;
         }
@@ -358,10 +323,10 @@ public class CreateMessageEditor extends JPanel implements ActionListener{
 
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            createMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
-            createMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
         } else if (event.getSource() == addParameterButton) {
             addParameter();
         } else if (event.getSource() == editParameterButton) {

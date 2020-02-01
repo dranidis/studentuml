@@ -4,7 +4,6 @@ package edu.city.studentuml.view.gui;
 //Author: Ervin Ramollari
 //CallMessageEditor.java
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.RoleClassifier;
@@ -32,7 +31,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -44,7 +42,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
 
     private JButton addParameterButton;
     private JPanel bottomPanel;
-    private JDialog callMessageDialog;
+    private JDialog messageDialog;
     private JButton cancelButton;
     private JPanel centerPanel;
     private JButton deleteParameterButton;
@@ -193,14 +191,14 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         }
 
-        callMessageDialog = new JDialog(owner, true);
-        callMessageDialog.getContentPane().add(this);
-        callMessageDialog.setTitle(title);
-        callMessageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        callMessageDialog.pack();
-        callMessageDialog.setResizable(false);
-        callMessageDialog.setLocationRelativeTo(owner);
-        callMessageDialog.show();
+        messageDialog = new JDialog(owner, true);
+        messageDialog.getContentPane().add(this);
+        messageDialog.setTitle(title);
+        messageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        messageDialog.pack();
+        messageDialog.setResizable(false);
+        messageDialog.setLocationRelativeTo(owner);
+        messageDialog.show();
 
         return ok;
     }
@@ -327,18 +325,6 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void addParameter() {
-//        String parameterName = JOptionPane.showInputDialog("Enter message parameter name");
-//
-//        if (parameterName == null) {    // user pressed cancel
-//            return;
-//        }
-//
-//        MethodParameter parameter = new MethodParameter(parameterName);
-//
-//        parameters.add(parameter);
-//        updateParametersList();
-//        
-        
         MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
 
         if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
@@ -352,19 +338,6 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void editParameter() {
-//        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
-//            return;
-//        }
-//
-//        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
-//        String newName = JOptionPane.showInputDialog("Enter the new parameter name", parameter.getName());
-//
-//        if (newName == null) {    // user pressed cancel
-//            return;
-//        }
-//
-//        parameter.setName(newName);
-//        updateParametersList();
         if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
             return;
         }
@@ -392,10 +365,10 @@ public class CallMessageEditor extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            callMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
-            callMessageDialog.setVisible(false);
+            messageDialog.setVisible(false);
         } else if (event.getSource() == addParameterButton) {
             addParameter();
         } else if (event.getSource() == editParameterButton) {
