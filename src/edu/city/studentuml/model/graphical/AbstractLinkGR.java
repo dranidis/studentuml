@@ -175,16 +175,29 @@ public abstract class AbstractLinkGR extends GraphicalElement {
     }
     
     public double getDv(double w, double h) {
-        double minDim = h;
+        double minDim = h/2;
         if (h > w) 
-            minDim = w;
+            minDim = w/2;
 
-        minDim /= 2;
         double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
-        double dv = knobDistance * (getIndexOfLink() - (getNumberOfLinks() - 1)/2.0);   
+        double dv = knobDistance * getIndexOfLink();   
+        System.out.println("A : Number: " + getClass().getName() + " " + getIndexOfLink() + "/" + getNumberOfLinks() + " : " + dv);
 
         return dv;
     }
+    
+    
+    public double getDvB(double w, double h) {
+        double minDim = h/2;
+        if (h > w) 
+            minDim = w/2;
+
+        double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
+        double dv = knobDistance * getIndexOfLink();   
+        System.out.println("B : Number: " + getClass().getName() + " " + getIndexOfLink() + "/" + getNumberOfLinks() + " : " + dv);
+
+        return dv;
+    }    
 
     public Point2D getEndPointRoleA() {
         double xA = getCentreRoleA().getX();
@@ -193,10 +206,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         double yB = getCentreRoleB().getY();
 
         double dv = getDv(getWidthA(), getHeightA());   
-
         double angle = Math.atan2(yB-yA, xB-xA);
-//        System.out.println("Angle: " + Math.toDegrees(angle));
-
         angle -= Math.PI/2;
         double xoffset = Math.cos(angle) * dv;
         double yoffset =  Math.sin(angle) * dv;
@@ -212,9 +222,9 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
 
-        double dv = -1 * getDv(getWidthB(), getHeightB());   
-//            double angle = getAngle(new Point2D.Double(xA, yA), new Point2D.Double(xB, yB));
-        double angle = Math.atan2(yA-yB, xA-xB) -  Math.PI/2;
+        double dv = getDvB(getWidthB(), getHeightB());   
+        double angle = Math.atan2(yB-yA, xB-xA);
+        angle -= Math.PI/2;
         double xoffset = Math.cos(angle) * dv;
         double yoffset =  Math.sin(angle) * dv;
 
