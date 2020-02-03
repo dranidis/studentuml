@@ -47,6 +47,15 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
     @Override
     public void draw(Graphics2D g) {
+//        Rectangle2D r = getBounds();
+//        if(r.getHeight() < 0) {
+//            r = new Rectangle2D.Double(r.getX(), r.getY() + r.getHeight(), r.getWidth(), -1*r.getHeight());
+//        }
+//        if(r.getWidth() < 0) {
+//            r = new Rectangle2D.Double(r.getX() + r.getWidth(), r.getY(), -1 * r.getWidth(), r.getHeight());
+//        }        
+//        System.out.println(r);
+//        g.draw(r);
     }
 
     protected abstract ClassifierGR getClassifierA();
@@ -125,81 +134,90 @@ public abstract class AbstractLinkGR extends GraphicalElement {
     private double getMaxWidth() {
         return Math.max(getWidthA(), getWidthB());
     }
+    
+    public Point2D getEndPointFrom(double orX, double orY, double myW, double myH, double myX, double myY, double dx, double dy) {
+//        System.out.printf("dx: %3.2f   dy: %3.2f %n", dx, dy);
+        double x;
+        if (dy > 0) {
+            x = (myH - orY) * dx / dy;
+        } else {
+            x = orY * dx / dy;
+        }
+//        System.out.printf("x: %3.2f %n", x);
+        if (dy >= 0 && orX + x <= myW && orX + x >= 0 
+                || dy < 0 && orX - x <= myW && orX -x >-0) {
+//            System.out.println("VERTICAL orX+x:" + (orX +x) + " myW: " + myW + " myH: " + myH);
+            if (dy > 0) {
+                x = myX + orX + x;
+                return new Point2D.Double(x, myY + myH);
+            } else {
+                x = myX + orX - x;
+                return new Point2D.Double(x, myY);
+            }
+        } else {
+            double y;
+            if (dx > 0) {
+                y = (myW - orX) * dy / dx;
+            } else {
+                y = orX * dy / dx;
+            }
+//            System.out.println("HORIZONTAL orX+x:" + (orX +x) + " orY+y:" + (orY+y) + " myW: " + myW + " myH: " + myH);
+            if (dx > 0) {
+                y = myY + orY + y;
+//                System.out.println("HORIZONTAL RIGHT y:" + y );
+                return new Point2D.Double(myX + myW, y);
+            } else {
+                y = myY + orY - y;
+//                System.out.println("HORIZONTAL LEFT:" + y );
+                return new Point2D.Double(myX, y);
+            }
+        }        
+    }
+    
+    public double getDv() {
+        double minDim = getHeightA();
+        if (getHeightA() > getWidthA()) 
+            minDim = getWidthA();
+
+        double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
+        double dv = knobDistance * (getIndexOfLink() - (getNumberOfLinks() - 1)/2.0);   
+
+        return dv;
+    }
 
     public Point2D getEndPointRoleA() {
-        boolean horizontal = false;
-
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
 
-        // IF THE ABSOLUTE VALUE OF THE ANGLE FROM THE HORIZONTAL IS >45 DEGREES
-        if (Math.abs((yB - yA) / (xB - xA)) < 1) {
-            horizontal = true;
-        }
+        double dv = getDv();   
 
-        int knobCount = this.getNumberOfLinks();
-        double knobDistance;
-        double dv;
-        int dx;
-        if (horizontal) {
-            int cx = (int) getTopLeftXA();
-            if (xA < xB) {
-                cx += getWidthA();
-            }
-            knobDistance = (getHeightA() / (knobCount + 1.0));
-            dv = getTopLeftYA() + (knobDistance * (this.getIndexOfLink() + 1));
+        double angle = Math.atan2(yB-yA, xB-xA);
+//        System.out.println("Angle: " + Math.toDegrees(angle));
 
-            return new Point2D.Double(cx, dv);
-        } else {
-            int cy = (int) getTopLeftYA();
-            if (yA < yB) {
-                cy += getHeightA();
-            }
-            knobDistance = (getWidthA() / (knobCount + 1.0));
-            dv = getTopLeftXA() + (knobDistance * (this.getIndexOfLink() + 1));
+        angle -= Math.PI/2;
+        double xoffset = Math.cos(angle) * dv;
+        double yoffset =  Math.sin(angle) * dv;
 
-            return new Point2D.Double(dv, cy);
-        }
+        return getEndPointFrom(getWidthA()/2 + xoffset, getHeightA()/2 + yoffset, getWidthA(), getHeightA(), getTopLeftXA(), getTopLeftYA(), xB - xA, yB - yA);
     }
 
     // returns the endpoint corresponding to role B
     public Point2D getEndPointRoleB() {
-        boolean horizontal = false;
 
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
 
-        // IF THE ABSOLUTE VALUE OF THE ANGLE FROM THE HORIZONTAL IS >45 DEGREES
-        if (Math.abs((yB - yA) / (xB - xA)) < 1) {
-            horizontal = true;
-        }
+        double dv = -1 * getDv();   
+//            double angle = getAngle(new Point2D.Double(xA, yA), new Point2D.Double(xB, yB));
+        double angle = Math.atan2(yA-yB, xA-xB) -  Math.PI/2;
+        double xoffset = Math.cos(angle) * dv;
+        double yoffset =  Math.sin(angle) * dv;
 
-        int knobCount = this.getNumberOfLinks();
-        double knobDistance;
-        double dv;
-        int dx;
-        if (horizontal) {
-            int cx = (int) getTopLeftXB();
-            if (xB < xA) {
-                cx += getWidthB();
-            }
-            knobDistance = (getHeightB() / (knobCount + 1.0));
-            dv = getTopLeftYB() + (knobDistance * (this.getIndexOfLink() + 1.0));
-            return new Point2D.Double(cx, dv);
-        } else {
-            int cy = (int) getTopLeftYB();
-            if (yB < yA) {
-                cy += getHeightB();
-            }
-            knobDistance = (getWidthB() / (knobCount + 1.0));
-            dv = getTopLeftXB() + (knobDistance * (this.getIndexOfLink() + 1.0));
-            return new Point2D.Double(dv, cy);
-        }
-
+        return getEndPointFrom(getWidthB()/2 + xoffset, getHeightB()/2 + yoffset, getWidthB(), getHeightB(), getTopLeftXB(), getTopLeftYB(), xA - xB, yA - yB);
     }
 
     public Point2D getCentreRoleA() {
