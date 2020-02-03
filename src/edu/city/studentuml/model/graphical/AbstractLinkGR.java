@@ -174,11 +174,12 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         }        
     }
     
-    public double getDv() {
-        double minDim = getHeightA();
-        if (getHeightA() > getWidthA()) 
-            minDim = getWidthA();
+    public double getDv(double w, double h) {
+        double minDim = h;
+        if (h > w) 
+            minDim = w;
 
+        minDim /= 2;
         double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
         double dv = knobDistance * (getIndexOfLink() - (getNumberOfLinks() - 1)/2.0);   
 
@@ -191,7 +192,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
 
-        double dv = getDv();   
+        double dv = getDv(getWidthA(), getHeightA());   
 
         double angle = Math.atan2(yB-yA, xB-xA);
 //        System.out.println("Angle: " + Math.toDegrees(angle));
@@ -211,7 +212,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
 
-        double dv = -1 * getDv();   
+        double dv = -1 * getDv(getWidthB(), getHeightB());   
 //            double angle = getAngle(new Point2D.Double(xA, yA), new Point2D.Double(xB, yB));
         double angle = Math.atan2(yA-yB, xA-xB) -  Math.PI/2;
         double xoffset = Math.cos(angle) * dv;
