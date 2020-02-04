@@ -6,26 +6,22 @@ package edu.city.studentuml.controller;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.model.graphical.AbstractSDObjectGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import java.awt.geom.Point2D;
-import java.util.ListIterator;
-import java.util.Vector;
+import java.util.Optional;
 import javax.swing.undo.UndoableEdit;
 
 public class AddCallMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;
-    private Vector elements;
 
     public AddCallMessageController(SDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -35,54 +31,42 @@ public class AddCallMessageController extends AddElementController {
         super(model, frame);
     }
 
+    @Override
     public void pressed(int x, int y) {
-        elements = diagramModel.getGraphicalElements();
-
-        ListIterator listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
-
-        while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
-
-            if ((element instanceof RoleClassifierGR) && element.contains(origin)) {
-                source = (RoleClassifierGR) element;
-
-                break;
-            }
-        }
+        
+        Optional<GraphicalElement> element = diagramModel.getGraphicalElements().stream()
+                .filter(el -> el instanceof RoleClassifierGR && el.contains(origin))
+                .findFirst();
+        
+        if (element.isPresent())
+            source = (RoleClassifierGR) element.get();
     }
 
+    @Override
     public void dragged(int x, int y) {
     }
 
+    @Override
     public void released(int x, int y) {
         if (source == null) {
             return;
         }
-
-        elements = diagramModel.getGraphicalElements();
-
-        ListIterator listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
-
-        while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
-
-            // a call message goes to normal objects as well as multiobjects
-            if (((element instanceof SDObjectGR) || (element instanceof MultiObjectGR) || element instanceof SystemInstanceGR) && element.contains(origin)) {
-                addCallMessage(source, (RoleClassifierGR) element, y);
-
-                break;
-            }
+        
+        Optional<GraphicalElement> element = diagramModel.getGraphicalElements().stream()
+                .filter(el -> el instanceof AbstractSDObjectGR && el.contains(origin))
+                .findFirst();
+        
+        if (element.isPresent()) {
+            addCallMessage(source, (RoleClassifierGR) element.get(), y);
+        } else {
+            // set originating role classifier to null to start over again
+            source = null;
         }
-
-        // set originating role classifier to null to start over again
-        source = null;
     }
 
-    public void addCallMessage(RoleClassifierGR source, RoleClassifierGR target, int y) {
+    private void addCallMessage(RoleClassifierGR source, RoleClassifierGR target, int y) {
         CallMessage message = new CallMessage(source.getRoleClassifier(), target.getRoleClassifier(),
                 new GenericOperation(""));
         CallMessageGR messageGR = new CallMessageGR(source, target, message, y);
