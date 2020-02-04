@@ -9,6 +9,7 @@ import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.AbstractSDObjectGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
@@ -23,11 +24,7 @@ public class AddCallMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;
 
-    public AddCallMessageController(SDModel model, DiagramInternalFrame frame) {
-        super(model, frame);
-    }
-
-    public AddCallMessageController(SSDModel model, DiagramInternalFrame frame) {
+    public AddCallMessageController(DiagramModel model, DiagramInternalFrame frame) {
         super(model, frame);
     }
 
