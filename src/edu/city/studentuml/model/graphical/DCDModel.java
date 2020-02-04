@@ -89,6 +89,9 @@ public class DCDModel extends DiagramModel {
         super.addGraphicalElement(a);
     }
 
+    /*
+    TODO: Not used?
+    */
     public void addAssoc(ClassifierGR classA, ClassifierGR classB) {
         SystemWideObjectNamePool.getInstance().loading();
 
@@ -146,11 +149,15 @@ public class DCDModel extends DiagramModel {
         super.addGraphicalElement(a);
     }
 
+    /*
+    TODO: Not used?
+    */
     public void addAggreg(ClassGR whole, ClassGR part) {
         SystemWideObjectNamePool.getInstance().loading();
 
         // the false flag indicates that the aggregation is not strong (composition)
         Aggregation aggregation = new Aggregation(whole.getDesignClass(), part.getDesignClass(), false);
+        aggregation.setDirection(Association.AB);
         AggregationGR aggregationGR = new AggregationGR(whole, part, aggregation);
 
         addAggregation(aggregationGR);
