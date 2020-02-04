@@ -5,7 +5,6 @@
  */
 package edu.city.studentuml;
 
-import edu.city.studentuml.model.domain.DesignClass;
 import java.awt.geom.Point2D;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,8 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import edu.city.studentuml.model.graphical.AssociationGR;
-import edu.city.studentuml.model.graphical.ClassGR;
-import java.awt.Point;
 import static org.junit.Assert.assertTrue;
 
 /**

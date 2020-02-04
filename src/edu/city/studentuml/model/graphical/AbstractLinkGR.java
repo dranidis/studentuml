@@ -135,18 +135,29 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         return Math.max(getWidthA(), getWidthB());
     }
     
+    /**
+     * Returns a border point on the line starting from orX, orY within the box, parallel to the 
+     * line defined by the gradient dx, dy.
+     * 
+     * @param orX the x coordinate of the point in the box
+     * @param orY the y coordinate of the point in the box
+     * @param myW the width of the box
+     * @param myH the height of the box
+     * @param myX the top lext x of the box
+     * @param myY the top lext y of the box
+     * @param dx the dx of the gradient
+     * @param dy the dy of the gradient
+     * @return a point on the border
+     */
     public Point2D getEndPointFrom(double orX, double orY, double myW, double myH, double myX, double myY, double dx, double dy) {
-//        System.out.printf("dx: %3.2f   dy: %3.2f %n", dx, dy);
         double x;
         if (dy > 0) {
             x = (myH - orY) * dx / dy;
         } else {
             x = orY * dx / dy;
         }
-//        System.out.printf("x: %3.2f %n", x);
         if (dy >= 0 && orX + x <= myW && orX + x >= 0 
                 || dy < 0 && orX - x <= myW && orX -x >-0) {
-//            System.out.println("VERTICAL orX+x:" + (orX +x) + " myW: " + myW + " myH: " + myH);
             if (dy > 0) {
                 x = myX + orX + x;
                 return new Point2D.Double(x, myY + myH);
@@ -161,14 +172,11 @@ public abstract class AbstractLinkGR extends GraphicalElement {
             } else {
                 y = orX * dy / dx;
             }
-//            System.out.println("HORIZONTAL orX+x:" + (orX +x) + " orY+y:" + (orY+y) + " myW: " + myW + " myH: " + myH);
             if (dx > 0) {
                 y = myY + orY + y;
-//                System.out.println("HORIZONTAL RIGHT y:" + y );
                 return new Point2D.Double(myX + myW, y);
             } else {
                 y = myY + orY - y;
-//                System.out.println("HORIZONTAL LEFT:" + y );
                 return new Point2D.Double(myX, y);
             }
         }        
