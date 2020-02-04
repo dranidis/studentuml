@@ -1152,6 +1152,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             if (response == JOptionPane.YES_OPTION) {
                 saveProject();
+                
+                if(!isSaved()) // saving was cancelled
+                    return false;
+                
                 closeFrames();
                 umlProject.clear();
                 centralRepository.clear();
