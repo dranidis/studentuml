@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
@@ -20,10 +21,13 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -31,6 +35,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 public class SDInternalFrame extends DiagramInternalFrame {
+
+    private JMenuBar menuBar;
 
     public SDInternalFrame(SDModel sdModel) {
         super(sdModel.getDiagramName());
@@ -42,6 +48,8 @@ public class SDInternalFrame extends DiagramInternalFrame {
         view.addMouseMotionListener(selectionController.getMouseMotionListener());
 
         JPanel drawingPanel = new JPanel();
+        
+        createMenuBar();
 
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
@@ -53,6 +61,43 @@ public class SDInternalFrame extends DiagramInternalFrame {
         getContentPane().add(sp, BorderLayout.WEST);
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, "SDObjectGR"));
         setSize(550, 450);
+    }
+    
+    private void createMenuBar() {
+        menuBar = new JMenuBar();
+        this.setJMenuBar(menuBar);
+
+        JMenu editMenu = new JMenu();
+        editMenu.setText(" Edit ");
+        menuBar.add(editMenu);
+
+        JMenuItem undoMenuItem = new JMenuItem();
+        undoMenuItem.setText("Undo");
+        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        undoMenuItem.setAccelerator(keyStrokeToNew);  
+
+        undoMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                undoManager.undo();
+                refreshUndoRedoButtons();            
+            }
+        });
+        editMenu.add(undoMenuItem);
+        
+        JMenuItem redoMenuItem = new JMenuItem();
+        redoMenuItem.setText("Redo");
+        keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+        redoMenuItem.setAccelerator(keyStrokeToNew);  
+
+        redoMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                undoManager.redo();
+                refreshUndoRedoButtons();            
+            }
+        });
+        editMenu.add(redoMenuItem);        
     }
 
     private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
