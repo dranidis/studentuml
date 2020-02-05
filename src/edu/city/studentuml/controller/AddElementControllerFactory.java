@@ -9,16 +9,27 @@ import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
+import java.util.HashMap;
+import java.util.Map;
 
 //AddElementControllerFactory.java
 //Singleton class that uses Factory Method design pattern to
 //dynamically instantiate the appropriate controller for adding a particular element
 public class AddElementControllerFactory {
+    /**
+     * Each frame has its own controllers, one for each command represented by the string
+     * Controllers are dynamically created upon clicking on the toolbars and then stored
+     * for later usage.
+     * 
+     * Older implementation used to always create a new controller on every click.
+     */
+    private Map<DiagramInternalFrame, Map<String, AddElementController>> controllers;
 
     private static AddElementControllerFactory factory;
 
     // AddElementControllerFactory constructor
     protected AddElementControllerFactory() {
+        controllers = new HashMap<>();
     }
 
     public static final AddElementControllerFactory getInstance() {
@@ -30,7 +41,17 @@ public class AddElementControllerFactory {
     }
 
     public AddElementController newAddElementController(DiagramModel model, DiagramInternalFrame frame, String elementClass) {
+        if (controllers.get(frame) == null) {
+            controllers.put(frame, new HashMap<>());
+        }
+        Map<String, AddElementController> frameControllers = controllers.get(frame);
+        if (frameControllers.get(elementClass) == null) {
+            frameControllers.put(elementClass, makeController(model, frame, elementClass));
+        }
+        return frameControllers.get(elementClass);
+    }
 
+    private AddElementController makeController(DiagramModel model, DiagramInternalFrame frame, String elementClass) {
         if (model instanceof UCDModel) {
             if (elementClass.equals("ActorGR")) {
                 return new AddUCActorController((UCDModel) model, frame);
@@ -55,7 +76,7 @@ public class AddElementControllerFactory {
             } else if (elementClass.equals("ActorInstanceGR")) {
                 return new AddActorInstanceController((SSDModel) model, frame);
             } else if (elementClass.equals("SystemOperationGR")) {
-                return new AddCallMessageController((SSDModel) model, frame);
+                return new AddCallMessageController(model, frame);
             } else if (elementClass.equals("ReturnMessageGR")) {
                 return new AddReturnMessageController((SSDModel) model, frame);
             } else if (elementClass.equals("UMLNoteGR")) {
@@ -85,7 +106,7 @@ public class AddElementControllerFactory {
             } else if (elementClass.equals("MultiObjectGR")) {
                 return new AddMultiObjectController((SDModel) model, frame);
             } else if (elementClass.equals("CallMessageGR")) {
-                return new AddCallMessageController((SDModel) model, frame);
+                return new AddCallMessageController(model, frame);
             } else if (elementClass.equals("ReturnMessageGR")) {
                 return new AddReturnMessageController((SDModel) model, frame);
             } else if (elementClass.equals("CreateMessageGR")) {
@@ -146,7 +167,6 @@ public class AddElementControllerFactory {
                 return new AddUMLNoteController((ADModel) model, frame);
             }
         }
-
-        return null;
+        throw new RuntimeException("AddElementController not found");
     }
 }

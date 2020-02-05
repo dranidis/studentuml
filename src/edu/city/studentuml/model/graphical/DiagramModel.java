@@ -37,7 +37,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     
     protected String diagramName;
     protected DiagramInternalFrame frame;
-    protected NotifierVector graphicalElements;
+    protected NotifierVector<GraphicalElement> graphicalElements;
     protected Vector<GraphicalElement> selected;
 
     // every diagram has to have a reference to the central repository of UML elements
@@ -159,7 +159,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return ge;
     }
 
-    public NotifierVector getGraphicalElements() {
+    public NotifierVector<GraphicalElement> getGraphicalElements() {
         return graphicalElements;
     }
 
