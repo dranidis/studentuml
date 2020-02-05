@@ -29,6 +29,7 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
     private Font roleFont;
 
     public AssociationGR(ClassifierGR a, ClassifierGR b, Association assoc) {
+        super(a, b);
         classA = a;
         classB = b;
         association = assoc;

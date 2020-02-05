@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
  *
  * @author draganbisercic
  */
-public abstract class UCLinkGR extends AbstractLinkGR {
+public abstract class UCLinkGR extends LinkGR {
 
 //    //same links cannot exist
 //    private ClassifierGR from;
@@ -26,6 +26,7 @@ public abstract class UCLinkGR extends AbstractLinkGR {
     private Font font;
 
     protected UCLinkGR(UCDComponentGR source, UCDComponentGR target, UCLink link) {
+        super(source, target);
 //        this.from = from;
 //        this.to = to;
 

@@ -30,6 +30,7 @@ public class DependencyGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public DependencyGR(ClassGR a, ClassGR b, Dependency dep) {
+        super(a, b);
         classA = a;
         classB = b;
         dependency = dep;

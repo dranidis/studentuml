@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -14,7 +13,6 @@ import java.util.Vector;
 public abstract class AbstractLinkGR extends GraphicalElement {
 
     public static Vector<AbstractLinkGR> linkInstances = new Vector();
-    private static int knobSize = 8;
 
     public abstract int getTopLeftXA();
 
@@ -34,16 +32,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
     public abstract boolean isReflective();
 
-    @Override
-    public Rectangle2D getBounds() {
-        Point2D pa = getEndPointRoleA();
-        Point2D pb = getEndPointRoleB();
 
-        Rectangle2D r1 = new Rectangle2D.Double(pa.getX(), pa.getY(),
-                pb.getX() - pa.getX(), pb.getY() - pa.getY());
-
-        return r1;
-    }
 
     @Override
     public void draw(Graphics2D g) {
@@ -62,11 +51,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
     protected abstract ClassifierGR getClassifierB();
 
-    // override superclass method getStartingPoint()
-    @Override
-    public Point getStartingPoint() {
-        return new Point(Math.min(getXA(), getXB()), Math.min(getYA(), getYB()));
-    }
+
 
     protected boolean isSameLink(AbstractLinkGR with) {
         return (((this.getClassifierA() == with.getClassifierA())
@@ -112,23 +97,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         }
     }
 
-    public int getXA() {
-        double rez = getEndPointRoleA().getX();
-        return (int) rez;
-    }
 
-    public int getXB() {
-        return (int) getEndPointRoleB().getX();
-    }
-
-    public int getYA() {
-        double rez = getEndPointRoleA().getY();
-        return (int) rez;
-    }
-
-    public int getYB() {
-        return (int) getEndPointRoleB().getY();
-    }
 
     // returns the endpoint corresponding to role A
     private double getMaxWidth() {
@@ -183,61 +152,18 @@ public abstract class AbstractLinkGR extends GraphicalElement {
     }
     
     public double getDv(double w, double h) {
-        double minDim = h/2;
-        if (h > w) 
-            minDim = w/2;
-
-        double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
-        double dv = knobDistance * getIndexOfLink();   
-        System.out.println("A : Number: " + getClass().getName() + " " + getIndexOfLink() + "/" + getNumberOfLinks() + " : " + dv);
-
-        return dv;
+        double knobDistance = getMinDim(w,h) / (getNumberOfLinks() + 1.0);
+        return knobDistance * (getIndexOfLink() + 1);   
     }
     
-    
-    public double getDvB(double w, double h) {
-        double minDim = h/2;
+    protected double getMinDim(double w, double h) {
+        double minDim = h;
         if (h > w) 
-            minDim = w/2;
-
-        double knobDistance = (minDim / (getNumberOfLinks() + 1.0));
-        double dv = knobDistance * getIndexOfLink();   
-        System.out.println("B : Number: " + getClass().getName() + " " + getIndexOfLink() + "/" + getNumberOfLinks() + " : " + dv);
-
-        return dv;
-    }    
-
-    public Point2D getEndPointRoleA() {
-        double xA = getCentreRoleA().getX();
-        double yA = getCentreRoleA().getY();
-        double xB = getCentreRoleB().getX();
-        double yB = getCentreRoleB().getY();
-
-        double dv = getDv(getWidthA(), getHeightA());   
-        double angle = Math.atan2(yB-yA, xB-xA);
-        angle -= Math.PI/2;
-        double xoffset = Math.cos(angle) * dv;
-        double yoffset =  Math.sin(angle) * dv;
-
-        return getEndPointFrom(getWidthA()/2 + xoffset, getHeightA()/2 + yoffset, getWidthA(), getHeightA(), getTopLeftXA(), getTopLeftYA(), xB - xA, yB - yA);
+            minDim = w;
+        return minDim;
     }
+    
 
-    // returns the endpoint corresponding to role B
-    public Point2D getEndPointRoleB() {
-
-        double xA = getCentreRoleA().getX();
-        double yA = getCentreRoleA().getY();
-        double xB = getCentreRoleB().getX();
-        double yB = getCentreRoleB().getY();
-
-        double dv = getDvB(getWidthB(), getHeightB());   
-        double angle = Math.atan2(yB-yA, xB-xA);
-        angle -= Math.PI/2;
-        double xoffset = Math.cos(angle) * dv;
-        double yoffset =  Math.sin(angle) * dv;
-
-        return getEndPointFrom(getWidthB()/2 + xoffset, getHeightB()/2 + yoffset, getWidthB(), getHeightB(), getTopLeftXB(), getTopLeftYB(), xA - xB, yA - yB);
-    }
 
     public Point2D getCentreRoleA() {
         double x = getTopLeftXA() + getWidthA() / 2;
@@ -278,17 +204,26 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
         return angle;
     }
-
-    public double getAngleRoleA() {
-        double angle = getAngle(new Point2D.Double(getXA(), getYA()), new Point2D.Double(getXB(), getYB()));
-
-        return angle;
+    
+    abstract public Point2D getEndPointRoleA();
+    abstract public Point2D getEndPointRoleB();
+    
+    public int getXA() {
+        double rez = getEndPointRoleA().getX();
+        return (int) rez;
     }
 
-    public double getAngleRoleB() {
-        double angle = getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
+    public int getXB() {
+        return (int) getEndPointRoleB().getX();
+    }
 
-        return angle;
+    public int getYA() {
+        double rez = getEndPointRoleA().getY();
+        return (int) rez;
+    }
+
+    public int getYB() {
+        return (int) getEndPointRoleB().getY();
     }
 
     public boolean contains(Point2D p) {

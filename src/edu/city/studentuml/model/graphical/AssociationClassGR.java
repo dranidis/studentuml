@@ -41,6 +41,7 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
     public static int DIST = 30;    //minimum distance from association to association class
 
     public AssociationClassGR(ClassifierGR a, ClassifierGR b, AbstractAssociationClass associationClass) {
+        super(a, b);
         this.associationClass = associationClass;
         associationElement = new AssociationGR(a, b, associationClass.getAssociation());
         if (associationClass instanceof ConceptualAssociationClass) {

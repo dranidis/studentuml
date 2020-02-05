@@ -871,6 +871,7 @@ public final class ObjectFactory extends Observable {
             ((CreateMessage) parent).addParameter(m);
         } else {
             java.lang.System.err.println("::::::trying to stream method parameter but dont know where?");
+            java.lang.System.err.println("parent instance of: " + parent.getClass().getSimpleName() + " element: " + stream.getTagName());
             throw new RuntimeException();
         }
         return m;
