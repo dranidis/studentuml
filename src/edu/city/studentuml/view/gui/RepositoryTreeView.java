@@ -572,6 +572,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                     frame.setIcon(false);
                     frame.moveToFront();
                     frame.show();
+                    frame.setSelected(true);
                 } catch (PropertyVetoException ex) {
                     Logger.getLogger(RepositoryTreeView.class.getName()).log(Level.SEVERE, null, ex);
                 }

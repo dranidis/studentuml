@@ -15,12 +15,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -55,6 +59,9 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         super(title, true, false, true, true);
         popup = new JPopupMenu();
         addRename();
+        
+        createMenuBar();
+        
         addDelete();
         ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
@@ -86,6 +93,49 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         });
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
+    }
+    
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        this.setJMenuBar(menuBar);
+
+        JMenu editMenu = new JMenu();
+        editMenu.setText(" Edit ");
+        menuBar.add(editMenu);
+
+        JMenuItem undoMenuItem = new JMenuItem();
+        undoMenuItem.setText("Undo");
+        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        undoMenuItem.setAccelerator(keyStrokeToNew);  
+
+        undoMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (!undoManager.canUndo())
+                    return;
+
+                undoManager.undo();
+                refreshUndoRedoButtons();            
+            }
+        });
+        editMenu.add(undoMenuItem);
+        
+        JMenuItem redoMenuItem = new JMenuItem();
+        redoMenuItem.setText("Redo");
+        keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+        redoMenuItem.setAccelerator(keyStrokeToNew);  
+
+        redoMenuItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (!undoManager.canRedo())
+                    return;
+
+                undoManager.redo();
+                refreshUndoRedoButtons();            
+            }
+        });
+        editMenu.add(redoMenuItem);        
     }
 
     private void addRename() {
