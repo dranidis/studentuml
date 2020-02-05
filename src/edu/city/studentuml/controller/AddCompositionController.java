@@ -4,6 +4,7 @@ package edu.city.studentuml.controller;
 //Author: Ervin Ramollari
 //AddCompositionController.java
 import edu.city.studentuml.model.domain.Aggregation;
+import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -88,7 +89,12 @@ public class AddCompositionController extends AddElementController {
         if (!repository.addAggregation(aggregation)) {
             return;
         }
-
+        if (diagramModel instanceof CCDModel) {
+            aggregation.setBidirectional();
+        } else {
+            aggregation.setDirection(Association.AB);
+        }
+        
         AggregationGR aggregationGR = new AggregationGR(whole, part, aggregation);
 
         UndoableEdit edit = new AddEdit(aggregationGR, diagramModel);

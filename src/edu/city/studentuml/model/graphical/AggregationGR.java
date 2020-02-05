@@ -26,13 +26,15 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
     // OVERRIDE drawArrowHeads of AssociationGR
     public void drawArrowHeads(Graphics2D g) {
         drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), getAngleRoleB(), g);
-        //drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
+//        drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
+        super.drawArrowHeads(g);
     }
 
     public void drawArrowHeadsReflective(Graphics2D g) {
         drawAggregationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(),
                 getAggregation().isStrong(), Math.PI / 2, g);
-        //drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
+//        drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
+        super.drawArrowHeadsReflective(g);
     }
 
     public void drawAggregationArrowHead(int x, int y, boolean isStrong, double angle, Graphics2D g) {
@@ -62,14 +64,14 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
         g.translate(-x, -y);
     }
 
-    public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-        g.drawLine(-8, 4, 0, 0);
-        g.drawLine(-8, -4, 0, 0);
-        g.rotate(-angle);
-        g.translate(-x, -y);
-    }
+//    public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
+//        g.translate(x, y);
+//        g.rotate(angle);
+//        g.drawLine(-8, 4, 0, 0);
+//        g.drawLine(-8, -4, 0, 0);
+//        g.rotate(-angle);
+//        g.translate(-x, -y);
+//    }
 
     public Aggregation getAggregation() {
         return (Aggregation) getAssociation();

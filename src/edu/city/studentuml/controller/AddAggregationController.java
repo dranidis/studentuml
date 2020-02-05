@@ -4,6 +4,7 @@ package edu.city.studentuml.controller;
 //Author: Ervin Ramollari
 //AddAggregationController.java
 import edu.city.studentuml.model.domain.Aggregation;
+import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -84,7 +85,11 @@ public class AddAggregationController extends AddElementController {
         // the false flag indicates that the aggregation is not strong (composition)
         Aggregation aggregation = new Aggregation(whole.getClassifier(), part.getClassifier(), false);
         AggregationGR aggregationGR = new AggregationGR(whole, part, aggregation);
-
+        if (diagramModel instanceof CCDModel) {
+            aggregation.setBidirectional();
+        } else {
+            aggregation.setDirection(Association.AB);
+        }
         UndoableEdit edit = new AddEdit(aggregationGR, diagramModel);
 
         diagramModel.addGraphicalElement(aggregationGR);
