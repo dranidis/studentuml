@@ -63,6 +63,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
@@ -262,6 +263,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         newProjectMenuItem = new JMenuItem();
         newProjectMenuItem.setText("New Project");
+        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
+        newProjectMenuItem.setAccelerator(keyStrokeToNew);  
+
         newProjectMenuItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -272,6 +276,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         openProjectMenuItem = new JMenuItem();
         openProjectMenuItem.setText("Open Project");
+        KeyStroke keyStrokeToOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+        openProjectMenuItem.setAccelerator(keyStrokeToOpen);  
         openProjectMenuItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -282,6 +288,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         saveProjectMenuItem = new JMenuItem();
         saveProjectMenuItem.setText("Save");
+        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+        saveProjectMenuItem.setAccelerator(keyStrokeToSave);  
         saveProjectMenuItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -866,6 +874,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
+            System.out.println(e);
         if (c != KeyEvent.CHAR_UNDEFINED) {
             System.out.println(c);
             repaint();
@@ -874,9 +883,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void keyPressed(KeyEvent e) {
+            System.out.println(e);
     }
 
     public void keyReleased(KeyEvent e) {
+            System.out.println(e);
     }
 
     public void update(Observable observable, Object object) {
