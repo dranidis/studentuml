@@ -402,8 +402,8 @@ public final class ObjectFactory {
     }
 
     public static IXMLCustomStreamable newucassociation(Object parent, Element stream, XMLStreamer streamer) {
-        Actor actor = (Actor) streamer.readObjectByID(stream, "from", null);
-        UseCase useCase = (UseCase) streamer.readObjectByID(stream, "to", null);
+        Actor actor = (Actor) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
+        UseCase useCase = (UseCase) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
         UCAssociation a = new UCAssociation(actor, useCase);
         return a;
