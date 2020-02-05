@@ -57,12 +57,9 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 //                      boolean iconifiable)
 //        super(title, true, true, false, true);
         super(title, true, false, true, true);
-        popup = new JPopupMenu();
-        addRename();
         
         createMenuBar();
         
-        addDelete();
         ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
@@ -107,61 +104,37 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         undoMenuItem.setText("Undo");
         KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
         undoMenuItem.setAccelerator(keyStrokeToNew);  
-
-        undoMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (!undoManager.canUndo())
-                    return;
-
-                undoManager.undo();
-                refreshUndoRedoButtons();            
-            }
-        });
+        undoMenuItem.addActionListener(e -> undo());
         editMenu.add(undoMenuItem);
         
         JMenuItem redoMenuItem = new JMenuItem();
         redoMenuItem.setText("Redo");
         keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
         redoMenuItem.setAccelerator(keyStrokeToNew);  
-
-        redoMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (!undoManager.canRedo())
-                    return;
-
-                undoManager.redo();
-                refreshUndoRedoButtons();            
-            }
-        });
+        redoMenuItem.addActionListener(e -> redo());
         editMenu.add(redoMenuItem);        
-    }
+        
+        JMenuItem rename = new JMenuItem("Rename diagram");
+        rename.addActionListener(e -> renameDiagram());
+        editMenu.add(rename);
 
-    private void addRename() {
-        JMenuItem rename = new JMenuItem("Rename");
-        ActionListener renameListener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (event.getActionCommand().equals("Rename")) {
-                    renameDiagram();
-                }
-            }
-        };
-        rename.addActionListener(renameListener);
-        popup.add(rename);
+        JMenuItem delete = new JMenuItem("Delete diagram");
+        delete.addActionListener(e -> deleteDiagram());
+        editMenu.add(delete);
     }
-
-    private void addDelete() {
-        JMenuItem delete = new JMenuItem("Delete");
-        ActionListener deleteListener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (event.getActionCommand().equals("Delete")) {
-                    deleteDiagram();
-                }
-            }
-        };
-        delete.addActionListener(deleteListener);
-        popup.add(delete);
+    
+    private void redo() {
+        if (!undoManager.canRedo())
+            return;
+        undoManager.redo();
+        refreshUndoRedoButtons();            
+    }
+    
+    private void undo() {
+        if (!undoManager.canUndo())
+            return;
+        undoManager.undo();
+        refreshUndoRedoButtons();            
     }
 
     private void renameDiagram() {
