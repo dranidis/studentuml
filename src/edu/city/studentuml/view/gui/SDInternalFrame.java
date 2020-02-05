@@ -23,7 +23,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -42,7 +41,8 @@ public class SDInternalFrame extends DiagramInternalFrame {
         view.addMouseMotionListener(selectionController.getMouseMotionListener());
 
         JPanel drawingPanel = new JPanel();
-
+        
+        
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new DrawingToolbar(this);
@@ -54,7 +54,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, "SDObjectGR"));
         setSize(550, 450);
     }
-
+    
     private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
         private JToggleButton actorButton;
