@@ -5,6 +5,7 @@ package edu.city.studentuml.controller;
 //AddCreateMessageController.java
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.graphical.ConstantsGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
@@ -83,7 +84,9 @@ public class AddCreateMessageController extends AddElementController {
         CreateMessageGR messageGR = new CreateMessageGR(source, target, message, y);
 
         ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
-        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + 30);
+               
+        int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + barHeight + target.getHeight());
 
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
 

@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author dimitris
  */
-class ConstantsGR {
+public class ConstantsGR {
     private static ConstantsGR instance = new ConstantsGR();
     private Map<String, Map<String, Object>> parameters;
     
@@ -20,14 +20,15 @@ class ConstantsGR {
         parameters = new HashMap<>();
         parameters.put("SDMessageGR", new HashMap<>());
         parameters.get("SDMessageGR").put("messageDY", 3);
-        parameters.get("SDMessageGR").put("barWidth", 12);
+        parameters.get("SDMessageGR").put("barWidth", 10);
+        parameters.get("SDMessageGR").put("initBarHeight", 20);
     }
 
-    static ConstantsGR getInstance() {
+    public static ConstantsGR getInstance() {
         return instance;
     }
 
-    int get(String graphicalElement, String parameter) {
+    public int get(String graphicalElement, String parameter) {
         return (Integer) parameters.get(graphicalElement).get(parameter);
     }
     

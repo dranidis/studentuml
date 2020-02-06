@@ -9,13 +9,12 @@ import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.AbstractSDObjectGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.ConstantsGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.model.graphical.SSDModel;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 import javax.swing.undo.UndoableEdit;
@@ -69,7 +68,9 @@ public class AddCallMessageController extends AddElementController {
         CallMessageGR messageGR = new CallMessageGR(source, target, message, y);
 
         ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
-        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + 30);
+        
+        int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + barHeight);
         
         /**
          * fix undo

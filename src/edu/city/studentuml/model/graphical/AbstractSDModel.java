@@ -5,13 +5,16 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ActorInstance;
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.AddEdit;
 import java.awt.Color;
 import java.util.Iterator;
 import java.util.Vector;
+import javax.swing.undo.UndoableEdit;
 
 /**
  *
@@ -76,14 +79,23 @@ public abstract class AbstractSDModel extends DiagramModel {
         repository.addSDMessage(m.getMessage());
         messages.add(m);
         super.addGraphicalElement(m);
+
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
         orderChanged = true;
         messagesChanged();
+        if (m instanceof CallMessageGR) {
+            int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+            moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE);
+        }
+        if (m instanceof CreateMessageGR) {
+            int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+            moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE + m.getTarget().getHeight());
+        }
         restoreMessagesDistances();
         SystemWideObjectNamePool.getInstance().reload();
     }
-
+    
     // override superclass method moveGraphicalElement
     // to handle cases when the movement of one element affects other
     // elements, rather than simply moving alone
@@ -430,5 +442,20 @@ public abstract class AbstractSDModel extends DiagramModel {
                 message.target.addActivationHeight(message.getY());
         }
         orderChanged = false;
+    }
+
+    private void moveMessagesBelowBy(SDMessageGR m, int dis) {
+        for(int i = 0; i< messages.size() - 1; i++) {
+            if (m == messages.get(i)) {
+                if (messages.get(i+1).getY() - m.getY() < dis) {
+                    int moveDis = m.getY() + dis; 
+                    for(int j = i+1; j < messages.size(); j++) {
+                        messages.get(j).move(0, moveDis);
+                    }
+                }
+                break;
+            }
+            
+        }
     }
 }
