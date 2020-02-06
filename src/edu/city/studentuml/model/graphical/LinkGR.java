@@ -14,8 +14,15 @@ import javafx.scene.transform.Rotate;
 
 //Author: Ervin Ramollari
 //LinkGR.java
-
+/**
+ * A superclass that connects two classifiers.
+ * 
+ * @author dimitris
+ */
 public abstract class LinkGR extends AbstractLinkGR {
+    /**
+     * links stores the classifiers that are connected. For each pair A, B of classifiers
+     */
     private static Map<ClassifierGR, Map<ClassifierGR, Integer>> links = new HashMap<>();
 
     private final ClassifierGR a;
@@ -107,6 +114,10 @@ public abstract class LinkGR extends AbstractLinkGR {
     }
     
     public Point2D getEndPointRoleA() {
+        if (isReflective()) {
+            return new Point2D.Double(getTopLeftXA() + getWidthA() - 2 * getReflectiveStep(), // minus 2 offset            
+                    getTopLeftYA());
+        }
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
         double xB = getCentreRoleB().getX();
@@ -126,7 +137,10 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     // returns the endpoint corresponding to role B
     public Point2D getEndPointRoleB() {
-
+        if (isReflective()) {
+            return new Point2D.Double(getTopLeftXA() + getWidthA(),             
+                    getTopLeftYA() + 2 * getReflectiveStep());
+        }
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
         double xB = getCentreRoleB().getX();

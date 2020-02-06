@@ -166,12 +166,13 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         } else // handle rendering of reflective associations in an ad-hoc way
         {
             GeneralPath reflective = new GeneralPath();
+            int step = getReflectiveStep();
+            reflective.moveTo(xA, yA);
+            reflective.lineTo(xA, yA - REFLECTIVE_UP * step); // up 2
+            reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yA - REFLECTIVE_UP * step); // right 4
+            reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yB); // down 4
+            reflective.lineTo(xB, yB);  // left 2          
 
-            reflective.moveTo(getTopLeftXA() + getWidthA() - 30, getTopLeftYA());
-            reflective.lineTo(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() - 15);
-            reflective.lineTo(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
-            reflective.lineTo(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() + 30);
-            reflective.lineTo(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30);
             g.draw(reflective);
 
             drawArrowHeadsReflective(g);
@@ -184,7 +185,8 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             String name = association.getName();
 
             if ((name != null) && !name.equals("")) {
-                g.drawString(name, getTopLeftXA() + getWidthA() - 15, getTopLeftYA() - 19);
+                g.drawString(name, getXA(), getTopLeftYA() - REFLECTIVE_UP * getReflectiveStep() - 2);
+//                g.drawString(name, getTopLeftXA() + getWidthA() - 15, getTopLeftYA() - 19);
             }
 
             // draw role names and multiplicities
@@ -196,21 +198,21 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             String roleBMultiplicity = association.getRoleB().getMultiplicity();
 
             if ((roleAName != null) && !roleAName.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() + 5, -Math.PI / 2, roleAName, false,
+                drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAName, false,
                         g);
             }
 
             if ((roleAMultiplicity != null) && !roleAMultiplicity.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity,
+                drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity,
                         true, g);
             }
 
             if ((roleBName != null) && !roleBName.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 5, getTopLeftYA() + 30, 0, roleBName, false, g);
+                drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBName, false, g);
             }
 
             if ((roleBMultiplicity != null) && !roleBMultiplicity.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 5, getTopLeftYA() + 30, 0, roleBMultiplicity, true, g);
+                drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBMultiplicity, true, g);
             }
         }
 
@@ -232,14 +234,13 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     protected void drawArrowHeadsReflective(Graphics2D g) {
-        if (association.getDirection() == Association.AB) {
-            drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
-        } else if (association.getDirection() == Association.BA) {
-            drawAssociationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(), Math.PI / 2, g);
-        } else if (association.getDirection() == Association.BIDIRECTIONAL_FIX) {
-            drawAssociationArrowHead(getTopLeftXA() + getWidthA(), getTopLeftYA() + 30, Math.PI, g);
-            drawAssociationArrowHead(getTopLeftXA() + getWidthA() - 30, getTopLeftYA(), Math.PI / 2, g);
-        }
+        int direction = association.getDirection();
+        if (direction == Association.AB || direction == Association.BIDIRECTIONAL_FIX) {
+            drawAssociationArrowHead(getXB(), getYB(), Math.PI, g);
+        } 
+        if (direction == Association.BA || direction == Association.BIDIRECTIONAL_FIX) {
+            drawAssociationArrowHead(getXA(), getYA(), Math.PI / 2, g);
+        } 
     }
 
     public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {

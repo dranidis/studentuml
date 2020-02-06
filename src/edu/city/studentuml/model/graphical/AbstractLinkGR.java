@@ -11,6 +11,9 @@ import java.util.Vector;
  * @author draganbisercic
  */
 public abstract class AbstractLinkGR extends GraphicalElement {
+    
+    public static final int REFLECTIVE_UP = 2;
+    public static final int REFLECTIVE_RIGHT = 4;
 
     public static Vector<AbstractLinkGR> linkInstances = new Vector();
 
@@ -226,6 +229,12 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         return (int) getEndPointRoleB().getY();
     }
 
+    public int getReflectiveStep() {
+        int gap = 7;
+        int step = 10 + gap * (getIndexOfLink()); 
+        return step;
+    }
+    
     public boolean contains(Point2D p) {
 
         if (!isReflective()) {
@@ -235,11 +244,16 @@ public abstract class AbstractLinkGR extends GraphicalElement {
             return (distanceFromLine < 7);
         } else // reflective
         {
-            Rectangle2D definingRect1 = new Rectangle2D.Double(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() - 15,
-                    45, 15);
-            Rectangle2D definingRect2 = new Rectangle2D.Double(getTopLeftXA() + getWidthA(), getTopLeftYA(), 15, 30);
+            int step = getReflectiveStep();
+            Rectangle2D definingRect1 = new Rectangle2D.Double(getXA() + step/2, getYB(), REFLECTIVE_RIGHT * step, step);
+            Rectangle2D definingRect2 = new Rectangle2D.Double(getXA() - step/2, getYA() - REFLECTIVE_UP * step, step, REFLECTIVE_UP * step);
+            Rectangle2D definingRect3 = new Rectangle2D.Double(getXA(), getYA() - REFLECTIVE_UP * step - step/2, REFLECTIVE_RIGHT * step, step);
+            Rectangle2D definingRect4 = new Rectangle2D.Double(getXA() + REFLECTIVE_RIGHT * step, getYA() - REFLECTIVE_UP * step - step/2, step, step * REFLECTIVE_UP + getYB() - getYA());
+//            Rectangle2D definingRect1 = new Rectangle2D.Double(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() - 15,
+//                    45, 15);
+//            Rectangle2D definingRect2 = new Rectangle2D.Double(getTopLeftXA() + getWidthA(), getTopLeftYA(), 15, 30);
 
-            return (definingRect1.contains(p) || definingRect2.contains(p));
+            return (definingRect1.contains(p) || definingRect2.contains(p) || definingRect3.contains(p) || definingRect4.contains(p));
         }
 
     }
