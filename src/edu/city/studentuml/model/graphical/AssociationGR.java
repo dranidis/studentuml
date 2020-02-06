@@ -142,27 +142,9 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw role names and multiplicities
             g.setFont(roleFont);
+            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(), true, g);
+            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),  true, g);
 
-            String roleAName = association.getRoleA().getName();
-            String roleAMultiplicity = association.getRoleA().getMultiplicity();
-            String roleBName = association.getRoleB().getName();
-            String roleBMultiplicity = association.getRoleB().getMultiplicity();
-
-            if ((roleAName != null) && !roleAName.equals("")) {
-                drawRoleString(xA, yA, angleA, roleAName, false, g);
-            }
-
-            if ((roleAMultiplicity != null) && !roleAMultiplicity.equals("")) {
-                drawRoleString(xA, yA, angleA, roleAMultiplicity, true, g);
-            }
-
-            if ((roleBName != null) && !roleBName.equals("")) {
-                drawRoleString(xB, yB, angleB, roleBName, false, g);
-            }
-
-            if ((roleBMultiplicity != null) && !roleBMultiplicity.equals("")) {
-                drawRoleString(xB, yB, angleB, roleBMultiplicity, true, g);
-            }
         } else // handle rendering of reflective associations in an ad-hoc way
         {
             GeneralPath reflective = new GeneralPath();
@@ -181,39 +163,23 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw the association name string
             g.setFont(nameFont);
-
-            String name = association.getName();
-
-            if ((name != null) && !name.equals("")) {
-                g.drawString(name, getXA(), getTopLeftYA() - REFLECTIVE_UP * getReflectiveStep() - 2);
-//                g.drawString(name, getTopLeftXA() + getWidthA() - 15, getTopLeftYA() - 19);
+//            g.drawString(association.getName(), getXA(), getTopLeftYA() - REFLECTIVE_UP * getReflectiveStep() - 2);
+            double angle = 0;
+            if (association.getLabelDirection() == Association.FROM_A_TO_B) {
+                angle = Math.toRadians(0);
+            } else {
+                angle = Math.toRadians(180);
             }
+            drawAssociationName(xA + REFLECTIVE_RIGHT * step / 2, yA - REFLECTIVE_UP * step, angle, association.getName(), association.getShowArrow(), g);
 
             // draw role names and multiplicities
             g.setFont(roleFont);
-
             String roleAName = association.getRoleA().getName();
             String roleAMultiplicity = association.getRoleA().getMultiplicity();
             String roleBName = association.getRoleB().getName();
             String roleBMultiplicity = association.getRoleB().getMultiplicity();
-
-            if ((roleAName != null) && !roleAName.equals("")) {
-                drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAName, false,
-                        g);
-            }
-
-            if ((roleAMultiplicity != null) && !roleAMultiplicity.equals("")) {
-                drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity,
-                        true, g);
-            }
-
-            if ((roleBName != null) && !roleBName.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBName, false, g);
-            }
-
-            if ((roleBMultiplicity != null) && !roleBMultiplicity.equals("")) {
-                drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBMultiplicity, true, g);
-            }
+            drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity, roleAName, true, g);
+            drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBMultiplicity, roleBName, false, g);
         }
 
         g.setStroke(originalStroke);
@@ -253,6 +219,8 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public void drawAssociationName(int x, int y, double angle, String string, boolean arrow, Graphics2D g) {
+        if (string.length() == 0)
+            return;
 
         // modify the angle so that the text is always rotated to go from left to right
         double textAngle = angle;
@@ -311,35 +279,41 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-    public void drawRoleString(int x, int y, double angle, String string, boolean up, Graphics2D g) {
-        FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(string, roleFont, frc);
-        Rectangle2D bounds = layout.getBounds();
-        int xOffset = (int) bounds.getX();
-        int yOffset = (int) bounds.getY();
-        int textWidth = (int) bounds.getWidth();
-        int textHeight = (int) bounds.getHeight();
+    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up, Graphics2D g) {
         boolean sameDirection = true;
 
         if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
             angle -= Math.PI;
             sameDirection = false;
         }
-
+        StringBuilder sb = new StringBuilder();
+        if (sameDirection) {
+            sb.append(multiplicity).append(" ").append(roleName);
+        } else {
+            sb.append(roleName).append(" ").append(multiplicity);
+        }
         g.translate(x, y);
         g.rotate(angle);
 
+        FontRenderContext frc = g.getFontRenderContext();
+        TextLayout layout = new TextLayout(sb.toString(), roleFont, frc);
+        Rectangle2D bounds = layout.getBounds();
+        int xOffset = (int) bounds.getX();
+        int yOffset = (int) bounds.getY();
+        int textWidth = (int) bounds.getWidth();
+        int textHeight = (int) bounds.getHeight();
+        
         if (sameDirection) {
             if (up) {
-                g.drawString(string, 10, -5);
+                g.drawString(sb.toString(), 12 + xOffset, -5);
             } else {
-                g.drawString(string, 10, 5 - yOffset);
+                g.drawString(sb.toString(), 12 + xOffset, 5 - yOffset);
             }
         } else {
             if (up) {
-                g.drawString(string, -10 - textWidth, -5);
+                g.drawString(sb.toString(), -12 - textWidth - xOffset, -5);
             } else {
-                g.drawString(string, -10 - textWidth, 5 - yOffset);
+                g.drawString(sb.toString(), -12 - textWidth - xOffset, 5 - yOffset);
             }
         }
 

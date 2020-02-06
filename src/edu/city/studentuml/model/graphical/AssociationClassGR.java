@@ -136,7 +136,8 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         if (!isReflective()) {
             associationCenterPoint = getAssociationCenterPoint();
         } else {
-            associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
+//            associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
+            associationCenterPoint = new Point(associationElement.getXA() + REFLECTIVE_RIGHT * associationElement.getReflectiveStep(), getTopLeftYA() - 15);
         }
         drawClassAndDashedLine(g);
     }

@@ -12,8 +12,8 @@ import java.util.Vector;
  */
 public abstract class AbstractLinkGR extends GraphicalElement {
     
-    public static final int REFLECTIVE_UP = 2;
-    public static final int REFLECTIVE_RIGHT = 4;
+    public static final int REFLECTIVE_UP = 3;
+    public static final int REFLECTIVE_RIGHT = 6;
 
     public static Vector<AbstractLinkGR> linkInstances = new Vector();
 

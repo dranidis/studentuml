@@ -34,8 +34,12 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        System.out.println("Object added " + obj.getClass().getName());
         LinkGR link = (LinkGR) obj;
+        if (link.a == link.b) {
+            System.out.println("Reflective not added " + obj.getClass().getName());
+            return;
+        }
+        System.out.println("Object added " + obj.getClass().getName());
         if (!links.containsKey(link.a)) {
             if (!links.containsKey(link.b)) {
                 Map<ClassifierGR, Integer> newlinks = new HashMap<>();
@@ -63,6 +67,7 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     @Override
     public void objectRemoved(GraphicalElement obj) {
+        System.out.println("objectRemoved (before): links " + links);
         LinkGR link = (LinkGR) obj;
         if(links.containsKey(link.a)) {
             Map<ClassifierGR, Integer> m = links.get(link.a);
@@ -73,7 +78,7 @@ public abstract class LinkGR extends AbstractLinkGR {
                 if (m.isEmpty()) 
                     links.remove(link.a);
             }
-        } else {
+        } else if(links.containsKey(link.b)) {
             Map<ClassifierGR, Integer> m = links.get(link.b);
             if (m.get(link.a) > 1)
                 m.put(link.a, m.get(link.a) - 1);
@@ -82,8 +87,10 @@ public abstract class LinkGR extends AbstractLinkGR {
                 if (m.isEmpty()) 
                     links.remove(link.b);
             }
+        } else {
+            System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links.");
         }
-        System.out.println("links " + links);
+        System.out.println("objectRemoved (after): links " + links);
         super.objectRemoved(obj);
     }
     

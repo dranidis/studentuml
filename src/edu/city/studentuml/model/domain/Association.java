@@ -65,7 +65,9 @@ public class Association implements Serializable, IXMLCustomStreamable {
     }
 
     public String getName() {
-        return name;
+        if (name == null)
+            return "";
+        return name.trim();
     }
 
     public int getDirection() {

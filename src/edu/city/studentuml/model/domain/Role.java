@@ -33,11 +33,15 @@ public class Role implements Serializable, IXMLCustomStreamable {
 
     // 'get' methods
     public String getName() {
-        return roleName;
+        if (roleName == null)
+            return "";        
+        return roleName.trim();
     }
 
     public String getMultiplicity() {
-        return multiplicity;
+        if (multiplicity == null)
+            return "";
+        return multiplicity.trim();
     }
 
     public Classifier getReferredClass() {
