@@ -136,7 +136,9 @@ public abstract class SelectionController {
                 // undo/redo [move]
                 undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
 
-                if (event.isControlDown()) {
+                if (event.isShiftDown() && event.isControlDown()) {
+                    handleCtrlShiftSelect(element);
+                } else if (event.isControlDown()) {
                     if (!selectedElements.contains(element)) {
                         selectedElements.add(element);
                     }
@@ -276,6 +278,9 @@ public abstract class SelectionController {
 
             popupMenuOne.show(event.getComponent(), event.getX(), event.getY());
         }
+    }
+
+    public void handleCtrlShiftSelect(GraphicalElement element) {
     }
 
     // listens for events from the menu items of the popup menu

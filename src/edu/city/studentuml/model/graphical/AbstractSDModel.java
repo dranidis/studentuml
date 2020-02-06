@@ -12,7 +12,9 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
@@ -455,7 +457,19 @@ public abstract class AbstractSDModel extends DiagramModel {
                 }
                 break;
             }
-            
         }
+    }
+    
+    public List<SDMessageGR> getMessagesBelow(SDMessageGR m) {
+        List<SDMessageGR> messagesBelow = new ArrayList<>();
+        for(int i = 0; i< messages.size() - 1; i++) {
+            if (m == messages.get(i)) {
+                for(int j = i+1; j < messages.size(); j++) {
+                    messagesBelow.add(messages.get(j));
+                }
+                break;
+            }
+        }        
+        return messagesBelow;
     }
 }
