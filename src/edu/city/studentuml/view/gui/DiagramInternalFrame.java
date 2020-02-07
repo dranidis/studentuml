@@ -11,8 +11,6 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -23,18 +21,16 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEditSupport;
 
 public abstract class DiagramInternalFrame extends JInternalFrame {
 
-    protected JPopupMenu popup;
+//    protected JPopupMenu popup;
     protected AddElementControllerFactory addElementControllerFactory;
     protected AddElementController addElementController;
     protected DrawLineController drawLineController; //TK draw line
@@ -45,6 +41,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected boolean isIconified = false;
     
     protected AbstractDrawingToolbar toolbar;
+    protected JMenuBar menuBar = new JMenuBar();
 
     // Undo/Redo
     protected UndoManager undoManager;
@@ -60,7 +57,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         
         createMenuBar();
         
-        ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
+//        ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
         // Undo/Redo
@@ -93,7 +90,6 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
     
     private void createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
         this.setJMenuBar(menuBar);
 
         JMenu editMenu = new JMenu();

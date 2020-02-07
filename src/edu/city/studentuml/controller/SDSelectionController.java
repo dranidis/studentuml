@@ -26,6 +26,8 @@ import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
@@ -39,6 +41,7 @@ import edu.city.studentuml.util.undoredo.MultiObjectEdit;
 import edu.city.studentuml.util.undoredo.ObjectEdit;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -336,5 +339,21 @@ public class SDSelectionController extends SelectionController {
 
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
+    }
+    
+    public void handleCtrlShiftSelect(GraphicalElement element) {
+        if(element instanceof SDMessageGR) {
+            if (!selectedElements.contains(element)) {
+                selectedElements.add(element);
+            }
+            SDMessageGR message = (SDMessageGR) element;
+            AbstractSDModel sdmodel = (AbstractSDModel) model;
+            List<SDMessageGR> belowMessages = sdmodel.getMessagesBelow(message);
+            for (SDMessageGR m: belowMessages) {
+                if (!selectedElements.contains(m)) {
+                    selectedElements.add(m);
+                }
+            }
+        }
     }
 }
