@@ -28,6 +28,7 @@ public abstract class SDMessageGR extends GraphicalElement {
     protected Font messageFont;
     protected RoleClassifierGR source;
     protected RoleClassifierGR target;
+    private String errorMessage;
 
     // of the x and y coordinates, only y is significant, since
     // the x coordinate is derived from the x coordinates of source and target
@@ -87,7 +88,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             g.setStroke(getStroke());
             g.drawLine(startingX, getY(), endingX, getY());
-
+            
             // restore the original stroke
             g.setStroke(originalStroke);
 
@@ -116,6 +117,10 @@ public abstract class SDMessageGR extends GraphicalElement {
             int messageStartX = Math.min(startingX, endingX);
 
             g.drawString(messageText, messageStartX + textX, getY() - messageDY);
+            
+            if (errorMessage != null && errorMessage.length() > 0) {
+                g.drawString(errorMessage, messageStartX + textX, getY() - messageDY - 10);
+            }
         } else // handle reflective message rendering 'ad-hoc'
         {
             //Stroke originalStroke = g.getStroke();
@@ -197,5 +202,9 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     public RoleClassifierGR getTarget() {
         return target;
+    }
+
+    void setErrorMsg(String validatedStr) {
+        errorMessage = validatedStr;
     }
 }

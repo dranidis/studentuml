@@ -75,68 +75,70 @@ public abstract class RoleClassifierGR extends GraphicalElement {
         startingPoint.setLocation(x, startingPoint.getY());
     }
 
-    boolean validateOut(RoleClassifierGR target) {
+    public String validateOut(RoleClassifierGR target) {
         if( in.size() > out.size()) {
             out.push(target);
-            return true;
+            return "";
         } else {
-            System.out.println(this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus");
-            showStacks();
-            return false;
+//            System.out.println(this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus");
+//            showStacks();
+            return this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus";
         }
     }
 
-    boolean validateIn(RoleClassifierGR source) {
+    public String validateIn(RoleClassifierGR source) {
         if( in.size() == out.size()) {
             in.push(source);
-            return true;
+            return "";
         } else {
-            System.out.println(this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus");
-            showStacks();
-            return false;
+//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus");
+//            showStacks();
+            return this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus";
         }
     }
 
-    boolean validateOutReturn(RoleClassifierGR target) {
+    public String validateOutReturn(RoleClassifierGR target) {
         if( in.size() > out.size() ) {
             RoleClassifierGR origFrom = in.peek();
             if (origFrom == target) {
                 in.pop();
-                return true;
+                return "";
             } else {
-                System.out.println(this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
-                        origFrom.getRoleClassifier().getName() + " was the original caller.");
-                showStacks();
-                return false;
+//                System.out.println(this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
+//                        origFrom.getRoleClassifier().getName() + " was the original caller.");
+//                showStacks();
+                return this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
+                        origFrom.getRoleClassifier().getName() + " was the original caller.";
             }
         } else {
-            System.out.println(this.getRoleClassifier().getName() + " Cannot return. It does not have the focus");
-            showStacks();
-            return false;
+//            System.out.println(this.getRoleClassifier().getName() + " Cannot return. It does not have the focus");
+//            showStacks();
+            return this.getRoleClassifier().getName() + " Cannot return. It does not have the focus";
         }
     }
 
-    boolean validateInReturn(RoleClassifierGR source) {
+    String validateInReturn(RoleClassifierGR source) {
         if(out.isEmpty()) {
-            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages");
-            showStacks();
-            return false;
+//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages");
+//            showStacks();
+            return this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages";
         }
         if( in.size() == out.size() ) {
             RoleClassifierGR origTo = out.peek();
             if (origTo == source) {
                 out.pop();
-                return true;
+                return "";
             } else {
-                System.out.println(this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
-                        " Expecting from " + origTo.getRoleClassifier().getName());
-                showStacks();
-                return false;
+//                System.out.println(this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
+//                        " Expecting from " + origTo.getRoleClassifier().getName());
+//                showStacks();
+                return this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
+                        " Expecting from " + origTo.getRoleClassifier().getName();
             }
         } else {
-            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus");
-            showStacks();
-            return false;
+//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus");
+//            showStacks();
+            return this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus";
         }
     }
 

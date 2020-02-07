@@ -416,22 +416,25 @@ public abstract class AbstractSDModel extends DiagramModel {
         
         for(SDMessageGR message:messages) {
             message.outlineColor = Color.BLACK;
+            message.setErrorMsg("");
 //            System.out.println(message.message + ": " + message.source + " -> " + message.target);
             boolean validated;
+            String validatedStr = "";
             if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
-                validated = message.source.validateOut(message.target);
-                if (!validated) 
+                validatedStr += message.source.validateOut(message.target);
+                validatedStr += message.target.validateIn(message.source);
+                if (validatedStr.length() > 0) {
                     message.outlineColor = Color.RED;
-                validated = message.target.validateIn(message.source);
-                if (!validated) 
-                    message.outlineColor = Color.RED;
+                    message.setErrorMsg(validatedStr);
+                }
             } else if (message instanceof ReturnMessageGR) {
-                validated = message.source.validateOutReturn(message.target);
-                if (!validated) 
+                validatedStr += message.source.validateOutReturn(message.target);
+                validatedStr += message.target.validateInReturn(message.source);
+//                validatedStr += message.target.validateInReturn(message.source);
+                if (validatedStr.length() > 0) {
                     message.outlineColor = Color.RED;
-                validated = message.target.validateInReturn(message.source);
-                if (!validated) 
-                    message.outlineColor = Color.RED;
+                    message.setErrorMsg(validatedStr);
+                }
             }
             if(message.source ==  message.target)
                 message.source.addActivationHeight(message.getY() + 5);
