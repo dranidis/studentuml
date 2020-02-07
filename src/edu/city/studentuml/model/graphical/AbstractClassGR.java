@@ -303,4 +303,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
     }
+    
+    public String toString() {
+        return abstractClass.getName();
+    }
 }

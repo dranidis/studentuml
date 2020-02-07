@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.logging.Logger;
 import javafx.scene.transform.Rotate;
 
 //Author: Ervin Ramollari
@@ -20,10 +22,13 @@ import javafx.scene.transform.Rotate;
  * @author dimitris
  */
 public abstract class LinkGR extends AbstractLinkGR {
+    Logger logger = Logger.getLogger(LinkGR.class.getSimpleName());
     /**
-     * links stores the classifiers that are connected. For each pair A, B of classifiers
+     * links stores the pairs of classifiers that are connected. 
+     * For each pair A, B of classifiers the number of their relationships is stored
+     * Note that only on the pairs A,B or B,A is stored.
      */
-    private static Map<ClassifierGR, Map<ClassifierGR, Integer>> links = new HashMap<>();
+    private static Map<Link, Integer> links = new HashMap<>();
 
     private final ClassifierGR a;
     private final ClassifierGR b;
@@ -32,65 +37,81 @@ public abstract class LinkGR extends AbstractLinkGR {
         this.b = b;
     }
 
+    private class Link {
+        private final ClassifierGR a;
+        private final ClassifierGR b;  
+        Link(ClassifierGR a, ClassifierGR b) {
+            this.a = a;
+            this.b = b;
+        }
+	@Override
+	public boolean equals(Object obj) {
+            if (obj == this)
+                return true;
+
+            if (obj == null || obj.getClass() != getClass()) {
+                return false;
+            }
+
+            Link link = (Link) obj;
+            return link.a == a && link.b == b;
+	}
+
+	@Override
+	public int hashCode() {
+            return Objects.hash(a, b);
+	}
+        
+        @Override
+        public String toString() {
+            return a.getClassifier().getName() + "-->" + b.getClassifier().getName();
+        }
+
+    } 
+    
     @Override
     public void objectAdded(GraphicalElement obj) {
         LinkGR link = (LinkGR) obj;
-        if (link.a == link.b) {
-            System.out.println("Reflective not added " + obj.getClass().getName());
-            return;
-        }
-        System.out.println("Object added " + obj.getClass().getName());
-        if (!links.containsKey(link.a)) {
-            if (!links.containsKey(link.b)) {
-                Map<ClassifierGR, Integer> newlinks = new HashMap<>();
-                newlinks.put(link.b, 1);
-                links.put(link.a, newlinks);
+        logger.info("Object added " + obj.getClass().getName());
+        Link linkAB = new Link(link.a, link.b);
+        Link linkBA = new Link(link.b, link.a);
+        if (!links.containsKey(linkAB)) {
+            if (!links.containsKey(linkBA)) {
+                links.put(linkAB, 1);
             } else {
-                Map<ClassifierGR, Integer> m = links.get(link.b);
-                if(!m.containsKey(link.a)) {
-                    m.put(link.a, 1);
-                } else {
-                    m.put(link.a, m.get(link.a) + 1);
-                }
+                links.put(linkBA, links.get(linkBA) + 1);
             }
         } else {
-            Map<ClassifierGR, Integer> m = links.get(link.a);
-            if(!m.containsKey(link.b)) {
-                m.put(link.b, 1);
-            } else {
-                m.put(link.b, m.get(link.b) + 1);
-            }        
+            links.put(linkAB, links.get(linkAB) + 1);        
         }
-        System.out.println("links " + links);
+        logger.info("links " + links);
         super.objectAdded(obj);
     }
 
     @Override
     public void objectRemoved(GraphicalElement obj) {
-        System.out.println("objectRemoved (before): links " + links);
         LinkGR link = (LinkGR) obj;
-        if(links.containsKey(link.a)) {
-            Map<ClassifierGR, Integer> m = links.get(link.a);
-            if (m.get(link.b) > 1)
-                m.put(link.b, m.get(link.b) - 1);
-            else {
-                m.remove(link.b);
-                if (m.isEmpty()) 
-                    links.remove(link.a);
+        Link linkAB = new Link(link.a, link.b);
+        Link linkBA = new Link(link.b, link.a);
+        logger.info("objectRemoved (before): links " + links);
+        logger.info("Link to remove: link " + link);
+        if(links.containsKey(linkAB)) {
+            if (links.get(linkAB) > 1) {
+                links.put(linkAB, links.get(linkAB) - 1);
+            } else {
+                links.remove(linkAB);
             }
-        } else if(links.containsKey(link.b)) {
-            Map<ClassifierGR, Integer> m = links.get(link.b);
-            if (m.get(link.a) > 1)
-                m.put(link.a, m.get(link.a) - 1);
-            else {
-                m.remove(link.a);
-                if (m.isEmpty()) 
-                    links.remove(link.b);
+        } else if(links.containsKey(linkBA)) {
+            if (links.get(linkBA) > 1) {
+                links.put(linkBA, links.get(linkBA) - 1);
+            } else {
+                links.remove(linkBA);
             }
         } else {
-            System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links.");
+            System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links:" + links);
+            throw new RuntimeException();
         }
-        System.out.println("objectRemoved (after): links " + links);
+        logger.info("objectRemoved (after): links " + links);
         super.objectRemoved(obj);
     }
     
@@ -111,7 +132,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         double xB = getCentreRoleB().getX();
         double yB = getCentreRoleB().getY();
         double angle;
-        if (links.get(a) != null) {
+        if (links.get(new Link(a, b)) != null) {
             angle = Math.atan2(yB-yA, xB-xA);
         } else {
             angle = Math.atan2(yA-yB, xA-xB);
