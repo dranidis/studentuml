@@ -219,13 +219,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createLookAndFeel() {
-        System.setProperty("lipstikLF.theme", "LightGrayTheme");
-
-        try {
-            UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        System.setProperty("lipstikLF.theme", "LightGrayTheme");
+//
+//        try {
+//            UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void createInterface() {
