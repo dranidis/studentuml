@@ -863,7 +863,7 @@ public final class ObjectFactory extends Observable {
 
     public IXMLCustomStreamable newmethodparameter(Object parent, Element stream, XMLStreamer streamer) {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
-        if (parent instanceof Method) {
+        if (parent instanceof edu.city.studentuml.model.domain.Method) {
             ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);//FIXME: PACKAGE
         } else if (parent instanceof CallMessage) {
             ((CallMessage) parent).addParameter(m);
@@ -871,6 +871,9 @@ public final class ObjectFactory extends Observable {
             ((CreateMessage) parent).addParameter(m);
         } else {
             java.lang.System.err.println("::::::trying to stream method parameter but dont know where?");
+            java.lang.System.err.println("::::::parent: " + parent + " instanceof " + parent.getClass().getName());
+            java.lang.System.err.println("::::::stream element: " + stream);
+            java.lang.System.err.println("::::::XMLStreamer: " + streamer);
             throw new RuntimeException();
         }
         return m;
