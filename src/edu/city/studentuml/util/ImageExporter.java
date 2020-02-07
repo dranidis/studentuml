@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -44,6 +45,10 @@ public class ImageExporter {
         }
 
         JFileChooser fileChooser = new JFileChooser();
+        String path = Preferences.userRoot().get("DEFAULT_PATH", "");
+        if (path.length() > 0)
+            fileChooser.setCurrentDirectory(new File(path));
+        
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
         if (fileChooser.showSaveDialog(owner) != JFileChooser.APPROVE_OPTION) {
