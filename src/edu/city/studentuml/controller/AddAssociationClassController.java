@@ -10,24 +10,16 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
-import edu.city.studentuml.util.undoredo.AddEdit;
-import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import java.awt.geom.Point2D;
-import java.util.ListIterator;
-import java.util.Vector;
-import javax.swing.undo.UndoableEdit;
+import edu.city.studentuml.model.graphical.LinkGR;
 
 /**
  *
  * @author draganbisercic
+ * @author dranidis
  */
-public class AddAssociationClassController extends AddElementController {
-
-    private AbstractClassGR whole = null;
-    private Vector elements;
+public class AddAssociationClassController extends AddAssociationController {
 
     public AddAssociationClassController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -37,55 +29,8 @@ public class AddAssociationClassController extends AddElementController {
         super(model, frame);
     }
 
-    public void pressed(int x, int y) {
-        elements = diagramModel.getGraphicalElements();
-
-        ListIterator listIterator = elements.listIterator(elements.size());
-        Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
-
-        // start from the most recent shape
-        while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
-
-            if ((element instanceof AbstractClassGR) && element.contains(origin)) {
-                whole = (AbstractClassGR) element;
-
-                break;
-            }
-        }
-    }
-
-    public void dragged(int x, int y) {
-    }
-
-    public void released(int x, int y) {
-        if (whole == null) {
-            return;
-        }
-
-        elements = diagramModel.getGraphicalElements();
-
-        ListIterator listIterator = elements.listIterator(elements.size());
-        Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
-
-        while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
-
-            if ((element instanceof AbstractClassGR) && element.contains(origin)) {
-                addAssociationClass(whole, (AbstractClassGR) element);
-
-                break;
-            }
-        }
-
-        // set composed class to null to start over again
-        whole = null;
-    }
-
-    public void addAssociationClass(ClassifierGR whole, ClassifierGR part) {
-
+    @Override
+    protected LinkGR createLinkGR(ClassifierGR whole, ClassifierGR part) {
         AbstractAssociationClass associationClass;
         AssociationClassGR associationClassGR;
 
@@ -100,12 +45,6 @@ public class AddAssociationClassController extends AddElementController {
             associationClassGR = new AssociationClassGR(whole, part, associationClass);
         }
         
-        UndoableEdit edit = new AddEdit(associationClassGR, diagramModel);
-
-        diagramModel.addGraphicalElement(associationClassGR);
-
-        parentFrame.setSelectionMode();
-
-        parentFrame.getUndoSupport().postEdit(edit);
-    }
+        return associationClassGR;
+    }    
 }

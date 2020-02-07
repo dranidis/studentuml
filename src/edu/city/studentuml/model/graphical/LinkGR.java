@@ -2,6 +2,7 @@ package edu.city.studentuml.model.graphical;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import edu.city.studentuml.model.domain.Classifier;
 import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -68,6 +69,18 @@ public abstract class LinkGR extends AbstractLinkGR {
         }
 
     } 
+    
+    public int getNumberOfLinks(ClassifierGR a, ClassifierGR b) {
+        Link linkAB = new Link(a, b);
+        Link linkBA = new Link(b, a); 
+        if (links.containsKey(linkAB)) {
+            return links.get(linkAB);
+        } else if (links.containsKey(linkBA)) {
+            return links.get(linkBA);
+        } else {
+            return 0;
+        }
+    }
     
     @Override
     public void objectAdded(GraphicalElement obj) {
