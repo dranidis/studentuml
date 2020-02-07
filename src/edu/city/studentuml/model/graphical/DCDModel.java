@@ -472,7 +472,7 @@ public class DCDModel extends DiagramModel {
     }
 
     public void removeAssociationClass(AssociationClassGR a) {
-        a.clear();  //removes association object from links instances in AssociationClassGR
+//        a.clear();  //removes association object from links instances in AssociationClassGR
         repository.removeAssociationClass((DesignAssociationClass) a.getAssociationClass());
         super.removeGraphicalElement(a);
     }

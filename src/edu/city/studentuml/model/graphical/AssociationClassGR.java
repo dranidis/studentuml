@@ -66,8 +66,17 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         if ((!this.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
             this.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
+        associationElement.objectAdded(associationElement);
     }
 
+    @Override
+    public void objectRemoved(GraphicalElement obj) {
+        if (this.linkInstances.contains(obj)) {
+            this.linkInstances.remove(obj);
+        }
+        associationElement.objectRemoved(associationElement);
+    }    
+    
     public AssociationGR getAssociationElement() {
         return associationElement;
     }
@@ -212,10 +221,10 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-    // when removing
-    public void clear() {
-        associationElement.objectRemoved(associationElement);
-    }
+//    // when removing
+//    public void clear() {
+//        associationElement.objectRemoved(associationElement);
+//    }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {

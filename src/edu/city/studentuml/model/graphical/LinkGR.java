@@ -87,27 +87,25 @@ public abstract class LinkGR extends AbstractLinkGR {
         logger.info("links " + links);
         super.objectAdded(obj);
     }
-
-    @Override
-    public void objectRemoved(GraphicalElement obj) {
-        LinkGR link = (LinkGR) obj;
-        Link linkAB = new Link(link.a, link.b);
-        Link linkBA = new Link(link.b, link.a);
-        logger.info("objectRemoved (before): links " + links);
-        logger.info("Link to remove: link " + link);
-        if(links.containsKey(linkAB)) {
+    
+    private boolean removeLink(Link linkAB) {
+        if(links.containsKey(linkAB)) {        
             if (links.get(linkAB) > 1) {
                 links.put(linkAB, links.get(linkAB) - 1);
             } else {
                 links.remove(linkAB);
             }
-        } else if(links.containsKey(linkBA)) {
-            if (links.get(linkBA) > 1) {
-                links.put(linkBA, links.get(linkBA) - 1);
-            } else {
-                links.remove(linkBA);
-            }
-        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void objectRemoved(GraphicalElement obj) {
+        LinkGR link = (LinkGR) obj;
+        logger.info("objectRemoved (before): links " + links);
+        logger.info("Link to remove: link " + link);
+        if(!removeLink(new Link(link.a, link.b)) && !removeLink(new Link(link.b, link.a))) {
             System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links:" + links);
             throw new RuntimeException();
         }
