@@ -32,6 +32,7 @@ public class RealizationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public RealizationGR(ClassGR c, InterfaceGR i, Realization real) {
+        super(c, i);
         classGR = c;
         interfaceGR = i;
         realization = real;

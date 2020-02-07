@@ -12,11 +12,18 @@ import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.LinkGR;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.ListIterator;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * 
+ * @author dimitris
+ */
 public class AddAssociationController extends AddElementController {
 
     private AbstractClassGR classA = null;
@@ -76,8 +83,8 @@ public class AddAssociationController extends AddElementController {
         // set classA to null to start over again
         classA = null;
     }
-
-    public void addAssociation(ClassifierGR classA, ClassifierGR classB) {//TODO here for association??
+    
+    protected LinkGR createLinkGR(ClassifierGR classA, ClassifierGR classB) {
         Association association = new Association(classA.getClassifier(), classB.getClassifier());
         if (diagramModel instanceof CCDModel) {
             association.setBidirectional();
@@ -86,9 +93,27 @@ public class AddAssociationController extends AddElementController {
         }
         AssociationGR associationGR = new AssociationGR(classA, classB, association);
 
-        UndoableEdit edit = new AddEdit(associationGR, diagramModel);
+        return associationGR;
+    }
 
-        diagramModel.addGraphicalElement(associationGR);
+    public void addAssociation(ClassifierGR classA, ClassifierGR classB) { //TODO here for association??
+        LinkGR linkGR = createLinkGR(classA, classB);
+        if (linkGR == null) {
+            System.err.println(this.getClass().getName() + "Link not created");
+        }
+        if (linkGR.isReflective()) {
+            if (linkGR.getNumberOfLinks(classA, classB) > 3) {
+                System.err.println("Too many reflective relationships");
+                JOptionPane.showMessageDialog(parentFrame,
+                			"Only up to 4 reflective relationships are supported.", "Too many reflective relationships", 
+                                        JOptionPane.WARNING_MESSAGE);                
+                return;
+            }
+        }  
+        
+        UndoableEdit edit = new AddEdit(linkGR, diagramModel);
+
+        diagramModel.addGraphicalElement(linkGR);
         
         parentFrame.setSelectionMode();
 

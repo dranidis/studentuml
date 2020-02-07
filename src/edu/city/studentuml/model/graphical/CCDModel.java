@@ -225,7 +225,7 @@ public class CCDModel extends DiagramModel {
     }
 
     public void removeAssociationClass(AssociationClassGR a) {
-        a.clear();  //removes association object from links instances in AssociationClassGR
+//        a.clear();  //removes association object from links instances in AssociationClassGR
         repository.removeAssociationClass((ConceptualAssociationClass) a.getAssociationClass());
         super.removeGraphicalElement(a);
     }

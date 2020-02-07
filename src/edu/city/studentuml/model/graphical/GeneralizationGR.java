@@ -22,19 +22,19 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
     private AbstractClassGR superClass;
     private AbstractClassGR baseClass;
 
-    private GeneralizationGR() {
+    public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {
+        super(parent, child);
         outlineColor = Color.black;
         highlightColor = Color.blue;
-    }
-    public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {
-        this();
         superClass = parent;
         baseClass = child;
         generalization = gener;
     }
 
     public GeneralizationGR(ConceptualClassGR parent, ConceptualClassGR child, Generalization gener) {
-        this();
+        super(parent, child);
+        outlineColor = Color.black;
+        highlightColor = Color.blue;
         superClass = parent;
         baseClass = child;
         generalization = gener;

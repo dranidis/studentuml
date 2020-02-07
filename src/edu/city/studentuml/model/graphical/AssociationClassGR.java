@@ -41,6 +41,7 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
     public static int DIST = 30;    //minimum distance from association to association class
 
     public AssociationClassGR(ClassifierGR a, ClassifierGR b, AbstractAssociationClass associationClass) {
+        super(a, b);
         this.associationClass = associationClass;
         associationElement = new AssociationGR(a, b, associationClass.getAssociation());
         if (associationClass instanceof ConceptualAssociationClass) {
@@ -65,8 +66,17 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         if ((!this.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
             this.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
+        associationElement.objectAdded(associationElement);
     }
 
+    @Override
+    public void objectRemoved(GraphicalElement obj) {
+        if (this.linkInstances.contains(obj)) {
+            this.linkInstances.remove(obj);
+        }
+        associationElement.objectRemoved(associationElement);
+    }    
+    
     public AssociationGR getAssociationElement() {
         return associationElement;
     }
@@ -135,7 +145,8 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         if (!isReflective()) {
             associationCenterPoint = getAssociationCenterPoint();
         } else {
-            associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
+//            associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
+            associationCenterPoint = new Point(associationElement.getXA() + REFLECTIVE_RIGHT * associationElement.getReflectiveStep(), getTopLeftYA() - 15);
         }
         drawClassAndDashedLine(g);
     }
@@ -210,10 +221,10 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-    // when removing
-    public void clear() {
-        associationElement.objectRemoved(associationElement);
-    }
+//    // when removing
+//    public void clear() {
+//        associationElement.objectRemoved(associationElement);
+//    }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
