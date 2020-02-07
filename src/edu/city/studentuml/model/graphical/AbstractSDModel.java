@@ -452,10 +452,13 @@ public abstract class AbstractSDModel extends DiagramModel {
     private void moveMessagesBelowBy(SDMessageGR m, int dis) {
         for(int i = 0; i< messages.size() - 1; i++) {
             if (m == messages.get(i)) {
+                if (m.getMessage().isReflective())
+                    dis += 15;
                 if (messages.get(i+1).getY() - m.getY() < dis) {
-                    int moveDis = m.getY() + dis; 
+                    int moveDis = dis - (messages.get(i+1).getY() - m.getY()); 
                     for(int j = i+1; j < messages.size(); j++) {
-                        messages.get(j).move(0, moveDis);
+                        int y = messages.get(j).getY();
+                        messages.get(j).move(0, y + moveDis);
                     }
                 }
                 break;

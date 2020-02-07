@@ -19,9 +19,9 @@ public class ConstantsGR {
     private ConstantsGR() {
         parameters = new HashMap<>();
         parameters.put("SDMessageGR", new HashMap<>());
-        parameters.get("SDMessageGR").put("messageDY", 3);
+        parameters.get("SDMessageGR").put("messageDY", 4); // distance of sd message name from arrow
         parameters.get("SDMessageGR").put("barWidth", 10);
-        parameters.get("SDMessageGR").put("initBarHeight", 20);
+        parameters.get("SDMessageGR").put("initBarHeight", 40); // height of bar when call and return created
     }
 
     public static ConstantsGR getInstance() {
