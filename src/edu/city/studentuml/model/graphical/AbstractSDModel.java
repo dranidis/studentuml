@@ -5,22 +5,20 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.AddEdit;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.undo.UndoableEdit;
 
 /**
  *
  * @author draganbisercic
+ * @author dimitris
  */
 public abstract class AbstractSDModel extends DiagramModel {
 

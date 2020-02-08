@@ -102,7 +102,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JMenuItem exitMenuItem;
     protected JMenu editMenu;
     protected JMenuItem resizeDrawingAreaMenuItem;
-    protected JMenuItem renameProject;
     protected JMenuItem reloadRulesMenuItem;
     protected JMenu preferencesMenu;
     protected ButtonGroup bgroup;
@@ -346,16 +345,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         editMenu = new JMenu();
         editMenu.setText(" Edit ");
         menuBar.add(editMenu);
-
-        renameProject = new JMenuItem();
-        renameProject.setText("Rename Project");
-        renameProject.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                renameProject();
-            }
-        });
-        editMenu.add(renameProject);
 
         resizeDrawingAreaMenuItem = new JMenuItem();
         resizeDrawingAreaMenuItem.setText("Resize Drawing Area");
@@ -1015,8 +1004,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 //            setSaveActionState(false);
         }
     }
-
-    public abstract void renameProject();
 
     public void resizeView() {
         JInternalFrame selectedFrame = desktopPane.getSelectedFrame();

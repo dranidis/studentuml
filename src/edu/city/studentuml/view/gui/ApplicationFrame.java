@@ -15,6 +15,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+
 /**
  *
  * @author draganbisercic
@@ -32,6 +36,16 @@ public class ApplicationFrame extends ApplicationGUI {
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
 
+        try {
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
         xmlFileChooser = new JFileChooser();
@@ -51,22 +65,6 @@ public class ApplicationFrame extends ApplicationGUI {
             title = title + " *";
         }
         frame.setTitle(title);
-    }
-
-    @Override
-    public void renameProject() {
-        if (umlProject == null) {
-            return;
-        }
-        String projectName = JOptionPane.showInputDialog("Enter project name: ");
-        if ((projectName != null) && (projectName.length() > 0)) {
-            projectName += ".xml";
-            if (getFilePath() != null && !getFilePath().equalsIgnoreCase("")) {
-                String newFilePath = getFilePath().replace(getFileName(), projectName);
-                saveProject();
-            }
-            setFileName(projectName);
-        }
     }
 
     @Override
