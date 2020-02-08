@@ -186,7 +186,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         return false;
     }
     
-    public String getName() {
+    public String getObjectName() {
         return nameField.getText();
     }
     
@@ -201,7 +201,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return "fail";
         }
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
         if ((repository.getDesignClass(newClass.getName()) != null)
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
@@ -227,7 +227,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         
         repository.addClass(dc);
         
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict

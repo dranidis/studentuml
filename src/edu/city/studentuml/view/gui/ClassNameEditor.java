@@ -95,7 +95,7 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
         return ok;
     }
 
-    public String getName() {
+    public String getClassName() {
         return nameField.getText();
     }
 

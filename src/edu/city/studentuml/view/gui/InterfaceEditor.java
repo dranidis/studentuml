@@ -127,7 +127,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
         return ok;
     }
 
-    public String getName() {
+    public String getInterfaceName() {
         return nameField.getText();
     }
 
@@ -202,7 +202,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
             return;
         }
 
-        Method method = new Method(methodEditor.getName());
+        Method method = new Method(methodEditor.getMethodName());
 
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
@@ -224,7 +224,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
             return;
         }
 
-        method.setName(methodEditor.getName());
+        method.setName(methodEditor.getMethodName());
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
         method.setScope(methodEditor.getScope());

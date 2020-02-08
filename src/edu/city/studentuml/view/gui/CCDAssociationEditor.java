@@ -233,7 +233,7 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         }
     }
 
-    public String getName() {
+    public String getAssociationName() {
         if (nameField.getText().equals("")) {
             return null;
         } else {

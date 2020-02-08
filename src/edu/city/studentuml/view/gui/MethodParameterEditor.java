@@ -148,7 +148,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         }
     }
 
-    public String getName() {
+    public String getParameterName() {
         return nameField.getText();
     }
 

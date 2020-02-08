@@ -192,7 +192,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         return false;
     }
 
-    public String getName() {
+    public String getSystemName() {
         return nameField.getText();
     }
 

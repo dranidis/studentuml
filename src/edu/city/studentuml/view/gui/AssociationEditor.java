@@ -256,7 +256,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         }
     }
 
-    public String getName() {
+    public String getAssociationName() {
         if (nameField.getText() == "") {
             return null;
         } else {

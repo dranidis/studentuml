@@ -322,7 +322,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         updateMethodsList();
     }
 
-    public String getName() {
+    public String getAssociationClassName() {
         if (nameField.getText().equals("")) {
             return null;
         } else {
@@ -456,7 +456,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             return;
         }
 
-        Attribute attribute = new Attribute(attributeEditor.getName());
+        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
 
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
@@ -478,7 +478,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             return;
         }
 
-        attribute.setName(attributeEditor.getName());
+        attribute.setName(attributeEditor.getAttributeName());
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
         attribute.setScope(attributeEditor.getScope());
@@ -502,7 +502,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             return;
         }
 
-        Method method = new Method(methodEditor.getName());
+        Method method = new Method(methodEditor.getMethodName());
 
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
@@ -525,7 +525,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             return;
         }
 
-        method.setName(methodEditor.getName());
+        method.setName(methodEditor.getMethodName());
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
         method.setScope(methodEditor.getScope());

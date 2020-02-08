@@ -91,7 +91,7 @@ public class DCDSelectionController extends SelectionController {
             return;
         }
 
-        DesignClass newClass = new DesignClass(classEditor.getName());
+        DesignClass newClass = new DesignClass(classEditor.getClassName());
         newClass.setStereotype(classEditor.getStereotype());
 
         // add the attributes to the new class
@@ -150,7 +150,7 @@ public class DCDSelectionController extends SelectionController {
             return;
         }
 
-        Interface newInterface = new Interface(interfaceEditor.getName());
+        Interface newInterface = new Interface(interfaceEditor.getInterfaceName());
 
         // add the methods to the new interface
         Iterator methodIterator = interfaceEditor.getMethods().iterator();
@@ -202,7 +202,7 @@ public class DCDSelectionController extends SelectionController {
         // Undo/Redo
         Association undoAssociation = association.clone();
 
-        association.setName(associationEditor.getName());
+        association.setName(associationEditor.getAssociationName());
         association.setDirection(associationEditor.getDirection());
         association.setShowArrow(associationEditor.getShowArrow());
         association.setLabelDirection(associationEditor.getLabelDirection());
@@ -236,7 +236,7 @@ public class DCDSelectionController extends SelectionController {
 
         DesignAssociationClass undoAssociationClass = (DesignAssociationClass) associationClass.clone();
 
-        associationClass.setName(associationClassEditor.getName());
+        associationClass.setName(associationClassEditor.getAssociationClassName());
         associationClass.setDirection(associationClassEditor.getDirection());
 
         Role roleA = associationClass.getRoleA();

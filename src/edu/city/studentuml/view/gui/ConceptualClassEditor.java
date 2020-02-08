@@ -133,7 +133,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
         return ok;
     }
 
-    public String getName() {
+    public String getClassName() {
         return nameField.getText();
     }
 
@@ -192,7 +192,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
             return;
         }
 
-        Attribute attribute = new Attribute(attributeEditor.getName());
+        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
 
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
@@ -213,7 +213,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
             return;
         }
 
-        attribute.setName(attributeEditor.getName());
+        attribute.setName(attributeEditor.getAttributeName());
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
         attribute.setScope(attributeEditor.getScope());

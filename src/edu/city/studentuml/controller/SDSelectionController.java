@@ -108,7 +108,7 @@ public class SDSelectionController extends SelectionController {
             return;
         }
 
-        SDObject newObject = new SDObject(objectEditor.getName(), objectEditor.getDesignClass());
+        SDObject newObject = new SDObject(objectEditor.getObjectName(), objectEditor.getDesignClass());
         ObjectEdit originalEdit;
 
         // edit the object if there is no change in the name,
@@ -163,7 +163,7 @@ public class SDSelectionController extends SelectionController {
             return;
         }
 
-        MultiObject newMultiObject = new MultiObject(multiObjectEditor.getName(), multiObjectEditor.getDesignClass());
+        MultiObject newMultiObject = new MultiObject(multiObjectEditor.getMultiObjectName(), multiObjectEditor.getDesignClass());
         MultiObjectEdit originalEdit;
 
         // edit the multiobject if there is no change in the name,
@@ -212,7 +212,7 @@ public class SDSelectionController extends SelectionController {
             return;
         }
 
-        ActorInstance newActorInstance = new ActorInstance(actorInstanceEditor.getName(),
+        ActorInstance newActorInstance = new ActorInstance(actorInstanceEditor.getActorInstanceName(),
                 actorInstanceEditor.getActor());
         ActorInstanceEdit originalEdit;
 
@@ -259,7 +259,7 @@ public class SDSelectionController extends SelectionController {
             return;
         }
 
-        message.setName(callMessageEditor.getName());
+        message.setName(callMessageEditor.getCallMessageName());
         message.setIterative(callMessageEditor.isIterative());
         message.setReturnValue(callMessageEditor.getReturnValue());
         message.setReturnType(callMessageEditor.getReturnType());

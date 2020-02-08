@@ -312,7 +312,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         parametersList.setListData(parameters);
     }
 
-    public String getName() {
+    public String getCallMessageName() {
         return nameField.getText();
     }
 
@@ -343,7 +343,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             return;
         }
 
-        MethodParameter parameter = new MethodParameter(parameterEditor.getName(), parameterEditor.getType());
+        MethodParameter parameter = new MethodParameter(parameterEditor.getParameterName(), parameterEditor.getType());
 
         parameters.add(parameter);
         updateParametersList();        
@@ -361,7 +361,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             return;
         }
 
-        parameter.setName(parameterEditor.getName());
+        parameter.setName(parameterEditor.getParameterName());
         parameter.setType(parameterEditor.getType());
         updateParametersList();
     }

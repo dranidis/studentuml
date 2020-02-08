@@ -93,7 +93,7 @@ public class SSDSelectionController extends SelectionController {
             return;
         }
 
-        SystemInstance newSystemInstance = new SystemInstance(systemEditor.getName(), systemEditor.getSystem());
+        SystemInstance newSystemInstance = new SystemInstance(systemEditor.getSystemName(), systemEditor.getSystem());
         SystemEdit originalEdit;
 
         // edit the system instance if there is no change in the name,
@@ -143,7 +143,7 @@ public class SSDSelectionController extends SelectionController {
             return;
         }
 
-        ActorInstance newActorInstance = new ActorInstance(actorInstanceEditor.getName(),
+        ActorInstance newActorInstance = new ActorInstance(actorInstanceEditor.getActorInstanceName(),
                 actorInstanceEditor.getActor());
         ActorInstanceEdit originalEdit;
 
@@ -190,7 +190,7 @@ public class SSDSelectionController extends SelectionController {
             return;
         }
 
-        message.setName(callMessageEditor.getName());
+        message.setName(callMessageEditor.getCallMessageName());
         message.setIterative(callMessageEditor.isIterative());
         message.setReturnValue(callMessageEditor.getReturnValue());
 

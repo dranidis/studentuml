@@ -186,7 +186,7 @@ public class AttributeEditor extends JPanel implements ActionListener {
         }
     }
 
-    public String getName() {
+    public String getAttributeName() {
         return nameField.getText();
     }
 
