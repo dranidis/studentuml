@@ -257,7 +257,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
         updateAttributesList();
     }
 
-    public String getName() {
+    public String getAssociationClassName() {
         if (nameField.getText().equals("")) {
             return null;
         } else {
@@ -351,7 +351,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
             return;
         }
 
-        Attribute attribute = new Attribute(attributeEditor.getName());
+        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
 
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
@@ -373,7 +373,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
             return;
         }
 
-        attribute.setName(attributeEditor.getName());
+        attribute.setName(attributeEditor.getAttributeName());
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
         attribute.setScope(attributeEditor.getScope());

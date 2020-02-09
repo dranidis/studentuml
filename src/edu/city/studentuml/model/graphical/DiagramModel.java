@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -221,7 +222,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public String toString() {
         return diagramName;
     }
-
+    
+    @Override
+    public synchronized void addObserver(Observer o) {
+        logger.info(o.toString());
+        super.addObserver(o);
+    }
     // this custom method is called whenever a change in the diagram occurs to notify observers
     public void modelChanged() {
 

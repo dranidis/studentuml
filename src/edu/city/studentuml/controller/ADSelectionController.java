@@ -235,7 +235,7 @@ public class ADSelectionController extends SelectionController {
         ObjectNode undoObjectNode = (ObjectNode) objectNode.clone();
 
         // do not edit if name and type are both empty
-        if ((objectNodeEditor.getName().isEmpty())
+        if ((objectNodeEditor.getObjectName().isEmpty())
                 && (objectNodeEditor.getType() == null)) {
             JOptionPane.showMessageDialog(parentComponent,
                     "Object name and/or type is missing!",
@@ -244,7 +244,7 @@ public class ADSelectionController extends SelectionController {
             return;
         } else {
             ObjectNode newObjectNode = new ObjectNode();
-            newObjectNode.setName(objectNodeEditor.getName());
+            newObjectNode.setName(objectNodeEditor.getObjectName());
             newObjectNode.setType(objectNodeEditor.getType());
 
             // add the states to the new object node

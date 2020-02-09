@@ -204,7 +204,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         return ok;
     }
 
-    public String getName() {
+    public String getClassName() {
         return nameField.getText();
     }
 
@@ -334,7 +334,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        Attribute attribute = new Attribute(attributeEditor.getName());
+        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
 
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
@@ -355,7 +355,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        attribute.setName(attributeEditor.getName());
+        attribute.setName(attributeEditor.getAttributeName());
         attribute.setType(attributeEditor.getType());
         attribute.setVisibility(attributeEditor.getVisibility());
         attribute.setScope(attributeEditor.getScope());
@@ -378,7 +378,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        Method method = new Method(methodEditor.getName());
+        Method method = new Method(methodEditor.getMethodName());
 
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
@@ -401,7 +401,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         }
 
         System.out.println("Setting name");
-        method.setName(methodEditor.getName());
+        method.setName(methodEditor.getMethodName());
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
         method.setScope(methodEditor.getScope());
@@ -465,12 +465,12 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private void setTempAttributes() {
         tempAttributes.clear();
 
-        if (getName().equals("")) {
+        if (getClassName().equals("")) {
             updateAddAttributesPanel();
             return;
         }
 
-        ConceptualClass concept = repository.getConceptualClass(getName());
+        ConceptualClass concept = repository.getConceptualClass(getClassName());
         if (concept == null) {
             updateAddAttributesPanel();
             return;
@@ -516,7 +516,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             cl.show(cardPanel, "empty");
         } else {
             addAttributesLabel.setText("Add attributes from the conceptual class "
-                + getName() + " -->");
+                + getClassName() + " -->");
             cl.show(cardPanel, "nonempty");
         }
     }

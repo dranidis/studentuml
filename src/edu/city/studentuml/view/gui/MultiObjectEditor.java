@@ -193,7 +193,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         return false;
     }
 
-    public String getName() {
+    public String getMultiObjectName() {
         return nameField.getText();
     }
 
@@ -204,7 +204,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return "fail";
         }
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
         if ((repository.getDesignClass(newClass.getName()) != null)
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
@@ -234,7 +234,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
 
         repository.addClass(dc);
 
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict

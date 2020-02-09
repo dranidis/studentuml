@@ -179,7 +179,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         return false;
     }
 
-    public String getName() {
+    public String getActorInstanceName() {
         return nameField.getText();
     }
 

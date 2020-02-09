@@ -90,7 +90,7 @@ public class CCDSelectionController extends SelectionController {
             return;
         }
 
-        ConceptualClass newClass = new ConceptualClass(classEditor.getName());
+        ConceptualClass newClass = new ConceptualClass(classEditor.getClassName());
 
         // add the attributes to the new class
         Iterator attributeIterator = classEditor.getAttributes().iterator();
@@ -142,7 +142,7 @@ public class CCDSelectionController extends SelectionController {
         // Undo/Redo
         Association undoAssociation = association.clone();
 
-        association.setName(associationEditor.getName());
+        association.setName(associationEditor.getAssociationName());
         association.setShowArrow(associationEditor.getShowArrow());
         association.setLabelDirection(associationEditor.getLabelDirection());
 
@@ -175,7 +175,7 @@ public class CCDSelectionController extends SelectionController {
 
         ConceptualAssociationClass undoAssociationClass = (ConceptualAssociationClass) associationClass.clone();
 
-        associationClass.setName(associationClassEditor.getName());
+        associationClass.setName(associationClassEditor.getAssociationClassName());
 
         Role roleA = associationClass.getRoleA();
         roleA.setName(associationClassEditor.getRoleAName());

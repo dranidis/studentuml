@@ -175,7 +175,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         return ok;
     }
 
-    public String getName() {
+    public String getObjectName() {
         return objectNameField.getText();
     }
 
@@ -257,7 +257,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             return "fail";
         }
 
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
         if ((repository.getDesignClass(newClass.getName()) != null)
                 && !newClass.getName().equals("")) {
@@ -386,7 +386,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             return "fail";
         }
 
-        DesignClass newClass = new DesignClass(classNameEditor.getName());
+        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
         if ((repository.getDesignClass(newClass.getName()) != null)
                 && !newClass.getName().equals("")) {
