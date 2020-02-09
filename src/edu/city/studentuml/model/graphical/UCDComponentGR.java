@@ -120,10 +120,14 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 //        this.classifier = classifier;
 //    }
 
+//    public Classifier getClassifier() {
+//        throw new UnsupportedOperationException();
+//    }
+    @Override
     public Classifier getClassifier() {
-        throw new UnsupportedOperationException();
+        return (Classifier) ucdComponent;
     }
-
+    
     public void refreshDimensions(Graphics2D g) {
         calculateWidth(g);
         calculateHeight(g);

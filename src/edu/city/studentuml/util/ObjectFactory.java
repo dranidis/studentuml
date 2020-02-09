@@ -346,8 +346,8 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newucinclude(Object parent, Element stream, XMLStreamer streamer) {
-        UseCase from = (UseCase) streamer.readObjectByID(stream, "from", null);
-        UseCase to = (UseCase) streamer.readObjectByID(stream, "to", null);
+        UseCase from = (UseCase) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
+        UseCase to = (UseCase) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to")); 
 
         UCInclude include = new UCInclude(from, to);
         return include;
@@ -397,8 +397,8 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newucextend(Object parent, Element stream, XMLStreamer streamer) {
-        UseCase from = (UseCase) streamer.readObjectByID(stream, "from", null);
-        UseCase to = (UseCase) streamer.readObjectByID(stream, "to", null);
+        UseCase from = (UseCase) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("from"));
+        UseCase to = (UseCase) SystemWideObjectNamePool.getInstance().getObjectByName(stream.getAttribute("to"));
 
         UCExtend extend = new UCExtend(from, to);
         return extend;
