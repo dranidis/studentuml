@@ -15,18 +15,15 @@ public class SSDModel extends AbstractSDModel {
 
     @Override
     protected void addToRepository(RoleClassifierGR rc) {
-        if (rc.getRoleClassifier() instanceof SystemInstance) {
-            if (!umlProject.isSystemReferenced(rc, ((SystemInstance) rc.getRoleClassifier()).getSystem())) {
-                repository.removeSystem(((SystemInstance) rc.getRoleClassifier()).getSystem());
-
-            }
             repository.addSystemInstance(((SystemInstance) rc.getRoleClassifier()));
-        }
     }
 
     @Override
     protected void removeClassifiersFromRepository(RoleClassifierGR rc) {
         if (rc.getRoleClassifier() instanceof SystemInstance) {
+            if (!umlProject.isSystemReferenced(rc, ((SystemInstance) rc.getRoleClassifier()).getSystem())) {
+                repository.removeSystem(((SystemInstance) rc.getRoleClassifier()).getSystem());
+            }
             repository.removeSystemInstance((SystemInstance) rc.getRoleClassifier());
         }
     }
