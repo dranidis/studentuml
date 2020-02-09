@@ -20,7 +20,7 @@ public class SSDModel extends AbstractSDModel {
                 repository.removeSystem(((SystemInstance) rc.getRoleClassifier()).getSystem());
 
             }
-            repository.removeSystemInstance(((SystemInstance) rc.getRoleClassifier()));
+            repository.addSystemInstance(((SystemInstance) rc.getRoleClassifier()));
         }
     }
 
