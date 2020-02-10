@@ -14,10 +14,13 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public abstract class GraphicalElement implements Serializable, IXMLCustomStreamable {
+    
+    Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
     protected Color fillColor;
@@ -126,11 +129,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
         ((GraphicalElement) instance).myUid = uid;
 
-        System.out.println("Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
+        logger.finer("Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        System.out.println("Streaming to " + this.getClass().getName());
+        logger.finer("Streaming to " + this.getClass().getName());
         node.setAttribute("uid", this.getMyUid());
     }
 }

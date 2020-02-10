@@ -562,10 +562,9 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
         /* retrieve the node that was selected */ 
             Object nodeInfo = node.getUserObject();
-            logger.info(nodeInfo.getClass().getName());
             
             if (DiagramModel.class.isAssignableFrom(nodeInfo.getClass())) {
-                logger.info("Diagram model selected");
+                logger.finer("Diagram model selected");
                 DiagramModel dm = (DiagramModel) nodeInfo;
                 try {
                     DiagramInternalFrame frame = dm.getFrame();

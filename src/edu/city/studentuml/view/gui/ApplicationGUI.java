@@ -80,7 +80,7 @@ import javax.swing.tree.TreePath;
  */
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
     
-    Logger logger = Logger.getLogger(ApplicationGUI.class.getSimpleName());
+    Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     protected static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -142,7 +142,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             Preferences.userRoot().put("SELECT_LAST", "TRUE");
         }
         String selectLast = Preferences.userRoot().get("SELECT_LAST", "");
-        logger.info("SELECT_LAST:" + selectLast);
+        logger.fine("SELECT_LAST:" + selectLast);
         isApplet = false;
         this.frame = frame;
         instance = this;
@@ -1216,28 +1216,24 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
 
         public void internalFrameActivated(InternalFrameEvent e) {
-            logger.info("Activated");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
         public void internalFrameDeActivated(InternalFrameEvent e) {
-            logger.info("DeActivated");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
         }
 
         public void internalFrameIconified(InternalFrameEvent e) {
-            logger.info("Iconified");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
         public void internalFrameDeIconified(InternalFrameEvent e) {
-            logger.info("Deiconified");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);

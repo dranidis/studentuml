@@ -61,7 +61,11 @@ public class DCDModel extends DiagramModel {
         repository.addClass(c.getDesignClass());
         super.addGraphicalElement(c);
     }
-
+    
+/**
+ * TODO: not used?
+ * @param dc 
+ */
     public void addC(DesignClass dc) {
         SystemWideObjectNamePool.getInstance().loading();
         Random rn = new Random();

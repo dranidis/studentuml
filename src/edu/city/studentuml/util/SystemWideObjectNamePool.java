@@ -10,8 +10,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.logging.Logger;
 
 public class SystemWideObjectNamePool extends Observable {
+    Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName()); 
 
     private static SystemWideObjectNamePool ref = null;
     private String ruleFile = null;
@@ -135,6 +137,7 @@ public class SystemWideObjectNamePool extends Observable {
 
         facts.setName("<html><b>Facts</b>" + " [" + facts.size() + "]</html>");
 
+        logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(this);
     }

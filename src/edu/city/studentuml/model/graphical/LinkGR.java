@@ -23,7 +23,7 @@ import javafx.scene.transform.Rotate;
  * @author dimitris
  */
 public abstract class LinkGR extends AbstractLinkGR {
-    Logger logger = Logger.getLogger(LinkGR.class.getSimpleName());
+    Logger logger = Logger.getLogger(LinkGR.class.getName());
     /**
      * links stores the pairs of classifiers that are connected. 
      * For each pair A, B of classifiers the number of their relationships is stored
@@ -85,7 +85,7 @@ public abstract class LinkGR extends AbstractLinkGR {
     @Override
     public void objectAdded(GraphicalElement obj) {
         LinkGR link = (LinkGR) obj;
-        logger.info("Object added " + obj.getClass().getName());
+        logger.finest("Object added " + obj.getClass().getName());
         Link linkAB = new Link(link.a, link.b);
         Link linkBA = new Link(link.b, link.a);
         if (!links.containsKey(linkAB)) {
@@ -97,7 +97,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         } else {
             links.put(linkAB, links.get(linkAB) + 1);        
         }
-        logger.info("links " + links);
+        logger.finest("links " + links);
         super.objectAdded(obj);
     }
     
@@ -116,13 +116,13 @@ public abstract class LinkGR extends AbstractLinkGR {
     @Override
     public void objectRemoved(GraphicalElement obj) {
         LinkGR link = (LinkGR) obj;
-        logger.info("objectRemoved (before): links " + links);
-        logger.info("Link to remove: link " + link);
+        logger.finest("objectRemoved (before): links " + links);
+        logger.finest("Link to remove: link " + link);
         if(!removeLink(new Link(link.a, link.b)) && !removeLink(new Link(link.b, link.a))) {
             System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links:" + links);
             throw new RuntimeException();
         }
-        logger.info("objectRemoved (after): links " + links);
+        logger.finest("objectRemoved (after): links " + links);
         super.objectRemoved(obj);
     }
     

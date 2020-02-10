@@ -99,11 +99,9 @@ public class ApplicationFrame extends ApplicationGUI {
 //        updateTitle();
         frame.setTitle(applicationName + " - New Project");
 
-        logger.info("New project");
     }
 
     private void setFileName(String name) {
-        logger.log(Level.INFO, "Set fileName and projectName to: {0}", name);
         umlProject.setFilename(name);
         umlProject.setName(name);
         frame.setTitle(applicationName + " - " + name);
