@@ -114,25 +114,15 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     public void drawDiagram(Graphics2D g) {
-
-        //IJ:make a little Z-order first draw the Links then everything on top of it...
         SystemWideObjectNamePool.drawLock.lock();
+        
+        model.getGraphicalElements().stream()
+                .filter(ge -> ge instanceof LinkGR)
+                .forEach(ge -> ge.draw(g));
 
-        Iterator iterator = model.getGraphicalElements().iterator();
-        GraphicalElement element;
-
-        Vector<GraphicalElement> others = new Vector();
-        while (iterator.hasNext()) { //TODO here to pass number of links??
-            element = (GraphicalElement) iterator.next();
-            if ((element instanceof LinkGR)) {
-                element.draw(g);
-            } else {
-                others.add(element);
-            }
-        }
-        for (int x = 0; x < others.size(); x++) {
-            others.get(x).draw(g);
-        }
+        model.getGraphicalElements().stream()
+                .filter(ge -> ! (ge instanceof LinkGR))
+                .forEach(ge -> ge.draw(g));
 
         g.setPaint(Color.GRAY);
         g.draw(dragLine);
