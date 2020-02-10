@@ -29,7 +29,7 @@ public class ConsistencyChecker {
     public ConsistencyChecker(String location) {
         //loadRules("rules/rules.txt");
         loadRules(location);
-        logger.info(location + " (ConsistencyChecker constructor)");
+        logger.finer(location + " (ConsistencyChecker constructor)");
         logger.info("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
     }
 

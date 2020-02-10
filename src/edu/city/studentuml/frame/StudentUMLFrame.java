@@ -1,6 +1,8 @@
 package edu.city.studentuml.frame;
 
 import edu.city.studentuml.view.gui.ApplicationFrame;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**

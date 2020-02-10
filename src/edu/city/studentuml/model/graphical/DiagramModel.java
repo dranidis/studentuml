@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
     
-    Logger logger = Logger.getLogger(DiagramModel.class.getSimpleName());
+    Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     public static final int UCD = 0;
     public static final int SSD = 1;
@@ -49,7 +49,6 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public DiagramModel(String name, UMLProject umlp) {
-        logger.info("New model: " + name);
         diagramName = name;
         graphicalElements = new NotifierVector();
         selected = null;
@@ -72,6 +71,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     // and notify the view observers, but subclasses may override this behavior,
     // for example in case the addition of one element affects other elements
     public void addGraphicalElement(GraphicalElement e) {
+        logger.fine("Adding Element e: " + e.getClass().getSimpleName());
         e.objectAdded(e);
         graphicalElements.add(e);
         modelChanged();
@@ -225,12 +225,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.info(o.toString());
+        logger.fine("OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
     // this custom method is called whenever a change in the diagram occurs to notify observers
     public void modelChanged() {
-
+        logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
 

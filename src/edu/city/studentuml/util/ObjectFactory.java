@@ -159,7 +159,6 @@ public final class ObjectFactory extends Observable {
             return null;
         }
         String methodName = "new" + c.getSimpleName().toLowerCase();
-        logger.info(methodName);
         try {
             Method m = ObjectFactory.class.getMethod(methodName, new Class[]{Object.class, Element.class, XMLStreamer.class});
             Object result = m.invoke(this, new Object[]{parent, stream, streamer});
@@ -175,7 +174,7 @@ public final class ObjectFactory extends Observable {
         } catch (SecurityException e) {
             return null;
         } catch (NoSuchMethodException e) {
-            java.lang.System.err.println("---> ObjectFactory: No Such Method Defined : " + methodName);
+            logger.severe("---> ObjectFactory: No Such Method Defined : " + methodName);
             return null;
         } catch (IllegalArgumentException e) {
             return null;

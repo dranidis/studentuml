@@ -60,8 +60,10 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class CentralRepository extends Observable implements Serializable {
+    Logger logger = Logger.getLogger(CentralRepository.class.getName());
 
     private Vector datatypes;
     private NotifierVector useCases;
@@ -237,7 +239,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     // this method occurs whenever a change in the repository occurs to notify observers
     public void repositoryChanged() {
-
+        logger.fine("Repository notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
 
@@ -349,6 +351,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     // methods for manipulating the list of project classes
     public boolean addClass(DesignClass c) {
+        logger.fine("Adding class:" + c.getName());
         DesignClass existingClass = getDesignClass(c.getName());
 
         // if a class with the same name doesn't exist, or the class hasn't been named yet,
