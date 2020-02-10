@@ -93,7 +93,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private void projectInit() {
         repository = new CentralRepository();
         diagramModels = new NotifierVector();
-        repository.addObserver(this);
+        /*
+        since umlproject observes the diagrams for changes
+        is it necessary to observer the repository?
+        */
+//        repository.addObserver(this);
 
         //applet
         title = "";
