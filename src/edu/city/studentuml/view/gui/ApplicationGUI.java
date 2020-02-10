@@ -136,6 +136,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected int openFrameCounter = 0;
     public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
+    protected DiagramInternalFrame selectedFrame;
 
     public ApplicationGUI(StudentUMLFrame frame) {
         if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
@@ -922,6 +923,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             FrameProperties fp = (FrameProperties) object;
             addInternalFrame(fp.model, fp.R);
 
+            if (fp.selected) {
+                selectedFrame = fp.model.getFrame();
+            }
             try {
                 // TODO: refactor
                 ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
@@ -1216,30 +1220,36 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
 
         public void internalFrameActivated(InternalFrameEvent e) {
+            logger.finer("Frame activated");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
         public void internalFrameDeActivated(InternalFrameEvent e) {
+            logger.finer("Frame deactivated");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
         }
 
         public void internalFrameIconified(InternalFrameEvent e) {
+            logger.finer("Frame iconified");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
         public void internalFrameDeIconified(InternalFrameEvent e) {
+            logger.finer("Frame deiconified");
             umlProject.setSaved(false);
             setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);
         }
 
         public void internalFrameClosing(InternalFrameEvent event) {
+            logger.finer("Frame closing");
+
             // closing a frame removes the diagram from the model
             // closing is only possible from the popup menu "Delete" on the diagram
             // top bar.
@@ -1270,6 +1280,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         boolean runtimeChecking = isRuntimeChecking();
         setRuntimeChecking(false);
 
+        logger.fine("Closing project");
         if (!isSaved()) {
             int response = JOptionPane.showConfirmDialog(this, "Do you want to save changes to this project?",
                     "Save Changes", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);

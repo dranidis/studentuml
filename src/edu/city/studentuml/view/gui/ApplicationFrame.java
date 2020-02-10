@@ -5,6 +5,7 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -161,12 +162,16 @@ public class ApplicationFrame extends ApplicationGUI {
         }
 
 //        */
-
+        
+        try {
+            selectedFrame.setSelected(true);
+        } catch (PropertyVetoException ex) {
+            Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         umlProject.setSaved(true);
         setSaveActionState();
         updateTitle();
         logger.info("Opened project");
-
         return true;
     }
 

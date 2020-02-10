@@ -831,6 +831,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean addObject(SDObject o) {
+        logger.fine("Adding object " + o.toString());
         SDObject existingObject = getObject(o.getName());
 
         if ((existingObject == null) || o.getName().equals("")) {
@@ -1080,6 +1081,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     // methods for manipulating the list of project sequence diagram messages
     public boolean addSDMessage(SDMessage m) {
+        logger.fine("Adding message " + m.toString());
         sdMessages.add(m);
         repositoryChanged();
 

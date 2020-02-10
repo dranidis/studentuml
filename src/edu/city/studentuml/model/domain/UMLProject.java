@@ -162,9 +162,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void setSaved(Boolean saved) {
-        if (SystemWideObjectNamePool.getInstance().isLoading()) {
-            return;
-        }
+        logger.fine("Setting projectSaved: " + saved);
         projectSaved = saved;
         /**
          * Why is projectChagend called when we save a project?
@@ -192,6 +190,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void projectChanged() {
+        logger.fine("Project changed");
         setSaved(false);
 //        projectSaved = false;
 //        logger.info("Observers: " + countObservers());

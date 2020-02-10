@@ -77,6 +77,7 @@ public class SystemWideObjectNamePool extends Observable {
 
     public void loading() {
         loading++;
+        logger.finer("loading: " + loading);
     }
 
     public void done() {
@@ -84,9 +85,11 @@ public class SystemWideObjectNamePool extends Observable {
         if (loading == 0) {
             reloadrules();
         }
+        logger.finer("loading: " + loading);
     }
 
     public boolean isLoading() {
+        logger.finer("loading: " + loading);
         return loading > 0;
     }
     
