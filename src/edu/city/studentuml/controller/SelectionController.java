@@ -299,12 +299,12 @@ public abstract class SelectionController {
     }
 
     private void deleteSelected() {
-        int response = JOptionPane.showConfirmDialog(parentComponent, "Are you sure?", "Delete",
-                JOptionPane.YES_NO_OPTION);
-
-        if (response != JOptionPane.YES_OPTION) {
-            return;
-        }
+//        int response = JOptionPane.showConfirmDialog(parentComponent, "Are you sure?", "Delete",
+//                JOptionPane.YES_NO_OPTION);
+//
+//        if (response != JOptionPane.YES_OPTION) {
+//            return;
+//        }
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
         for (GraphicalElement selectedElement : selectedElements) {
