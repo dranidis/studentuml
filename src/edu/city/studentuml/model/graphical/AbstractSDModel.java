@@ -31,6 +31,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     protected NotifierVector<RoleClassifierGR> roleClassifiers;
     protected NotifierVector<SDMessageGR> messages;
     private boolean orderChanged = false;
+    private boolean automove = false;
 
     public AbstractSDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -84,16 +85,22 @@ public abstract class AbstractSDModel extends DiagramModel {
         // sort the messages, give them ranks, and keep the distances
         orderChanged = true;
         messagesChanged();
-        if (m instanceof CallMessageGR) {
-            int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
-            moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE);
+        if (automove) {
+            if (m instanceof CallMessageGR) {
+                int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+                moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE);
+            }
+            if (m instanceof CreateMessageGR) {
+                int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
+                moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE + m.getTarget().getHeight());
+            }
+            restoreMessagesDistances();
         }
-        if (m instanceof CreateMessageGR) {
-            int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
-            moveMessagesBelowBy(m, barHeight + MINIMUM_MESSAGE_DISTANCE + m.getTarget().getHeight());
-        }
-        restoreMessagesDistances();
         SystemWideObjectNamePool.getInstance().reload();
+    }
+
+    public void setAutomove(boolean automove) {
+        this.automove = automove;
     }
     
     // override superclass method moveGraphicalElement
@@ -453,6 +460,8 @@ public abstract class AbstractSDModel extends DiagramModel {
                 if (m.getMessage().isReflective())
                     dis += 15;
                 if (messages.get(i+1).getY() - m.getY() < dis) {
+                    logger.fine("MOVING messages below");
+
                     int moveDis = dis - (messages.get(i+1).getY() - m.getY()); 
                     for(int j = i+1; j < messages.size(); j++) {
                         int y = messages.get(j).getY();

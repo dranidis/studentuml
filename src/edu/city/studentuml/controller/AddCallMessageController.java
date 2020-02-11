@@ -6,6 +6,7 @@ package edu.city.studentuml.controller;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.AbstractSDObjectGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -77,9 +78,11 @@ public class AddCallMessageController extends AddElementController {
          */
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
 
+        ((AbstractSDModel) diagramModel).setAutomove(true);
         // handle the rest of addition details to the diagram model
         diagramModel.addGraphicalElement(messageGR);
         diagramModel.addGraphicalElement(returnMessageGR);
+        ((AbstractSDModel) diagramModel).setAutomove(false);
 
         parentFrame.setSelectionMode();
 

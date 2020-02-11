@@ -5,6 +5,7 @@ package edu.city.studentuml.controller;
 //AddCreateMessageController.java
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.ConstantsGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -90,8 +91,11 @@ public class AddCreateMessageController extends AddElementController {
 
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
 
+        ((AbstractSDModel) diagramModel).setAutomove(true);
         diagramModel.addGraphicalElement(messageGR);
         diagramModel.addGraphicalElement(returnMessageGR);
+        ((AbstractSDModel) diagramModel).setAutomove(false);
+
         if (parentFrame instanceof SDInternalFrame) {
             ((SDInternalFrame) parentFrame).setSelectionMode();
         }
