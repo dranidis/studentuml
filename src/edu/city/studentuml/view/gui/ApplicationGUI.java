@@ -155,6 +155,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createLookAndFeel();
         addKeyListener(this);
         createInterface();
+        setRunTimeConsistencyCheck(false);
     }
 
     private void initializeRules() {
@@ -245,7 +246,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         treePane = new JScrollPane(repositoryTreeView);
         JSplitPane splitPane = new JSplitPane();
         splitPane.setDividerSize(5);
-        splitPane.setDividerLocation(150);
+        splitPane.setDividerLocation(200);
         splitPane.setResizeWeight(0);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setRightComponent(splitPane_1);
@@ -722,6 +723,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         setSaveActionState();
+        repositoryTreeView.expandDiagrams();
     }
 
     /*

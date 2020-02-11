@@ -286,6 +286,10 @@ public class RepositoryTreeView extends JPanel implements Observer {
         }
     }
 
+    void expandDiagrams() {
+        tree.expandRow(2);
+    }
+
     class UMLTreeModelListener implements TreeModelListener {
 
         public void treeNodesChanged(TreeModelEvent e) {

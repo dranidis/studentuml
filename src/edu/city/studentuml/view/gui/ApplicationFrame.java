@@ -149,6 +149,7 @@ public class ApplicationFrame extends ApplicationGUI {
 //        umlProject.addObserver(this);
 
         repositoryTreeView.setUMLProject(umlProject);
+        repositoryTreeView.expandDiagrams();
         umlProject.projectChanged();
         
         setFilePath(file);
