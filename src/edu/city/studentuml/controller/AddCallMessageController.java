@@ -18,6 +18,7 @@ import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import java.awt.geom.Point2D;
 import java.util.Optional;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 public class AddCallMessageController extends AddElementController {
@@ -76,9 +77,12 @@ public class AddCallMessageController extends AddElementController {
         /**
          * fix undo
          */
+        CompoundEdit compoundEdit = new CompoundEdit();
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
+        compoundEdit.addEdit(edit);
 
         ((AbstractSDModel) diagramModel).setAutomove(true);
+        ((AbstractSDModel) diagramModel).setCompoundEdit(compoundEdit);
         // handle the rest of addition details to the diagram model
         diagramModel.addGraphicalElement(messageGR);
         diagramModel.addGraphicalElement(returnMessageGR);
@@ -86,6 +90,9 @@ public class AddCallMessageController extends AddElementController {
 
         parentFrame.setSelectionMode();
 
-        parentFrame.getUndoSupport().postEdit(edit);
+        compoundEdit.end();
+        parentFrame.getUndoSupport().postEdit(compoundEdit);
+        ((AbstractSDModel) diagramModel).setCompoundEdit(null);
+
     }
 }

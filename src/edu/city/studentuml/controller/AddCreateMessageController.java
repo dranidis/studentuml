@@ -20,6 +20,7 @@ import edu.city.studentuml.model.graphical.SDObjectGR;
 import java.awt.geom.Point2D;
 import java.util.ListIterator;
 import java.util.Vector;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 public class AddCreateMessageController extends AddElementController {
@@ -89,8 +90,12 @@ public class AddCreateMessageController extends AddElementController {
         int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
         ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + barHeight + target.getHeight());
 
+//        UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
+        CompoundEdit compoundEdit = new CompoundEdit();
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);
+        compoundEdit.addEdit(edit);
 
+        ((AbstractSDModel) diagramModel).setCompoundEdit(compoundEdit);
         ((AbstractSDModel) diagramModel).setAutomove(true);
         diagramModel.addGraphicalElement(messageGR);
         diagramModel.addGraphicalElement(returnMessageGR);
@@ -100,6 +105,8 @@ public class AddCreateMessageController extends AddElementController {
             ((SDInternalFrame) parentFrame).setSelectionMode();
         }
 
-        parentFrame.getUndoSupport().postEdit(edit);
+        compoundEdit.end();
+        ((AbstractSDModel) diagramModel).setCompoundEdit(null);
+        parentFrame.getUndoSupport().postEdit(compoundEdit);
     }
 }

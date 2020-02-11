@@ -9,11 +9,15 @@ import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.MoveEdit;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 
 /**
  *
@@ -32,6 +36,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     protected NotifierVector<SDMessageGR> messages;
     private boolean orderChanged = false;
     private boolean automove = false;
+    private CompoundEdit compoundEdit;
 
     public AbstractSDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -148,7 +153,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
         messagesChanged();
-        restoreMessagesDistances();
+//        restoreMessagesDistances();
     }
 
     // subclasses that need to validate create and destroy messages need to override this method
@@ -252,7 +257,16 @@ public abstract class AbstractSDModel extends DiagramModel {
             message2 = (SDMessageGR) messages.elementAt(i + 1);
 
             if (message2.getY() - message1.getY() < MINIMUM_MESSAGE_DISTANCE) {
+                List<GraphicalElement> movedElements = new ArrayList<>();
+                movedElements.add(message2);
+                Point2D.Double undoCoordinates = new Point2D.Double(0, 0);
+                Point2D.Double redoCoordinates = new Point2D.Double(0, 0);
+                redoCoordinates.setLocation(0, message1.getY() + MINIMUM_MESSAGE_DISTANCE); 
+                
                 message2.move(0, message1.getY() + MINIMUM_MESSAGE_DISTANCE);
+                
+                UndoableEdit edit = new MoveEdit(movedElements, this, undoCoordinates, redoCoordinates);
+                this.compoundEdit.addEdit(edit);
             }
         }
 
@@ -387,7 +401,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         removeOtherMessages(e); //hook for subclasses
 
         messagesChanged();
-        restoreMessagesDistances();
+//        restoreMessagesDistances();
         super.removeGraphicalElement(e);
     }
 
@@ -455,6 +469,10 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     private void moveMessagesBelowBy(SDMessageGR m, int dis) {
+                    
+        List<GraphicalElement> movedElements = new ArrayList<>();
+        Point2D.Double undoCoordinates = new Point2D.Double(0, 0);
+        Point2D.Double redoCoordinates = new Point2D.Double(0, 0);
         for(int i = 0; i< messages.size() - 1; i++) {
             if (m == messages.get(i)) {
                 if (m.getMessage().isReflective())
@@ -463,7 +481,10 @@ public abstract class AbstractSDModel extends DiagramModel {
                     logger.fine("MOVING messages below");
 
                     int moveDis = dis - (messages.get(i+1).getY() - m.getY()); 
+                    redoCoordinates.setLocation(0, moveDis); 
+                    
                     for(int j = i+1; j < messages.size(); j++) {
+                        movedElements.add(messages.get(j));
                         int y = messages.get(j).getY();
                         messages.get(j).move(0, y + moveDis);
                     }
@@ -471,6 +492,8 @@ public abstract class AbstractSDModel extends DiagramModel {
                 break;
             }
         }
+        UndoableEdit edit = new MoveEdit(movedElements, this, undoCoordinates, redoCoordinates);
+        this.compoundEdit.addEdit(edit);
     }
     
     public List<SDMessageGR> getMessagesBelow(SDMessageGR m) {
@@ -484,5 +507,9 @@ public abstract class AbstractSDModel extends DiagramModel {
             }
         }        
         return messagesBelow;
+    }
+
+    public void setCompoundEdit(CompoundEdit compoundEdit) {
+        this.compoundEdit = compoundEdit;
     }
 }

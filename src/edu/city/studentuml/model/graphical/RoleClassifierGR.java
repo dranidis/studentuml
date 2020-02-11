@@ -19,7 +19,7 @@ import java.util.Stack;
 //and to the y coordinate of the top most point
 public abstract class RoleClassifierGR extends GraphicalElement {
 
-    public static final int MINIMUM_LIFELINE_LENGTH = 100;
+    public static final int MINIMUM_LIFELINE_LENGTH = 60;
     // the default vertical distance from the top
     // border where drawing of role classifiers starts
     public static final int VERTICAL_OFFSET = 20;
