@@ -243,7 +243,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repositoryTreeView = new RepositoryTreeView();
         repositoryTreeView.setUMLProject(umlProject);
         treePane = new JScrollPane(repositoryTreeView);
-        add(treePane, BorderLayout.WEST);
+        JSplitPane splitPane = new JSplitPane();
+        splitPane.setDividerSize(5);
+        splitPane.setDividerLocation(150);
+        splitPane.setResizeWeight(0);
+        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setRightComponent(splitPane_1);
+        splitPane.setLeftComponent(treePane);
+        add(splitPane, BorderLayout.CENTER);
     }
 
     private void createDiagramAndConsistencyArea() {
@@ -251,7 +258,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         splitPane_1 = new JSplitPane();
         splitPane_1.setDividerSize(5);
         splitPane_1.setDividerLocation(450);
-        splitPane_1.setResizeWeight(0.7);
+        splitPane_1.setResizeWeight(1);
         splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPane_1.setLeftComponent(desktopPane);
         splitPane_1.setRightComponent(tabbedPane);
