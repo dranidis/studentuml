@@ -17,6 +17,7 @@ import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
+import edu.city.studentuml.view.gui.menu.MenuBar;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -46,7 +47,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -56,14 +56,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
@@ -82,7 +80,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     
     Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
-    protected static boolean isApplet = false;
+    public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
     protected StudentUMLApplet applet = null;
     protected boolean repairMode = false;
@@ -91,29 +89,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected String simpleRulesFile;
     protected String advancedRulesFile;
     protected String currentRuleFile;
-    protected static final String rulesLocation = "/edu/city/studentuml/util/validation/rules/";
-    protected JMenuBar menuBar;
-    protected JMenu fileMenu;
-    protected JMenuItem newProjectMenuItem;
-    protected JMenuItem openProjectMenuItem;
-    protected JMenuItem saveProjectMenuItem;
-    protected JMenuItem saveProjectAsMenuItem;
-    protected JMenuItem exportToImageMenuItem;
-    protected JMenuItem exitMenuItem;
-    protected JMenu editMenu;
-    protected JMenuItem resizeDrawingAreaMenuItem;
-    protected JMenuItem reloadRulesMenuItem;
-    protected JMenu preferencesMenu;
-    protected ButtonGroup bgroup;
-    protected JMenu createMenu;
-    protected JMenuItem newUseCaseMenuItem;
-    protected JMenuItem newSystemSequenceMenuItem;
-    protected JMenuItem newConceptualClassMenuItem;
-    protected JMenuItem newSequenceDiagramMenuItem;
-    protected JMenuItem newDesignClassMenuItem;
-    protected JMenuItem newActivityDiagramMenuItem;
-    protected JMenu helpMenu;
-    protected JMenuItem getHelpMenuItem;
     private ProjectToolBar toolbar;
     protected JDesktopPane desktopPane;   //holds internal frames
     protected RepositoryTreeView repositoryTreeView;
@@ -234,424 +209,20 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createToolBar();
         createDesktopPane();
         //createUMLProject();
-        createCentralRepositoryTreeView();
         update(umlProject, this);
         createFactsAndMessageTree();
         createDiagramAndConsistencyArea();
         createRepairPopupMenu();
         createRepairPanel();
+        createCentralRepositoryTreeView();
     }
 
     private void createMenuBar() {
-        menuBar = new JMenuBar();
         if (!isApplet) {
-            frame.setJMenuBar(menuBar);
+            frame.setJMenuBar(new MenuBar(this).getMenuBar());
         } else {
-            applet.setJMenuBar(menuBar);
+            applet.setJMenuBar(new MenuBar(this).getMenuBar());
         }
-
-        createFileMenu();
-        createEditMenu();
-        createCreateMenu();
-        createHelpMenu();
-    }
-
-    private void createFileMenu() {
-        fileMenu = new JMenu();
-        fileMenu.setText(" File ");
-        menuBar.add(fileMenu);
-
-        newProjectMenuItem = new JMenuItem();
-        newProjectMenuItem.setText("New Project");
-        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
-        newProjectMenuItem.setAccelerator(keyStrokeToNew);  
-
-        newProjectMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                newProject();
-            }
-        });
-        fileMenu.add(newProjectMenuItem);
-
-        openProjectMenuItem = new JMenuItem();
-        openProjectMenuItem.setText("Open Project");
-        KeyStroke keyStrokeToOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
-        openProjectMenuItem.setAccelerator(keyStrokeToOpen);  
-        openProjectMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                openProject();
-            }
-        });
-        fileMenu.add(openProjectMenuItem);
-
-        saveProjectMenuItem = new JMenuItem();
-        saveProjectMenuItem.setText("Save");
-        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
-        saveProjectMenuItem.setAccelerator(keyStrokeToSave);  
-        saveProjectMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                saveProject();
-            }
-        });
-        fileMenu.add(saveProjectMenuItem);
-
-        saveProjectAsMenuItem = new JMenuItem();
-        saveProjectAsMenuItem.setText("Save As...");
-        saveProjectAsMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                saveProjectAs();
-            }
-        });
-        fileMenu.add(saveProjectAsMenuItem);
-
-        fileMenu.addSeparator();
-
-        exportToImageMenuItem = new JMenuItem();
-        exportToImageMenuItem.setText("Export To Image");
-        exportToImageMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                exportImage();
-            }
-        });
-        fileMenu.add(exportToImageMenuItem);
-
-        fileMenu.addSeparator();
-
-        exitMenuItem = new JMenuItem();
-        exitMenuItem.setText("Exit");
-        exitMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (closeProject()) {
-                    System.exit(0);
-                }
-            }
-        });
-        fileMenu.add(exitMenuItem);
-
-        if (isApplet) {
-            newProjectMenuItem.setEnabled(false);
-            saveProjectAsMenuItem.setEnabled(false);
-            exportToImageMenuItem.setEnabled(false);
-            exitMenuItem.setEnabled(false);
-        }
-    }
-
-    private void createEditMenu() {
-        editMenu = new JMenu();
-        editMenu.setText(" Edit ");
-        menuBar.add(editMenu);
-
-        resizeDrawingAreaMenuItem = new JMenuItem();
-        resizeDrawingAreaMenuItem.setText("Resize Drawing Area");
-        resizeDrawingAreaMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                resizeView();
-            }
-        });
-        editMenu.add(resizeDrawingAreaMenuItem);
-
-        reloadRulesMenuItem = new JMenuItem();
-        reloadRulesMenuItem.setText("Reload Rules");
-        reloadRulesMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                reloadRules();
-            }
-        });
-        editMenu.add(reloadRulesMenuItem);
-
-        editMenu.addSeparator();
-
-        createPreferencesSubmenu();
-    }
-
-    private void createPreferencesSubmenu() {
-        preferencesMenu = new JMenu();
-        preferencesMenu.setText("Preferences");
-        editMenu.add(preferencesMenu);
-
-        JCheckBoxMenuItem selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
-        selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");
-        selectLastCheckBoxMenuItem.setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
-                + " the need to select it again. <br>"
-                + "If this is disabled the selection is always reset to the selection arrow.</html>");
-        selectLastCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (selectLastCheckBoxMenuItem.isSelected()) {
-                    Preferences.userRoot().put("SELECT_LAST", "TRUE");
-                } else {
-                    Preferences.userRoot().put("SELECT_LAST", "FALSE");
-                }
-            }
-        });
-        
-        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals("TRUE") ? true : false;
-        selectLastCheckBoxMenuItem.setSelected(selectLastPref);
-        preferencesMenu.add(selectLastCheckBoxMenuItem);
-
-        preferencesMenu.addSeparator();
-        
-
-        JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
-        showTypesInSDCheckBoxMenuItem.setText("Show types in messages in Sequence Diagrams");
-        showTypesInSDCheckBoxMenuItem.setToolTipText("");
-        showTypesInSDCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (showTypesInSDCheckBoxMenuItem.isSelected()) {
-                    Preferences.userRoot().put("SHOW_TYPES_SD", "TRUE");
-                } else {
-                    Preferences.userRoot().put("SHOW_TYPES_SD", "FALSE");
-                }
-                Vector sdFrames = getInternalFramesOfType(DiagramModel.SD);
-                for (int i = 0; i < sdFrames.size(); i++) {
-                    System.out.println("REPAINT : ");
-                    ((SDInternalFrame) sdFrames.get(i)).repaint();
-                }               
-                sdFrames = getInternalFramesOfType(DiagramModel.SSD);
-                for (int i = 0; i < sdFrames.size(); i++) {
-                    System.out.println("REPAINT : ");
-                    ((SSDInternalFrame) sdFrames.get(i)).repaint();
-                }               
-            }
-        });
-        
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE") ? true : false;
-        showTypesInSDCheckBoxMenuItem.setSelected(showTypesSDPref);
-        preferencesMenu.add(showTypesInSDCheckBoxMenuItem);
-
-        preferencesMenu.addSeparator();
-                
-        JCheckBoxMenuItem showReturnsSDCheckBoxMenuItem = new JCheckBoxMenuItem();
-        showReturnsSDCheckBoxMenuItem.setText("Show return arrows in Sequence Diagrams");
-        showReturnsSDCheckBoxMenuItem.setToolTipText("");
-        showReturnsSDCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (showReturnsSDCheckBoxMenuItem.isSelected()) {
-                    Preferences.userRoot().put("SHOW_RETURN_SD", "TRUE");
-                } else {
-                    Preferences.userRoot().put("SHOW_RETURN_SD", "FALSE");
-                }
-                Vector sdFrames = getInternalFramesOfType(DiagramModel.SD);
-                for (int i = 0; i < sdFrames.size(); i++) {
-                    System.out.println("REPAINT : ");
-                    ((SDInternalFrame) sdFrames.get(i)).repaint();
-                }               
-                sdFrames = getInternalFramesOfType(DiagramModel.SSD);
-                for (int i = 0; i < sdFrames.size(); i++) {
-                    System.out.println("REPAINT : ");
-                    ((SSDInternalFrame) sdFrames.get(i)).repaint();
-                }               
-            }
-        });
-        
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
-        showReturnsSDCheckBoxMenuItem.setSelected(showReturnPref);
-        preferencesMenu.add(showReturnsSDCheckBoxMenuItem);
-        
-        
-        preferencesMenu.addSeparator();
-                
-        JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
-        enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
-        enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
-        enableRuntimeConsistencyCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (enableRuntimeConsistencyCheckBoxMenuItem.isSelected()) {
-                    setRuntimeChecking(true);
-                    tabbedPane.setVisible(true);
-                    splitPane_1.setDividerSize(5);
-                    splitPane_1.setDividerLocation(getHeight() * 360 / 600);
-                    reloadRules();
-                } else {
-                    setRuntimeChecking(false);
-                    tabbedPane.setVisible(false);
-                    splitPane_1.setDividerSize(0);
-                }
-            }
-        });
-        enableRuntimeConsistencyCheckBoxMenuItem.setSelected(true);
-        preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
-
-        JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem = new JCheckBoxMenuItem();
-        showRuleEditorCheckBoxMenuItem.setText("Show Rule Editor Tab");
-        showRuleEditorCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the rule editor tab that enables the user<br/> to edit the rules on which the consistency checking is being based</html>");
-        showRuleEditorCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (showRuleEditorCheckBoxMenuItem.isSelected() && ruleEditorTabPlacement == -1) {
-                    ruleEditorTabPlacement = tabbedPane.getTabCount();
-                    tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
-                    tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
-                } else {
-                    tabbedPane.remove(ruleEditorTabPlacement);
-                    ruleEditorTabPlacement = -1;
-                }
-
-            }
-        });
-        preferencesMenu.add(showRuleEditorCheckBoxMenuItem);
-
-        JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
-        showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
-        showFactsTabCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the fact's tab</html>");
-        showFactsTabCheckBoxMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (showFactsTabCheckBoxMenuItem.isSelected() && factsTreeTabPlacement == -1) {
-                    factsTreeTabPlacement = tabbedPane.getTabCount();
-                    tabbedPane.insertTab("Facts", null, scrollPane_f, null, tabbedPane.getTabCount());
-                    tabbedPane.setSelectedIndex(factsTreeTabPlacement);
-                } else {
-                    tabbedPane.remove(factsTreeTabPlacement);
-                    factsTreeTabPlacement = -1;
-                }
-
-            }
-        });
-        preferencesMenu.add(showFactsTabCheckBoxMenuItem);
-
-        preferencesMenu.addSeparator();
-
-        JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
-        simpleModeRadioButtonMenuItem.setToolTipText("<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
-        simpleModeRadioButtonMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                currentRuleFile = simpleRulesFile;
-                setRuleFile(simpleRulesFile);
-                reloadRules();
-                if (ruleEditorTabPlacement != -1) {
-                    int selected = tabbedPane.getSelectedIndex();
-                    tabbedPane.remove(ruleEditorTabPlacement);
-                    tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
-                    tabbedPane.setSelectedIndex(selected);
-                }
-                Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
-                for (int i = 0; i < dcdFrames.size(); i++) {
-                    ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
-                }
-            }
-        });
-        preferencesMenu.add(simpleModeRadioButtonMenuItem);
-
-        JRadioButtonMenuItem advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
-        advancedModeRadioButtonMenuItem.setToolTipText("<html>Enables <b>dependency relationship</b> in DCD's and takes<br/> in consideration <b>object visibility</b> in consistency checks.</html>");
-        advancedModeRadioButtonMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                currentRuleFile = advancedRulesFile;
-                setRuleFile(advancedRulesFile);
-                reloadRules();
-                if (ruleEditorTabPlacement != -1) {
-                    int selected = tabbedPane.getSelectedIndex();
-                    tabbedPane.remove(ruleEditorTabPlacement);
-                    tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
-                    tabbedPane.setSelectedIndex(selected);
-                }
-                Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
-                for (int i = 0; i < dcdFrames.size(); i++) {
-                    ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
-                }
-            }
-        });
-        preferencesMenu.add(advancedModeRadioButtonMenuItem);
-
-        bgroup = new ButtonGroup();
-        bgroup.add(simpleModeRadioButtonMenuItem);
-        bgroup.add(advancedModeRadioButtonMenuItem);
-    }
-
-    private void createCreateMenu() {
-        createMenu = new JMenu();
-        createMenu.setText(" Create ");
-        menuBar.add(createMenu);
-
-        newUseCaseMenuItem = new JMenuItem();
-        newUseCaseMenuItem.setText("New Use Case Diagram");
-        newUseCaseMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.UCD);
-            }
-        });
-
-        newSystemSequenceMenuItem = new JMenuItem();
-        newSystemSequenceMenuItem.setText("New System Sequence Diagram");
-        newSystemSequenceMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.SSD);
-            }
-        });
-
-        newConceptualClassMenuItem = new JMenuItem();
-        newConceptualClassMenuItem.setText("New Conceptual Class Diagram");
-        newConceptualClassMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.CCD);
-            }
-        });
-
-        newSequenceDiagramMenuItem = new JMenuItem();
-        newSequenceDiagramMenuItem.setText("New Sequence Diagram");
-        newSequenceDiagramMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.SD);
-            }
-        });
-
-        newDesignClassMenuItem = new JMenuItem();
-        newDesignClassMenuItem.setText("New Design Class Diagram");
-        newDesignClassMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.DCD);
-            }
-        });
-
-        newActivityDiagramMenuItem = new JMenuItem();
-        newActivityDiagramMenuItem.setText("New Activity Diagram");
-        newActivityDiagramMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createNewInternalFrame(DiagramModel.AD);
-            }
-        });
-        createMenu.add(newActivityDiagramMenuItem);
-        createMenu.add(newUseCaseMenuItem);
-        createMenu.add(newConceptualClassMenuItem);
-        createMenu.add(newSystemSequenceMenuItem);
-        createMenu.add(newSequenceDiagramMenuItem);
-        createMenu.add(newDesignClassMenuItem);
-    }
-
-    private void createHelpMenu() {
-        helpMenu = new JMenu();
-        helpMenu.setText(" Help ");
-        menuBar.add(helpMenu);
-
-        getHelpMenuItem = new JMenuItem();
-        getHelpMenuItem.setText("Get Help");
-        getHelpMenuItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                help();
-            }
-        });
-        helpMenu.add(getHelpMenuItem);
     }
 
     private void createToolBar() {
@@ -684,7 +255,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPane_1.setLeftComponent(desktopPane);
         splitPane_1.setRightComponent(tabbedPane);
-        add(splitPane_1, BorderLayout.CENTER);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -1046,7 +616,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return repairMode;
     }
 
-    protected void reloadRules() {
+    public void reloadRules() {
         SystemWideObjectNamePool.getInstance().reloadRules();
     }
 
@@ -1213,6 +783,76 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return new Vector();
     }
 
+    public void setRunTimeConsistencyCheck(boolean b) {
+        setRuntimeChecking(b);
+        tabbedPane.setVisible(b);
+        if (b) {
+            splitPane_1.setDividerSize(5);
+            splitPane_1.setDividerLocation(getHeight() * 360 / 600);
+            reloadRules();
+        } else {
+            splitPane_1.setDividerSize(0);   
+        }
+    }
+
+    public void showRuleEditorTab(boolean b) {
+        if(b) {
+            ruleEditorTabPlacement = tabbedPane.getTabCount();
+            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
+            tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
+        } else {
+            tabbedPane.remove(ruleEditorTabPlacement);
+            ruleEditorTabPlacement = -1;
+        }
+    }
+
+    public int getRuleEditorTabPlacement() {
+        return ruleEditorTabPlacement;
+    }    
+
+    public void showFactsTab(boolean selected) {
+        if (selected && factsTreeTabPlacement == -1) {
+            factsTreeTabPlacement = tabbedPane.getTabCount();
+            tabbedPane.insertTab("Facts", null, scrollPane_f, null, tabbedPane.getTabCount());
+            tabbedPane.setSelectedIndex(factsTreeTabPlacement);
+        } else {
+            tabbedPane.remove(factsTreeTabPlacement);
+            factsTreeTabPlacement = -1;
+        }
+    }
+    
+    public void simpleMode() {
+        currentRuleFile = simpleRulesFile;
+        setRuleFile(simpleRulesFile);
+        reloadRules();
+        if (ruleEditorTabPlacement != -1) {
+            int selected = tabbedPane.getSelectedIndex();
+            tabbedPane.remove(ruleEditorTabPlacement);
+            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            tabbedPane.setSelectedIndex(selected);
+        }
+        Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        for (int i = 0; i < dcdFrames.size(); i++) {
+            ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
+        }        
+    }
+    
+    public void advancedMode() {
+        currentRuleFile = advancedRulesFile;
+        setRuleFile(advancedRulesFile);
+        reloadRules();
+        if (ruleEditorTabPlacement != -1) {
+            int selected = tabbedPane.getSelectedIndex();
+            tabbedPane.remove(ruleEditorTabPlacement);
+            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            tabbedPane.setSelectedIndex(selected);
+        }
+        Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        for (int i = 0; i < dcdFrames.size(); i++) {
+            ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
+        }
+    }
+    
     /*
      * inner class listens for events from internal frames;
      * overrides default behavior when the user closes the frame
@@ -1276,7 +916,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * closes the current project while prompting the user to save changes if necessary
      */
-    protected boolean closeProject() {
+    public boolean closeProject() {
         boolean runtimeChecking = isRuntimeChecking();
         setRuntimeChecking(false);
 
