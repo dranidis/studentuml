@@ -38,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
+import javax.xml.transform.OutputKeys;
 
 public class XMLStreamer {
     
@@ -361,6 +362,8 @@ public class XMLStreamer {
         Transformer transformer;
         try {
             transformer = tFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new File(xml));
             transformer.transform(source, result);
