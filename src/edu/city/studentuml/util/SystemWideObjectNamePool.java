@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Logger;
 
 public class SystemWideObjectNamePool extends Observable {
@@ -49,6 +50,12 @@ public class SystemWideObjectNamePool extends Observable {
         consistencyChecker = new ConsistencyChecker(ruleFile);
     }
 
+    @Override
+    public synchronized void addObserver(Observer o) {
+        logger.fine("OBSERVER added: " + o.toString());
+        super.addObserver(o);
+    }  
+    
     // Get runtime consistency checking
     public boolean isRuntimeChecking() {
         return runtimeChecking;

@@ -79,7 +79,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     private DefaultMutableTreeNode datamodelnode;
     private DefaultMutableTreeNode diagrammodelnode;
-    private UMLProject project;
+    private UMLProject umlProject = UMLProject.getInstance();
     private ImageIcon rootIcon;
     private DefaultMutableTreeNode rootNode;
     private JTree tree;
@@ -100,11 +100,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         datamodelnode = addObject("Data Model");
         diagrammodelnode = addObject("Diagram Model");
         tree.addTreeSelectionListener(new RepositoryTreeSelectionListener());
-    }
-
-    public void setUMLProject(UMLProject prj) {
-        project = prj;
-        project.addObserver(this);
+        umlProject.addObserver(this);
     }
 
     public void update(Observable o, Object arg) {
@@ -128,21 +124,21 @@ public class RepositoryTreeView extends JPanel implements Observer {
         diagrammodelnode.removeAllChildren();
         treeModel.reload();
 
-        classes = project.getCentralRepository().getClasses();
+        classes = umlProject.getCentralRepository().getClasses();
         iterator = classes.iterator();
         while (iterator.hasNext()) {
             designClass = (DesignClass) iterator.next();
             addObject(datamodelnode, designClass);
         }
 
-        interfaces = project.getCentralRepository().getInterfaces();
+        interfaces = umlProject.getCentralRepository().getInterfaces();
         iterator = interfaces.iterator();
         while (iterator.hasNext()) {
             designInterface = (Interface) iterator.next();
             addObject(datamodelnode, designInterface);
         }
 
-        diagrams = project.getDiagramModels();
+        diagrams = umlProject.getDiagramModels();
         iterator = diagrams.iterator();
         while (iterator.hasNext()) {
             diagram = (DiagramModel) iterator.next();

@@ -9,7 +9,6 @@ package edu.city.studentuml.model.domain;
  * @author not attributable
  * @version 1.0
  */
-//import edu.city.studentuml.applet.Application;
 import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -93,12 +92,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private void projectInit() {
         repository = new CentralRepository();
         diagramModels = new NotifierVector();
-        /*
-        since umlproject observes the diagrams for changes
-        is it necessary to observer the repository?
-        */
-//        repository.addObserver(this);
-
         //applet
         title = "";
         comment = "";
@@ -117,37 +110,23 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void clear() {
-        //ApplicationGUI.closeFrames();
         diagramModels.clear();
         repository.clear();
         setFilename("");
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
-        projectChanged();
+        logger.fine("Notifying observers: " + this.countObservers());
+        setSaved(true);
+        setChanged();
+        notifyObservers();
     }
 
-    /**
-     * remove method?
-     */
-    public void becomeObserver() {
-        /**
-         * Is it necessary to observe the models, since it already
-         * observes the repository?
-         */
-//        DiagramModel model;
-//        Iterator iterator = diagramModels.iterator();
-//
-//        while (iterator.hasNext()) {
-//            model = (DiagramModel) iterator.next();
-//            model.addObserver(this);
-//        }
-
-/**
- * It is already!
- */
-        repository.addObserver(this);
-    }
+    @Override
+    public synchronized void addObserver(Observer o) {
+        logger.fine("OBSERVER added: " + o.toString());
+        super.addObserver(o);
+    }    
 
     public CentralRepository getCentralRepository() {
         return repository;
@@ -168,34 +147,29 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void setSaved(Boolean saved) {
         logger.fine("Setting projectSaved: " + saved);
         projectSaved = saved;
-        /**
-         * Why is projectChagend called when we save a project?
-         * to update the title?
-         */
-//        projectChanged();
-        setChanged();
-        notifyObservers();
     }
 
     public void addDiagram(DiagramModel dm) {
         diagramModels.add(dm);
 
         dm.addObserver(this);
-        setSaved(false);
+        projectChanged();
         }
 
     public void removeDiagram(DiagramModel dm) {
+        dm.deleteObserver(this);
         diagramModels.remove(dm);
-        setSaved(false);
+        projectChanged();
     }
 
     public void projectChanged() {
         logger.fine("Project changed");
         setSaved(false);
-//        projectSaved = false;
-//        logger.info("Observers: " + countObservers());
-//        setChanged();
-//        notifyObservers();
+        
+        logger.fine("Notifying observers: " + this.countObservers());
+        setChanged();
+        notifyObservers();
+
     }
 
     public void update(Observable observable, Object object) {
@@ -220,6 +194,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         logger.finer(".......end from XML: \n" + filename);
         projectChanged();
+        setSaved(true);
     }
     // Embed4Auto
 
@@ -252,6 +227,16 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
+
+    public void streamToXML() {
+        if (projectFilepath == null || projectFilepath.length() == 0) {
+            logger.severe("Empty or NULL projectFilepath");
+            return;
+        }
+        streamToXML(projectFilepath);
+        setSaved(true);
+    }
+    
     public void streamToXML(String path) {
         XMLStreamer streamer = new XMLStreamer();
         streamer.streamObject(null, "project", this);
@@ -458,7 +443,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void setName(String name) {
         projectName = name;
-        setSaved(false);
     }
 
     public String getFilename() {
@@ -467,7 +451,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void setFilename(String filename) {
         projectFilename = filename;
-        setSaved(false);
     }
 
     public String getFilepath() {
@@ -476,7 +459,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void setFilepath(String filepath) {
         projectFilepath = filepath;
-        setSaved(false);
+        if (filepath.length() > 0) {
+            projectFilename = filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);            
+            projectName = projectFilename.substring(0, projectFilename.lastIndexOf("."));
+        }
     }
     
     
@@ -946,5 +932,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 		methodToChange.addCalledMethod(sourceClass,sdMethod, targetClass, targetObject, isReflective);
 		sourceClass.replaceSDMethod(sourceClass.getSDMethods().indexOf(headMethod), methodToChange);
 		return sourceClass;
+    }
+
+    public void createNewProject() {
+        clear();
+        SystemWideObjectNamePool.getInstance().clear();
+        SystemWideObjectNamePool.getInstance().reload();
+        setSaved(true);
+        setName("New Project");
     }
 }

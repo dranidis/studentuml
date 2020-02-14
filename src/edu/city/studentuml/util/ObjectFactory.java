@@ -112,6 +112,7 @@ import java.awt.Rectangle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -124,6 +125,12 @@ public final class ObjectFactory extends Observable {
     }
     private Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
+    @Override
+    public synchronized void addObserver(Observer o) {
+        logger.fine("OBSERVER added: " + o.toString());
+        super.addObserver(o);
+    }  
+    
     public IXMLCustomStreamable newInstance(String className, Object parent, Element stream, XMLStreamer streamer) {
         // THIS IS QUICK HACK; SHOULD BE CHANGED IF TIME ALLOWS
         String modelGraphicalPackageName = "edu.city.studentuml.model.graphical.";
@@ -1191,6 +1198,7 @@ public final class ObjectFactory extends Observable {
         boolean iconified = Boolean.parseBoolean(stream.getAttribute("iconified"));
         
         FrameProperties frameProperties = new FrameProperties(model, R, selected, iconified);
+        logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(frameProperties);
     }

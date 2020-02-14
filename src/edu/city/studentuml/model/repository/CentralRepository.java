@@ -59,6 +59,7 @@ import edu.city.studentuml.util.NotifierVector;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -150,6 +151,12 @@ public class CentralRepository extends Observable implements Serializable {
         activityNodes = new NotifierVector();
     }
 
+    @Override
+    public synchronized void addObserver(Observer o) {
+        logger.fine("OBSERVER added: " + o.toString());
+        super.addObserver(o);
+    }  
+    
     public Vector getAllObjects() {
         Vector v = new Vector();
 
@@ -239,7 +246,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     // this method occurs whenever a change in the repository occurs to notify observers
     public void repositoryChanged() {
-        logger.fine("Repository notifying observers: " + this.countObservers());
+        logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
 
@@ -838,6 +845,7 @@ public class CentralRepository extends Observable implements Serializable {
             objects.add(o);
             repositoryChanged();
 
+            logger.finer("objects: " + objects);
             return true;
         } else {
             return false;

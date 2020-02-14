@@ -72,10 +72,7 @@
           <object class="Role" classifier="designclass6" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="DependencyGR" classa="classgr3" classb="classgr6" id="" internalid="dependencygr0">
-        <object class="Dependency" from="designclass3" id="dependency" internalid="dependency0" to="designclass6"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr7" uid="Desktop Application User" x="61" y="369">
+      <object class="ClassGR" id="" internalid="classgr7" uid="Desktop Application User" x="66" y="341">
         <object class="DesignClass" id="designclass" internalid="designclass22" name="RoleClassifierGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass12" name="RoleClassifierGR"/>
           <object id="attributes"/>
@@ -95,8 +92,15 @@
           <object class="Role" classifier="designclass26" id="roleb" multiplicity="*" name=""/>
         </object>
       </object>
+      <object class="ClassGR" id="" internalid="classgr14" uid="Desktop Application User" x="1104" y="262">
+        <object class="DesignClass" id="designclass" internalid="designclass7" name="" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass15" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
     </object>
-    <object class="SDModel" framex="0,0,1460,969" iconified="false" id="" internalid="sdmodel0" name="SD: addSDObject" selected="true">
+    <object class="SDModel" framex="0,0,1460,969" iconified="false" id="" internalid="sdmodel0" name="SD: addSDObject" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="2">
         <object class="SDObject" designclass="designclass8" id="sdobject" internalid="sdobject0" name="">
           <object class="DesignClass" id="designclass" internalid="designclass8" name="AddSDObjectController" stereotype="">
@@ -401,6 +405,92 @@
       </object>
       <object class="ReturnMessageGR" from="sdobjectgr4" id="" internalid="returnmessagegr21" to="sdobjectgr4" y="826">
         <object class="ReturnMessage" from="sdobject4" id="message" internalid="returnmessage21" name="" to="sdobject4"/>
+      </object>
+    </object>
+    <object class="DCDModel" framex="42,28,1020,778" iconified="false" id="" internalid="dcdmodel1" name="DCD: observers" selected="false">
+      <object class="ClassGR" id="" internalid="classgr9" uid="Desktop Application User" x="312" y="58">
+        <object class="DesignClass" id="designclass" internalid="designclass3" name="UMLProject" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass3" name="UMLProject"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr10" uid="Desktop Application User" x="29" y="57">
+        <object class="DesignClass" id="designclass" internalid="designclass9" name="RepositoryTreeView" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass16" name="RepositoryTreeView"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr11" uid="Desktop Application User" x="29" y="156">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="ApplicationFrame" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name="ApplicationFrame"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr12" uid="Desktop Application User" x="291" y="164">
+        <object class="DesignClass" id="designclass" internalid="designclass13" name="ObjectFactory" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass18" name="ObjectFactory"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr13" uid="Desktop Application User" x="182" y="293">
+        <object class="DesignClass" id="designclass" internalid="designclass5" name="SystemWideObjectNamePool" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass5" name="SystemWideObjectNamePool"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr10" classb="classgr9" id="" internalid="dependencygr1">
+        <object class="Dependency" from="designclass9" id="dependency" internalid="dependency1" to="designclass3"/>
+      </object>
+      <object class="DependencyGR" classa="classgr11" classb="classgr13" id="" internalid="dependencygr2">
+        <object class="Dependency" from="designclass2" id="dependency" internalid="dependency2" to="designclass5"/>
+      </object>
+      <object class="DependencyGR" classa="classgr11" classb="classgr12" id="" internalid="dependencygr3">
+        <object class="Dependency" from="designclass2" id="dependency" internalid="dependency3" to="designclass13"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr15" uid="Desktop Application User" x="636" y="58">
+        <object class="DesignClass" id="designclass" internalid="designclass6" name="DiagramModel" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass6" name="DiagramModel"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr16" uid="Desktop Application User" x="494" y="161">
+        <object class="DesignClass" id="designclass" internalid="designclass14" name="DiagramView" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass19" name="DiagramView"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr16" classb="classgr15" id="" internalid="dependencygr4">
+        <object class="Dependency" from="designclass14" id="dependency" internalid="dependency4" to="designclass6"/>
+      </object>
+      <object class="DependencyGR" classa="classgr9" classb="classgr15" id="" internalid="dependencygr0">
+        <object class="Dependency" from="designclass3" id="dependency" internalid="dependency0" to="designclass6"/>
+      </object>
+    </object>
+    <object class="SDModel" framex="0,0,550,450" iconified="false" id="" internalid="sdmodel1" name="SD: notifyObservers" selected="true">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr7" uid="Desktop Application User" x="35">
+        <object class="SDObject" designclass="designclass6" id="sdobject" internalid="sdobject7" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass6" name="DiagramModel" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass6" name="DiagramModel"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr8" uid="Desktop Application User" x="165">
+        <object class="SDObject" designclass="" id="sdobject" internalid="sdobject8" name="">
+          <object class="DesignClass" id="designclass" name="" stereotype="">
+            <object class="GenericClass" id="generic" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
       </object>
     </object>
   </object>
