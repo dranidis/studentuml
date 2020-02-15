@@ -62,7 +62,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     Logger logger = Logger.getLogger(UMLProject.class.getName());
 
     private static UMLProject ref = null;
-    private NotifierVector diagramModels;
+    private NotifierVector<DiagramModel> diagramModels;
     private CentralRepository repository;
     private Boolean projectSaved = true;
     private String user;
@@ -136,7 +136,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         return (DiagramModel) diagramModels.elementAt(index);
     }
 
-    public Vector getDiagramModels() {
+    public Vector<DiagramModel> getDiagramModels() {
         return diagramModels;
     }
 
@@ -475,11 +475,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     	Interface interfs = null;
     	boolean hasLifeline=false;
     	Method headMethod=null;
-    	DiagramModel currDiagram;
+//    	DiagramModel currDiagram;
     	Vector projectElements;
     	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
-    	for (int y = 0; y < projectDiagrams.size(); y++) {
-    	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
+        
+    	for (DiagramModel currDiagram: getDiagramModels()) {
+//    	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
     	  projectElements = currDiagram.getGraphicalElements();
     	  
     	  for (int i = 0; i < projectElements.size(); i++) {
@@ -675,8 +676,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
             }
           }
     	}
-    	for (int y = 0; y < projectDiagrams.size(); y++) {
-      	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
+    	for (DiagramModel currDiagram: getDiagramModels()) {
+//      	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
       	  projectElements = currDiagram.getGraphicalElements();
       	  HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
     	  //sort by rank and add Methods of Message Calls
@@ -739,21 +740,24 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                   	   CallMessage cm = (CallMessage) sdm;
                   	   Method sdMethod = new Method(cm.getName());
                   	   if (sdMethod != null) {
-                  		   sdMethod.setParameters(cm.getSDMethodParameters());
-                  		   String returnValue = cm.getReturnValueAsString();
-                  		   if (returnValue.contains(" ")) {
-                  			   String[] split = returnValue.split("\\s+");
-                  			   returnValue = split[0];
-                  			   if(!returnValue.equals("")) {
-	                  			   if (split.length>1) {
-	                  			   String returnParameter = split[1];
-	                  			   sdMethod.setReturnParameter(returnParameter);
-	                  			   }
-                  			   }else {
-                  				   returnValue="void";
-                  			   }
-                  		   }
-                  		   sdMethod.setReturnType(new DataType(returnValue));
+//                  		   sdMethod.setParameters(cm.getSDMethodParameters());
+                  		   sdMethod.setParameters(cm.getParameters());
+//                  		   String returnValue = cm.getReturnValueAsString();
+//                  		   if (returnValue.contains(" ")) {
+//                  			   String[] split = returnValue.split("\\s+");
+//                  			   returnValue = split[0];
+//                  			   if(!returnValue.equals("")) {
+//	                  			   if (split.length>1) {
+//	                  			   String returnParameter = split[1];
+//	                  			   sdMethod.setReturnParameter(returnParameter);
+//	                  			   }
+//                  			   }else {
+//                  				   returnValue="void";
+//                  			   }
+//                  		   }
+//                  		   sdMethod.setReturnType(new DataType(returnValue));
+                  		   sdMethod.setReturnType(((CallMessage) sdm).getReturnType());
+                                   
   	                	   sdMethod.setPriority(cm.getRank());
   	                	   if(!(cm.getTarget() instanceof MultiObject && !cm.isIterative())){
   	                		   dc.addSDMethod(sdMethod);

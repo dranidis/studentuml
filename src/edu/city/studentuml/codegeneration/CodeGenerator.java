@@ -1,6 +1,7 @@
 package edu.city.studentuml.codegeneration;
 
 import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 
 public class CodeGenerator {
 	
-	public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
+    public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     private boolean isFileGeneration=true;
@@ -36,16 +37,9 @@ public class CodeGenerator {
     private static final String INDENT = "  ";
     
     
-    public String generateFile(boolean isInUpdateMode,Object classObject, String path,UMLProject umlproject) {
-    	String name = null;
-    	if ( classObject instanceof DesignClass) {
-    		DesignClass cls = (DesignClass) classObject;
-    		name = cls.getName();
-    	}
-    	if ( classObject instanceof Interface) {
-    		Interface interfs = (Interface) classObject;
-    		name = interfs.getName();
-    	}
+    public String generateFile(boolean isInUpdateMode, Classifier classObject, String path,UMLProject umlproject) {
+    	String name = classObject != null ? classObject.getName() : null;
+
         if (name == null || name.length() == 0 || path==null) {
             return null;
         }
@@ -218,7 +212,7 @@ public class CodeGenerator {
     	imports.append(LINE_SEPARATOR);
     	return imports.toString();
     }
-    private String generateClassifier(Object cls) {
+    private String generateClassifier(Classifier cls) {
         StringBuffer returnValue = new StringBuffer();
         StringBuffer start = generateClassifierStart(cls);
         if ((start != null) && (start.length() > 0)) {
@@ -237,47 +231,56 @@ public class CodeGenerator {
         return returnValue.toString();
     }
     
-    public StringBuffer generateClassifierStart(Object obj) {
-        String sClassifierKeyword;
+    private String getClassifierKeyword(Classifier c) {
+        if (c instanceof DesignClass) 
+            return "class";
+        else if (c instanceof Interface)
+            return "interface";
+        else
+            LOG.severe("No keyword for classifier " + c.getName());
+        return "";
+    }
+    
+    private String getStereotype(Classifier c) {
+        if (c instanceof DesignClass) {
+            DesignClass cls = (DesignClass) c;
+            if (cls.getStereotype() != null)
+                return cls.getStereotype() + " ";
+            else
+                return "";
+        }
+        return "";
+    }
+    
+    
+    public StringBuffer generateClassifierStart(Classifier obj) {
         StringBuffer sb = new StringBuffer(80);
         // add visibility
         sb.append("public ");
+        sb.append(getStereotype(obj));
+        sb.append(getClassifierKeyword(obj)).append(" ");
+        sb.append(obj.getName());
         // add base class/interface
         if (obj instanceof DesignClass) {
-	        sClassifierKeyword = "class";
-	        DesignClass cls = (DesignClass) obj;
-	        String classStereotype = cls.getStereotype();
-	        if (classStereotype != null && !classStereotype.isEmpty()){
-	        	sb.append(classStereotype.toLowerCase()).append(" ");
-	        }
-	     // add classifier keyword and classifier name
-	        
-	        sb.append(sClassifierKeyword).append(" ");
-			sb.append(cls.getName());
-	        // add extended class
-			if (cls.getExtendClass() != null) {
-				sb.append(" ").append("extends");
-				sb.append(" ").append(cls.getExtendClass().getName());
-			}
-			 // add implemented interfaces, if needed
-			if (!cls.getImplementInterfaces().isEmpty()) {
-				sb.append(" ").append("implements");
-				sb.append(" ");
-				List <Interface> implementInterfaces = cls.getImplementInterfaces();
-				for (int i=0;i<implementInterfaces.size();i++) {
-					sb.append(implementInterfaces.get(i).getName());
-					if( i != implementInterfaces.size()-1) {
-						sb.append(",");
-					}
-				}
-			}
-        } else if (obj instanceof Interface) {
-        	sClassifierKeyword = "interface";
-        	Interface interfs = (Interface) obj;
-        	sb.append(sClassifierKeyword).append(" ");
-			sb.append(interfs.getName());    	
-        }
-        
+        // add extended class
+            DesignClass cls = (DesignClass) obj;
+            if (cls.getExtendClass() != null) {
+                sb.append(" ").append("extends");
+                sb.append(" ").append(cls.getExtendClass().getName());
+            }
+             // add implemented interfaces, if needed
+            if (!cls.getImplementInterfaces().isEmpty()) {
+                    sb.append(" ").append("implements");
+                    sb.append(" ");
+                    List <Interface> implementInterfaces = cls.getImplementInterfaces();
+                    for (int i=0;i<implementInterfaces.size();i++) {
+                        sb.append(implementInterfaces.get(i).getName());
+                        if( i != implementInterfaces.size()-1) {
+                                sb.append(",");
+                        }
+                    }
+            }
+        } 
 		
         // add opening brace
         sb.append(lfBeforeCurly ? (LINE_SEPARATOR + "{") : " {");
@@ -285,7 +288,7 @@ public class CodeGenerator {
         return sb;
     }
     
-    private StringBuffer generateClassifierBody(Object obj) {
+    private StringBuffer generateClassifierBody(Classifier obj) {
         StringBuffer sb = new StringBuffer();
         Vector classMethods = new Vector();
         Vector classSDMethods = new Vector();
@@ -399,22 +402,17 @@ public class CodeGenerator {
         return sb;
     }
     
-    public String generateOperation(Method op,Object obj) {
- 
+    public String generateOperation(Method op, Classifier obj) {
         StringBuffer sb = new StringBuffer(80);
         String nameStr = null;
         nameStr = op.getName();
-        String className="";
-        if(obj instanceof DesignClass) {
-        	className=((DesignClass) obj).getName();
-        }else if(obj instanceof Interface) {
-        	className=((Interface) obj).getName();
-        }
+        String className= obj.getName();
+        
         sb.append(op.getVisibilityAsString()).append(' ');
 
         // return type
-        if(op.getReturnTypeAsString()=="VOID" && !nameStr.equals(className)) {
-        	sb.append("void").append(' ');
+        if(op.getReturnTypeAsString() == "VOID" && !nameStr.equals(className)) {
+        	sb.append("void ");
         }else if(nameStr.equals(className)){
         	//constructor
         }else {
@@ -566,7 +564,7 @@ public class CodeGenerator {
         return sb.toString();
     }
     
-    private StringBuffer generateClassifierEnd(Object obj) {
+    private StringBuffer generateClassifierEnd(Classifier obj) {
         StringBuffer sb = new StringBuffer();
         String classifierkeyword;
         if(obj instanceof DesignClass) {
