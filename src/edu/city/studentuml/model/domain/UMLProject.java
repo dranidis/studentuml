@@ -465,27 +465,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         }
     }
     
-    
-    public int generateCode(boolean isInUpdateMode) {
-    	int genFilesCount = 0;
-    	Vector projectDiagrams = this.getDiagramModels();
-    	CodeGenerator javaGenerator= new CodeGenerator(); 
-    	DesignClass dc = null;
+    private int processGraphicalElement(boolean inUpdateMode, int genFilesCount, List<DesignClass> dcToGenerate, GraphicalElement currEl) {
+        CodeGenerator javaGenerator= new CodeGenerator(); 
+        DesignClass dc = null;
     	DesignClass dc2 = null;
     	Interface interfs = null;
-    	boolean hasLifeline=false;
-    	Method headMethod=null;
-//    	DiagramModel currDiagram;
-    	Vector projectElements;
-    	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
-        
-    	for (DiagramModel currDiagram: getDiagramModels()) {
-//    	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
-    	  projectElements = currDiagram.getGraphicalElements();
-    	  
-    	  for (int i = 0; i < projectElements.size(); i++) {
-              GraphicalElement currEl = (GraphicalElement) projectElements.get(i);
-              if (currEl instanceof ClassGR) {
+        if (currEl instanceof ClassGR) {
                   dc = ((ClassGR) currEl).getDesignClass();
                   dc.setExtendClass(null);
                   dc.resetImplementInterfaces();
@@ -509,7 +494,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
               if (currEl instanceof InterfaceGR) {
                   interfs = ((InterfaceGR) currEl).getInterface();
                   String projectPath = new File(this.getFilepath()).getParent();
-                  String genPath = javaGenerator.generateFile(isInUpdateMode,interfs,projectPath,this);
+                  String genPath = javaGenerator.generateFile(inUpdateMode,interfs,projectPath,this);
                   if(genPath!=null) {
                 	  genFilesCount++;
                   }  
@@ -674,17 +659,18 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 	            	 }
 	             }
             }
-          }
-    	}
-    	for (DiagramModel currDiagram: getDiagramModels()) {
-//      	  currDiagram = (DiagramModel) projectDiagrams.get(y);	
-      	  projectElements = currDiagram.getGraphicalElements();
-      	  HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
-    	  //sort by rank and add Methods of Message Calls
-    	  if(currDiagram instanceof SDModel) {
+        return genFilesCount;
+    }
+    
+    public DesignClass processSDModel(SDModel currDiagram) {
+      	DesignClass dc = null;
+        DesignClass dc2 = null;
+    	boolean hasLifeline=false;
+    	Method headMethod=null;
+      	HashMap <SDMessage,Integer> SDMessages = new HashMap<SDMessage,Integer>();
+        
     		  List<Method> headMethods= new ArrayList<Method>();
-    		  for (int i = 0; i < projectElements.size(); i++) {
-    			  GraphicalElement currElSD = (GraphicalElement) projectElements.get(i);
+    		  for (GraphicalElement currElSD: currDiagram.getGraphicalElements()) {
     			  if (currElSD instanceof SDMessageGR) {
     				  SDMessage sdmx = ((SDMessageGR) currElSD).getMessage();
     				  SDMessages.put(sdmx,sdmx.getRank());
@@ -853,9 +839,28 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                      }
     			}
     		  }
-    		  
+                  return dc;
+    }
+    
+    public int generateCode(boolean isInUpdateMode) {
+    	int genFilesCount = 0;
+    	CodeGenerator javaGenerator= new CodeGenerator(); 
+    	DesignClass dc = null;
+
+    	List<DesignClass> dcToGenerate = new ArrayList<DesignClass>();
+        
+    	for (DiagramModel currDiagram: getDiagramModels()) {
+            for (GraphicalElement currEl: currDiagram.getGraphicalElements()) {
+                genFilesCount = processGraphicalElement(isInUpdateMode, genFilesCount, dcToGenerate, currEl);
+            }
+    	}
+    	for (DiagramModel currDiagram: getDiagramModels()) {
+    	  //sort by rank and add Methods of Message Calls
+    	  if(currDiagram instanceof SDModel) {
+              dc = processSDModel((SDModel) currDiagram);
     	  }
-    	  
+
+// why check? Does the previous loop leave something?          
     	  if (dc!=null) {
         	 if(dcToGenerate.contains(dc)){
         	 dcToGenerate.set(dcToGenerate.indexOf(dc),dc);
@@ -864,13 +869,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         	 }    
     	  }
     	}
-    	for (int i=0; i<dcToGenerate.size();i++) {
-	    	DesignClass dci =(DesignClass) dcToGenerate.get(i);	
-	    	String projectPath = new File(this.getFilepath()).getParent();
-	        String genPath = javaGenerator.generateFile(isInUpdateMode,dci,projectPath,this);
-		    if(genPath!=null) {
-		    	genFilesCount++;
-		    }
+    	for (DesignClass dci: dcToGenerate) {
+	    String projectPath = new File(this.getFilepath()).getParent();
+	    String genPath = javaGenerator.generateFile(isInUpdateMode, dci, projectPath, this);
+            if(genPath != null) {
+		genFilesCount++;
+            }
     	}
     	
     	return genFilesCount;

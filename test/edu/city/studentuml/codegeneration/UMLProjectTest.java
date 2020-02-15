@@ -600,7 +600,8 @@ public class UMLProjectTest {
                 ex.printStackTrace();
             }
         }
-        assertTrue(classExists && generatedFiles == 3);
+        assertTrue(classExists);
+        assertEquals(3, generatedFiles);
     }
 
     @Test
