@@ -190,7 +190,12 @@ public abstract class LinkGR extends AbstractLinkGR {
         Rotate rotate = new Rotate(angle, xB, yB);
         double minDim = getMinDim(getWidthB(), getHeightB());   
         double offx = (getWidthB() - minDim)/2;
+        
         javafx.geometry.Point2D point = rotate.transform(getTopLeftXB() + offx + dv , getTopLeftYB() + getHeightB()/2);
+        
+//        double[] original = new double[]{getTopLeftXB() + offx + dv, getTopLeftYB() + getHeightB()/2, 1};
+//        double[] rotated = 
+        
         double orX = point.getX() - getTopLeftXB();
         double orY = point.getY() - getTopLeftYB();
 
@@ -217,5 +222,39 @@ public abstract class LinkGR extends AbstractLinkGR {
         return angle;
     }
 
-  
+    /**
+     * Matrix multiplication
+     * 
+     * @param firstMatrix
+     * @param secondMatrix
+     * @return 
+     */
+    private double[][] multiplyMatrices(double[][] firstMatrix, double[][] secondMatrix) {
+        double[][] result = new double[firstMatrix.length][secondMatrix[0].length];
+
+        for (int row = 0; row < result.length; row++) {
+            for (int col = 0; col < result[row].length; col++) {
+                result[row][col] = multiplyMatricesCell(firstMatrix, secondMatrix, row, col);
+            }
+        }
+        return result;
+    }
+    private double multiplyMatricesCell(double[][] firstMatrix, double[][] secondMatrix, int row, int col) {
+        double cell = 0;
+        for (int i = 0; i < secondMatrix.length; i++) {
+            cell += firstMatrix[row][i] * secondMatrix[i][col];
+        }
+        return cell;
+    }
+    double[][] rotationMatrix(double theta, double x, double y) {
+        double cos = Math.cos(theta);
+        double sin = Math.sin(theta);
+        double[][] matrix = {
+            new double[]{cos,   -1 * sin,   x - x*cos + y*sin},
+            new double[]{sin,   cos,        y - x*sin - y*cos},
+            new double[]{0,     0 ,         1}
+        };
+        return matrix;
+    }
+
 }
