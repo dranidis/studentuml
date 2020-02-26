@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
+import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
@@ -1352,7 +1353,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 		    JOptionPane.YES_NO_OPTION);
                 	boolean update = checkBox.isSelected();
                 	if (codeGenerationConfirm == 0) {
-                		int genFilesCount = umlProject.generateCode(update);
+                                CodePreparation codePreparation = new CodePreparation();
+                		int genFilesCount = codePreparation.generateCode(update);
                 		if (genFilesCount>0) {
                 			JOptionPane.showMessageDialog(frame,
                 			"Success!! \n" +

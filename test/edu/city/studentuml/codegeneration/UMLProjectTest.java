@@ -18,14 +18,12 @@ import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -50,6 +48,7 @@ public class UMLProjectTest {
     String javapath = filepath + File.separator + filepath + File.separator;
     ApplicationFrame af;
     UMLProject umlProject;
+    CodePreparation codePreparation ;
 
     @Before
     public void setup() {
@@ -68,6 +67,7 @@ public class UMLProjectTest {
         }
         umlProject.setFilepath(fullpath);
         umlProject.setFilename("test.xml");
+        codePreparation = new CodePreparation();
     }
 
     @Test
@@ -75,7 +75,7 @@ public class UMLProjectTest {
         DCDModel currDiagram = new DCDModel("dcd1", umlProject);
         DesignClass dc1 = new DesignClass("Class1");
         currDiagram.addGraphicalElement(new ClassGR(dc1, new Point(1, 10)));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean classExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -102,7 +102,7 @@ public class UMLProjectTest {
         DCDModel currDiagram = new DCDModel("dcd1", umlProject);
         Interface int1 = new Interface("Int1");
         currDiagram.addGraphicalElement(new InterfaceGR(int1, new Point(1, 10)));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Int1.java");
         boolean interfaceExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -129,7 +129,7 @@ public class UMLProjectTest {
         SDModel currDiagram = new SDModel("sd1", umlProject);
         DesignClass dc1 = new DesignClass("Class1");
         currDiagram.addGraphicalElement(new SDObjectGR(new SDObject("sd1", dc1), 1));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean classExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -170,7 +170,7 @@ public class UMLProjectTest {
         cm.setReturnType(DataType.INTEGER);
         cm.addParameter(new MethodParameter("x", DataType.INTEGER));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm, 1));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean methodExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -221,7 +221,7 @@ public class UMLProjectTest {
 //        cm2.addParameter(new MessageParameter("String x"));
         cm2.addParameter(new MethodParameter("x", DataType.STRING));
         currDiagram2.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm2, 1));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean method1Exists = false;
         boolean method2Exists = false;
@@ -269,7 +269,7 @@ public class UMLProjectTest {
 //        cm.addParameter(new MessageParameter("int x"));
         cm.addParameter(new MethodParameter("x", DataType.INTEGER));
         sdDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm, 1));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean sdMethodExists = false;
         boolean dcdMethodExists = false;
@@ -328,7 +328,7 @@ public class UMLProjectTest {
         cm2.addParameter(new MethodParameter("y", DataType.INTEGER));        
 //        cm2.addParameter(new MessageParameter("int y"));
         currDiagram.addGraphicalElement(new CallMessageGR(sd2GR, sd3GR, cm2, 2));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean calledMethodExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -379,7 +379,7 @@ public class UMLProjectTest {
         cm2.setReturnType(DataType.INTEGER);
         cm2.addParameter(new MethodParameter("y", DataType.INTEGER));        
         currDiagram.addGraphicalElement(new CallMessageGR(sd2GR, sd3GR, cm2, 2));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean calledMethodExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -427,7 +427,7 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         CreateMessage cm2 = new CreateMessage(sd2, sd3);
         currDiagram.addGraphicalElement(new CreateMessageGR(sd2GR, sd3GR, cm2, 2));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean calledMethodExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -474,7 +474,7 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         DestroyMessage cm2 = new DestroyMessage(sd2, sd3);
         currDiagram.addGraphicalElement(new DestroyMessageGR(sd2GR, sd3GR, cm2, 2));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean calledMethodExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -498,7 +498,7 @@ public class UMLProjectTest {
 
     @Test
     public void testNotGenerateForNoInput() {
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         assertTrue(generatedFiles == 0);
     }
 
@@ -513,7 +513,7 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(dc1gr);
         currDiagram.addGraphicalElement(adcgr);
         currDiagram.addGraphicalElement(new GeneralizationGR(adcgr, dc1gr, new Generalization(adc, dc1)));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean classExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -545,7 +545,7 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(dc1gr);
         currDiagram.addGraphicalElement(int1gr);
         currDiagram.addGraphicalElement(new RealizationGR(dc1gr, int1gr, new Realization(dc1, int1)));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean classExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -581,7 +581,7 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(int2gr);
         currDiagram.addGraphicalElement(new RealizationGR(dc1gr, int1gr, new Realization(dc1, int1)));
         currDiagram.addGraphicalElement(new RealizationGR(dc1gr, int2gr, new Realization(dc1, int2)));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean classExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -621,7 +621,7 @@ public class UMLProjectTest {
         AtoB.setDirection(1);
         AtoB.setShowArrow(true);
         currDiagram.addGraphicalElement(new AssociationGR(dc1GR, dc2GR, AtoB));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class1.java");
         boolean parameterExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -640,7 +640,8 @@ public class UMLProjectTest {
                 ex.printStackTrace();
             }
         }
-        assertTrue(parameterExists && generatedFiles == 2);
+        assertTrue(parameterExists);
+        assertEquals(2, generatedFiles);
     }
 
     @Test
@@ -660,7 +661,7 @@ public class UMLProjectTest {
         BtoA.setDirection(2);
         BtoA.setShowArrow(true);
         currDiagram.addGraphicalElement(new AssociationGR(dc1GR, dc2GR, BtoA));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
         boolean parameterExists = false;
         if (!f.isDirectory() && f.exists()) {
@@ -699,7 +700,7 @@ public class UMLProjectTest {
         bi.setDirection(3);
         bi.setShowArrow(true);
         currDiagram.addGraphicalElement(new AssociationGR(dc1GR, dc2GR, bi));
-        int generatedFiles = umlProject.generateCode(false);
+        int generatedFiles = codePreparation.generateCode(false);
         int parameterExists = 0;
         File f = new File(javapath + "Class1.java");
         if (!f.isDirectory() && f.exists()) {
