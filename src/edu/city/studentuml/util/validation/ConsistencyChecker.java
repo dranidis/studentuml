@@ -30,7 +30,7 @@ public class ConsistencyChecker {
         //loadRules("rules/rules.txt");
         loadRules(location);
         logger.finer(location + " (ConsistencyChecker constructor)");
-        logger.info("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
+        logger.fine("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
     }
 
     /*
