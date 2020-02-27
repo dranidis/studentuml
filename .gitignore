@@ -1,5 +1,13 @@
+target/
+test/
+
 *.class
 build/
 dist/
 nbproject/private/
 /bin/
+
+.vscode/
+.settings
+.classpath
+.project
