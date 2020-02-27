@@ -42,10 +42,10 @@ import edu.city.studentuml.view.gui.ApplicationFrame;
 import org.junit.Before;
 
 public class UMLProjectTest {
-
-    String filepath = "test";
+    String projectName = "test";
+    String filepath = "target" + File.separator + "codegeneration-test";
     String fullpath = filepath + File.separator + "test.xml";
-    String javapath = filepath + File.separator + filepath + File.separator;
+    String javapath = filepath + File.separator + projectName + File.separator;
     ApplicationFrame af;
     UMLProject umlProject;
     CodePreparation codePreparation ;
@@ -66,7 +66,7 @@ public class UMLProjectTest {
             }
         }
         umlProject.setFilepath(fullpath);
-        umlProject.setFilename("test.xml");
+        umlProject.setFilename(projectName + ".xml");
         codePreparation = new CodePreparation();
     }
 

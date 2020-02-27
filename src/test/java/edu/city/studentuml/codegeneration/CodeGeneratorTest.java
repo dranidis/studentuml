@@ -26,7 +26,7 @@ import org.junit.Before;
 
 public class CodeGeneratorTest {
 
-    String filepath = "test";
+    String filepath = "target" + File.separator + "codegeneration-test";
     String fullpath = filepath + File.separator + "test.xml";
     ApplicationFrame af;
     UMLProject umlProject;
