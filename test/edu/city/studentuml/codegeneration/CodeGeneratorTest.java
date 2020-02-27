@@ -18,6 +18,7 @@ import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.codegeneration.CodeGenerator;
+import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.ApplicationFrame;
@@ -51,10 +52,10 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateClassFile() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classClassifier = new DesignClass("Class1");
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
-        String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
+        String path = testGenerator.generateFile(false, classClassifier, projectPath, umlProject);
         File f = new File(path);
         assertTrue(path.contains("Class1"));
         assertTrue(f.exists() && !f.isDirectory());
@@ -62,7 +63,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateInterfaceFile() {
-        Object classObject = new Interface("Int1");
+        Classifier classObject = new Interface("Int1");
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -73,7 +74,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateClassStart() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -100,7 +101,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateInterfaceStart() {
-        Object classObject = new Interface("Int1");
+        Classifier classObject = new Interface("Int1");
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -127,7 +128,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateAbstractClassStart() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         dc.setStereotype("abstract");
         String projectPath = new File(umlProject.getFilepath()).getParent();
@@ -156,7 +157,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateImplementInterfaceStart() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         dc.resetImplementInterfaces();
         dc.addImplementInterfaces(new Interface("Int1"));
@@ -186,7 +187,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateExtendClassStart() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         DesignClass adc = new DesignClass("AbstractClass1");
         adc.setStereotype("abstract");
@@ -217,7 +218,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateOperation() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
@@ -250,7 +251,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateSDOperation() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
@@ -283,7 +284,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateCoreAttribute() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         dc.addAttribute(new Attribute("attr1", new DataType("String")));
         String projectPath = new File(umlProject.getFilepath()).getParent();
@@ -313,7 +314,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateCalledMethods() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         DesignClass dc2 = new DesignClass("Class2");
         Method headMethod = new Method("hmtd");
@@ -350,7 +351,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateVoidCalledMethods() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         DesignClass dc2 = new DesignClass("Class2");
         Method headMethod = new Method("hmtd");
@@ -387,7 +388,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateMultiobjectCalledMethods() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         DesignClass dc2 = new DesignClass("Class2");
         Method headMethod = new Method("hmtd");
@@ -424,7 +425,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateSelfCalledMethods() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
@@ -460,7 +461,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testGenerateIterativeCalledMethods() {
-        Object classObject = new DesignClass("Class1");
+        Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
         DesignClass dc2 = new DesignClass("Class2");
         Method headMethod = new Method("hmtd");
@@ -498,7 +499,7 @@ public class CodeGeneratorTest {
 
     @Test
     public void testNoInputGenerateFile() {
-        Object classObject = null;
+        Classifier classObject = null;
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);

@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
+import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
@@ -84,7 +85,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected StudentUMLFrame frame = null;
     protected StudentUMLApplet applet = null;
     protected boolean repairMode = false;
-    protected UMLProject umlProject = null;
+    protected UMLProject umlProject = UMLProject.getInstance();
     protected CentralRepository centralRepository;
     protected String simpleRulesFile;
     protected String advancedRulesFile;
@@ -131,6 +132,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setVisible(true);
         
         ObjectFactory.getInstance().addObserver(this);
+        umlProject.addObserver(this);
     }
 
     public ApplicationGUI(StudentUMLApplet applet) {
@@ -150,7 +152,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private void create() {
         initializeRules();
         SystemWideObjectNamePool.getInstance().addObserver(this);
-        createUMLProject();
         setUserId();
         createLookAndFeel();
         addKeyListener(this);
@@ -165,22 +166,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         // set the rule file and construct the consistency checker
         SystemWideObjectNamePool.getInstance().init(currentRuleFile);
-    }
-
-    /*
-     * initializes a new project
-     */
-    private void createUMLProject() {
-        umlProject = UMLProject.getInstance();
-/**
- * it already is
- */
-//        umlProject.becomeObserver();
-        /**
-         * ApplicationGUI seems to use only the SystemWideObjectNamePool for its job
-         * Try to remove observing umlProject.
-         */
-//        umlProject.addObserver(this);
     }
 
     /*
@@ -209,7 +194,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createMenuBar();
         createToolBar();
         createDesktopPane();
-        //createUMLProject();
         update(umlProject, this);
         createFactsAndMessageTree();
         createDiagramAndConsistencyArea();
@@ -242,7 +226,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private void createCentralRepositoryTreeView() {
         centralRepository = umlProject.getCentralRepository();
         repositoryTreeView = new RepositoryTreeView();
-        repositoryTreeView.setUMLProject(umlProject);
         treePane = new JScrollPane(repositoryTreeView);
         JSplitPane splitPane = new JSplitPane();
         splitPane.setDividerSize(5);
@@ -494,8 +477,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 factsTree.setModel(facts);
             }
             
-            umlProject.setSaved(false);
-            setSaveActionState();
+            umlProject.projectChanged();
         }
         if (object != null && object instanceof FrameProperties) {
             FrameProperties fp = (FrameProperties) object;
@@ -574,16 +556,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else {
                 return;
             }
-            // is this necessary?
-            // It is already observing UMLProject
-            // that observer the models.
-//            model.addObserver(this);
             
             addInternalFrame(model);
-            /**
-             * setSaved is called within addInternalFrame
-             */
-//            setSaveActionState(false);
         }
     }
 
@@ -722,7 +696,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             vetoException.printStackTrace();
         }
 
-        setSaveActionState();
         repositoryTreeView.expandDiagrams();
     }
 
@@ -736,7 +709,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.dispose();
         desktopPane.remove(frame);
         openFrameCounter--;
-        setSaveActionState();
     }
 
     /*
@@ -871,28 +843,24 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         public void internalFrameActivated(InternalFrameEvent e) {
             logger.finer("Frame activated");
             umlProject.setSaved(false);
-            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
         public void internalFrameDeActivated(InternalFrameEvent e) {
             logger.finer("Frame deactivated");
             umlProject.setSaved(false);
-            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
         }
 
         public void internalFrameIconified(InternalFrameEvent e) {
             logger.finer("Frame iconified");
             umlProject.setSaved(false);
-            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
         public void internalFrameDeIconified(InternalFrameEvent e) {
             logger.finer("Frame deiconified");
             umlProject.setSaved(false);
-            setSaveActionState();
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);
         }
 
@@ -903,7 +871,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             // closing is only possible from the popup menu "Delete" on the diagram
             // top bar.
             umlProject.setSaved(false);
-            setSaveActionState();
             removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
@@ -961,20 +928,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             setRuntimeChecking(runtimeChecking);
             return true;
         }
-    }
-
-    /*
-     * This method used to deactivate the save button
-     * when the project was already saved and no changes for saving
-     * were present.
-     * 
-     * It is preferred to have the save button always active!
-     * 
-     */
-    protected void setSaveActionState() {
-//        logger.info("setting save buttons");
-//        saveProjectMenuItem.setEnabled(!umlProject.isSaved());
-//        toolbar.setSaveActionEnabled(!umlProject.isSaved());
     }
 
     protected boolean isSaved() {
@@ -1400,7 +1353,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 		    JOptionPane.YES_NO_OPTION);
                 	boolean update = checkBox.isSelected();
                 	if (codeGenerationConfirm == 0) {
-                		int genFilesCount = umlProject.generateCode(update);
+                                CodePreparation codePreparation = new CodePreparation();
+                		int genFilesCount = codePreparation.generateCode(update);
                 		if (genFilesCount>0) {
                 			JOptionPane.showMessageDialog(frame,
                 			"Success!! \n" +

@@ -72,14 +72,14 @@ public class AbstractLinGRTest {
                     double angle2 = Math.toRadians(angle);
                     double dx = d * Math.cos(angle2);
                     double dy = d * Math.sin(angle2);
-                    System.out.printf("Angle: %3.2f   dx: %3.2f   dy: %3.2f  ORIGIN: %3f, %3f %n", Math.toDegrees(angle2), dx, dy, orX, orY);
+//                    System.out.printf("Angle: %3.2f   dx: %3.2f   dy: %3.2f  ORIGIN: %3f, %3f %n", Math.toDegrees(angle2), dx, dy, orX, orY);
 
                     Point2D p = assoc.getEndPointFrom(orX, orY, myW, myH, myX, myY, dx, dy);
                     boolean onBoxX = (p.getY() >= myY && p.getY() <= myY + myH)
                             && (equalDouble(p.getX(), myX)  || equalDouble(p.getX(), myX + myW)) ;
                     boolean onBoxY = (p.getX() >= myX && p.getX() <= myX + myW)
                             && (equalDouble(p.getY(), myY) || equalDouble(p.getY(), myY + myH));
-                    System.out.printf("x: %3.2f   y: %3.2f %n", p.getX(), p.getY());
+//                    System.out.printf("x: %3.2f   y: %3.2f %n", p.getX(), p.getY());
                     assertTrue("X, Y dimension is correct p.getX():" + p.getX() + " p.getY():" + p.getY(), onBoxX || onBoxY);
                 }
             }

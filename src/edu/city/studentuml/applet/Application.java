@@ -199,12 +199,10 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         // initialize a new project
         umlProject = UMLProject.getInstance();
-        umlProject.becomeObserver();
         umlProject.addObserver(this);
 
         centralRepository = umlProject.getCentralRepository();
         repositoryTreeView = new RepositoryTreeView();
-        repositoryTreeView.setUMLProject(umlProject);
         treePane = new JScrollPane(repositoryTreeView);
         getContentPane().add(treePane, BorderLayout.WEST);
 
@@ -362,7 +360,6 @@ public class Application extends JApplet implements Observer, KeyListener {
     // NEW SOLUTION TO EXERCISE
     public void newSolution() {
         /* umlProject = new UMLProject();
-         umlProject.becomeObserver();
          umlProject.addObserver(this); */
 
         umlProject.clear();
@@ -387,7 +384,6 @@ public class Application extends JApplet implements Observer, KeyListener {
          if(umlProject != null)
          umlProject.clear();
          umlProject = new UMLProject();
-         umlProject.becomeObserver();
          umlProject.addObserver(this); */
 
         umlProject.clear();
@@ -492,9 +488,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             /* JOptionPane.showMessageDialog(null, infoString,
              "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
             setSaved(true);
-            umlProject.becomeObserver();
             umlProject.addObserver(this);
-            repositoryTreeView.setUMLProject(umlProject);
             umlProject.projectChanged();
             // setFilePath(file);
             // setFileName(file.substring( file.lastIndexOf('\\') + 1));
@@ -746,17 +740,9 @@ public class Application extends JApplet implements Observer, KeyListener {
     }
 
     public void setSaved(boolean projectSaved) {
-
-        // saved = projectSaved;
         setSaveMenuActionEnabled(!umlProject.isSaved());
         toolbar.setSaveActionEnabled(!umlProject.isSaved());
-//			String title = applicationName + " - " + umlProject.getName();
-//
-//			if (!projectSaved) {
-//					title = title + " *";
-//			}
-//
-//			setTitle(title);
+
     }
 
     public boolean isSaved() {
@@ -1435,9 +1421,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 umlProject.loadFromXMLString(solution);
 
                 setSaved(true);
-                umlProject.becomeObserver();
                 umlProject.addObserver(this);
-                repositoryTreeView.setUMLProject(umlProject);
                 umlProject.projectChanged();
                 // setFilePath(file);
                 // setFileName(file.substring( file.lastIndexOf('\\') + 1));

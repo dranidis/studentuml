@@ -33,7 +33,6 @@ public class ApplicationFrame extends ApplicationGUI {
     Preferences pref= Preferences.userRoot();
     String path = pref.get("DEFAULT_PATH", "");
     
-
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
 
@@ -52,17 +51,19 @@ public class ApplicationFrame extends ApplicationGUI {
         xmlFileChooser = new JFileChooser();
         xmlFileChooser.setFileFilter(new XMLFileFilter());
         xmlFileChooser.setCurrentDirectory(new File(path));
+        
+        umlProject.setUser(DESKTOP_USER);
     }
 
     @Override
     public void update(Observable observable, Object object) {
         super.update(observable, object);
-        updateTitle();
+        updateFrameTitle();
     }
     
-    private void updateTitle() {
+    private void updateFrameTitle() {
         String title = applicationName + " - " + umlProject.getName();
-        if (!title.endsWith(" *") && !umlProject.isSaved()) {
+        if (!umlProject.isSaved()) {
             title = title + " *";
         }
         frame.setTitle(title);
@@ -73,61 +74,23 @@ public class ApplicationFrame extends ApplicationGUI {
         if (!closeProject()) {
             return;
         }
-
-        if (umlProject != null) {
-            umlProject.clear();
-        }
-        //umlProject = new UMLProject();
-        /**
-         * already performed
-         */
-//        umlProject.becomeObserver();
-        /**
-         * does not need to observe umlProject
-         */
-//        umlProject.addObserver(this);
-
-        umlProject.setUser(DESKTOP_USER);
-//        String projectName = JOptionPane.showInputDialog("Enter project name: ");
-//        if ((projectName != null) && (projectName.length() > 0)) {
-//            setFileName(projectName + ".xml");
-//        }
-        SystemWideObjectNamePool.getInstance().clear();
-        SystemWideObjectNamePool.getInstance().reload();
         
-        umlProject.setSaved(true);
-        setSaveActionState();
-//        updateTitle();
-        frame.setTitle(applicationName + " - New Project");
-
-    }
-
-    private void setFileName(String name) {
-        umlProject.setFilename(name);
-        umlProject.setName(name);
-        frame.setTitle(applicationName + " - " + name);
-    }
-
-    public String getFileName() {
-        return umlProject.getFilename();
+        umlProject.createNewProject();
+        updateFrameTitle();
     }
 
     @Override
     public void openProject() {
-        openProjectFromFile();
-    }
-
-    private boolean openProjectFromFile() {
         boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         int response = xmlFileChooser.showOpenDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
-            return false;
+            return;
         }
 
         if (!closeProject()) {
-            return false;
+            return;
         }
 
         checkTreeManager.getSelectionModel().clearSelection();
@@ -136,33 +99,18 @@ public class ApplicationFrame extends ApplicationGUI {
         repairButton.setEnabled(false);
         
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
-        
         umlProject.loadFromXML(file);
 
-        /**
-         * already performed
-         */
-//        umlProject.becomeObserver();
-        /**
-         * ApplicationGUI does not need to observe the umlProject.
-         */
-//        umlProject.addObserver(this);
-
-        repositoryTreeView.setUMLProject(umlProject);
         repositoryTreeView.expandDiagrams();
-        umlProject.projectChanged();
+        repositoryTreeView.update(null, null);
+//        umlProject.projectChanged();
         
-        setFilePath(file);
-//        setFileName(file.substring(file.lastIndexOf('\\') + 1));
-        setFileName(file.substring(file.lastIndexOf(File.separatorChar) + 1));
+        umlProject.setFilepath(file);
 
-//        /* throws error
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
-
-//        */
         
         try {
             selectedFrame.setSelected(true);
@@ -170,14 +118,8 @@ public class ApplicationFrame extends ApplicationGUI {
             Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         umlProject.setSaved(true);
-        setSaveActionState();
-        updateTitle();
+        updateFrameTitle();
         logger.info("Opened project");
-        return true;
-    }
-
-    private void setFilePath(String path) {
-        umlProject.setFilepath(path);
     }
 
     private String getFilePath() {
@@ -186,20 +128,14 @@ public class ApplicationFrame extends ApplicationGUI {
 
     @Override
     public void saveProject() {
-        String path = getFilePath();
+        String path = umlProject.getFilepath();
 
         if ((path == null) || path.equals("")) {
             // if no file has yet been chosen, prompt via method saveProjectAs
             saveProjectAs();
         } else {
-            umlProject.streamToXML(path);
-            setFilePath(path);
-//            setFileName(path.substring(path.lastIndexOf('\\') + 1));
-            setFileName(path.substring(path.lastIndexOf(File.separatorChar) + 1));
-            
-            umlProject.setSaved(true);
+            umlProject.streamToXML();
 
-            setSaveActionState();
             pref.put("DEFAULT_PATH", path);
         }
     }
@@ -207,8 +143,7 @@ public class ApplicationFrame extends ApplicationGUI {
     @Override
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
-        //System.out.println(SystemWideObjectNamePool.getInstance().isRuntimeChecking());
-        xmlFileChooser.setSelectedFile(new File(getFileName()));
+        xmlFileChooser.setSelectedFile(new File(umlProject.getFilename()));
         int response = xmlFileChooser.showSaveDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
@@ -220,24 +155,19 @@ public class ApplicationFrame extends ApplicationGUI {
                 return;
             }
         }
-        String fileName = xmlFileChooser.getSelectedFile().getName();
         String filePath = xmlFileChooser.getSelectedFile().getAbsolutePath();
 
-        if (!fileName.toLowerCase().endsWith(XMLFileFilter.EXTENSION)) {
-            fileName += XMLFileFilter.EXTENSION;
+        if (!filePath.toLowerCase().endsWith(XMLFileFilter.EXTENSION)) {
             filePath += XMLFileFilter.EXTENSION;
         }
 
-        setFilePath(filePath);
-        setFileName(fileName);
+        umlProject.setFilepath(filePath);
         
         logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
-        umlProject.getInstance().streamToXML(getFilePath());
+        umlProject.streamToXML();
         
-        umlProject.setSaved(true);
         
-        setSaveActionState();
         pref.put("DEFAULT_PATH", filePath);
     }
 
@@ -256,6 +186,5 @@ public class ApplicationFrame extends ApplicationGUI {
 
     @Override
     public void help() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
