@@ -2,18 +2,15 @@ package edu.city.studentuml.model.graphical;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import edu.city.studentuml.model.domain.Classifier;
 import java.awt.Point;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
-import javafx.scene.transform.Rotate;
+
+import edu.city.studentuml.util.Rotate;
 
 //Author: Ervin Ramollari
 //LinkGR.java
@@ -167,7 +164,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         Rotate rotate = new Rotate(angle, xA, yA);
         double minDim = getMinDim(getWidthA(), getHeightA());   
         double offx = (getWidthA() - minDim)/2;
-        javafx.geometry.Point2D point = rotate.transform(getTopLeftXA() + offx + dv , getTopLeftYA() + getHeightA()/2);
+        Point2D.Double point = rotate.transform(getTopLeftXA() + offx + dv , getTopLeftYA() + getHeightA()/2);
         double orX = point.getX() - getTopLeftXA();
         double orY = point.getY() - getTopLeftYA();
 
@@ -190,7 +187,9 @@ public abstract class LinkGR extends AbstractLinkGR {
         Rotate rotate = new Rotate(angle, xB, yB);
         double minDim = getMinDim(getWidthB(), getHeightB());   
         double offx = (getWidthB() - minDim)/2;
-        javafx.geometry.Point2D point = rotate.transform(getTopLeftXB() + offx + dv , getTopLeftYB() + getHeightB()/2);
+        
+        Point2D.Double point = rotate.transform(getTopLeftXB() + offx + dv , getTopLeftYB() + getHeightB()/2);
+       
         double orX = point.getX() - getTopLeftXB();
         double orY = point.getY() - getTopLeftYB();
 
@@ -217,5 +216,4 @@ public abstract class LinkGR extends AbstractLinkGR {
         return angle;
     }
 
-  
 }
