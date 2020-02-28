@@ -1,5 +1,16 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ListIterator;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.UMLProject;
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //DiagramModel.java
@@ -13,20 +24,14 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.model.domain.UMLProject;
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
-import java.util.logging.Logger;
-
-import org.w3c.dom.Element;
 
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
     
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     public static final int UCD = 0;
@@ -50,7 +55,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     public DiagramModel(String name, UMLProject umlp) {
         diagramName = name;
-        graphicalElements = new NotifierVector();
+        graphicalElements = new NotifierVector<>();
         selected = null;
         umlProject = umlp;
         repository = umlp.getCentralRepository();
@@ -128,13 +133,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public void clearSelected() {
-        Iterator iterator = graphicalElements.iterator();
-        GraphicalElement element;
-
-        while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+        for(GraphicalElement element : graphicalElements) {
             element.setSelected(false);
         }
+
         if (!selected.isEmpty()) {
             selected.clear();
             modelChanged();
@@ -183,7 +185,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         // get the first element that contains the point, starting from the end of the list,
         // i.e. from the most recently drawn grapical element, so that the uppermost is
         // returned in case elements are overlayed one on top of the other
-        ListIterator listIterator = graphicalElements.listIterator(graphicalElements.size());
+        ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
@@ -208,7 +210,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
         }
         graphicalElements.clear();
-        graphicalElements = new NotifierVector();
+        graphicalElements = new NotifierVector<>();
         modelChanged();
     }
 

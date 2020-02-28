@@ -512,41 +512,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * depending on the type integer
      */
     public void createNewInternalFrame(int type) {
-        String dialogText;
         DiagramModel model;
-        switch (type) {
-            case DiagramModel.UCD:
-                dialogText = "Use Case Diagram Name: ";
-                break;
-            case DiagramModel.SSD:
-                dialogText = "System Sequence Diagram Name:";
-                break;
-            case DiagramModel.SD:
-                dialogText = "Sequence Diagram Name: ";
-                break;
-            case DiagramModel.CCD:
-                dialogText = "Conceptual Class Diagram Name: ";
-                break;
-            case DiagramModel.DCD:
-                dialogText = "Design Class Diagram Name: ";
-                break;
-            case DiagramModel.AD:
-                dialogText = "Activity Diagram Name: ";
-                break;
-            default:
-                throw new RuntimeException("Unknown diagram (int) type: " + type);
-        }
-        String modelName = JOptionPane.showInputDialog(dialogText);
+        String modelName = inputModelName(type);
+
         if ((modelName != null) && (modelName.length() > 0)) {
             if (type == DiagramModel.SSD) {
                 model = new SSDModel("SSD: " + modelName, umlProject);
-
             } else if (type == DiagramModel.SD) {
                 model = new SDModel("SD: " + modelName, umlProject);
-
             } else if (type == DiagramModel.CCD) {
                 model = new CCDModel("CCD: " + modelName, umlProject);
-
             } else if (type == DiagramModel.DCD) {
                 model = new DCDModel("DCD: " + modelName, umlProject);
             } else if (type == DiagramModel.AD) {
@@ -559,6 +534,41 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             
             addInternalFrame(model);
         }
+    }
+
+    private String inputModelName(int type) {
+        String dialogText;
+        String initialName;
+        switch (type) {
+            case DiagramModel.UCD:
+                dialogText = "Use Case Diagram Name: ";
+                initialName = "ucd";
+                break;
+            case DiagramModel.SSD:
+                dialogText = "System Sequence Diagram Name:";
+                initialName = "ssd";
+                break;
+            case DiagramModel.SD:
+                dialogText = "Sequence Diagram Name: ";
+                initialName = "sd";
+                break;
+            case DiagramModel.CCD:
+                dialogText = "Conceptual Class Diagram Name: ";
+                initialName = "ccd";
+                break;
+            case DiagramModel.DCD:
+                dialogText = "Design Class Diagram Name: ";
+                initialName = "dcd";
+                break;
+            case DiagramModel.AD:
+                dialogText = "Activity Diagram Name: ";
+                initialName = "ad";
+                break;
+            default:
+                throw new RuntimeException("Unknown diagram (int) type: " + type);
+        }
+        String modelName = JOptionPane.showInputDialog(dialogText, initialName);
+        return modelName;
     }
 
     public void resizeView() {

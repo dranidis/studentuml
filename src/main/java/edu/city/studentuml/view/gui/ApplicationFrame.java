@@ -40,6 +40,7 @@ public class ApplicationFrame extends ApplicationGUI {
         try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
+                    logger.fine("Look and feel: Nimbus");
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -104,7 +105,6 @@ public class ApplicationFrame extends ApplicationGUI {
 
         repositoryTreeView.expandDiagrams();
         repositoryTreeView.update(null, null);
-//        umlProject.projectChanged();
         
         umlProject.setFilepath(file);
 
@@ -114,7 +114,8 @@ public class ApplicationFrame extends ApplicationGUI {
         }
         
         try {
-            selectedFrame.setSelected(true);
+            if (selectedFrame != null)
+                selectedFrame.setSelected(true);
         } catch (PropertyVetoException ex) {
             Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -168,7 +169,6 @@ public class ApplicationFrame extends ApplicationGUI {
         pref.put("DEFAULT_PATH", filePath);
     }
 
-    //ZASTO STRING
     @Override
     public void exportImage() {
         JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
