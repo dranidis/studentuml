@@ -1,5 +1,11 @@
 package edu.city.studentuml.controller;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -7,10 +13,6 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  *

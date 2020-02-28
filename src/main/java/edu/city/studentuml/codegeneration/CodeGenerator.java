@@ -1,14 +1,5 @@
 package edu.city.studentuml.codegeneration;
 
-import edu.city.studentuml.model.domain.Attribute;
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.domain.UMLProject;
-import java.nio.file.Paths;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +17,15 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Interface;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.Type;
+import edu.city.studentuml.model.domain.UMLProject;
+
 //@author Spyros Maniopoulos
 
 public class CodeGenerator {
@@ -32,136 +33,134 @@ public class CodeGenerator {
     public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
     private boolean lfBeforeCurly;
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-    private boolean isFileGeneration=true;
     private boolean isUpdate = false;
-    private static final String INDENT = "  ";
-    
-    
-    public String generateFile(boolean isInUpdateMode, Classifier classObject, String path,UMLProject umlproject) {
-    	String name = classObject != null ? classObject.getName() : null;
+	private static final String INDENT = "  ";
 
-        if (name == null || name.length() == 0 || path==null) {
-            return null;
-        }
-       // Object classifier = modelElement;
-       String uname = umlproject.getFilename();
+	public String generateFile(boolean isInUpdateMode, Classifier classObject, String path, UMLProject umlproject) {
+		String name = classObject != null ? classObject.getName() : null;
 
-        path =  path + File.separator + uname.substring(0, uname.lastIndexOf("."));
-        String filename = name + ".java";
-        StringBuilder sbPath = new StringBuilder(path);
-        if (!path.endsWith(File.separator)) {
-            sbPath.append(File.separator);
-        }
-        
-        String pathname = sbPath.toString() + filename;
-      
-        //now decide whether file exist and need an update or is to be
-        //newly generated
-        BufferedWriter fos = null;
-        File f = new File(pathname);
-        Map<Integer,String> oldLines = new HashMap<Integer,String>();
-        String line = null;
-        if (!f.isDirectory() && !f.exists()) {
-        	if (!Paths.get(path).toFile().isDirectory()) {
-            if (!f.getParentFile().mkdir()) {
-                LOG.severe(" could not make directory " + path);
-                return null;
-            }
-          }
-        	isFileGeneration = true;
-        }  
-        if (!f.isDirectory() && f.exists() && isInUpdateMode) {
-        	try {
-        		DesignClass cls = null;
-        		Vector classAttributes = new Vector();
-        		Vector methods = new Vector();
-        		Vector sdMethods = new Vector();
-        		int fileIndex=0;
-        		boolean doesNotExist = true;
-        		if(classObject instanceof DesignClass) {
-        			cls = (DesignClass) classObject;
-        			classAttributes = cls.getAttributes();
-        			methods = cls.getMethods();
-        			sdMethods = cls.getSDMethods();
-        		}
-        		if(classObject instanceof Interface) {
-        			Interface infs = (Interface) classObject;
-        			methods = infs.getMethods();
-        		}
-        		FileReader fr = new FileReader(f);
-        		BufferedReader br = new BufferedReader(fr);
-        		while((line=br.readLine()) != null) {
-        			doesNotExist = true;
-        			if(line.contains(" class ") || line.contains(" interface ") || line.contains("//") || line.trim().isEmpty() || line.contains("}") 
-        					|| line.contains("{") || line.contains("return") || line.contains("import") || line.contains("this.")) {
-        				doesNotExist = false;
-        			}
-        			if(cls!=null) {
-        				if(line.contains(cls.getName())) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<classAttributes.size();i++) {
-        				Attribute classAttribute = (Attribute) classAttributes.get(i);
-        				if (line.contains(classAttribute.getName() + ";")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<methods.size();i++) {
-        				Method method = (Method) methods.get(i);
-        				if (line.contains(method.getName()+"(")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<sdMethods.size();i++) {
-        				Method sdMethod = (Method) sdMethods.get(i);
-        				if (line.contains(sdMethod.getName()+"(")) {
-        					doesNotExist = false;
-        				}
-        			}
-        			for(int i=0;i<sdMethods.size();i++) {
-        				Method sdMethod = (Method) sdMethods.get(i);
-        				List<String> calledMethodsInMethod = sdMethod.getCalledMethods();
-        				for(int y=0;y<calledMethodsInMethod.size();y++) {
-        					String calledMethodInMethod = calledMethodsInMethod.get(y);
-        					if(calledMethodInMethod.contains(".")) {
-        						calledMethodInMethod=calledMethodInMethod.substring(calledMethodInMethod.lastIndexOf(".")+1,calledMethodInMethod.lastIndexOf("("));
-            				}
-	        				if (line.contains(calledMethodInMethod)) {
-	        					doesNotExist = false;
-	        				}
-        				}	
-        			}
-        			if(doesNotExist) {
-        				isUpdate=true; //set true to enable updating
-        				oldLines.put(fileIndex,line);
-        			}
-        			fileIndex++;
-        		}	
-        		fr.close();
-        		br.close();
-        		
-        		
-        	}catch(Exception ex) {
-        		ex.printStackTrace();
-        	}
-        		
-        }
-       
-        //String pathname = path + filename;
-        // TODO: package, project basepath
-        LOG.log(Level.FINE, "Generating " + f.getPath());
-        String header = generateHeader();
-        String src = generateClassifier(classObject); 
-        try {
-          fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
-          	fos.write(header);
-            fos.write(src);
-        } catch (IOException exp) {
-            LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
-        } finally {
-            isFileGeneration = false;
-            try {
+		if (name == null || name.length() == 0 || path == null) {
+			return null;
+		}
+		// Object classifier = modelElement;
+		String uname = umlproject.getFilename();
+
+		path = path + File.separator + uname.substring(0, uname.lastIndexOf("."));
+		String filename = name + ".java";
+		StringBuilder sbPath = new StringBuilder(path);
+		if (!path.endsWith(File.separator)) {
+			sbPath.append(File.separator);
+		}
+
+		String pathname = sbPath.toString() + filename;
+
+		// now decide whether file exist and need an update or is to be
+		// newly generated
+		BufferedWriter fos = null;
+		File f = new File(pathname);
+		Map<Integer, String> oldLines = new HashMap<Integer, String>();
+		String line = null;
+		if (!f.isDirectory() && !f.exists()) {
+			if (!Paths.get(path).toFile().isDirectory()) {
+				if (!f.getParentFile().mkdir()) {
+					LOG.severe(" could not make directory " + path);
+					return null;
+				}
+			}
+		}
+		if (!f.isDirectory() && f.exists() && isInUpdateMode) {
+			try {
+				DesignClass cls = null;
+				Vector classAttributes = new Vector();
+				Vector methods = new Vector();
+				Vector sdMethods = new Vector();
+				int fileIndex = 0;
+				boolean doesNotExist = true;
+				if (classObject instanceof DesignClass) {
+					cls = (DesignClass) classObject;
+					classAttributes = cls.getAttributes();
+					methods = cls.getMethods();
+					sdMethods = cls.getSDMethods();
+				}
+				if (classObject instanceof Interface) {
+					Interface infs = (Interface) classObject;
+					methods = infs.getMethods();
+				}
+				FileReader fr = new FileReader(f);
+				BufferedReader br = new BufferedReader(fr);
+				while ((line = br.readLine()) != null) {
+					doesNotExist = true;
+					if (line.contains(" class ") || line.contains(" interface ") || line.contains("//")
+							|| line.trim().isEmpty() || line.contains("}") || line.contains("{")
+							|| line.contains("return") || line.contains("import") || line.contains("this.")) {
+						doesNotExist = false;
+					}
+					if (cls != null) {
+						if (line.contains(cls.getName())) {
+							doesNotExist = false;
+						}
+					}
+					for (int i = 0; i < classAttributes.size(); i++) {
+						Attribute classAttribute = (Attribute) classAttributes.get(i);
+						if (line.contains(classAttribute.getName() + ";")) {
+							doesNotExist = false;
+						}
+					}
+					for (int i = 0; i < methods.size(); i++) {
+						Method method = (Method) methods.get(i);
+						if (line.contains(method.getName() + "(")) {
+							doesNotExist = false;
+						}
+					}
+					for (int i = 0; i < sdMethods.size(); i++) {
+						Method sdMethod = (Method) sdMethods.get(i);
+						if (line.contains(sdMethod.getName() + "(")) {
+							doesNotExist = false;
+						}
+					}
+					for (int i = 0; i < sdMethods.size(); i++) {
+						Method sdMethod = (Method) sdMethods.get(i);
+						List<String> calledMethodsInMethod = sdMethod.getCalledMethods();
+						for (int y = 0; y < calledMethodsInMethod.size(); y++) {
+							String calledMethodInMethod = calledMethodsInMethod.get(y);
+							if (calledMethodInMethod.contains(".")) {
+								calledMethodInMethod = calledMethodInMethod.substring(
+										calledMethodInMethod.lastIndexOf(".") + 1,
+										calledMethodInMethod.lastIndexOf("("));
+							}
+							if (line.contains(calledMethodInMethod)) {
+								doesNotExist = false;
+							}
+						}
+					}
+					if (doesNotExist) {
+						isUpdate = true; // set true to enable updating
+						oldLines.put(fileIndex, line);
+					}
+					fileIndex++;
+				}
+				fr.close();
+				br.close();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+		}
+
+		// String pathname = path + filename;
+		// TODO: package, project basepath
+		LOG.log(Level.FINE, "Generating " + f.getPath());
+		String header = generateHeader();
+		String src = generateClassifier(classObject);
+		try {
+			fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			fos.write(header);
+			fos.write(src);
+		} catch (IOException exp) {
+			LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
+		} finally {
+			try {
                 if (fos != null) {
                     fos.close();
                 }

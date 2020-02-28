@@ -1,24 +1,25 @@
 package edu.city.studentuml.controller;
 
+import java.awt.geom.Point2D;
+import java.util.ListIterator;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
+
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //AddAssociationController.java
 import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.graphical.CCDModel;
-import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
+import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ClassifierGR;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.LinkGR;
-import java.awt.geom.Point2D;
-import java.io.File;
-import java.util.ListIterator;
-import java.util.Vector;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
+import edu.city.studentuml.util.undoredo.AddEdit;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
  * 

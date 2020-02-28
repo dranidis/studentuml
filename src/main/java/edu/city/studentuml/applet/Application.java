@@ -1,5 +1,58 @@
 package edu.city.studentuml.applet;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyVetoException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.tree.TreePath;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import edu.city.studentuml.model.domain.UMLProject;
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //Application.java
@@ -13,48 +66,31 @@ package edu.city.studentuml.applet;
 //consistencies, etc, mainly by making use of other classes.
 //Alexander taking over
 import edu.city.studentuml.model.graphical.CCDModel;
+import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.DiagramView;
+import edu.city.studentuml.view.gui.CCDInternalFrame;
 import edu.city.studentuml.view.gui.CollectionTreeModel;
 import edu.city.studentuml.view.gui.DCDInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.gui.RepositoryTreeView;
 import edu.city.studentuml.view.gui.SDInternalFrame;
-import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.Mode;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.view.gui.CCDInternalFrame;
 import edu.city.studentuml.view.gui.SSDInternalFrame;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.util.Constants;
-
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-
-import java.net.URL;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import java.beans.PropertyVetoException;
-import java.net.MalformedURLException;
-
-import org.w3c.dom.*;
 
 public class Application extends JApplet implements Observer, KeyListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private static Application instance;
     /* private JRadioButtonMenuItem advancedModeRadioButtonMenuItem;
      private JRadioButtonMenuItem simpleModeRadioButtonMenuItem;
@@ -86,36 +122,23 @@ public class Application extends JApplet implements Observer, KeyListener {
     private JMenuItem popupRepair;
     private JMenuItem popupHelp;
     private JPopupMenu popupMenu;
-    private JPopupMenu popupMenuRepair;
     private JTree factsTree;
     private JScrollPane scrollPane_f;
     private JTabbedPane tabbedPane;
     private JTree messageTree;
     private JScrollPane scrollPane_p;
     private JSplitPane splitPane_1;
-    private static final String applicationName = "Student UML";
-    private int openFrameCounter = 0;
-    // data needed to determine the position of new internal frames
-    private final int xOffset = 30;
-    private final int yOffset = 30;
     // the central repository of conceptual UML elements
     private CentralRepository centralRepository;
-    private JTree crTree;
     // all diagrams are stored in corresponding internal frames,
     // which in turn are stored in the desktop pane
     private JDesktopPane desktopPane;
-    // file processing data
-    private JFileChooser xmlFileChooser;
     private RepositoryTreeView repositoryTreeView;
-    private JSplitPane splitPane;
     private ProjectToolBar toolbar;
     private JScrollPane treePane;
     private ServerInterface serverInterface = null;
     private UMLProject umlProject = null;
     private CheckTreeManager checkTreeManager;
-    private int ruleEditorTabPlacement = -1;
-    private int factsTreeTabPlacement = -1;
-    private String simpleRulesFile;
     private String advancedRulesFile;
     private String currentRuleFile = null;
     private String username = null;
@@ -165,10 +188,10 @@ public class Application extends JApplet implements Observer, KeyListener {
         serverInterface = new ServerInterface(apiURL, passedAuthenticationToken);
 
         // initialize the rules files
-        //simpleRulesFile = getCodeBase() + "rules/simplerules.txt";
-        //advancedRulesFile = getCodeBase() + "rules/advancedrules.txt";
+        // simpleRulesFile = getCodeBase() + "rules/simplerules.txt";
+        // advancedRulesFile = getCodeBase() + "rules/advancedrules.txt";
         String rulesLocation = "/edu/city/studentuml/util/validation/rules/";
-        simpleRulesFile = this.getClass().getResource(rulesLocation + "simplerules.txt").toString();
+        this.getClass().getResource(rulesLocation + "simplerules.txt").toString();
         advancedRulesFile = this.getClass().getResource(rulesLocation + "advancedrules.txt").toString();
         currentRuleFile = advancedRulesFile;
 
@@ -208,14 +231,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         update(umlProject, this);
 
-        splitPane = new JSplitPane();
-        //splitPane.setBackground(UIManager.getColor("window"));
-        /*
-         splitPane.setDividerSize(5);
-         splitPane.add(treePane, JSplitPane.LEFT);
-         splitPane.add(desktopPane, JSplitPane.RIGHT);
-         splitPane.setDividerLocation(160);
-         */
+        new JSplitPane();
 
         splitPane_1 = new JSplitPane();
         splitPane_1.setDividerSize(5);
@@ -223,12 +239,12 @@ public class Application extends JApplet implements Observer, KeyListener {
         splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
         /*
-         splitPane_1.setOneTouchExpandable(true);
-
-         BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane_1.getUI();
-         BasicSplitPaneDivider divider = ui.getDivider();
-         JButton button = (JButton)divider.getComponent(1);
-         button.doClick(); */
+         * splitPane_1.setOneTouchExpandable(true);
+         * 
+         * BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane_1.getUI();
+         * BasicSplitPaneDivider divider = ui.getDivider(); JButton button =
+         * (JButton)divider.getComponent(1); button.doClick();
+         */
         getContentPane().add(splitPane_1, BorderLayout.CENTER);
         splitPane_1.setLeftComponent(desktopPane);
 
@@ -242,8 +258,8 @@ public class Application extends JApplet implements Observer, KeyListener {
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         tabbedPane.addTab("Problems", null, panel, null);
-        //tabbedPane.addTab("Rule Editor", null, new RuleEditor(), null);
-        //tabbedPane.addTab("Facts", null, scrollPane_f, null);
+        // tabbedPane.addTab("Rule Editor", null, new RuleEditor(), null);
+        // tabbedPane.addTab("Facts", null, scrollPane_f, null);
 
         scrollPane_p = new JScrollPane();
         panel.add(scrollPane_p);
@@ -251,19 +267,19 @@ public class Application extends JApplet implements Observer, KeyListener {
         scrollPane_p.setViewportView(messageTree);
 
         popupMenu = new JPopupMenu();
-        popupMenuRepair = new JPopupMenu();
+        new JPopupMenu();
 
         popupRepair = new JMenuItem();
 
-        //Repair Action
+        // Repair Action
         popupRepair.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-                //SystemWideObjectNamePool.getInstance().loading();
+                // SystemWideObjectNamePool.getInstance().loading();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-                //SystemWideObjectNamePool.getInstance().done();
-                ////SystemWideObjectNamePool.getInstance().reloadRules();
+                // SystemWideObjectNamePool.getInstance().done();
+                //// SystemWideObjectNamePool.getInstance().reloadRules();
                 SystemWideObjectNamePool.getInstance().reload();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(null);
             }
@@ -272,7 +288,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         popupHelp = new JMenuItem();
 
-        //Repair Action
+        // Repair Action
         popupHelp.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -285,8 +301,8 @@ public class Application extends JApplet implements Observer, KeyListener {
                     URL url = new URL(helpString);
                     Application.this.getAppletContext().showDocument(url, "_blank");
                 } catch (MalformedURLException mue) {
-                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL",
-                            "Wrong URL", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -305,8 +321,8 @@ public class Application extends JApplet implements Observer, KeyListener {
         repairButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent e) {
-                repairButton.setBorder(new CompoundBorder(
-                        new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
+                repairButton.setBorder(
+                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
             public void mouseExited(MouseEvent e) {
@@ -318,10 +334,12 @@ public class Application extends JApplet implements Observer, KeyListener {
             public void actionPerformed(ActionEvent e) {
                 TreePath checkedPaths[] = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-                //String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
+                // String rulename =
+                // messageTree.getSelectionPath().getLastPathComponent().toString();
                 if (checkedPaths != null) {
                     for (int i = 0; i < checkedPaths.length; i++) {
-                        SystemWideObjectNamePool.getInstance().setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
+                        SystemWideObjectNamePool.getInstance()
+                                .setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
                         SystemWideObjectNamePool.getInstance().reload();
                     }
                 }
@@ -332,7 +350,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
         });
 
-        //repairButton.setMargin(new Insets(2, 2, 2, 2));
+        // repairButton.setMargin(new Insets(2, 2, 2, 2));
         repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
@@ -341,7 +359,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         repairPanel.setVisible(false);
         showRepairButton(messageTree, repairButton);
 
-        setRepairMode(false);	// Sets on/off the REPAIR feature
+        setRepairMode(false); // Sets on/off the REPAIR feature
 
         setVisible(true);
 
@@ -359,8 +377,9 @@ public class Application extends JApplet implements Observer, KeyListener {
 
     // NEW SOLUTION TO EXERCISE
     public void newSolution() {
-        /* umlProject = new UMLProject();
-         umlProject.addObserver(this); */
+        /*
+         * umlProject = new UMLProject(); umlProject.addObserver(this);
+         */
 
         umlProject.clear();
 
@@ -377,14 +396,12 @@ public class Application extends JApplet implements Observer, KeyListener {
 
     // STARTS A UML PROJECT IN SANDBOX MODE
     public void newProject() {
-        /* if (!closeProject()) {
-         return;
-         }
-
-         if(umlProject != null)
-         umlProject.clear();
-         umlProject = new UMLProject();
-         umlProject.addObserver(this); */
+        /*
+         * if (!closeProject()) { return; }
+         * 
+         * if(umlProject != null) umlProject.clear(); umlProject = new UMLProject();
+         * umlProject.addObserver(this);
+         */
 
         umlProject.clear();
         umlProject.setUser(username);
@@ -407,16 +424,14 @@ public class Application extends JApplet implements Observer, KeyListener {
             Node resultNode = doc.getElementsByTagName("result").item(0);
             String resultString = resultNode.getTextContent().trim();
 
-            /* if (!resultString.equals("success"))
-             {
-             JOptionPane.showMessageDialog(this, "Requested node does not exist",
-             "Error", JOptionPane.ERROR_MESSAGE);
-
-             umlProject.setMode(Mode.SANDBOX);
-             newProject();
-
-             return false;
-             } */
+            /*
+             * if (!resultString.equals("success")) { JOptionPane.showMessageDialog(this,
+             * "Requested node does not exist", "Error", JOptionPane.ERROR_MESSAGE);
+             * 
+             * umlProject.setMode(Mode.SANDBOX); newProject();
+             * 
+             * return false; }
+             */
             boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
             checkTreeManager.getSelectionModel().clearSelection();
@@ -436,8 +451,10 @@ public class Application extends JApplet implements Observer, KeyListener {
             Node commentNode = doc.getElementsByTagName("nodedescription").item(0);
             String comment = commentNode.getTextContent().trim();
 
-            /* Node authoridNode = doc.getElementsByTagName("authorid").item(0);
-             int authorid = Integer.valueOf(authoridNode.getTextContent().trim()); */
+            /*
+             * Node authoridNode = doc.getElementsByTagName("authorid").item(0); int
+             * authorid = Integer.valueOf(authoridNode.getTextContent().trim());
+             */
             Node authorNameNode = doc.getElementsByTagName("authornickname").item(0);
             String authorName = authorNameNode.getTextContent().trim();
 
@@ -480,13 +497,18 @@ public class Application extends JApplet implements Observer, KeyListener {
             umlProject.setTitle(title);
             umlProject.setComment(comment);
 
-            /* String infoString = "Node Id: " + umlProject.getParentid() + "\nExercise Id: " + umlProject.getExid()
-             + "\nNode Type: " + umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle()
-             + "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName
-             + "\nIs Private: " + (isprivate?"Yes":"No"); */
+            /*
+             * String infoString = "Node Id: " + umlProject.getParentid() +
+             * "\nExercise Id: " + umlProject.getExid() + "\nNode Type: " +
+             * umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle() +
+             * "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName +
+             * "\nIs Private: " + (isprivate?"Yes":"No");
+             */
 
-            /* JOptionPane.showMessageDialog(null, infoString,
-             "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
+            /*
+             * JOptionPane.showMessageDialog(null, infoString, "Solution Information",
+             * JOptionPane.INFORMATION_MESSAGE);
+             */
             setSaved(true);
             umlProject.addObserver(this);
             umlProject.projectChanged();
@@ -495,24 +517,23 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             // Set the top internal frame (selected) to the one specified by user
             try {
-                DiagramInternalFrame frameToBeSelected
-                        = umlProject.getDiagramModel(Integer.valueOf(diagramno) - 1).getFrame();
+                DiagramInternalFrame frameToBeSelected = umlProject.getDiagramModel(Integer.valueOf(diagramno) - 1)
+                        .getFrame();
 
                 // desktopPane.setSelectedFrame(selectedFrame);
                 frameToBeSelected.setSelected(true);
             } catch (NumberFormatException nfe) {
                 // non-integer string, let the default behaviour continue
                 if (diagramno != null && !diagramno.equals("")) {
-                    JOptionPane.showMessageDialog(this, "Badly-formed thumbnail number",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Badly-formed thumbnail number", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IndexOutOfBoundsException ioobe) {
                 // non-existing pic number, let the default behaviour continue
-                JOptionPane.showMessageDialog(this, "Non-existing thumbnail number",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Non-existing thumbnail number", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (PropertyVetoException pve) {
-                JOptionPane.showMessageDialog(this, "PropertyVetoException",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "PropertyVetoException", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
@@ -523,9 +544,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             return true;
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(this,
-                    "There was an API error while loading node",
-                    ace.getMessage(),
+            JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),
                     JOptionPane.ERROR_MESSAGE);
 
             umlProject.setMode(Mode.SANDBOX);
@@ -533,10 +552,8 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             return false;
         } catch (AuthenticationFailedException afe) {
-            JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while trying to load node",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User Authentication failed while trying to load node",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
 
             umlProject.setMode(Mode.SANDBOX);
             newProject();
@@ -568,7 +585,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 centralRepository.clear();
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
                 return true;
-            } else {		// user pressed the cancel option
+            } else { // user pressed the cancel option
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
                 return false;
             }
@@ -602,14 +619,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             // INITIALIZE SOLUTION DATA INPUT PANEL
             Vector statusStrings = getStatusStrings();
             Vector nodeTypeStrings = getNodeTypeStrings();
-            SolutionInputPanel solutionInput = new SolutionInputPanel(
-                    statusStrings, nodeTypeStrings);
+            SolutionInputPanel solutionInput = new SolutionInputPanel(statusStrings, nodeTypeStrings);
 
             // solutionInput.setStatus(0);
             if (JOptionPane.showOptionDialog(this, solutionInput, "Your solution info", JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE, null, null, null) != JOptionPane.OK_OPTION) {
-                JOptionPane.showMessageDialog(this, "Solution saving was canceled!",
-                        "Solution was not saved", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Solution saving was canceled!", "Solution was not saved",
+                        JOptionPane.ERROR_MESSAGE);
 
                 return;
             }
@@ -621,8 +637,8 @@ public class Application extends JApplet implements Observer, KeyListener {
             // THIS IS NOT ONLY BECAUSE THE API EXPECTS A NON-EMPTY TITLE
             // BUT ALSO BECAUSE TITLES HAVE TO HAVE ACTUAL TEXT (NOT JUST WHITESPACES)
             if (title == null || title.trim().equals("")) {
-                JOptionPane.showMessageDialog(this, "You need to provide a Title!",
-                        "Solution was not saved", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "You need to provide a Title!", "Solution was not saved",
+                        JOptionPane.ERROR_MESSAGE);
 
                 return;
             }
@@ -638,18 +654,13 @@ public class Application extends JApplet implements Observer, KeyListener {
                 savePrivate = true;
             }
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "There was an API error while loading node types",
-                    ace.getMessage(),
+            JOptionPane.showMessageDialog(this, "There was an API error while loading node types", ace.getMessage(),
                     JOptionPane.ERROR_MESSAGE);
 
             return;
         } catch (AuthenticationFailedException afe) {
-            JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while trying to load node types",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User Authentication failed while trying to load node types",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
 
             return;
         }
@@ -658,9 +669,8 @@ public class Application extends JApplet implements Observer, KeyListener {
         // DONE IN TWO PARTS: (1) SAVING NODE and (2) SAVING PIC(S)
         try {
             // (1) SAVING NODE
-            Document saveNodeResponse = serverInterface.saveNode(
-                    username, exid, parentid, title, comment,
-                    nodeType, savePrivate, solution, "");
+            Document saveNodeResponse = serverInterface.saveNode(username, exid, parentid, title, comment, nodeType,
+                    savePrivate, solution, "");
 
             Node node = saveNodeResponse.getElementsByTagName("nodeid").item(0);
             int nodeid = Integer.valueOf(node.getTextContent());
@@ -672,14 +682,15 @@ public class Application extends JApplet implements Observer, KeyListener {
                 umlProject.setMode(Mode.NEW_STEP);
             }
 
-            /* // DISPLAY SAVING RESULT
-             Node resultNode = saveNodeResponse.getElementsByTagName("result").item(0);
-             String result = resultNode.getTextContent().trim();
-
-             if (result.equals("success"))
-             {
-
-             } */
+            /*
+             * // DISPLAY SAVING RESULT Node resultNode =
+             * saveNodeResponse.getElementsByTagName("result").item(0); String result =
+             * resultNode.getTextContent().trim();
+             * 
+             * if (result.equals("success")) {
+             * 
+             * }
+             */
             // (2) SAVING PICS
             Vector diagramModels = umlProject.getDiagramModels();
             DiagramModel diagramModel;
@@ -705,25 +716,19 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
 
             // DISPLAY SAVING RESULT; AT THIS POINT EVERYTHING MUST HAVE BEEN SUCCESSFUL
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Solution successfully " + (savePrivate ? "saved!" : "shared!"),
+            JOptionPane.showMessageDialog(this, "Solution successfully " + (savePrivate ? "saved!" : "shared!"),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
             setSaved(true);
 
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "There was an API error while "
-                    + (savePrivate ? "saving" : "sharing") + " the solution!",
+            JOptionPane.showMessageDialog(this,
+                    "There was an API error while " + (savePrivate ? "saving" : "sharing") + " the solution!",
                     ace.getMessage(), JOptionPane.ERROR_MESSAGE);
         } catch (AuthenticationFailedException afe) {
             JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while "
-                    + (savePrivate ? "saving" : "sharing") + " the solution!",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+                    "User Authentication failed while " + (savePrivate ? "saving" : "sharing") + " the solution!",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -841,8 +846,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         DiagramInternalFrame f = null;
 
         /*
-         * if ( model instanceof UCDModel ) {
-         *	} else
+         * if ( model instanceof UCDModel ) { } else
          */
         if (model instanceof SSDModel) {
             f = new SSDInternalFrame((SSDModel) model);
@@ -851,7 +855,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         } else if (model instanceof CCDModel) {
             f = new CCDInternalFrame((CCDModel) model);
         } else if (model instanceof DCDModel) {
-            f = new DCDInternalFrame((DCDModel) model, /*advancedModeRadioButtonMenuItem.isSelected()*/ true);
+            f = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         }
 
         if (R != null) {
@@ -863,8 +867,6 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         f.addInternalFrameListener(new DiagramInternalFrameListener());
         desktopPane.add(f);
-        //f.setLocation(xOffset * openFrameCounter, yOffset * openFrameCounter);
-        openFrameCounter++;
         f.setOpaque(true);
         f.setVisible(true);
 
@@ -885,7 +887,6 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         frame.dispose();
         desktopPane.remove(frame);
-        openFrameCounter--;
         setSaved(false);
     }
 

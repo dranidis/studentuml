@@ -1,5 +1,11 @@
 package edu.city.studentuml.controller;
 
+import java.awt.Point;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
+
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.Edge;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -12,10 +18,6 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.awt.Point;
-import java.util.Iterator;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
 
 /**
  *
