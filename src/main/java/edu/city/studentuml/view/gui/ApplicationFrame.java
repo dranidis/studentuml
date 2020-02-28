@@ -1,31 +1,32 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.frame.StudentUMLFrame;
-import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.ImageExporter;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.view.DiagramView;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
-
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.view.DiagramView;
 
-/**
- *
- * @author draganbisercic
- */
 public class ApplicationFrame extends ApplicationGUI {
     
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static String applicationName = "StudentUML";
@@ -63,9 +64,9 @@ public class ApplicationFrame extends ApplicationGUI {
     
     private void updateFrameTitle() {
         String title = applicationName + " - " + umlProject.getName();
-        if (!umlProject.isSaved()) {
-            title = title + " *";
-        }
+        // if (!umlProject.isSaved()) {
+        //     title = title + " *";
+        // }
         frame.setTitle(title);
     }
 
@@ -85,7 +86,7 @@ public class ApplicationFrame extends ApplicationGUI {
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         int response = xmlFileChooser.showOpenDialog(this);
-        if (response != xmlFileChooser.APPROVE_OPTION) {
+        if (response != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
@@ -120,10 +121,6 @@ public class ApplicationFrame extends ApplicationGUI {
         umlProject.setSaved(true);
         updateFrameTitle();
         logger.fine("Opened project");
-    }
-
-    private String getFilePath() {
-        return umlProject.getFilepath();
     }
 
     @Override

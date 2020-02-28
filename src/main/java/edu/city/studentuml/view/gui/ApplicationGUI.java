@@ -1,24 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.applet.StudentUMLApplet;
-import edu.city.studentuml.codegeneration.CodePreparation;
-import edu.city.studentuml.frame.StudentUMLFrame;
-import edu.city.studentuml.model.graphical.CCDModel;
-import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.model.graphical.UCDModel;
-import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.ADModel;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.FrameProperties;
-import edu.city.studentuml.util.ObjectFactory;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.validation.Rule;
-import edu.city.studentuml.view.DiagramView;
-import edu.city.studentuml.view.gui.menu.MenuBar;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -44,15 +25,13 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import javax.swing.ButtonGroup;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -73,12 +52,33 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
 
-/**
- *
- * @author draganbisercic
- */
+import edu.city.studentuml.applet.StudentUMLApplet;
+import edu.city.studentuml.codegeneration.CodePreparation;
+import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.model.graphical.ADModel;
+import edu.city.studentuml.model.graphical.CCDModel;
+import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.UCDModel;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.FrameProperties;
+import edu.city.studentuml.util.ObjectFactory;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.DiagramView;
+import edu.city.studentuml.view.gui.menu.MenuBar;
+
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
     
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     public static boolean isApplet = false;
@@ -714,13 +714,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * returns a list of internal frames having a particular diagram type
      */
-    public Vector getInternalFramesOfType(int type) {
-        Vector ucdFrames = new Vector();
-        Vector ssdFrames = new Vector();
-        Vector sdFrames = new Vector();
-        Vector ccdFrames = new Vector();
-        Vector dcdFrames = new Vector();
-        Vector adFrames = new Vector();
+    public Vector<JInternalFrame> getInternalFramesOfType(int type) {
+        Vector<JInternalFrame> ucdFrames = new Vector<>();
+        Vector<JInternalFrame> ssdFrames = new Vector<>();
+        Vector<JInternalFrame> sdFrames = new Vector<>();
+        Vector<JInternalFrame> ccdFrames = new Vector<>();
+        Vector<JInternalFrame> dcdFrames = new Vector<>();
+        Vector<JInternalFrame> adFrames = new Vector<>();
         //Vector stateFrames = new Vector();
         JInternalFrame[] frames = desktopPane.getAllFrames();
         JInternalFrame f;
@@ -761,7 +761,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         //return stateFrames;
         //}
 
-        return new Vector();
+        return new Vector<JInternalFrame>();
     }
 
     public void setRunTimeConsistencyCheck(boolean b) {
@@ -812,7 +812,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
             tabbedPane.setSelectedIndex(selected);
         }
-        Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
         }        
@@ -828,7 +828,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
             tabbedPane.setSelectedIndex(selected);
         }
-        Vector dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
         }
@@ -999,6 +999,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     // Inner class ProjectToolBar implements the main toolbar of the application
     private class ProjectToolBar extends JToolBar {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         private JButton newButton;
         private JButton openButton;
         private JButton saveButton;
@@ -1288,7 +1292,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     resizeView();
                 }
             });
-            add(resizeButton);
+
+            /**
+             * REMOVE the button
+             * 
+             * TODO: Is it necessary as a feature?
+             * 
+             */
+            // add(resizeButton);
 
             //Icon validateSD_DCDIcon = new ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
             //validateSD_DCDButton = new JButton(validateSD_DCDIcon);
@@ -1316,7 +1327,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     reloadRules();
                 }
             });
-            add(reloadRulesButton);
+
+            /**
+             * TODO: REMOVE TILL it is clear what it does!
+             */
+            // add(reloadRulesButton);
 
             addSeparator();
             
@@ -1369,7 +1384,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 	}
                 }
             });
-            add(forwardEngineerButton);
+
+            /** 
+             * TODO: REMOVE THE BUTTON TILL  code generation is completed!
+             */
+            // add(forwardEngineerButton);
             
             addSeparator();
 
@@ -1397,7 +1416,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     help();
                 }
             });
-            add(helpButton);
+
+            /**
+             * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED
+             */
+            // add(helpButton);
 
             setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         }
@@ -1410,6 +1433,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     // JPanel with components for inputting drawing view size
     private class SizeInputPanel extends JPanel {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         private JTextField heightField;
         private JLabel heightLabel;
         private JPanel heightPanel;
