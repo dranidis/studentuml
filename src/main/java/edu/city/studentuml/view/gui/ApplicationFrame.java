@@ -119,7 +119,7 @@ public class ApplicationFrame extends ApplicationGUI {
         }
         umlProject.setSaved(true);
         updateFrameTitle();
-        logger.info("Opened project");
+        logger.fine("Opened project");
     }
 
     private String getFilePath() {

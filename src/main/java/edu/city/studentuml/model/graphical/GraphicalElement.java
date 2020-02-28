@@ -46,13 +46,13 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
     public Color myColor() {
         if (getMyUid() == null) {
-            System.out.println("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
+            logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
             return new Color(0, 0, 0);
         }
         if (SystemWideObjectNamePool.userColorMap.containsKey(getMyUid())) {
             return (Color) SystemWideObjectNamePool.userColorMap.get(getMyUid());
         }
-        System.out.println("============= UID: " + getMyUid());
+        logger.fine("============= UID: " + getMyUid());
         SystemWideObjectNamePool.userColorMap.put(getMyUid(), getMyUid().equals(ApplicationGUI.DESKTOP_USER) ? DESKTOP_USER_COLOR : new Color((int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128)));
         return this.myColor();
     }
