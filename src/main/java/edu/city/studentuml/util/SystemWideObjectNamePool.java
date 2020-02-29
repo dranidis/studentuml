@@ -1,18 +1,27 @@
 package edu.city.studentuml.util;
 
-//import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.util.validation.ConsistencyChecker;
-import edu.city.studentuml.util.validation.Rule;
-import edu.city.studentuml.view.gui.CollectionTreeModel;
-import java.util.concurrent.locks.ReentrantLock;
-
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import edu.city.studentuml.util.validation.ConsistencyChecker;
+import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.gui.CollectionTreeModel;
+
+/**
+ * SystemWideObjectNamePool keeps maps with objects and their unique names.
+ * 
+ * Unique names are generated every time a new object is added.
+ * 
+ * When reading from an XML file the unique names are the internalid attributes in the XML file.
+ * <p>
+ * Also responsible for consistency checking (to be documented).
+ */
 public class SystemWideObjectNamePool extends Observable {
     Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName()); 
 
@@ -24,10 +33,10 @@ public class SystemWideObjectNamePool extends Observable {
     private static HashSet<String> messageTypes = new HashSet<String>();
     private static CollectionTreeModel messages = null;
     private static CollectionTreeModel facts = null;
-    private HashMap objectMap = new HashMap();
-    private HashMap namedMap = new HashMap();
+    private HashMap<Object, String> objectMap = new HashMap<>();
+    private HashMap<String, Object> namedMap = new HashMap<>();
     public static String uid;
-    public static HashMap userColorMap = new HashMap();
+    public static HashMap<String, Color> userColorMap = new HashMap<>();
     public static ReentrantLock drawLock = new ReentrantLock();
     //private String LastUndo = null;
     //private Stack<String> undoBuffer = new Stack<String>();
@@ -128,7 +137,7 @@ public class SystemWideObjectNamePool extends Observable {
         facts.add(messageType);
     }
 
-    private synchronized void generateRuleSet(HashMap map) {
+    private synchronized void generateRuleSet(HashMap<Object, String> map) {
         messages = new CollectionTreeModel();
         facts = new CollectionTreeModel();
 
@@ -163,29 +172,35 @@ public class SystemWideObjectNamePool extends Observable {
         reload();
     }
 
+    @SuppressWarnings("unchecked")
     private synchronized void reloadrules() {
         if (runtimeChecking) {
             synchronized (this) {
-                HashMap h = (HashMap) objectMap.clone();
+                HashMap<Object, String> h = (HashMap<Object, String>) objectMap.clone();
                 generateRuleSet(h);
             }
         }
     }
 
-    // generate unique name with lowercase class name + an index
-    private String generateName(Object o) {
+    /**
+     * Generates a unique name with lowercase class name + the next available integer index
+     * 
+     * @param o the object to be named
+     * @return the unique name
+     */
+    private String generateUniqueName(Object o) {
+        String objName = o.getClass().getSimpleName().toLowerCase();
         String tempName = "";
         int index = 0;
         while (true) {
-            tempName = o.getClass().getSimpleName() + index;
-            tempName = tempName.toLowerCase();
+            tempName = objName + index;
             if (objectMap.containsValue(tempName)) {
                 index++;
             } else {
                 break;
             }
         }
-        return tempName.toLowerCase();
+        return tempName;
     }
 
     // returns object by name
@@ -205,11 +220,14 @@ public class SystemWideObjectNamePool extends Observable {
     // add an object
     public synchronized void objectAdded(Object o) {
         if (objectMap.get(o) == null) {
-            String name = generateName(o);
+            String name = generateUniqueName(o);
             namedMap.put(name, o);
             objectMap.put(o, name);
 
             objectCountChanged();
+            logger.finer("ADDED in objectMap :" + o.getClass() + " named: " + name + " toString: " + o.toString());
+        } else {
+            logger.finer("ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: " + o.toString());
         }
     }
 
@@ -238,6 +256,15 @@ public class SystemWideObjectNamePool extends Observable {
     }
 
     //used for XML streaming
+    /**
+     * Called by ObjectFactory newinstance that provides the internalid for the name
+     * 
+     * Usually the object does not exist in the maps (oldName = null) and it behaves
+     * like adding the object and its name (internalid) in the maps.
+     *
+     * @param object the instance created by ObjectFactory
+     * @param name the internalid from the XML file
+     */
     public void renameObject(Object object, String name) {
         // remove the old object and the old name
         String oldName = (String) objectMap.remove(object);
@@ -245,11 +272,12 @@ public class SystemWideObjectNamePool extends Observable {
 
         objectMap.put(object, name);
         namedMap.put(name, object);
+        logger.finer("RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name);
     }
 
     public void clear() {
-        objectMap = new HashMap();
-        namedMap = new HashMap();
+        objectMap = new HashMap<>();
+        namedMap = new HashMap<>();
     }
 
     public void undo() {

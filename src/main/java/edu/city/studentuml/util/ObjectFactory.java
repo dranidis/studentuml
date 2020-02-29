@@ -174,6 +174,10 @@ public final class ObjectFactory extends Observable {
                 String thisID = stream.getAttribute("internalid");
                 if ((thisID != null) && (!thisID.equals(""))) {
                     SystemWideObjectNamePool.getInstance().renameObject(result, thisID);
+                } else {
+                    logger.severe("internalid:" + thisID + " class: " + c.getSimpleName() + " for object: "
+                            + result.getClass() + " toString: " + result.toString() + "Parent:" + parent + " stream: "
+                            + stream + " XMLStreamer: " + streamer);
                 }
                 return (IXMLCustomStreamable) result;
             }
