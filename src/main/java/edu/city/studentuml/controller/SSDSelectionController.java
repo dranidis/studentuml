@@ -12,6 +12,7 @@ import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
@@ -194,12 +195,7 @@ public class SSDSelectionController extends SelectionController {
         message.setIterative(callMessageEditor.isIterative());
         message.setReturnValue(callMessageEditor.getReturnValue());
 
-        Vector parameters = callMessageEditor.getParameters();
-        Iterator iterator = parameters.iterator();
-        message.setParameters(new Vector());
-        while (iterator.hasNext()) {
-            message.addParameter((MethodParameter) iterator.next());
-        }
+        message.setParameters(callMessageEditor.getParameters());
 
         // UNDO/REDO
         UndoableEdit edit = new EditCallMessageEdit(message, undoCallMessage, model);

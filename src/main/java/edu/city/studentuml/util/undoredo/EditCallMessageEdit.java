@@ -1,7 +1,9 @@
 package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

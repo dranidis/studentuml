@@ -1,13 +1,15 @@
 package edu.city.studentuml.model.domain;
 
+import java.util.StringJoiner;
+import java.util.Vector;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
+
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.logging.Logger;
-import org.w3c.dom.Element;
 
 /**
  *
@@ -27,7 +29,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         super(from, to);
         genericOperation = go;
         iterative = false;
-        parameters = new NotifierVector();
+        parameters = new NotifierVector<>();
     }
 
     public String getName() {
@@ -60,7 +62,9 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
     public void setParameters(Vector<MethodParameter> param) {
         parameters.clear();
-        parameters = NotifierVector.from(param);
+        for(MethodParameter par: param) {
+            parameters.add(par);
+        }
     }
 
     public void clear() {
@@ -122,24 +126,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public String getParametersString() {
-        String parametersString = "";
-        Iterator iterator = parameters.iterator();
-        MethodParameter parameter;
-        int i = 0;    // keeps track if it is the first iteration
-
-        while (iterator.hasNext()) {
-            parameter = (MethodParameter) iterator.next();
-
-            if (i == 0) {
-                parametersString += parameter.toString();
-            } else {
-                parametersString = parametersString + ", " + parameter.toString();
-            }
-
-            i++;
+        StringJoiner sj = new StringJoiner(", ");
+        for(MethodParameter par : parameters) {
+            sj.add(par.toStringShowTypes());
         }
-
-        return parametersString;
+        return sj.toString();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
@@ -171,7 +162,6 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("iterative", Boolean.toString(isIterative()));
 
@@ -210,24 +200,5 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
         return copyCallMessage;
     }
-    //new method to return MethodParameter and not MessageParameter
-    public Vector getSDMethodParameters() {
-        Iterator iterator = parameters.iterator();
-        MessageParameter param;
-        Vector methodParameters = new Vector<MethodParameter>();
 
-        while (iterator.hasNext()) {
-            param = (MessageParameter) iterator.next();
-            String [] parameterStr = param.getName().split("\\s+");
-            try {
-            	Type parameterType = new DataType (parameterStr[0]);
-	    		String parameter = parameterStr[1];
-	    		methodParameters.add(new MethodParameter(parameter,parameterType));
-            }catch(ArrayIndexOutOfBoundsException e) {
-            	logger.severe("Wrong Parameter");
-                e.printStackTrace();
-            } 
-        }
-        return methodParameters;
-    }
 }

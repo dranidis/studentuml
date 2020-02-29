@@ -1,12 +1,15 @@
 package edu.city.studentuml.model.domain;
 
+import java.io.Serializable;
+import java.util.prefs.Preferences;
+
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ramollari Ervin
 //MethodParameter.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
-import java.io.Serializable;
-import java.util.prefs.Preferences;
+
+
 
 import org.w3c.dom.Element;
 
@@ -49,7 +52,7 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
 
     public String getTypeAsString() {
         if (type == null) {
-            return "unspecified";
+            return null;
         } else {
             return type.getName();
         }
@@ -57,25 +60,29 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
 
     public String getTypeName() {
         if (type == null) {
-            return null;
+            return "unspecified";
         } else {
             return type.getName();
         }
     }
 
-    public String toString() {
+    public String toStringShowTypes() {
         String parameterString = getName();
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE") ? true : false;
+        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE");
 
         if (type != null && showTypesSDPref) {
-            parameterString = parameterString + " : " + getTypeName();
+            parameterString += ": " + getTypeName();
         }
 
         return parameterString;
     }
 
+    @Override
+    public String toString() {
+        return getName() + ": " + getTypeName();
+    }
+
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         String thistype = node.getAttribute("type");
         if (thistype.equals("")) {
@@ -86,7 +93,6 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         if (getType() != null) {
             node.setAttribute("type", getType().getName());

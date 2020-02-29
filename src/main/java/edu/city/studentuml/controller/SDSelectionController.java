@@ -8,6 +8,7 @@ import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
@@ -264,12 +265,7 @@ public class SDSelectionController extends SelectionController {
         message.setReturnValue(callMessageEditor.getReturnValue());
         message.setReturnType(callMessageEditor.getReturnType());
 
-        Vector parameters = callMessageEditor.getParameters();
-        Iterator iterator = parameters.iterator();
-        message.setParameters(new Vector());
-        while (iterator.hasNext()) {
-            message.addParameter((MethodParameter) iterator.next());
-        }
+        message.setParameters(callMessageEditor.getParameters());
 
         // UNDO/REDO
         UndoableEdit edit = new EditCallMessageEdit(message, undoCallMessage, model);

@@ -1,20 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//CallMessageEditor.java
-import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.MessageReturnValue;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.domain.CallMessage;
-import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.graphical.CallMessageGR;
-import edu.city.studentuml.model.graphical.CreateMessageGR;
-import edu.city.studentuml.model.repository.CentralRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -24,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,7 +25,24 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//CallMessageEditor.java
+import edu.city.studentuml.model.domain.ActorInstance;
+import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.MessageReturnValue;
+import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.MultiObject;
+import edu.city.studentuml.model.domain.RoleClassifier;
+import edu.city.studentuml.model.domain.SDObject;
+import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.Type;
+import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+
 public class CallMessageEditor extends JPanel implements ActionListener {
+    Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
     private JButton addParameterButton;
     private JPanel bottomPanel;
@@ -191,7 +194,8 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public boolean showDialog(Component parent, String title) {
-        System.out.println("TITLE : " + title);
+        logger.fine("TITLE : " + title);
+
         ok = false;
 
         // find the owner frame
@@ -332,7 +336,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         return (Type) typeComboBox.getSelectedItem();
     }
 
-    public Vector getParameters() {
+    public Vector<MethodParameter> getParameters() {
         return parameters;
     }
 

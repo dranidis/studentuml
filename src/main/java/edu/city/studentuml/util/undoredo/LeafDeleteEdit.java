@@ -1,15 +1,13 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.domain.MethodParameter;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 /**
  *
@@ -40,12 +38,7 @@ public class LeafDeleteEdit extends DeleteEditComponent {
             original.setReturnValue(message.getReturnValue());
             original.setReturnType(message.getReturnType());
 
-            Vector parameters = message.getParameters();
-            Iterator iterator = parameters.iterator();
-            original.setParameters(new Vector());
-            while (iterator.hasNext()) {
-                original.addParameter((MethodParameter) iterator.next());
-            }
+            original.setParameters(message.getParameters());
         }
     }
 
