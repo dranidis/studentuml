@@ -176,7 +176,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         SystemWideObjectNamePool.getInstance().done();
 
         logger.finer(".......end from XML: \n" + filename);
-        projectChanged();
         setSaved(true);
     }
     // Embed4Auto

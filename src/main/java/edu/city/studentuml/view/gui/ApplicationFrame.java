@@ -64,10 +64,14 @@ public class ApplicationFrame extends ApplicationGUI {
     }
     
     private void updateFrameTitle() {
+        if (SystemWideObjectNamePool.getInstance().isLoading()) {
+            return;
+        }
+
         String title = applicationName + " - " + umlProject.getName();
-        // if (!umlProject.isSaved()) {
-        //     title = title + " *";
-        // }
+        if (!umlProject.isSaved()) {
+            title += " (not saved)";
+        }
         frame.setTitle(title);
     }
 
