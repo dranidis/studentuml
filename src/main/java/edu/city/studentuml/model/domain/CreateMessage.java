@@ -1,29 +1,20 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//CreateMessage.java
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-
-
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
-public class CreateMessage extends CallMessage implements IXMLCustomStreamable {
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+public class CreateMessage extends CallMessage {
 
     Logger logger = Logger.getLogger(CreateMessage.class.getName());
 
-    private NotifierVector<MethodParameter> parameters;
-
     public CreateMessage(RoleClassifier from, RoleClassifier to) {
         super(from, to, new GenericOperation("create"));
-        parameters = new NotifierVector<>();
     }
 
     public String toString() {
@@ -50,63 +41,6 @@ public class CreateMessage extends CallMessage implements IXMLCustomStreamable {
 
         streamer.streamObjects(streamer.addChild(node, "parameters"), parameters.iterator());
 
-    }
-
-    public void addParameter(MethodParameter p) {
-        parameters.add(p);
-    }
-
-    public void removeParameter(MethodParameter p) {
-        parameters.remove(p);
-    }
-
-    public Vector<MethodParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(Vector<MethodParameter> param) {
-        parameters.clear();
-        parameters = NotifierVector.from(param);
-    }
-
-    public void clear() {
-        parameters.clear();
-    }
-
-    public MethodParameter getParameterByName(String name) {
-        Iterator iterator = parameters.iterator();
-        MethodParameter param;
-
-        while (iterator.hasNext()) {
-            param = (MethodParameter) iterator.next();
-
-            if (param.getName().equals(name)) {
-                return param;
-            }
-        }
-
-        return null;
-    }
-
-    public String getParametersString() {
-        String parametersString = "";
-        Iterator iterator = parameters.iterator();
-        MethodParameter parameter;
-        int i = 0;    // keeps track if it is the first iteration
-
-        while (iterator.hasNext()) {
-            parameter = (MethodParameter) iterator.next();
-
-            if (i == 0) {
-                parametersString += parameter.toString();
-            } else {
-                parametersString = parametersString + ", " + parameter.toString();
-            }
-
-            i++;
-        }
-
-        return parametersString;
     }
 
     public Vector getSDMethodParameters() {

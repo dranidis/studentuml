@@ -21,7 +21,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
     private GenericOperation genericOperation;
     private boolean iterative;
-    private NotifierVector<MethodParameter> parameters;
+    protected NotifierVector<MethodParameter> parameters;
     private MessageReturnValue returnValue;
     private Type returnType;
 
