@@ -13,4 +13,4 @@ pipelines:
           name: Build and release
           script:
             - mvn -B verify
-            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/studentuml-public/downloads" --form files=@"target/studentuml-${BITBUCKET_TAG}-jar-with-dependencies.jar"
+            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/studentuml/studentuml-public/downloads" --form files=@"target/studentuml-${BITBUCKET_TAG}-jar-with-dependencies.jar"
