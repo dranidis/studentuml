@@ -61,7 +61,7 @@ public abstract class NodeComponent {
         return incomingEdges.size();
     }
 
-    public Iterator getIncomingEdges() {
+    public Iterator<Edge> getIncomingEdges() {
         return incomingEdges.iterator();
     }
 
@@ -77,7 +77,7 @@ public abstract class NodeComponent {
         return outgoingEdges.size();
     }
 
-    public Iterator getOutgoingEdges() {
+    public Iterator<Edge> getOutgoingEdges() {
         return outgoingEdges.iterator();
     }
 

@@ -7,12 +7,14 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Biser
  */
 public abstract class FinalNodeGR extends ControlNodeGR {
+    Logger logger = Logger.getLogger(FinalNodeGR.class.getName());
 
     public static final int RADIUS = 14;
 
@@ -29,6 +31,7 @@ public abstract class FinalNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
+        logger.finest("draw:" + this.toString());
         super.draw(g);
 
         calculateWidth(g);
@@ -36,6 +39,7 @@ public abstract class FinalNodeGR extends ControlNodeGR {
 
         int startingX = getX();
         int startingY = getY();
+        logger.finest("starting:X,Y: " + startingX + ", " + startingY);
 
         // paint outer circle of the final node
         g.setPaint(fillColor);
