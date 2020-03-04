@@ -1,17 +1,20 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.FlowFinalNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.logging.Logger;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.FlowFinalNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class FlowFinalNodeGR extends FinalNodeGR implements IXMLCustomStreamable {
+public class FlowFinalNodeGR extends FinalNodeGR {
+    Logger logger = Logger.getLogger(FlowFinalNodeGR.class.getName());
 
     public FlowFinalNodeGR(FlowFinalNode finalNode, int x, int y) {
         super(finalNode, x, y);
@@ -28,15 +31,20 @@ public class FlowFinalNodeGR extends FinalNodeGR implements IXMLCustomStreamable
         g.translate(getX() + width / 2, getY() + height / 2);
 
         g.rotate((45 * java.lang.Math.PI) / 180);
+
         g.translate(-RADIUS, 0);
         g.fillRect(0, 0, 2 * RADIUS, lineWidth);
-
         g.translate(RADIUS, 0);
+
         g.rotate((-90 * java.lang.Math.PI) / 180);
+        
         g.translate(-RADIUS, 0);
         g.fillRect(0, 0, 2 * RADIUS, lineWidth);
 
-        g.setTransform(new AffineTransform());
+        //  UNDO all rotations and translations
+        g.translate(RADIUS, 0);
+        g.rotate((45 * java.lang.Math.PI) / 180);
+        g.translate(-1  * (getX() + width / 2), -1 * (getY() + height / 2));
     }
 
     @Override
