@@ -48,7 +48,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private static UMLProject ref = null;
     private NotifierVector<DiagramModel> diagramModels;
     private CentralRepository repository;
-    private Boolean projectSaved = true;
+    private boolean projectSaved = true;
     private String user;
     //for applet
     private int status;
@@ -123,11 +123,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         return diagramModels;
     }
 
-    public Boolean isSaved() {
+    public boolean isSaved() {
         return projectSaved;
     }
 
-    public void setSaved(Boolean saved) {
+    public void setSaved(boolean saved) {
         logger.fine("Setting projectSaved: " + saved);
         projectSaved = saved;
     }
