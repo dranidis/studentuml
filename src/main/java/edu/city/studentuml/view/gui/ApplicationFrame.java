@@ -27,7 +27,7 @@ public class ApplicationFrame extends ApplicationGUI {
      */
     private static final long serialVersionUID = 1L;
 
-    private Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
+    Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static String applicationName = "StudentUML";
     private JFileChooser xmlFileChooser;
@@ -64,8 +64,14 @@ public class ApplicationFrame extends ApplicationGUI {
     }
     
     private void updateFrameTitle() {
-        if (SystemWideObjectNamePool.getInstance().isLoading()) {
-            return;
+        if (closingOrLoading) return;
+
+        // if (SystemWideObjectNamePool.getInstance().isLoading()) {
+        //     return;
+        // }
+
+        if (logger != null) {
+            logger.finer("Updating title: saved: " + umlProject.isSaved());
         }
 
         String title = applicationName + " - " + umlProject.getName();
@@ -105,6 +111,9 @@ public class ApplicationFrame extends ApplicationGUI {
         repairButton.setEnabled(false);
         
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
+
+        closingOrLoading = true;
+
         umlProject.loadFromXML(file);
 
         repositoryTreeView.expandDiagrams();
@@ -124,6 +133,7 @@ public class ApplicationFrame extends ApplicationGUI {
             Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         umlProject.setSaved(true);
+        closingOrLoading = false;
         updateFrameTitle();
         logger.fine("Opened project");
     }
@@ -137,6 +147,7 @@ public class ApplicationFrame extends ApplicationGUI {
             saveProjectAs();
         } else {
             umlProject.streamToXML();
+            updateFrameTitle();
 
             pref.put("DEFAULT_PATH", path);
         }
@@ -168,7 +179,7 @@ public class ApplicationFrame extends ApplicationGUI {
         logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
         umlProject.streamToXML();
-        
+        updateFrameTitle();
         
         pref.put("DEFAULT_PATH", filePath);
     }

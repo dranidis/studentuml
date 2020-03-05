@@ -1,5 +1,3 @@
-package edu.city.studentuml.controller;
-
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //SelectionController.java
@@ -8,11 +6,9 @@ package edu.city.studentuml.controller;
 //Serves as the superclass of all selection controllers of particular diagrams.
 //Dragging and dropping, and other mouse events are handled by this superclass,
 //while the details of editing and deleting elements are left to subclasses.
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.MoveEdit;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.model.graphical.GraphicalElement;
+
+package edu.city.studentuml.controller;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,17 +20,25 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.MoveEdit;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+
 public abstract class SelectionController {
+
+    Logger logger = Logger.getLogger(SelectionController.class.getName());
 
     // parent component needed to be set as the owner of any dialog boxes displayed
     protected DiagramInternalFrame parentComponent;
@@ -47,7 +51,7 @@ public abstract class SelectionController {
     // this boolean variable determines whether the selection controller or
     // an add-element-controller should take control of mouse events
     protected boolean selectionMode = false;
-    protected Vector<GraphicalElement> selectedElements = new Vector<GraphicalElement>();
+    protected Vector<GraphicalElement> selectedElements = new Vector<>();
     // data required for drag-and-drop
     protected int lastX;
     protected int lastY;
@@ -213,9 +217,8 @@ public abstract class SelectionController {
 
     public void moveElement(int x, int y) {
         if (lastPressed != null) {
-            Iterator i = selectedElements.iterator();
+            Iterator<GraphicalElement> i = selectedElements.iterator();
             GraphicalElement e;
-            Point2D p;
 
             int deltaX = x - lastX;
             int deltaY = y - lastY;
@@ -269,6 +272,7 @@ public abstract class SelectionController {
     // method that shows a popup menu when the right mouse button has been clicked
     public void managePopup(MouseEvent event) {
         if (event.isPopupTrigger()) {
+            logger.finer("Popup trigger");
 
             if (selectedElements.size() > 1) {
                 editMenuItem.setVisible(false);

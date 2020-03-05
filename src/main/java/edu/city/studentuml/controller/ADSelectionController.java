@@ -97,9 +97,9 @@ public class ADSelectionController extends SelectionController {
             return;
         }
         
-        Iterator it = sourceNode.getOutgoingEdges();
+        Iterator<Edge> it = sourceNode.getOutgoingEdges();
         while (it.hasNext()) {
-            Edge edge = (Edge) it.next();
+            Edge edge = it.next();
             if (edge != controlFlow) {
                 String s = edge.getGuard();
                 if (s.equals(guard) && !s.isEmpty()) {
@@ -147,9 +147,9 @@ public class ADSelectionController extends SelectionController {
             return;
         }
         
-        Iterator it = sourceNode.getOutgoingEdges();
+        Iterator<Edge> it = sourceNode.getOutgoingEdges();
         while (it.hasNext()) {
-            Edge edge = (Edge) it.next();
+            Edge edge = it.next();
             if (edge != objectFlow) {
                 String s = edge.getGuard();
                 if (s.equals(guard) && !s.isEmpty()) {
@@ -313,7 +313,7 @@ public class ADSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
-    	private void editUMLNote(UMLNoteGR noteGR) {
+    private void editUMLNote(UMLNoteGR noteGR) {
         UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
 
         // Undo/Redo [edit note]

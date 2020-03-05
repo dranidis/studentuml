@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ActivityNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -19,13 +16,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ActivityNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class ActivityNodeGR extends CompositeNodeGR implements Resizable, IXMLCustomStreamable {
+public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     private static int minimumWidth = 100;
     private static int minimumHeight = 50;

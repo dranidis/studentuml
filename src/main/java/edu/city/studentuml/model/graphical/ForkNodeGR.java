@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ForkNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -10,13 +7,17 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ForkNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class ForkNodeGR extends ControlNodeGR implements IXMLCustomStreamable {
+public class ForkNodeGR extends ControlNodeGR {
 
     private static int FORK_WIDTH = 60;
     private static int FORK_HEIGHT = 10;

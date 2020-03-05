@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ActionNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,13 +11,17 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ActionNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class ActionNodeGR extends LeafNodeGR implements IXMLCustomStreamable {
+public class ActionNodeGR extends LeafNodeGR  {
 
     private static int minimumWidth = 70;
     private static int minimumHeight = 24;
