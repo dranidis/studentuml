@@ -1,21 +1,22 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.InitialNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class InitialNodeGR extends ControlNodeGR implements IXMLCustomStreamable {
+public class InitialNodeGR extends ControlNodeGR {
 
     public static final int RADIUS = 12;
 

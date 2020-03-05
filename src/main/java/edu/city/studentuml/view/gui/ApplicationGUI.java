@@ -114,6 +114,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
     protected DiagramInternalFrame selectedFrame;
 
+    protected boolean closingOrLoading = false;
+
     public ApplicationGUI(StudentUMLFrame frame) {
         if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
             Preferences.userRoot().put("SELECT_LAST", "TRUE");
@@ -934,8 +936,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
 
         } else {
+            closingOrLoading = true;
+            
             closeFrames();
             setRuntimeChecking(runtimeChecking);
+
+            closingOrLoading = false;
             return true;
         }
     }

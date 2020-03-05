@@ -1,16 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ActivityFinalNode;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Graphics2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ActivityFinalNode;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
  */
-public class ActivityFinalNodeGR extends FinalNodeGR implements IXMLCustomStreamable {
+public class ActivityFinalNodeGR extends FinalNodeGR {
 
     public ActivityFinalNodeGR(ActivityFinalNode finalNode, int x, int y) {
         super(finalNode, x, y);
