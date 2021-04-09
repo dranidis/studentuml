@@ -4,8 +4,12 @@ package edu.city.studentuml.model.domain;
 //Author: Ramollari Ervin
 //Attribute.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.w3c.dom.Element;
 
@@ -18,9 +22,10 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
     public static final int PRIVATE = 1;
     public static final int PUBLIC = 2;
     public static final int PROTECTED = 3;
+    @JsonIgnore
     public GenericAttribute genericAttribute;
-    private int scope;         // 1 = instance, 2 = classifier
-    private int visibility;    // 1 = private, 2 = public, 3 = protected
+    private int scope; // 1 = instance, 2 = classifier
+    private int visibility; // 1 = private, 2 = public, 3 = protected
     private Type type;
 
     public Attribute(GenericAttribute ga) {
@@ -43,6 +48,11 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
 
     public Attribute(String name, Type t) {
         this(new GenericAttribute(name), t);
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     public void setGenericAttribute(GenericAttribute ga) {
@@ -87,6 +97,7 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         return type;
     }
 
+    @JsonIgnore
     public String getTypeName() {
         if (type != null) {
             return type.getName();
@@ -111,6 +122,7 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         return getVisibilityString() + getNameString() + getTypeString();
     }
 
+    @JsonIgnore
     public String getVisibilityName() {
         if (visibility == PRIVATE) {
             return "private";
@@ -121,6 +133,7 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         }
     }
 
+    @JsonIgnore
     public String getVisibilityString() {
         if (visibility == PRIVATE) {
             return "-";
@@ -131,10 +144,12 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         }
     }
 
+    @JsonIgnore
     public String getNameString() {
         return getName();
     }
 
+    @JsonIgnore
     public String getTypeString() {
         if (type == null) {
             return "";
@@ -173,11 +188,11 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         Attribute copyAttribute = new Attribute(this.getName());
         copyAttribute.setScope(this.scope);
         copyAttribute.setVisibility(this.visibility);
-        
+
         if (this.getType() != null) {
             copyAttribute.setTypeByName(this.type.getName());
         }
-        
+
         return copyAttribute;
     }
 }

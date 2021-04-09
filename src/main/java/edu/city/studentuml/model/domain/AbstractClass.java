@@ -6,9 +6,12 @@ package edu.city.studentuml.model.domain;
  */
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.Iterator;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import org.w3c.dom.Element;
 
@@ -24,6 +27,11 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
 
     public AbstractClass(String name) {
         this(new GenericClass(name));
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     public void setGenericClass(GenericClass gc) {
@@ -97,9 +105,8 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
     public abstract void streamFromXML(Element node, XMLStreamer streamer, Object instance);
 
     public abstract void streamToXML(Element node, XMLStreamer streamer);
-    
+
     public String toString() {
         return getName();
     }
 }
-

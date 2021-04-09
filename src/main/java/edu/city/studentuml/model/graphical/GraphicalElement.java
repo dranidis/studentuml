@@ -16,10 +16,14 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import org.w3c.dom.Element;
 
 public abstract class GraphicalElement implements Serializable, IXMLCustomStreamable {
-    
+
     Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
@@ -44,6 +48,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return myUid;
     }
 
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
+    }
+
     public Color myColor() {
         if (getMyUid() == null) {
             logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
@@ -53,13 +62,18 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
             return (Color) SystemWideObjectNamePool.userColorMap.get(getMyUid());
         }
         logger.fine("============= UID: " + getMyUid());
-        SystemWideObjectNamePool.userColorMap.put(getMyUid(), getMyUid().equals(ApplicationGUI.DESKTOP_USER) ? DESKTOP_USER_COLOR : new Color((int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128)));
+        SystemWideObjectNamePool.userColorMap.put(getMyUid(),
+                getMyUid().equals(ApplicationGUI.DESKTOP_USER) ? DESKTOP_USER_COLOR
+                        : new Color((int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128),
+                                (int) (Math.random() * 128.0 + 128)));
         return this.myColor();
     }
 
     public static Color lighter(Color sourceColor) {
-        //return new Color(255,0,0,128); alpha is cool
-        //return new Color(Math.min(sourceColor.getRed() + 50, 255), Math.min(sourceColor.getGreen() + 50, 255), Math.min(sourceColor.getBlue() + 50, 255));
+        // return new Color(255,0,0,128); alpha is cool
+        // return new Color(Math.min(sourceColor.getRed() + 50, 255),
+        // Math.min(sourceColor.getGreen() + 50, 255), Math.min(sourceColor.getBlue() +
+        // 50, 255));
         return sourceColor.equals(DESKTOP_USER_COLOR) ? new Color(255, 255, 205) : sourceColor.brighter();
     }
 
@@ -110,10 +124,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     public void draw(Graphics2D g) {
-        /* if (SystemWideObjectNamePool.userColorMap.size() > 1 && this instanceof UMLNoteGR) {
-        g.setFont(baseFont);
-        g.drawString("user: "+this.myUid, getX(), getY()-5);
-        } */
+        /*
+         * if (SystemWideObjectNamePool.userColorMap.size() > 1 && this instanceof
+         * UMLNoteGR) { g.setFont(baseFont); g.drawString("user: "+this.myUid, getX(),
+         * getY()-5); }
+         */
     }
 
     public abstract void move(int x, int y);

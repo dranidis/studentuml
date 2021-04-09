@@ -17,8 +17,11 @@ import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import org.w3c.dom.Element;
 
+@JsonIncludeProperties({ "classA", "classB", "internalid" })
 public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
     private Association association;
@@ -87,8 +90,8 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             super.draw(g);
         }
 
-        //if (outlineColor == null)
-        //	outlineColor = this.myColor();
+        // if (outlineColor == null)
+        // outlineColor = this.myColor();
         int xA = getXA();
         int yA = getYA();
         int xB = getXB();
@@ -142,8 +145,10 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw role names and multiplicities
             g.setFont(roleFont);
-            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(), true, g);
-            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),  true, g);
+            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(),
+                    true, g);
+            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),
+                    true, g);
 
         } else // handle rendering of reflective associations in an ad-hoc way
         {
@@ -153,7 +158,7 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             reflective.lineTo(xA, yA - REFLECTIVE_UP * step); // up 2
             reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yA - REFLECTIVE_UP * step); // right 4
             reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yB); // down 4
-            reflective.lineTo(xB, yB);  // left 2          
+            reflective.lineTo(xB, yB); // left 2
 
             g.draw(reflective);
 
@@ -163,14 +168,16 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw the association name string
             g.setFont(nameFont);
-//            g.drawString(association.getName(), getXA(), getTopLeftYA() - REFLECTIVE_UP * getReflectiveStep() - 2);
+            // g.drawString(association.getName(), getXA(), getTopLeftYA() - REFLECTIVE_UP *
+            // getReflectiveStep() - 2);
             double angle = 0;
             if (association.getLabelDirection() == Association.FROM_A_TO_B) {
                 angle = Math.toRadians(0);
             } else {
                 angle = Math.toRadians(180);
             }
-            drawAssociationName(xA + REFLECTIVE_RIGHT * step / 2, yA - REFLECTIVE_UP * step, angle, association.getName(), association.getShowArrow(), g);
+            drawAssociationName(xA + REFLECTIVE_RIGHT * step / 2, yA - REFLECTIVE_UP * step, angle,
+                    association.getName(), association.getShowArrow(), g);
 
             // draw role names and multiplicities
             g.setFont(roleFont);
@@ -203,10 +210,10 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         int direction = association.getDirection();
         if (direction == Association.AB || direction == Association.BIDIRECTIONAL_FIX) {
             drawAssociationArrowHead(getXB(), getYB(), Math.PI, g);
-        } 
+        }
         if (direction == Association.BA || direction == Association.BIDIRECTIONAL_FIX) {
             drawAssociationArrowHead(getXA(), getYA(), Math.PI / 2, g);
-        } 
+        }
     }
 
     public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
@@ -279,7 +286,8 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up, Graphics2D g) {
+    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up,
+            Graphics2D g) {
         boolean sameDirection = true;
 
         if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
@@ -302,7 +310,7 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();
         int textHeight = (int) bounds.getHeight();
-        
+
         if (sameDirection) {
             if (up) {
                 g.drawString(sb.toString(), 12 + xOffset, -5);

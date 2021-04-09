@@ -14,14 +14,22 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import org.w3c.dom.Element;
 
+@JsonIncludeProperties({ "abstractClass", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
-
+    @JsonIgnore
     private static int nameStereotypeDistance = 4;
+    @JsonIgnore
     private static int methodFieldXOffset = 4;
+    @JsonIgnore
     private static int methodFieldYOffset = 3;
+    @JsonIgnore
     private Font stereotypeFont;
+    @JsonIgnore
     private Font methodFont;
 
     public ClassGR(DesignClass c, Point start) {
@@ -85,8 +93,7 @@ public class ClassGR extends AbstractClassGR {
 
         // consider stereotype text dimensions
         if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
-            TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont,
-                    frc);
+            TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int stereotypeWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
 

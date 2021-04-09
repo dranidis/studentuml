@@ -18,18 +18,19 @@ import edu.city.studentuml.view.gui.CollectionTreeModel;
  * 
  * Unique names are generated every time a new object is added.
  * 
- * When reading from an XML file the unique names are the internalid attributes in the XML file.
+ * When reading from an XML file the unique names are the internalid attributes
+ * in the XML file.
  * <p>
  * Also responsible for consistency checking (to be documented).
  */
 public class SystemWideObjectNamePool extends Observable {
-    Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName()); 
+    Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName());
 
     private static SystemWideObjectNamePool ref = null;
     private String ruleFile = null;
     private static String selectedRule = null;
     private ConsistencyChecker consistencyChecker = null;
-    private boolean runtimeChecking = true;
+    private boolean runtimeChecking = false;
     private static HashSet<String> messageTypes = new HashSet<String>();
     private static CollectionTreeModel messages = null;
     private static CollectionTreeModel facts = null;
@@ -38,9 +39,9 @@ public class SystemWideObjectNamePool extends Observable {
     public static String uid;
     public static HashMap<String, Color> userColorMap = new HashMap<>();
     public static ReentrantLock drawLock = new ReentrantLock();
-    //private String LastUndo = null;
-    //private Stack<String> undoBuffer = new Stack<String>();
-    //private Stack<String> redoBuffer = new Stack<String>();
+    // private String LastUndo = null;
+    // private Stack<String> undoBuffer = new Stack<String>();
+    // private Stack<String> redoBuffer = new Stack<String>();
     private int loading = 0;
 
     private SystemWideObjectNamePool() {
@@ -63,8 +64,8 @@ public class SystemWideObjectNamePool extends Observable {
     public synchronized void addObserver(Observer o) {
         logger.fine("OBSERVER added: " + o.toString());
         super.addObserver(o);
-    }  
-    
+    }
+
     // Get runtime consistency checking
     public boolean isRuntimeChecking() {
         return runtimeChecking;
@@ -108,22 +109,22 @@ public class SystemWideObjectNamePool extends Observable {
         logger.finer("loading: " + loading);
         return loading > 0;
     }
-    
+
     public boolean pushToUndoStack() {
         if (loading > 0) {
             return false;
         }
 
-//        String XMLData = UMLProject.getInstance().streamToXMLString();
-//        if (XMLData.equals(LastUndo)) return false;//FIXME:
+        // String XMLData = UMLProject.getInstance().streamToXMLString();
+        // if (XMLData.equals(LastUndo)) return false;//FIXME:
 
         loading();
-//        if (LastUndo != null) {
-//            undoBuffer.push(LastUndo);
-//            redoBuffer.clear();
-//        }
+        // if (LastUndo != null) {
+        // undoBuffer.push(LastUndo);
+        // redoBuffer.clear();
+        // }
         done();
-//        LastUndo = XMLData;
+        // LastUndo = XMLData;
         return true;
     }
 
@@ -166,7 +167,7 @@ public class SystemWideObjectNamePool extends Observable {
         done();
     }
 
-    public void reloadRules() {//FIXME: need reload? (loading/done)
+    public void reloadRules() {// FIXME: need reload? (loading/done)
         consistencyChecker = null;
         consistencyChecker = new ConsistencyChecker(ruleFile);
         reload();
@@ -183,7 +184,8 @@ public class SystemWideObjectNamePool extends Observable {
     }
 
     /**
-     * Generates a unique name with lowercase class name + the next available integer index
+     * Generates a unique name with lowercase class name + the next available
+     * integer index
      * 
      * @param o the object to be named
      * @return the unique name
@@ -227,7 +229,8 @@ public class SystemWideObjectNamePool extends Observable {
             objectCountChanged();
             logger.finer("ADDED in objectMap :" + o.getClass() + " named: " + name + " toString: " + o.toString());
         } else {
-            logger.finer("ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: " + o.toString());
+            logger.finer(
+                    "ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: " + o.toString());
         }
     }
 
@@ -255,7 +258,7 @@ public class SystemWideObjectNamePool extends Observable {
         return null;
     }
 
-    //used for XML streaming
+    // used for XML streaming
     /**
      * Called by ObjectFactory newinstance that provides the internalid for the name
      * 
@@ -263,7 +266,7 @@ public class SystemWideObjectNamePool extends Observable {
      * like adding the object and its name (internalid) in the maps.
      *
      * @param object the instance created by ObjectFactory
-     * @param name the internalid from the XML file
+     * @param name   the internalid from the XML file
      */
     public void renameObject(Object object, String name) {
         // remove the old object and the old name
@@ -281,54 +284,54 @@ public class SystemWideObjectNamePool extends Observable {
     }
 
     public void undo() {
-//       if (undoBuffer.size() == 0) return;
-//
-//       loading();
-//       String XML = undoBuffer.pop();
-//       if (LastUndo != null)
-//           redoBuffer.push(LastUndo);
-//
-//       objectMap.clear();
-//       namedMap.clear();
-//       UMLProject.getInstance().clear();
-//       UMLProject.getInstance().loadFromXMLString(XML);
-//       LastUndo = null;
-//       done();
+        // if (undoBuffer.size() == 0) return;
+        //
+        // loading();
+        // String XML = undoBuffer.pop();
+        // if (LastUndo != null)
+        // redoBuffer.push(LastUndo);
+        //
+        // objectMap.clear();
+        // namedMap.clear();
+        // UMLProject.getInstance().clear();
+        // UMLProject.getInstance().loadFromXMLString(XML);
+        // LastUndo = null;
+        // done();
     }
 
     public void redo() {
-//       if (redoBuffer.size() == 0) return;
-//
-//       loading();
-//       String XML = redoBuffer.pop();
-//       //if (LastUndo != null)
-//           undoBuffer.push(LastUndo);
-//       objectMap.clear();
-//       namedMap.clear();
-//       UMLProject.getInstance().clear();
-//       UMLProject.getInstance().loadFromXMLString(XML);
-//       LastUndo = null;
-//       done();
+        // if (redoBuffer.size() == 0) return;
+        //
+        // loading();
+        // String XML = redoBuffer.pop();
+        // //if (LastUndo != null)
+        // undoBuffer.push(LastUndo);
+        // objectMap.clear();
+        // namedMap.clear();
+        // UMLProject.getInstance().clear();
+        // UMLProject.getInstance().loadFromXMLString(XML);
+        // LastUndo = null;
+        // done();
     }
 
     public void setRuleFile(String ruleFile) {
         this.ruleFile = ruleFile;
     }
-// private boolean isAlphaNumeric(final String s) {
-// final char[] chars = s.toCharArray();
-// for (int x = 0; x < chars.length; x++) {
-//   final char c = chars[x];
-//   if ((c >= 'a') && (c <= 'z')) continue; // lowercase
-//   if ((c >= 'A') && (c <= 'Z')) continue; // uppercase
-//   if ((c >= '0') && (c <= '9')) continue; // numeric
-//   return false;
-// }
-// return true;
-//}
-//
-//private String isValidName(String newName) {
-//if (newName.length() == 0) return null;
-//if (isAlphaNumeric(newName)) return newName; else
-//return null;
-//}
+    // private boolean isAlphaNumeric(final String s) {
+    // final char[] chars = s.toCharArray();
+    // for (int x = 0; x < chars.length; x++) {
+    // final char c = chars[x];
+    // if ((c >= 'a') && (c <= 'z')) continue; // lowercase
+    // if ((c >= 'A') && (c <= 'Z')) continue; // uppercase
+    // if ((c >= '0') && (c <= '9')) continue; // numeric
+    // return false;
+    // }
+    // return true;
+    // }
+    //
+    // private String isValidName(String newName) {
+    // if (newName.length() == 0) return null;
+    // if (isAlphaNumeric(newName)) return newName; else
+    // return null;
+    // }
 }
