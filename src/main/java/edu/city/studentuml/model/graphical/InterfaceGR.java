@@ -21,8 +21,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
+@JsonIncludeProperties({ "interface", "internalid", "startingPoint" })
 public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
 
     private static int methodFieldXOffset = 4;
@@ -32,6 +36,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
     private static int minimumWidth = 70;
     private static int nameFieldXOffset = 3;
     private static int nameFieldYOffset = 3;
+    @JsonProperty("interface")
     private Interface coreInterface;
     private Font methodFont;
     private Font nameFont;

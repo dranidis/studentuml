@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
@@ -28,7 +29,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
-@JsonIncludeProperties({ "diagramName", "internalid", "graphicalElements" })
+@JsonIncludeProperties({ "name", "internalid", "graphicalElements" })
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
 
     /**
@@ -45,6 +46,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public static final int DCD = 4;
     public static final int AD = 5;
 
+    @JsonProperty("name")
     protected String diagramName;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;

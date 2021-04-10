@@ -39,14 +39,14 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     private JButton deleteMethodButton;
     private JButton editMethodButton;
     private JDialog interfaceDialog;
-    private InterfaceGR interfaceGR;    // the interface that the dialog edits
+    private InterfaceGR interfaceGR; // the interface that the dialog edits
     private Vector methods;
     private JPanel methodsButtonsPanel;
     private JList methodsList;
     private JPanel methodsPanel;
     private JTextField nameField;
     private JLabel nameLabel;
-    private boolean ok;             // stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
     private JButton okButton;
     private JPanel topPanel;
     private CentralRepository repository;
@@ -198,7 +198,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     public void addMethod() {
         MethodEditor methodEditor = new MethodEditor(null, repository);
 
-        if (!methodEditor.showDialog(this, "Method Editor")) {    // cancel pressed
+        if (!methodEditor.showDialog(this, "Method Editor")) { // cancel pressed
             return;
         }
 
@@ -220,7 +220,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
         Method method = (Method) methods.elementAt(methodsList.getSelectedIndex());
         MethodEditor methodEditor = new MethodEditor(method, repository);
 
-        if (!methodEditor.showDialog(this, "Method Editor")) {    // cancel pressed
+        if (!methodEditor.showDialog(this, "Method Editor")) { // cancel pressed
             return;
         }
 

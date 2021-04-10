@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
 
     private Type type;
-    private List<State> states;    //required states of the object
+    private List<State> states; // required states of the object
 
     private ObjectNode(String name) {
         super(name);
@@ -175,14 +175,14 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             } else if (t instanceof DesignClass) {
                 typeinstance = "designclass";
                 DesignClass dc = (DesignClass) t;
-////                dc.streamToXML(node, streamer);
-//                streamer.streamObject(node, "type", dc);
+                //// dc.streamToXML(node, streamer);
+                // streamer.streamObject(node, "type", dc);
                 node.setAttribute("typeid", SystemWideObjectNamePool.getInstance().getNameForObject(dc));
             } else if (t instanceof Interface) {
                 typeinstance = "interface";
                 Interface i = (Interface) t;
-////                i.streamToXML(node, streamer);
-//                streamer.streamObject(node, "interface", i);
+                //// i.streamToXML(node, streamer);
+                // streamer.streamObject(node, "interface", i);
                 node.setAttribute("typeid", SystemWideObjectNamePool.getInstance().getNameForObject(i));
             }
 

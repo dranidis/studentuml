@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,766,607" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
+      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="122" y="24">
+        <object class="Interface" id="interface" internalid="interface0" name="Classifier">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="217" y="152">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="AbstractClass" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name="AbstractClass"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr0" id="" interfaceb="interfacegr0" internalid="realizationgr0">
+        <object a="designclass0" b="interface0" class="Realization" id="realization" internalid="realization0"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="233" y="334">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="DesignClass" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="DesignClass"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr1" class="GeneralizationGR" id="" internalid="generalizationgr0" super="classgr0">
+        <object base="designclass1" class="Generalization" id="generalization" internalid="generalization0" super="designclass0"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="301" y="260">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="ConceptualClass" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name="ConceptualClass"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr2" class="GeneralizationGR" id="" internalid="generalizationgr1" super="classgr0">
+        <object base="designclass2" class="Generalization" id="generalization" internalid="generalization1" super="designclass0"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="29" y="133">
+        <object class="DesignClass" id="designclass" internalid="designclass3" name="Actor" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass3" name="Actor"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr3" id="" interfaceb="interfacegr0" internalid="realizationgr1">
+        <object a="designclass3" b="interface0" class="Realization" id="realization" internalid="realization1"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr4" uid="Desktop Application User" x="69" y="249">
+        <object class="DesignClass" id="designclass" internalid="designclass4" name="UCDComponent" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass4" name="UCDComponent"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr4" id="" interfaceb="interfacegr0" internalid="realizationgr2">
+        <object a="designclass4" b="interface0" class="Realization" id="realization" internalid="realization2"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr5" uid="Desktop Application User" x="23" y="372">
+        <object class="DesignClass" id="designclass" internalid="designclass5" name="CompositeUCDElement" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass5" name="CompositeUCDElement"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr5" class="GeneralizationGR" id="" internalid="generalizationgr2" super="classgr4">
+        <object base="designclass5" class="Generalization" id="generalization" internalid="generalization2" super="designclass4"/>
+      </object>
+      <object class="AggregationGR" classa="classgr5" classb="classgr4" id="" internalid="aggregationgr0">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation0" labelDirection="3" name="" showArrow="false" strong="false">
+          <object class="Role" classifier="designclass5" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass4" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

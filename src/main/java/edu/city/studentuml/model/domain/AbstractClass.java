@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import org.w3c.dom.Element;
 

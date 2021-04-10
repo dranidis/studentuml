@@ -48,13 +48,13 @@ public class UMLProjectTest {
     String javapath = filepath + File.separator + projectName + File.separator;
     ApplicationFrame af;
     UMLProject umlProject;
-    CodePreparation codePreparation ;
+    CodePreparation codePreparation;
 
     @Before
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
-        
+
         umlProject = UMLProject.getInstance();
         umlProject.clear();
         File file = new File(filepath);
@@ -164,8 +164,8 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(sd1GR);
         currDiagram.addGraphicalElement(sd2GR);
         CallMessage cm = new CallMessage(sd1, sd2, mtd1);
-//        cm.setReturnValue(new MessageReturnValue("int"));
-//        cm.addParameter(new MessageParameter("int x"));
+        // cm.setReturnValue(new MessageReturnValue("int"));
+        // cm.addParameter(new MessageParameter("int x"));
         cm.setReturnValue(new MessageReturnValue("y"));
         cm.setReturnType(DataType.INTEGER);
         cm.addParameter(new MethodParameter("x", DataType.INTEGER));
@@ -209,16 +209,16 @@ public class UMLProjectTest {
         CallMessage cm = new CallMessage(sd1, sd2, mtd1);
         cm.setReturnValue(new MessageReturnValue("y"));
         cm.setReturnType(DataType.INTEGER);
-//        cm.addParameter(new MessageParameter("int x"));
+        // cm.addParameter(new MessageParameter("int x"));
         cm.addParameter(new MethodParameter("x", DataType.INTEGER));
 
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm, 1));
         currDiagram2.addGraphicalElement(sd1GR);
         currDiagram2.addGraphicalElement(sd2GR);
         CallMessage cm2 = new CallMessage(sd1, sd2, mtd2);
-//        cm2.setReturnValue(new MessageReturnValue("void"));
+        // cm2.setReturnValue(new MessageReturnValue("void"));
         cm2.setReturnType(DataType.VOID);
-//        cm2.addParameter(new MessageParameter("String x"));
+        // cm2.addParameter(new MessageParameter("String x"));
         cm2.addParameter(new MethodParameter("x", DataType.STRING));
         currDiagram2.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm2, 1));
         int generatedFiles = codePreparation.generateCode(false);
@@ -266,7 +266,7 @@ public class UMLProjectTest {
         CallMessage cm = new CallMessage(sd1, sd2, mtd1);
         cm.setReturnValue(new MessageReturnValue("y"));
         cm.setReturnType(DataType.INTEGER);
-//        cm.addParameter(new MessageParameter("int x"));
+        // cm.addParameter(new MessageParameter("int x"));
         cm.addParameter(new MethodParameter("x", DataType.INTEGER));
         sdDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm, 1));
         int generatedFiles = codePreparation.generateCode(false);
@@ -295,7 +295,7 @@ public class UMLProjectTest {
             fail("No file");
         }
         assertEquals(2, generatedFiles);
-        assertTrue(dcdMethodExists); 
+        assertTrue(dcdMethodExists);
         assertTrue(sdMethodExists);
     }
 
@@ -319,14 +319,14 @@ public class UMLProjectTest {
         CallMessage cm1 = new CallMessage(sd1, sd2, mtd1);
         cm1.setReturnValue(new MessageReturnValue("z"));
         cm1.setReturnType(DataType.INTEGER);
-        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));        
-//        cm1.addParameter(new MessageParameter("int y"));
+        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));
+        // cm1.addParameter(new MessageParameter("int y"));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         CallMessage cm2 = new CallMessage(sd2, sd3, mtd2);
-//        cm2.setReturnValue(new MessageReturnValue("void"));
+        // cm2.setReturnValue(new MessageReturnValue("void"));
         cm2.setReturnType(DataType.VOID);
-        cm2.addParameter(new MethodParameter("y", DataType.INTEGER));        
-//        cm2.addParameter(new MessageParameter("int y"));
+        cm2.addParameter(new MethodParameter("y", DataType.INTEGER));
+        // cm2.addParameter(new MessageParameter("int y"));
         currDiagram.addGraphicalElement(new CallMessageGR(sd2GR, sd3GR, cm2, 2));
         int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
@@ -370,14 +370,14 @@ public class UMLProjectTest {
         CallMessage cm1 = new CallMessage(sd1, sd2, mtd1);
         cm1.setReturnValue(new MessageReturnValue("z"));
         cm1.setReturnType(DataType.INTEGER);
-        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));        
-//        cm1.addParameter(new MessageParameter("int y"));
+        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));
+        // cm1.addParameter(new MessageParameter("int y"));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         CallMessage cm2 = new CallMessage(sd2, sd3, mtd2);
         cm2.setReturnValue(new MessageReturnValue("z"));
-//        cm2.addParameter(new MessageParameter("int y"));
+        // cm2.addParameter(new MessageParameter("int y"));
         cm2.setReturnType(DataType.INTEGER);
-        cm2.addParameter(new MethodParameter("y", DataType.INTEGER));        
+        cm2.addParameter(new MethodParameter("y", DataType.INTEGER));
         currDiagram.addGraphicalElement(new CallMessageGR(sd2GR, sd3GR, cm2, 2));
         int generatedFiles = codePreparation.generateCode(false);
         File f = new File(javapath + "Class2.java");
@@ -421,9 +421,9 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(sd3GR);
         CallMessage cm1 = new CallMessage(sd1, sd2, mtd1);
         cm1.setReturnValue(new MessageReturnValue("z"));
-//        cm1.addParameter(new MessageParameter("int y"));
+        // cm1.addParameter(new MessageParameter("int y"));
         cm1.setReturnType(DataType.INTEGER);
-        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));        
+        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         CreateMessage cm2 = new CreateMessage(sd2, sd3);
         currDiagram.addGraphicalElement(new CreateMessageGR(sd2GR, sd3GR, cm2, 2));
@@ -468,9 +468,9 @@ public class UMLProjectTest {
         currDiagram.addGraphicalElement(sd3GR);
         CallMessage cm1 = new CallMessage(sd1, sd2, mtd1);
         cm1.setReturnValue(new MessageReturnValue("z"));
-//        cm1.addParameter(new MessageParameter("int y"));
+        // cm1.addParameter(new MessageParameter("int y"));
         cm1.setReturnType(DataType.INTEGER);
-        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));        
+        cm1.addParameter(new MethodParameter("y", DataType.INTEGER));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm1, 1));
         DestroyMessage cm2 = new DestroyMessage(sd2, sd3);
         currDiagram.addGraphicalElement(new DestroyMessageGR(sd2GR, sd3GR, cm2, 2));

@@ -33,7 +33,7 @@ import javax.swing.undo.CannotUndoException;
 public class CompositeDeleteEdit extends DeleteEditComponent {
 
     List deleteEditComponents = new ArrayList();
-    Object clone;   //need to store model elements before they are cleared at deletion
+    Object clone; // need to store model elements before they are cleared at deletion
 
     CompositeDeleteEdit(GraphicalElement element, DiagramModel model) {
         super(element, model);
@@ -118,7 +118,7 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
             MultiObject m = ((MultiObjectGR) element).getMultiObject();
             MultiObject n = (MultiObject) clone;
             model.getCentralRepository().editMultiObject(m, n.clone());
-        } 
+        }
     }
 
     @Override

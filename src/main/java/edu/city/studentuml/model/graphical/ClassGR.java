@@ -1,11 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ClassGR.java
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,22 +8,23 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
-@JsonIncludeProperties({ "abstractClass", "internalid", "startingPoint" })
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//ClassGR.java
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.util.XMLStreamer;
+
+@JsonIncludeProperties({ "class", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
-    @JsonIgnore
     private static int nameStereotypeDistance = 4;
-    @JsonIgnore
     private static int methodFieldXOffset = 4;
-    @JsonIgnore
     private static int methodFieldYOffset = 3;
-    @JsonIgnore
     private Font stereotypeFont;
-    @JsonIgnore
     private Font methodFont;
 
     public ClassGR(DesignClass c, Point start) {

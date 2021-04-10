@@ -107,15 +107,15 @@ public class DCDSelectionController extends SelectionController {
         }
 
         // edit the class if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalClass.getName().equals(newClass.getName())
-                && (repository.getDesignClass(newClass.getName()) != null)
-                && !newClass.getName().equals("")) {
+                && (repository.getDesignClass(newClass.getName()) != null) && !newClass.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing class with the given name already.\n"
-                    + "Do you want this diagram class to refer to the existing one?", "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram class to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 classGR.setDesignClass(repository.getDesignClass(newClass.getName()));
@@ -145,7 +145,8 @@ public class DCDSelectionController extends SelectionController {
         InterfaceEditor interfaceEditor = new InterfaceEditor(interfaceGR, repository);
         Interface originalInterface = interfaceGR.getInterface();
 
-        // show the interface editor dialog and check whether the user has pressed cancel
+        // show the interface editor dialog and check whether the user has pressed
+        // cancel
         if (!interfaceEditor.showDialog(parentComponent, "Interface Editor")) {
             return;
         }
@@ -159,14 +160,15 @@ public class DCDSelectionController extends SelectionController {
         }
 
         // edit the interface if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalInterface.getName().equals(newInterface.getName())
                 && (repository.getInterface(newInterface.getName()) != null) && !newInterface.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing interface with the given name already.\n"
-                    + "Do you want this diagram interface to refer to the existing one?", "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram interface to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 interfaceGR.setInterface(repository.getInterface(newInterface.getName()));
@@ -194,7 +196,8 @@ public class DCDSelectionController extends SelectionController {
         AssociationEditor associationEditor = new AssociationEditor(associationGR);
         Association association = associationGR.getAssociation();
 
-        // show the association editor dialog and check whether the user has pressed cancel
+        // show the association editor dialog and check whether the user has pressed
+        // cancel
         if (!associationEditor.showDialog(parentComponent, "Association Editor")) {
             return;
         }
@@ -229,7 +232,8 @@ public class DCDSelectionController extends SelectionController {
         DesignAssociationClassEditor associationClassEditor = new DesignAssociationClassEditor(associationClassGR, r);
         DesignAssociationClass associationClass = (DesignAssociationClass) associationClassGR.getAssociationClass();
 
-        // show the association class editor dialog and check whether the user has pressed cancel
+        // show the association class editor dialog and check whether the user has
+        // pressed cancel
         if (!associationClassEditor.showDialog(parentComponent, "Association Class Editor")) {
             return;
         }

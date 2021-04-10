@@ -41,7 +41,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     protected static int attributeFieldYOffset = 3;
     protected Font nameFont;
     protected Font attributeFont;
-    // @JsonProperty("class")
+    @JsonProperty("class")
     protected AbstractClass abstractClass;
 
     public AbstractClassGR(AbstractClass c, Point start) {
