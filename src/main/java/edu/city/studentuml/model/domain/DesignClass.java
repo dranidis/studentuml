@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import org.w3c.dom.Element;
 

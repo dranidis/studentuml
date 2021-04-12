@@ -24,27 +24,10 @@
           <object id="methods"/>
         </object>
       </object>
-      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="194" y="214">
-        <object class="Interface" id="interface" internalid="interface0" name="AnI">
-          <object id="methods">
-            <object class="Method" id="" internalid="method2" name="mtf" returntype="int" scope="1" visibility="2">
-              <object id="parameters">
-                <object class="MethodParameter" id="" internalid="methodparameter2" name="par" type="int"/>
-              </object>
-            </object>
-          </object>
-        </object>
-      </object>
       <object class="AssociationGR" classa="classgr0" classb="classgr1" id="" internalid="associationgr0" uid="Desktop Application User">
         <object class="Association" direction="1" id="association" internalid="association0" labelDirection="3" name="" showArrow="false">
           <object class="Role" classifier="designclass0" id="rolea" multiplicity="" name=""/>
           <object class="Role" classifier="designclass1" id="roleb" multiplicity="" name=""/>
-        </object>
-      </object>
-      <object class="AssociationGR" classa="classgr1" classb="interfacegr0" id="" internalid="associationgr1" uid="Desktop Application User">
-        <object class="Association" direction="1" id="association" internalid="association1" labelDirection="3" name="" showArrow="false">
-          <object class="Role" classifier="designclass1" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="interface0" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
     </object>
