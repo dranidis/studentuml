@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.city.studentuml</groupId>
   <artifactId>studentuml</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,11 +48,11 @@
     </dependency>
   </dependencies>
 
- <build>
+  <build>
     <plugins>
 
       <!-- create a single jar packaging all dependencies -->
-       <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
