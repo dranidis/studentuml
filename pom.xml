@@ -48,11 +48,11 @@
     </dependency>
   </dependencies>
 
- <build>
+  <build>
     <plugins>
 
       <!-- create a single jar packaging all dependencies -->
-       <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>

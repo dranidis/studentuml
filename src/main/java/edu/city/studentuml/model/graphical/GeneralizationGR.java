@@ -23,7 +23,7 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
     private AbstractClassGR baseClass;
 
     public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {
-        super(parent, child);
+        super(child, parent);
         outlineColor = Color.black;
         highlightColor = Color.blue;
         superClass = parent;
@@ -32,14 +32,14 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public GeneralizationGR(ConceptualClassGR parent, ConceptualClassGR child, Generalization gener) {
-        super(parent, child);
+        super(child, parent);
         outlineColor = Color.black;
         highlightColor = Color.blue;
         superClass = parent;
         baseClass = child;
         generalization = gener;
     }
-    
+
     protected ClassifierGR getClassifierA() {
         return this.baseClass;
     }
@@ -47,7 +47,7 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
     protected ClassifierGR getClassifierB() {
         return this.superClass;
     }
-    
+
     public Generalization getGeneralization() {
         return generalization;
     }
