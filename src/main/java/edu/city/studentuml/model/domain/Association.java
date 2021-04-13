@@ -1,14 +1,19 @@
 package edu.city.studentuml.model.domain;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
+import org.w3c.dom.Element;
+
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ramollari Ervin
 //Association.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
-import java.io.Serializable;
 
-import org.w3c.dom.Element;
-
+@JsonIncludeProperties({ "name", "direction", "showArrow", "labelDirection", "reflective", "bidirectional", "roleA",
+        "roleB" })
 public class Association implements Serializable, IXMLCustomStreamable {
 
     // integer constants defining direction
@@ -20,8 +25,8 @@ public class Association implements Serializable, IXMLCustomStreamable {
     public static final int FROM_A_TO_B = 3;
     public static final int FROM_B_TO_A = 4;
     private String name;
-    private int direction;      // 0 = bidirectional, 1 = A -> B, 2 = B -> A
-    private boolean showArrow;  // true if a direction arrow is to be shown along with the name
+    private int direction; // 0 = bidirectional, 1 = A -> B, 2 = B -> A
+    private boolean showArrow; // true if a direction arrow is to be shown along with the name
     private int labelDirection;
     private Role roleA;
     private Role roleB;
@@ -135,7 +140,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
         return copyAssociation;
     }
 
-    //need for undo/redo
+    // need for undo/redo
     public void setRoleA(Role roleA) {
         this.roleA = roleA;
     }
@@ -144,7 +149,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
         this.roleB = roleB;
     }
 
-    //fix for reading direction label
+    // fix for reading direction label
     public void changeLabelDirection() {
         if (labelDirection == FROM_A_TO_B) {
             setLabelDirection(FROM_B_TO_A);

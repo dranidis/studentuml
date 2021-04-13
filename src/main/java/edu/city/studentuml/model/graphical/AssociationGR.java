@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
-@JsonIncludeProperties({ "classA", "classB", "internalid" })
+@JsonIncludeProperties({ "classA", "classB", "internalid", "association" })
 public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
     private Association association;

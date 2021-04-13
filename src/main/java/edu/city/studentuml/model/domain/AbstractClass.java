@@ -1,5 +1,14 @@
 package edu.city.studentuml.model.domain;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import org.w3c.dom.Element;
+
 /**
  *
  * @author draganbisercic
@@ -8,13 +17,8 @@ import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import java.io.Serializable;
-import java.util.Iterator;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import org.w3c.dom.Element;
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
 
 public abstract class AbstractClass implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
