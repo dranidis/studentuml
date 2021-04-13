@@ -1,13 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//InterfaceGR.java
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -26,8 +18,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//InterfaceGR.java
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.Interface;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.util.XMLStreamer;
+
 @JsonIncludeProperties({ "interface", "internalid", "startingPoint" })
-public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
+public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
     private static int methodFieldXOffset = 4;
     private static int methodFieldYOffset = 3;

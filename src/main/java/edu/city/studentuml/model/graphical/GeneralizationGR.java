@@ -1,12 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//GeneralizationGR.java
-import edu.city.studentuml.model.domain.Generalization;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -16,7 +9,14 @@ import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
-public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//GeneralizationGR.java
+import edu.city.studentuml.model.domain.Generalization;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+public class GeneralizationGR extends LinkGR {
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
     private AbstractClassGR superClass;

@@ -4,7 +4,6 @@ package edu.city.studentuml.model.graphical;
 //Author: Ervin Ramollari
 //AssociationGR.java
 import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -22,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import org.w3c.dom.Element;
 
 @JsonIncludeProperties({ "classA", "classB", "internalid", "association" })
-public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
+public class AssociationGR extends LinkGR {
 
     private Association association;
     // the graphical classes that the association line connects in the diagram

@@ -1,10 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.AbstractClass;
-import edu.city.studentuml.model.domain.Attribute;
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,18 +13,20 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.AbstractClass;
+import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author draganbisercic
  */
-public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
+public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR {
 
     protected static int minimumAttributeFieldHeight = 20;
     protected static int minimumMethodFieldHeight = 20;
