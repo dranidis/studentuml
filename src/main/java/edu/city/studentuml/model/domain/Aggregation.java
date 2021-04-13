@@ -1,17 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Aggregation.java
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
-public class Aggregation extends Association implements Serializable, IXMLCustomStreamable {
+import edu.city.studentuml.util.XMLStreamer;
 
-    private boolean isStrong;    // true if composition, false if simple aggregation
+public class Aggregation extends Association implements Serializable {
+
+    private boolean isStrong; // true if composition, false if simple aggregation
 
     public Aggregation(Classifier w, Classifier p) {
         super(w, p);

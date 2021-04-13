@@ -7,6 +7,9 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -16,6 +19,7 @@ import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+@JsonIncludeProperties({ "internalid", "from", "to", "realization" })
 public class RealizationGR extends LinkGR {
 
     // the graphical class and interface that the dependency line connects in the
@@ -135,10 +139,12 @@ public class RealizationGR extends LinkGR {
         return realization;
     }
 
+    @JsonProperty("from")
     public ClassGR getTheClass() {
         return classGR;
     }
 
+    @JsonProperty("to")
     public InterfaceGR getTheInterface() {
         return interfaceGR;
     }

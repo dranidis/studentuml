@@ -7,6 +7,9 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -16,10 +19,13 @@ import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+@JsonIncludeProperties({ "internalid", "from", "to", "generalization" })
 public class GeneralizationGR extends LinkGR {
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
+    @JsonProperty("to")
     private AbstractClassGR superClass;
+    @JsonProperty("from")
     private AbstractClassGR baseClass;
 
     public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {

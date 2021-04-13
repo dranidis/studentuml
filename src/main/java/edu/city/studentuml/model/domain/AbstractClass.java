@@ -18,8 +18,6 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
-
 public abstract class AbstractClass implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
     protected GenericClass genericClass;

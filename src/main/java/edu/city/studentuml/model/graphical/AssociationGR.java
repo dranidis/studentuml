@@ -17,15 +17,18 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
-@JsonIncludeProperties({ "classA", "classB", "internalid", "association" })
+@JsonIncludeProperties({ "from", "to", "internalid", "association" })
 public class AssociationGR extends LinkGR {
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
+    @JsonProperty("from")
     private ClassifierGR classA;
+    @JsonProperty("to")
     private ClassifierGR classB;
     private Font nameFont;
     private Font roleFont;

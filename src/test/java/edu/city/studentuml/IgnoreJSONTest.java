@@ -11,18 +11,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
+import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DependencyGR;
+import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
@@ -198,6 +206,37 @@ public class IgnoreJSONTest {
     }
 
     @Test
+    public void diagramClassWithAggregation() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
+        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        UMLProject umlProject = UMLProject.getInstance();
+        DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
+
+        DesignClass dc1 = new DesignClass("A");
+        ClassGR graphicalClass1 = new ClassGR(dc1, new java.awt.Point(10, 12));
+        diagramModel.addGraphicalElement(graphicalClass1);
+        DesignClass dc2 = new DesignClass("B");
+        ClassGR graphicalClass2 = new ClassGR(dc2, new java.awt.Point(20, 22));
+        diagramModel.addGraphicalElement(graphicalClass2);
+
+        Aggregation aggregation = new Aggregation(dc1, dc2);
+        AggregationGR aggregationGR = new AggregationGR(graphicalClass1, graphicalClass2, aggregation);
+        diagramModel.addGraphicalElement(aggregationGR);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
     public void emptyDiagram() {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -249,6 +288,91 @@ public class IgnoreJSONTest {
         String jsonString = "";
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
+    public void realization() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DesignClass dc = new DesignClass("A");
+        Interface in = new Interface(("In"));
+        Realization r = new Realization(dc, in);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
+    public void realizationGR() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DesignClass dc = new DesignClass("A");
+        ClassGR cgr = new ClassGR(dc, new Point(23, 2));
+        Interface in = new Interface(("In"));
+        InterfaceGR ingr = new InterfaceGR(in, new Point(23, 2));
+        Realization r = new Realization(dc, in);
+        RealizationGR rgr = new RealizationGR(cgr, ingr, r);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rgr);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
+    public void dependencyGR() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DesignClass dc1 = new DesignClass("A");
+        ClassGR cgr1 = new ClassGR(dc1, new Point(23, 2));
+        DesignClass dc2 = new DesignClass("B");
+        ClassGR cgr2 = new ClassGR(dc2, new Point(23, 2));
+        Dependency d = new Dependency(dc1, dc2);
+        DependencyGR dgr = new DependencyGR(cgr1, cgr2, d);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dgr);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
+    public void generalizationGR() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DesignClass dc1 = new DesignClass("Super");
+        ClassGR cgr1 = new ClassGR(dc1, new Point(23, 2));
+        DesignClass dc2 = new DesignClass("Sub");
+        ClassGR cgr2 = new ClassGR(dc2, new Point(23, 2));
+        Generalization g = new Generalization(dc1, dc2);
+        GeneralizationGR ggr = new GeneralizationGR(cgr1, cgr2, g);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ggr);
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

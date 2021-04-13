@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -14,10 +17,13 @@ import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+@JsonIncludeProperties({ "internalid", "from", "to", "dependency" })
 public class DependencyGR extends LinkGR {
 
     // the graphical classes that the dependency line connects in the diagram
+    @JsonProperty("from")
     private ClassGR classA;
+    @JsonProperty("to")
     private ClassGR classB;
     private Dependency dependency;
 
