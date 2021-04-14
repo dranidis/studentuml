@@ -43,7 +43,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dc);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -64,7 +63,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cl);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -85,7 +83,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(in);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -103,7 +100,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(inGr);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -126,7 +122,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dc);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -142,7 +137,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(graphicalClass);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -166,7 +160,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -198,7 +191,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -229,7 +221,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -249,7 +240,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -268,7 +258,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -289,7 +278,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -308,7 +296,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(r);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -330,7 +317,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rgr);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -352,7 +338,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dgr);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -374,7 +359,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ggr);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);
@@ -395,7 +379,6 @@ public class IgnoreJSONTest {
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println(jsonString);

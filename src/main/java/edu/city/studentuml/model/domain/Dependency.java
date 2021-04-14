@@ -29,12 +29,9 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
-
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(from));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(to));
     }

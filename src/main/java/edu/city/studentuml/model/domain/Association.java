@@ -108,7 +108,6 @@ public class Association implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setDirection(Integer.parseInt(node.getAttribute("direction")));
         setShowArrow(Boolean.parseBoolean(node.getAttribute("showArrow")));
@@ -116,7 +115,6 @@ public class Association implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("direction", Integer.toString(direction));
         node.setAttribute("showArrow", String.valueOf(getShowArrow()));

@@ -296,7 +296,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         // DesignClass d = (DesignClass)streamer.readObjectByID(node, "designclass",
         // this);
         // setDesignClass(d);
@@ -307,7 +306,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
     // need to be redifined in subclass
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
     }
 

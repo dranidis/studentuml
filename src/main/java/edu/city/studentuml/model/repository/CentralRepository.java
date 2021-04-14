@@ -254,7 +254,6 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     private void initialiseDataTypes() {
-        // TODO Auto-generated method stub
         datatypes.add(DataType.VOID);
         datatypes.add(DataType.INTEGER);
         datatypes.add(DataType.FLOAT);

@@ -159,7 +159,6 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setVisibility(Integer.parseInt(node.getAttribute("visibility")));
         setScope(Integer.parseInt(node.getAttribute("scope")));

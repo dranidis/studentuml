@@ -73,7 +73,7 @@ import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
-    
+
     /**
      *
      */
@@ -91,7 +91,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected String advancedRulesFile;
     protected String currentRuleFile;
     private ProjectToolBar toolbar;
-    protected JDesktopPane desktopPane;   //holds internal frames
+    protected JDesktopPane desktopPane; // holds internal frames
     protected RepositoryTreeView repositoryTreeView;
     protected JScrollPane treePane;
     protected JTree factsTree;
@@ -132,7 +132,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
+
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
     }
@@ -182,13 +182,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createLookAndFeel() {
-//        System.setProperty("lipstikLF.theme", "LightGrayTheme");
-//
-//        try {
-//            UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        // System.setProperty("lipstikLF.theme", "LightGrayTheme");
+        //
+        // try {
+        // UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
     }
 
     private void createInterface() {
@@ -253,11 +253,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane_p);
 
-        //scrollPane_f = new JScrollPane();
-        //scrollPane_f.setViewportView(factsTree);
+        // scrollPane_f = new JScrollPane();
+        // scrollPane_f.setViewportView(factsTree);
         tabbedPane.addTab("Problems", null, panel, null);
-        //tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile), null);
-        //tabbedPane.addTab("Facts", null, scrollPane_f, null);
+        // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
+        // null);
+        // tabbedPane.addTab("Facts", null, scrollPane_f, null);
     }
 
     private void createFactsAndMessageTree() {
@@ -289,10 +290,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             public void actionPerformed(ActionEvent e) {
                 String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-                //SystemWideObjectNamePool.getInstance().loading();
+                // SystemWideObjectNamePool.getInstance().loading();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-                //SystemWideObjectNamePool.getInstance().done();
-                ////SystemWideObjectNamePool.getInstance().reloadRules();
+                // SystemWideObjectNamePool.getInstance().done();
+                //// SystemWideObjectNamePool.getInstance().reloadRules();
                 SystemWideObjectNamePool.getInstance().reload();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(null);
             }
@@ -316,8 +317,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                         // do something about this
                     }
                 } catch (MalformedURLException mue) {
-                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL",
-                            "Wrong URL", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -369,16 +370,15 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.add(repairPanel, BorderLayout.PAGE_END);
 
         repairButton = new JButton();
-        //repairButton.setMargin(new Insets(2, 2, 2, 2));
+        // repairButton.setMargin(new Insets(2, 2, 2, 2));
         repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
         repairButton.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent e) {
-                repairButton.setBorder(new CompoundBorder(
-                        new LineBorder(UIManager.getColor("blue"), 1),
-                        new EmptyBorder(1, 4, 1, 4)));
+                repairButton.setBorder(
+                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
             public void mouseExited(MouseEvent e) {
@@ -390,10 +390,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             public void actionPerformed(ActionEvent e) {
                 TreePath checkedPaths[] = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-                //String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
+                // String rulename =
+                // messageTree.getSelectionPath().getLastPathComponent().toString();
                 if (checkedPaths != null) {
                     for (int i = 0; i < checkedPaths.length; i++) {
-                        SystemWideObjectNamePool.getInstance().setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
+                        SystemWideObjectNamePool.getInstance()
+                                .setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
                         SystemWideObjectNamePool.getInstance().reload();
                     }
                 }
@@ -409,7 +411,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairPanel.setVisible(false);
         showRepairButton(messageTree, repairButton);
 
-        setRepairMode(true);	// Sets on/off the REPAIR feature
+        setRepairMode(true); // Sets on/off the REPAIR feature
     }
 
     protected void showRepairButton(final Component component, final JButton button) {
@@ -427,7 +429,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-            System.out.println(e);
+        System.out.println(e);
         if (c != KeyEvent.CHAR_UNDEFINED) {
             System.out.println(c);
             repaint();
@@ -436,11 +438,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void keyPressed(KeyEvent e) {
-            System.out.println(e);
+        System.out.println(e);
     }
 
     public void keyReleased(KeyEvent e) {
-            System.out.println(e);
+        System.out.println(e);
     }
 
     public void update(Observable observable, Object object) {
@@ -478,7 +480,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             if (factsTree != null) {
                 factsTree.setModel(facts);
             }
-            
+
             umlProject.projectChanged();
         }
         if (object != null && object instanceof FrameProperties) {
@@ -493,9 +495,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
                 ((DiagramInternalFrame) fp.model.getFrame()).setIcon(fp.iconified);
             } catch (PropertyVetoException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-            }            
+            }
         }
     }
 
@@ -510,8 +511,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public abstract void exportImage();
 
     /*
-     * creates a new empty diagram within the appropriate internal frame,
-     * depending on the type integer
+     * creates a new empty diagram within the appropriate internal frame, depending
+     * on the type integer
      */
     public void createNewInternalFrame(int type) {
         DiagramModel model;
@@ -533,7 +534,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else {
                 return;
             }
-            
+
             addInternalFrame(model);
         }
     }
@@ -542,32 +543,32 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String dialogText;
         String initialName;
         switch (type) {
-            case DiagramModel.UCD:
-                dialogText = "Use Case Diagram Name: ";
-                initialName = "ucd";
-                break;
-            case DiagramModel.SSD:
-                dialogText = "System Sequence Diagram Name:";
-                initialName = "ssd";
-                break;
-            case DiagramModel.SD:
-                dialogText = "Sequence Diagram Name: ";
-                initialName = "sd";
-                break;
-            case DiagramModel.CCD:
-                dialogText = "Conceptual Class Diagram Name: ";
-                initialName = "ccd";
-                break;
-            case DiagramModel.DCD:
-                dialogText = "Design Class Diagram Name: ";
-                initialName = "dcd";
-                break;
-            case DiagramModel.AD:
-                dialogText = "Activity Diagram Name: ";
-                initialName = "ad";
-                break;
-            default:
-                throw new RuntimeException("Unknown diagram (int) type: " + type);
+        case DiagramModel.UCD:
+            dialogText = "Use Case Diagram Name: ";
+            initialName = "ucd";
+            break;
+        case DiagramModel.SSD:
+            dialogText = "System Sequence Diagram Name:";
+            initialName = "ssd";
+            break;
+        case DiagramModel.SD:
+            dialogText = "Sequence Diagram Name: ";
+            initialName = "sd";
+            break;
+        case DiagramModel.CCD:
+            dialogText = "Conceptual Class Diagram Name: ";
+            initialName = "ccd";
+            break;
+        case DiagramModel.DCD:
+            dialogText = "Design Class Diagram Name: ";
+            initialName = "dcd";
+            break;
+        case DiagramModel.AD:
+            dialogText = "Activity Diagram Name: ";
+            initialName = "ad";
+            break;
+        default:
+            throw new RuntimeException("Unknown diagram (int) type: " + type);
         }
         String modelName = JOptionPane.showInputDialog(dialogText, initialName);
         return modelName;
@@ -640,16 +641,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * opens appropriate frames based on a vector of diagram model objects
      */
-//    private void openFrames(Vector diagramModels) {
-//        DiagramModel model;
-//        Iterator iterator = diagramModels.iterator();
-//
-//        while (iterator.hasNext()) {
-//            model = (DiagramModel) iterator.next();
-//            model.addObserver(this);
-//            addInternalFrame(model);
-//        }
-//    }
+    // private void openFrames(Vector diagramModels) {
+    // DiagramModel model;
+    // Iterator iterator = diagramModels.iterator();
+    //
+    // while (iterator.hasNext()) {
+    // model = (DiagramModel) iterator.next();
+    // model.addObserver(this);
+    // addInternalFrame(model);
+    // }
+    // }
 
     /*
      * closes all existing internal frames (diagrams) in the application
@@ -667,8 +668,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /*
-     * utilized by other methods trying to embed a diagram model
-     * in the appropriate internal frame
+     * utilized by other methods trying to embed a diagram model in the appropriate
+     * internal frame
      */
     public void addInternalFrame(DiagramModel model, Rectangle R) {
         DiagramInternalFrame f = null;
@@ -682,12 +683,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (model instanceof SDModel) {
             f = new SDInternalFrame((SDModel) model);
         } else if (model instanceof DCDModel) {
-            f = new DCDInternalFrame((DCDModel) model, /*advancedModeRadioButtonMenuItem.isSelected()*/ true);
+            f = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         } else if (model instanceof ADModel) {
             f = new ADInternalFrame((ADModel) model);
-        } //else if (model instanceof StateModel) {
-        //f = new StateInternalFrame((StateModel) model);
-        //}
+        } // else if (model instanceof StateModel) {
+          // f = new StateInternalFrame((StateModel) model);
+          // }
 
         if (R != null) {
             f.setBounds(R);
@@ -697,7 +698,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         model.setFrame(f);
         f.addInternalFrameListener(new DiagramInternalFrameListener());
         desktopPane.add(f);
-        //f.setLocation(xOffset * openFrameCounter, yOffset * openFrameCounter);
+        // f.setLocation(xOffset * openFrameCounter, yOffset * openFrameCounter);
         openFrameCounter++;
         f.setOpaque(true);
         f.setVisible(true);
@@ -733,7 +734,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Vector<JInternalFrame> ccdFrames = new Vector<>();
         Vector<JInternalFrame> dcdFrames = new Vector<>();
         Vector<JInternalFrame> adFrames = new Vector<>();
-        //Vector stateFrames = new Vector();
+        // Vector stateFrames = new Vector();
         JInternalFrame[] frames = desktopPane.getAllFrames();
         JInternalFrame f;
 
@@ -752,9 +753,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dcdFrames.add(f);
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
-            } //else if (f instanceof StateInternalFrame) {
-            //stateFrames.add(f);
-            //}
+            } // else if (f instanceof StateInternalFrame) {
+              // stateFrames.add(f);
+              // }
         }
 
         if (type == DiagramModel.UCD) {
@@ -769,9 +770,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             return dcdFrames;
         } else if (type == DiagramModel.AD) {
             return adFrames;
-        } //else if () {
-        //return stateFrames;
-        //}
+        } // else if () {
+          // return stateFrames;
+          // }
 
         return new Vector<JInternalFrame>();
     }
@@ -784,12 +785,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             splitPane_1.setDividerLocation(getHeight() * 360 / 600);
             reloadRules();
         } else {
-            splitPane_1.setDividerSize(0);   
+            splitPane_1.setDividerSize(0);
         }
     }
 
     public void showRuleEditorTab(boolean b) {
-        if(b) {
+        if (b) {
             ruleEditorTabPlacement = tabbedPane.getTabCount();
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
             tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
@@ -801,7 +802,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public int getRuleEditorTabPlacement() {
         return ruleEditorTabPlacement;
-    }    
+    }
 
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
@@ -813,7 +814,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             factsTreeTabPlacement = -1;
         }
     }
-    
+
     public void simpleMode() {
         currentRuleFile = simpleRulesFile;
         setRuleFile(simpleRulesFile);
@@ -827,9 +828,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
-        }        
+        }
     }
-    
+
     public void advancedMode() {
         currentRuleFile = advancedRulesFile;
         setRuleFile(advancedRulesFile);
@@ -845,10 +846,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
         }
     }
-    
+
     /*
-     * inner class listens for events from internal frames;
-     * overrides default behavior when the user closes the frame
+     * inner class listens for events from internal frames; overrides default
+     * behavior when the user closes the frame
      */
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
 
@@ -886,12 +887,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
-        
+
     /*
-     * Prompts the user to save changes, closes the project, and finally exits application
+     * Prompts the user to save changes, closes the project, and finally exits
+     * application
      */
     private void exitApplication() {
-        //exit app if the user decided to close project and didn't cancel
+        // exit app if the user decided to close project and didn't cancel
         if (closeProject()) {
             System.exit(0);
         }
@@ -902,7 +904,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /*
-     * closes the current project while prompting the user to save changes if necessary
+     * closes the current project while prompting the user to save changes if
+     * necessary
      */
     public boolean closeProject() {
         boolean runtimeChecking = isRuntimeChecking();
@@ -915,10 +918,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             if (response == JOptionPane.YES_OPTION) {
                 saveProject();
-                
-                if(!isSaved()) // saving was cancelled
+
+                if (!isSaved()) // saving was cancelled
                     return false;
-                
+
                 closeFrames();
                 umlProject.clear();
                 centralRepository.clear();
@@ -930,14 +933,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 centralRepository.clear();
                 setRuntimeChecking(runtimeChecking);
                 return true;
-            } else {		// user pressed the cancel option
+            } else { // user pressed the cancel option
                 setRuntimeChecking(runtimeChecking);
                 return false;
             }
 
         } else {
             closingOrLoading = true;
-            
+
             closeFrames();
             setRuntimeChecking(runtimeChecking);
 
@@ -970,8 +973,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return isApplet;
     }
     /*
-     * Below methods are used for remembering the tree expansion state for messageTree
-     * is path1 descendant of path2
+     * Below methods are used for remembering the tree expansion state for
+     * messageTree is path1 descendant of path2
      */
 
     public static boolean isDescendant(TreePath path1, TreePath path2) {
@@ -1044,7 +1047,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             newButton.setToolTipText("New Project");
             newButton.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
-                    newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1057,7 +1061,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     newProject();
                 }
             });
-            if (!isApplet) {  //applet version does not allow creation of new project
+            if (!isApplet) { // applet version does not allow creation of new project
                 add(newButton);
             }
             ImageIcon openIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "open.gif"));
@@ -1067,7 +1071,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             openButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1089,7 +1094,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             saveButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1111,7 +1117,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             saveAsButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    saveAsButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    saveAsButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1137,7 +1144,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             exportButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    exportButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    exportButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1155,14 +1163,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 addSeparator();
             }
 
-            ImageIcon useCaseIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "useCaseDiagram.gif"));
+            ImageIcon useCaseIcon = new ImageIcon(
+                    this.getClass().getResource(Constants.IMAGES_DIR + "useCaseDiagram.gif"));
             useCaseButton = new JButton(useCaseIcon);
             useCaseButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             useCaseButton.setToolTipText("New Use Case Diagram");
             useCaseButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    useCaseButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    useCaseButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1183,7 +1193,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ssdButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1204,7 +1215,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ccdButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1225,7 +1237,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             sdButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1246,7 +1259,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             dcdButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1267,7 +1281,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             adButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    adButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    adButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1295,7 +1310,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             resizeButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1317,10 +1333,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
              */
             // add(resizeButton);
 
-            //Icon validateSD_DCDIcon = new ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
-            //validateSD_DCDButton = new JButton(validateSD_DCDIcon);
-            //validateSD_DCDButton.setToolTipText("Validate SD against DCD");
-            //validateSD_DCDButton.addActionListener(this);
+            // Icon validateSD_DCDIcon = new
+            // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
+            // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
+            // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
+            // validateSD_DCDButton.addActionListener(this);
             addSeparator();
 
             ImageIcon reloadIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "reload.gif"));
@@ -1330,7 +1347,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             reloadRulesButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1350,8 +1368,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             // add(reloadRulesButton);
 
             addSeparator();
-            
-            ImageIcon forwardEngineerIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
+
+            ImageIcon forwardEngineerIcon = new ImageIcon(
+                    this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
             Image img2 = forwardEngineerIcon.getImage();
             Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             forwardEngineerIcon.setImage(imgScaled2);
@@ -1361,53 +1380,48 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             forwardEngineerButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                	forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
-                	forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+                    forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
             });
             forwardEngineerButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                	JCheckBox checkBox = new JCheckBox("Update Current Files",false);
-                	String message = "Do you Want to Generate Code? \n"
-                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
+                    JCheckBox checkBox = new JCheckBox("Update Current Files", false);
+                    String message = "Do you Want to Generate Code? \n"
+                            + "Make Sure You Have Created and Saved the Approrpiate\n"
                             + "Design (first) and Sequence Diagrams!";
-                	Object[] params= {message, checkBox};
-                	//0 for yes and 1 for no
-                	int codeGenerationConfirm = JOptionPane.showConfirmDialog(
-                		    frame,
-                		    params,
-                            "Code Generation",
-                		    JOptionPane.YES_NO_OPTION);
-                	boolean update = checkBox.isSelected();
-                	if (codeGenerationConfirm == 0) {
-                                CodePreparation codePreparation = new CodePreparation();
-                		int genFilesCount = codePreparation.generateCode(update);
-                		if (genFilesCount>0) {
-                			JOptionPane.showMessageDialog(frame,
-                			"Success!! \n" +
-                			"You have generated " + genFilesCount + " files in\n" +
-                			umlProject.getFilepath().replace(".xml", File.separator),
-                			"Code Generator",JOptionPane.INFORMATION_MESSAGE);		
-                		}else {
-                			JOptionPane.showMessageDialog(frame,
-                        			"No Input - New Files Not Generated",
-                					"Code Generator",JOptionPane.INFORMATION_MESSAGE);
-                		}
-                	}
+                    Object[] params = { message, checkBox };
+                    // 0 for yes and 1 for no
+                    int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
+                            JOptionPane.YES_NO_OPTION);
+                    boolean update = checkBox.isSelected();
+                    if (codeGenerationConfirm == 0) {
+                        CodePreparation codePreparation = new CodePreparation();
+                        int genFilesCount = codePreparation.generateCode(update);
+                        if (genFilesCount > 0) {
+                            JOptionPane.showMessageDialog(frame,
+                                    "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
+                                            + umlProject.getFilepath().replace(".xml", File.separator),
+                                    "Code Generator", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
                 }
             });
 
-            /** 
-             * TODO: REMOVE THE BUTTON TILL  code generation is completed!
+            /**
+             * TODO: REMOVE THE BUTTON TILL code generation is completed!
              */
             // add(forwardEngineerButton);
-            
-            addSeparator();
 
+            addSeparator();
 
             ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
@@ -1419,7 +1433,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             helpButton.addMouseListener(new MouseAdapter() {
 
                 public void mouseEntered(MouseEvent e) {
-                    helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                            new EmptyBorder(4, 4, 4, 4)));
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1487,8 +1502,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         public Dimension getSize() throws NumberFormatException {
-            int width = 0,
-                    height = 0;
+            int width = 0, height = 0;
 
             try {
                 width = Integer.parseInt(widthField.getText());

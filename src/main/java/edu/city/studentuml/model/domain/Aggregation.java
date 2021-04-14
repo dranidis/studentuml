@@ -1,12 +1,10 @@
 package edu.city.studentuml.model.domain;
 
-import java.io.Serializable;
-
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.XMLStreamer;
 
-public class Aggregation extends Association implements Serializable {
+public class Aggregation extends Association {
 
     private boolean isStrong; // true if composition, false if simple aggregation
 
@@ -49,14 +47,12 @@ public class Aggregation extends Association implements Serializable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
 
         setStrong(Boolean.valueOf(node.getAttribute("strong")));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("strong", Boolean.toString(isStrong));
 
         super.streamToXML(node, streamer);

@@ -24,13 +24,11 @@ public class SystemInstanceGR extends AbstractSDObjectGR implements IXMLCustomSt
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "systeminstance", getSystemInstance());
         node.setAttribute("x", Integer.toString(startingPoint.x));

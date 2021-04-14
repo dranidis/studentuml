@@ -212,7 +212,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setVisibility(Integer.parseInt(node.getAttribute("visibility")));
         setScope(Integer.parseInt(node.getAttribute("scope")));
@@ -224,7 +223,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
 
         node.setAttribute("returntype", returnType.getName());
@@ -256,7 +254,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
         return copyMethod;
     }
 
-    // TODO: User StringBuilder
     @JsonIgnore
     public String getParametersAsString() {
         String allParameters = "";

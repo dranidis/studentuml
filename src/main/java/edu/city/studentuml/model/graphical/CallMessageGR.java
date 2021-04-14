@@ -37,11 +37,8 @@ public class CallMessageGR extends SDMessageGR {
         return (CallMessage) getMessage();
     }
 
-
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
-
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));

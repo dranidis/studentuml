@@ -23,12 +23,10 @@ public class SDObject extends RoleClassifier implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         streamer.streamObject(node, "designclass", getDesignClass());
         node.setAttribute("designclass", SystemWideObjectNamePool.getInstance().getNameForObject(getDesignClass()));

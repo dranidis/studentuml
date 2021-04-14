@@ -231,13 +231,11 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
 
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classifierA));

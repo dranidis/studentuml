@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
 
 public class XMLStreamer {
-    
+
     Logger logger = Logger.getLogger(XMLStreamer.class.getName());
 
     private Document doc = null;
@@ -54,8 +54,9 @@ public class XMLStreamer {
             builder = factory.newDocumentBuilder();
             DOMImplementation impl = builder.getDOMImplementation();
             doc = impl.createDocument("", "uml", null);
-            //String packageName = this.getClass().getPackage().getName(); //FIXME: PACKAGE
-            //doc.getDocumentElement().setAttribute("package", packageName); //FIXME: PACKAGE
+            // String packageName = this.getClass().getPackage().getName(); //FIXME: PACKAGE
+            // doc.getDocumentElement().setAttribute("package", packageName); //FIXME:
+            // PACKAGE
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
@@ -67,15 +68,14 @@ public class XMLStreamer {
 
         try {
             builder = factory.newDocumentBuilder();
-            doc = builder.parse(new InputSource(new StringReader(xmlString))); // use parse(InputSource), where InputSource comes from String
+            doc = builder.parse(new InputSource(new StringReader(xmlString))); // use parse(InputSource), where
+                                                                               // InputSource comes from String
 
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -122,12 +122,10 @@ public class XMLStreamer {
             writer.close();
             xmlString = writer.toString();
         } catch (TransformerConfigurationException e) {
-            // TODO Auto-generated catch block
             JOptionPane.showMessageDialog(null, e.toString());
 
             // e.printStackTrace();
         } catch (TransformerException e) {
-            // TODO Auto-generated catch block
             JOptionPane.showMessageDialog(null, e.toString());
 
             // e.printStackTrace();
@@ -154,8 +152,8 @@ public class XMLStreamer {
 
             if (conn instanceof HttpURLConnection) {
                 ((HttpURLConnection) conn).setRequestMethod("POST");
-                ((HttpURLConnection) conn).setRequestProperty("Content-Length", ""
-                        + Integer.toString(xmlString.getBytes().length));
+                ((HttpURLConnection) conn).setRequestProperty("Content-Length",
+                        "" + Integer.toString(xmlString.getBytes().length));
             } else {
                 System.out.println("Not HTTP!");
             }
@@ -214,7 +212,8 @@ public class XMLStreamer {
         if (o instanceof IXMLCustomStreamable) {
             Element child = addChild(node, id);
             child.setAttribute("class", o.getClass().getSimpleName());
-            //child.setAttribute("class", o.getClass().getCanonicalName()); //FIXME: PACKAGE
+            // child.setAttribute("class", o.getClass().getCanonicalName()); //FIXME:
+            // PACKAGE
             child.setAttribute("id", id);
             String internalID = SystemWideObjectNamePool.getInstance().getNameForObject(o);
             if (internalID != null) {
@@ -240,7 +239,8 @@ public class XMLStreamer {
     public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) {
         Element child = getNodeById(node, id);
         if (child != null) {
-            IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance(((Element) child).getAttribute("class"), parent, (Element) child, this);
+            IXMLCustomStreamable object = ObjectFactory.getInstance()
+                    .newInstance(((Element) child).getAttribute("class"), parent, (Element) child, this);
             if (object != null) {
                 object.streamFromXML((Element) child, this, object);
                 return object;
@@ -254,7 +254,8 @@ public class XMLStreamer {
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {
-                IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
+                IXMLCustomStreamable object = ObjectFactory.getInstance()
+                        .newInstance(((Element) child).getAttribute("class"), instance, (Element) child, this);
                 if (object != null) {
                     object.streamFromXML((Element) child, this, object);
                 }
@@ -262,7 +263,7 @@ public class XMLStreamer {
         }
     }
 
-    //for undo/redo
+    // for undo/redo
     public void loadFromString(String data) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -275,15 +276,13 @@ public class XMLStreamer {
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    //for undo/redo
+    // for undo/redo
     public String streamToString() {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer;
@@ -296,10 +295,8 @@ public class XMLStreamer {
             return wri.toString();
 
         } catch (TransformerConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransformerException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return "";
@@ -324,7 +321,6 @@ public class XMLStreamer {
                     }
                 }
             } catch (XPathExpressionException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -348,10 +344,8 @@ public class XMLStreamer {
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -369,10 +363,8 @@ public class XMLStreamer {
             transformer.transform(source, result);
 
         } catch (TransformerConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransformerException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

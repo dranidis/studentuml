@@ -42,8 +42,8 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + 10, getY() - 8, width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle3 = new Rectangle2D.Double(getX() + width / 2 - 8,
-                getY() + height, 16, endingY - (getY() + height));
+        Rectangle2D rectangle3 = new Rectangle2D.Double(getX() + width / 2 - 8, getY() + height, 16,
+                endingY - (getY() + height));
 
         return (rectangle1.contains(point) || rectangle2.contains(point) || rectangle3.contains(point));
     }
@@ -110,8 +110,7 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         int underlineY = nameY + (int) bounds.getY() + (int) bounds.getHeight();
 
         g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                startingX + underlineX + (int) bounds.getWidth() + 2, startingY
-                + underlineY + 2);
+                startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
 
     }
 
@@ -142,13 +141,11 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "multiobject", getMultiObject());
         node.setAttribute("x", Integer.toString(startingPoint.x));

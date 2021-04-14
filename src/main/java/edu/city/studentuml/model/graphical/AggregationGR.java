@@ -89,12 +89,10 @@ public class AggregationGR extends AssociationGR {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(getWhole()));
         node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(getPart()));
 

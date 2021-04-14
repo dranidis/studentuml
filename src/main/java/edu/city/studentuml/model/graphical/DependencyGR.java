@@ -135,11 +135,9 @@ public class DependencyGR extends LinkGR {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
         node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));
 

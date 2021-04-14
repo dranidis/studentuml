@@ -31,7 +31,7 @@ public class CreateMessageGR extends CallMessageGR implements IXMLCustomStreamab
     }
 
     public Stroke getStroke() {
-        float dashes[] = {8};
+        float dashes[] = { 8 };
         return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
 
@@ -60,7 +60,6 @@ public class CreateMessageGR extends CallMessageGR implements IXMLCustomStreamab
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

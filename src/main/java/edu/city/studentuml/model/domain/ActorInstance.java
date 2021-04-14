@@ -22,14 +22,13 @@ public class ActorInstance extends RoleClassifier implements IXMLCustomStreamabl
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         streamer.streamObject(node, "actor", getActor());
-        //node.setAttribute("actor", SystemWideObjectNamePool.getInstance().getNameForObject(getActor()));
+        // node.setAttribute("actor",
+        // SystemWideObjectNamePool.getInstance().getNameForObject(getActor()));
     }
 
     public ActorInstance clone() {

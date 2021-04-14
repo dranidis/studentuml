@@ -27,7 +27,7 @@ public class ReturnMessage extends SDMessage implements IXMLCustomStreamable {
 
     public String toString() {
         String text = "";
-//        text += getRank() + ": ";
+        // text += getRank() + ": ";
         text += name;
         if (text.equals(""))
             text = " ";
@@ -35,12 +35,10 @@ public class ReturnMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
 
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));

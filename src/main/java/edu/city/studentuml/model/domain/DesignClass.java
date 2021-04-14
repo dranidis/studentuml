@@ -104,7 +104,6 @@ public class DesignClass extends AbstractClass {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setStereotype(node.getAttribute("stereotype"));
         clear();
         streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
@@ -112,7 +111,6 @@ public class DesignClass extends AbstractClass {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("stereotype", getStereotype());
         streamer.streamObject(node, "generic", genericClass);

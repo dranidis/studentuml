@@ -196,8 +196,6 @@ public class AssociationGR extends LinkGR {
     }
 
     protected void drawArrowHeads(Graphics2D g) {
-        // TODO Auto-generated method stub
-
         if (association.getDirection() == Association.AB) {
             drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
         } else if (association.getDirection() == Association.BA) {

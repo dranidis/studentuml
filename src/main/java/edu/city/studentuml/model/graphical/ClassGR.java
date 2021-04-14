@@ -179,7 +179,6 @@ public class ClassGR extends AbstractClassGR {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "designclass", getDesignClass());
         node.setAttribute("x", Integer.toString(startingPoint.x));

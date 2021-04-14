@@ -16,7 +16,7 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author dimitris
  */
 public class CallMessage extends SDMessage implements IXMLCustomStreamable {
-    
+
     Logger logger = Logger.getLogger(CallMessage.class.getName());
 
     private GenericOperation genericOperation;
@@ -62,7 +62,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
     public void setParameters(Vector<MethodParameter> param) {
         parameters.clear();
-        for(MethodParameter par: param) {
+        for (MethodParameter par : param) {
             parameters.add(par);
         }
     }
@@ -74,7 +74,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public MethodParameter getParameterByName(String name) {
-        for(MethodParameter param: parameters) {
+        for (MethodParameter param : parameters) {
             if (param.getName().equals(name)) {
                 return param;
             }
@@ -127,14 +127,13 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
     public String getParametersString() {
         StringJoiner sj = new StringJoiner(", ");
-        for(MethodParameter par : parameters) {
+        for (MethodParameter par : parameters) {
             sj.add(par.toStringShowTypes());
         }
         return sj.toString();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setIterative(Boolean.parseBoolean(node.getAttribute("iterative")));
         parameters.clear();
@@ -155,7 +154,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
                 returnType = null;
             } else {
                 returnType = new DataType(rv);
-;
+                ;
             }
         }
 
@@ -187,8 +186,8 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
     public CallMessage clone() {
         CallMessage copyCallMessage = new CallMessage(getSource(), getTarget(), new GenericOperation(this.getName()));
         copyCallMessage.setIterative(this.isIterative());
-        
-        for(MethodParameter p: parameters) 
+
+        for (MethodParameter p : parameters)
             copyCallMessage.addParameter(p.clone());
 
         MessageReturnValue returnVal = this.getReturnValue();
