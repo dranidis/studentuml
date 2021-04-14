@@ -20,7 +20,7 @@ import javax.swing.undo.UndoableEdit;
 public class AddGeneralizationController extends AddElementController {
 
     private Object baseClass = null;
-    private Vector elements;
+    private Vector<GraphicalElement> elements;
 
     public AddGeneralizationController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -33,7 +33,7 @@ public class AddGeneralizationController extends AddElementController {
     public void pressed(int x, int y) {
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
@@ -62,7 +62,7 @@ public class AddGeneralizationController extends AddElementController {
 
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
@@ -91,14 +91,15 @@ public class AddGeneralizationController extends AddElementController {
         UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);
 
         diagramModel.addGraphicalElement(generalizationGR);
-        
+
         parentFrame.setSelectionMode();
 
         parentFrame.getUndoSupport().postEdit(edit);
     }
 
     private void addCCDGeneralization(ConceptualClassGR superClass, ConceptualClassGR baseClass) {
-        Generalization generalization = new Generalization(superClass.getConceptualClass(), baseClass.getConceptualClass());
+        Generalization generalization = new Generalization(superClass.getConceptualClass(),
+                baseClass.getConceptualClass());
         GeneralizationGR generalizationGR = new GeneralizationGR(superClass, baseClass, generalization);
 
         UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);
