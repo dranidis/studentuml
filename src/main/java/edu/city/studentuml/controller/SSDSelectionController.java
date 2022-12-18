@@ -1,18 +1,20 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.view.gui.ActorInstanceEditor;
-import edu.city.studentuml.view.gui.CallMessageEditor;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.SystemInstanceEditor;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
+import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
+
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.SystemInstanceGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
@@ -24,16 +26,11 @@ import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.util.undoredo.EditSystemInstanceEdit;
 import edu.city.studentuml.util.undoredo.SystemEdit;
-import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.CallMessageGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.ReturnMessageGR;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
-import edu.city.studentuml.model.graphical.UMLNoteGR;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
+import edu.city.studentuml.view.gui.ActorInstanceEditor;
+import edu.city.studentuml.view.gui.CallMessageEditor;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.SystemInstanceEditor;
+import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  *
@@ -86,10 +83,12 @@ public class SSDSelectionController extends SelectionController {
         SystemInstance originalSystemInstance = systemInstanceGR.getSystemInstance();
 
         // UNDO/REDO
-        SystemInstance undoSystemInstance = new SystemInstance(originalSystemInstance.getName(), originalSystemInstance.getSystem());
+        SystemInstance undoSystemInstance = new SystemInstance(originalSystemInstance.getName(),
+                originalSystemInstance.getSystem());
         SystemEdit undoEdit = new SystemEdit(undoSystemInstance, originalSystemInstance.getSystem().getName());
 
-        // show the system instance editor dialog and check whether the user has pressed cancel
+        // show the system instance editor dialog and check whether the user has pressed
+        // cancel
         if (!systemEditor.showDialog(parentComponent, "System Instance Editor")) {
             return;
         }
@@ -98,16 +97,16 @@ public class SSDSelectionController extends SelectionController {
         SystemEdit originalEdit;
 
         // edit the system instance if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalSystemInstance.getName().equals(newSystemInstance.getName())
                 && (repository.getSystemInstance(newSystemInstance.getName()) != null)
                 && !newSystemInstance.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing system instance with the given name already.\n"
-                    + "Do you want this diagram system instance to refer to the existing one?",
-                    "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram system instance to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 systemInstanceGR.setSystemInstance(repository.getSystemInstance(newSystemInstance.getName()));
@@ -137,9 +136,11 @@ public class SSDSelectionController extends SelectionController {
 
         // UNDO/REDO
         ActorInstance undoActorInstance = originalActorInstance.clone();
-        ActorInstanceEdit undoEdit = new ActorInstanceEdit(undoActorInstance, originalActorInstance.getActor().getName());
+        ActorInstanceEdit undoEdit = new ActorInstanceEdit(undoActorInstance,
+                originalActorInstance.getActor().getName());
 
-        // show the actor instance editor dialog and check whether the user has pressed cancel
+        // show the actor instance editor dialog and check whether the user has pressed
+        // cancel
         if (!actorInstanceEditor.showDialog(parentComponent, "Actor Instance Editor")) {
             return;
         }
@@ -149,15 +150,16 @@ public class SSDSelectionController extends SelectionController {
         ActorInstanceEdit originalEdit;
 
         // edit the actor if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalActorInstance.getName().equals(newActorInstance.getName())
                 && (repository.getActorInstance(newActorInstance.getName()) != null)
                 && !newActorInstance.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing actor instance with the given name already.\n"
-                    + "Do you want this diagram actor instance to refer to the existing one?", "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram actor instance to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 actorInstance.setActorInstance(repository.getActorInstance(newActorInstance.getName()));
@@ -208,7 +210,7 @@ public class SSDSelectionController extends SelectionController {
     public void editReturnMessage(ReturnMessageGR messageGR) {
         String newName = JOptionPane.showInputDialog("Enter the return message string");
 
-        if (newName == null) {    // user pressed cancel
+        if (newName == null) { // user pressed cancel
             return;
         }
 

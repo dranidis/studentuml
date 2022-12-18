@@ -1,12 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//GeneralizationGR.java
-import edu.city.studentuml.model.domain.Generalization;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -14,12 +7,25 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
-public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//GeneralizationGR.java
+import edu.city.studentuml.model.domain.Generalization;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+@JsonIncludeProperties({ "internalid", "from", "to", "generalization" })
+public class GeneralizationGR extends LinkGR {
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
+    @JsonProperty("to")
     private AbstractClassGR superClass;
+    @JsonProperty("from")
     private AbstractClassGR baseClass;
 
     public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {
@@ -147,11 +153,9 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(baseClass));
         node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(superClass));
 

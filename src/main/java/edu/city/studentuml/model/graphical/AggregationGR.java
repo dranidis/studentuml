@@ -1,12 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AggregationGR.java
-import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -14,7 +7,14 @@ import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
-public class AggregationGR extends AssociationGR implements IXMLCustomStreamable {
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//AggregationGR.java
+import edu.city.studentuml.model.domain.Aggregation;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+public class AggregationGR extends AssociationGR {
 
     public AggregationGR(ClassifierGR w, ClassifierGR p, Aggregation aggreg) {
         super(w, p, aggreg);
@@ -26,13 +26,12 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
     // OVERRIDE drawArrowHeads of AssociationGR
     public void drawArrowHeads(Graphics2D g) {
         drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), getAngleRoleB(), g);
-//        drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
+        // drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
         super.drawArrowHeads(g);
     }
 
     public void drawArrowHeadsReflective(Graphics2D g) {
-        drawAggregationArrowHead(getXA(), getYA(),
-                getAggregation().isStrong(), Math.PI / 2, g);
+        drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), Math.PI / 2, g);
         super.drawArrowHeadsReflective(g);
     }
 
@@ -63,14 +62,15 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
         g.translate(-x, -y);
     }
 
-//    public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
-//        g.translate(x, y);
-//        g.rotate(angle);
-//        g.drawLine(-8, 4, 0, 0);
-//        g.drawLine(-8, -4, 0, 0);
-//        g.rotate(-angle);
-//        g.translate(-x, -y);
-//    }
+    // public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D
+    // g) {
+    // g.translate(x, y);
+    // g.rotate(angle);
+    // g.drawLine(-8, 4, 0, 0);
+    // g.drawLine(-8, -4, 0, 0);
+    // g.rotate(-angle);
+    // g.translate(-x, -y);
+    // }
 
     public Aggregation getAggregation() {
         return (Aggregation) getAssociation();
@@ -89,12 +89,10 @@ public class AggregationGR extends AssociationGR implements IXMLCustomStreamable
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(getWhole()));
         node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(getPart()));
 

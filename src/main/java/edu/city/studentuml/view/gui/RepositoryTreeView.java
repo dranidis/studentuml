@@ -9,6 +9,7 @@ package edu.city.studentuml.view.gui;
  * @author not attributable
  * @version 1.0
  */
+
 //import edu.city.studentuml.applet.Application;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
@@ -74,7 +75,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 public class RepositoryTreeView extends JPanel implements Observer {
-    
+
     private Logger logger = Logger.getLogger(RepositoryTreeView.class.getName());
 
     private DefaultMutableTreeNode datamodelnode;
@@ -200,7 +201,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                     GraphicalElement e = (GraphicalElement) i.next();
                     if (e instanceof NodeComponentGR) {
                         nodeComponent = ((NodeComponentGR) e).getNodeComponent();
-//                        addObject(dnode, nodeComponent);
+                        // addObject(dnode, nodeComponent);
                         addNodeComponent(dnode, nodeComponent);
                     }
                 }
@@ -294,10 +295,9 @@ public class RepositoryTreeView extends JPanel implements Observer {
             node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
 
             /*
-             * If the event lists children, then the changed
-             * node is the child of the node we've already
-             * gotten.  Otherwise, the changed node and the
-             * specified node are the same.
+             * If the event lists children, then the changed node is the child of the node
+             * we've already gotten. Otherwise, the changed node and the specified node are
+             * the same.
              */
             try {
                 int index = e.getChildIndices()[0];
@@ -360,8 +360,8 @@ public class RepositoryTreeView extends JPanel implements Observer {
             useCaseIcon = createImageIcon("useCase.gif");
             systemIcon = createImageIcon("system.gif");
             systemInstanceIcon = createImageIcon("object.gif");
-            ccdIcon = createImageIcon("ccd.gif");//ccd
-            conceptIcon = createImageIcon("class.gif");//ccd
+            ccdIcon = createImageIcon("ccd.gif");// ccd
+            conceptIcon = createImageIcon("class.gif");// ccd
             ssdIcon = createImageIcon("ssd.gif");
             diagramIcon = createImageIcon("sd.gif");
             dcdIcon = createImageIcon("dcd.gif");
@@ -503,14 +503,14 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 setText(nodeText);
                 setToolTipText("Activity Node - " + nodeText);
             } else {
-                setToolTipText(null);    // no tool tip
+                setToolTipText(null); // no tool tip
             }
 
             return this;
         }
     }
 
-    //Below methods are used for remembering the tree expansion state for the Tree
+    // Below methods are used for remembering the tree expansion state for the Tree
     //
     // is path1 descendant of path2
     public static boolean isDescendant(TreePath path1, TreePath path2) {
@@ -550,19 +550,18 @@ public class RepositoryTreeView extends JPanel implements Observer {
             tree.expandRow(token);
         }
     }
-    
-            
+
     private class RepositoryTreeSelectionListener implements TreeSelectionListener {
         public void valueChanged(TreeSelectionEvent e) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                               tree.getLastSelectedPathComponent();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
-        /* if nothing is selected */ 
-            if (node == null) return;
+            /* if nothing is selected */
+            if (node == null)
+                return;
 
-        /* retrieve the node that was selected */ 
+            /* retrieve the node that was selected */
             Object nodeInfo = node.getUserObject();
-            
+
             if (DiagramModel.class.isAssignableFrom(nodeInfo.getClass())) {
                 logger.finer("Diagram model selected");
                 DiagramModel dm = (DiagramModel) nodeInfo;

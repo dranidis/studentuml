@@ -106,7 +106,7 @@ public class CentralRepository extends Observable implements Serializable {
     public CentralRepository() {
 
         datatypes = new Vector();
-        initialiseDataTypes();        // all the lists of domain concepts created in a project
+        initialiseDataTypes(); // all the lists of domain concepts created in a project
 
         ucLinks = new NotifierVector();
         useCases = new NotifierVector();
@@ -138,7 +138,7 @@ public class CentralRepository extends Observable implements Serializable {
         ssdMessages = new NotifierVector();
 
         controlFlows = new NotifierVector();
-        objectFlows =  new NotifierVector();
+        objectFlows = new NotifierVector();
         actionNodes = new NotifierVector();
         initialNodes = new NotifierVector();
         activityFinalNodes = new NotifierVector();
@@ -155,8 +155,8 @@ public class CentralRepository extends Observable implements Serializable {
     public synchronized void addObserver(Observer o) {
         logger.fine("OBSERVER added: " + o.toString());
         super.addObserver(o);
-    }  
-    
+    }
+
     public Vector getAllObjects() {
         Vector v = new Vector();
 
@@ -244,7 +244,8 @@ public class CentralRepository extends Observable implements Serializable {
         activityNodes.clear();
     }
 
-    // this method occurs whenever a change in the repository occurs to notify observers
+    // this method occurs whenever a change in the repository occurs to notify
+    // observers
     public void repositoryChanged() {
         logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
@@ -253,7 +254,6 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     private void initialiseDataTypes() {
-        // TODO Auto-generated method stub
         datatypes.add(DataType.VOID);
         datatypes.add(DataType.INTEGER);
         datatypes.add(DataType.FLOAT);
@@ -281,7 +281,7 @@ public class CentralRepository extends Observable implements Serializable {
         return types;
     }
 
-    //methods for manipulating the list of conceptual classes
+    // methods for manipulating the list of conceptual classes
     public boolean addConceptualClass(ConceptualClass c) {
         ConceptualClass existingClass = getConceptualClass(c.getName());
 
@@ -322,8 +322,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editConceptualClass(ConceptualClass originalClass, ConceptualClass newClass) {
         ConceptualClass existingClass = getConceptualClass(newClass.getName());
 
-        if (!originalClass.getName().equals(newClass.getName())
-                && (existingClass != null)
+        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
                 && !newClass.getName().equals("")) {
             return false;
         }
@@ -361,7 +360,8 @@ public class CentralRepository extends Observable implements Serializable {
         logger.fine("Adding class:" + c.getName());
         DesignClass existingClass = getDesignClass(c.getName());
 
-        // if a class with the same name doesn't exist, or the class hasn't been named yet,
+        // if a class with the same name doesn't exist, or the class hasn't been named
+        // yet,
         // add it and return true; else return false
         if ((existingClass == null) || c.getName().equals("")) {
             classes.add(c);
@@ -391,8 +391,7 @@ public class CentralRepository extends Observable implements Serializable {
         // if the name of the class is changed and the new name causes conflict
         // with an existing class, and the new name is non-blank, then don't edit
         // and return false
-        if (!originalClass.getName().equals(newClass.getName())
-                && (existingClass != null)
+        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
                 && !newClass.getName().equals("")) {
             return false;
         }
@@ -740,8 +739,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editSystemInstance(SystemInstance originalSystemInstance, SystemInstance newSystemInstance) {
         SystemInstance existingSystemInstance = getSystemInstance(newSystemInstance.getName());
 
-        if (!originalSystemInstance.getName().equals(newSystemInstance.getName())
-                && (existingSystemInstance != null)
+        if (!originalSystemInstance.getName().equals(newSystemInstance.getName()) && (existingSystemInstance != null)
                 && !newSystemInstance.getName().equals("")) {
             return false;
         }
@@ -797,8 +795,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     public boolean editSystem(System originalSystem, System newSystem) {
         System existingSystem = getSystem(newSystem.getName());
-        if (!originalSystem.getName().equals(newSystem.getName())
-                && (existingSystem != null)
+        if (!originalSystem.getName().equals(newSystem.getName()) && (existingSystem != null)
                 && !newSystem.getName().equals("")) {
             return false;
         }
@@ -856,8 +853,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editObject(SDObject originalObject, SDObject newObject) {
         SDObject existingObject = getObject(newObject.getName());
 
-        if (!originalObject.getName().equals(newObject.getName())
-                && (existingObject != null)
+        if (!originalObject.getName().equals(newObject.getName()) && (existingObject != null)
                 && !newObject.getName().equals("")) {
             return false;
         }
@@ -1112,7 +1108,8 @@ public class CentralRepository extends Observable implements Serializable {
 
     // The following methods manage the lists of generic concepts which can be
     // shared by more than one type of UML concept. For example, a generic operation
-    // can be referred to by a System Sequence Diagram message, a Sequence Diagram message,
+    // can be referred to by a System Sequence Diagram message, a Sequence Diagram
+    // message,
     // and by a Class Method
     // methods for manipulating the list of generic classes
     public boolean addGenericClass(GenericClass gc) {
@@ -1182,7 +1179,8 @@ public class CentralRepository extends Observable implements Serializable {
     // If no match is found, the method returns null
     // This method is useful when adding a message or class method
     // in the repository in order to determine if there
-    // already exists a generic operation with the same name AND belonging to the same class
+    // already exists a generic operation with the same name AND belonging to the
+    // same class
     // to which the element can refer
     public GenericOperation getGenericOperation(String name, GenericClass parentClass) {
         GenericOperation go;
@@ -1234,7 +1232,8 @@ public class CentralRepository extends Observable implements Serializable {
     // If no match is found, the method returns null
     // This method is useful when adding a design or conceptual class
     // attribute in the repository in order to determine if there
-    // already exists a generic attribute with the same name and belonging to same class
+    // already exists a generic attribute with the same name and belonging to same
+    // class
     public GenericAttribute getGenericAttribute(String name, GenericClass parentClass) {
         GenericAttribute ga;
 
@@ -1307,9 +1306,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editUseCase(UseCase original, UseCase other) {
         UseCase existingUseCase = getUseCase(other.getName());
 
-        if (!original.getName().equals(other.getName())
-                && (existingUseCase != null)
-                && !other.getName().equals("")) {
+        if (!original.getName().equals(other.getName()) && (existingUseCase != null) && !other.getName().equals("")) {
             return false;
         }
 
@@ -1348,8 +1345,7 @@ public class CentralRepository extends Observable implements Serializable {
         while (iterator.hasNext()) {
             link = (UCLink) iterator.next();
 
-            if ((link.getClassifierFrom() == classifierFrom)
-                    && (link.getClassifierTo() == classifierTo)) {
+            if ((link.getClassifierFrom() == classifierFrom) && (link.getClassifierTo() == classifierTo)) {
                 return link;
             }
         }

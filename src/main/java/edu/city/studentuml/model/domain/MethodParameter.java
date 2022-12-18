@@ -3,13 +3,15 @@ package edu.city.studentuml.model.domain;
 import java.io.Serializable;
 import java.util.prefs.Preferences;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ramollari Ervin
 //MethodParameter.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-
-
 
 import org.w3c.dom.Element;
 
@@ -26,6 +28,11 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
     public MethodParameter(String n, Type t) {
         name = n;
         type = t;
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     // 'set' methods
@@ -50,6 +57,7 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
         return type;
     }
 
+    @JsonIgnore
     public String getTypeAsString() {
         if (type == null) {
             return null;
@@ -58,6 +66,7 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable {
         }
     }
 
+    @JsonIgnore
     public String getTypeName() {
         if (type == null) {
             return "unspecified";

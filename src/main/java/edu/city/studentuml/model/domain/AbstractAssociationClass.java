@@ -1,19 +1,23 @@
- /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*
+* To change this template, choose Tools | Templates
+* and open the template in the editor.
+*/
 package edu.city.studentuml.model.domain;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import org.w3c.dom.Element;
 
 /**
  *
  * @author draganbisercic
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__type")
 public abstract class AbstractAssociationClass implements Serializable, IXMLCustomStreamable {
 
     // integer constants defining direction
@@ -50,7 +54,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
     public void setAssociationClass(AbstractClass associationClass) {
         this.associationClass = associationClass;
     }
-    
+
     public String getName() {
         return associationClass.getName();
     }
@@ -95,7 +99,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
         return (getClassA() == getClassB());
     }
 
-    //need for undo/redo
+    // need for undo/redo
     public void setRoleA(Role roleA) {
         association.setRoleA(roleA);
     }

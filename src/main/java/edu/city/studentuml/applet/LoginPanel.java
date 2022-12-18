@@ -34,7 +34,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     private JButton cancelButton;
     private JPanel bottomPanel;
     private JDialog loginDialog;
-    private boolean ok;	// stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
 
     public LoginPanel() {
         usernameLabel = new JLabel("Username: ");
@@ -112,7 +112,6 @@ public class LoginPanel extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
         if ((e.getSource() == okButton) || (e.getSource() == passwordField)) {
             ok = true;
             loginDialog.setVisible(false);

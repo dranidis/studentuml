@@ -1,27 +1,34 @@
 package edu.city.studentuml.model.domain;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
+import org.w3c.dom.Element;
+
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ramollari Ervin
 //Class.java
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.lang.*;
-
-import org.w3c.dom.Element;
-
+@JsonIncludeProperties({ "name", "attributes", "methods", "internalid" })
 public class DesignClass extends AbstractClass {
 
     private String stereotype;
     private NotifierVector methods;
+    @JsonIgnore
     private AbstractClass extendClass;
+    @JsonIgnore
     private List<Interface> implementInterfaces = new ArrayList();
-    private Vector sdMethods = new Vector();
 
+    @JsonIgnore
+    private Vector sdMethods = new Vector();
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -97,7 +104,6 @@ public class DesignClass extends AbstractClass {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setStereotype(node.getAttribute("stereotype"));
         clear();
         streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
@@ -105,7 +111,6 @@ public class DesignClass extends AbstractClass {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("stereotype", getStereotype());
         streamer.streamObject(node, "generic", genericClass);
@@ -137,44 +142,41 @@ public class DesignClass extends AbstractClass {
 
         return copyClass;
     }
-    
+
     public void setExtendClass(AbstractClass newExtendClass) {
-    	this.extendClass = newExtendClass;
+        this.extendClass = newExtendClass;
     }
-    
+
     public AbstractClass getExtendClass() {
-    	return this.extendClass;
+        return this.extendClass;
     }
-    
+
     public void addImplementInterfaces(Interface newInterface) {
-    	this.implementInterfaces.add(newInterface);
+        this.implementInterfaces.add(newInterface);
     }
-    
+
     public List<Interface> getImplementInterfaces() {
-    	return this.implementInterfaces;
+        return this.implementInterfaces;
     }
-    
+
     public void resetImplementInterfaces() {
-    	this.implementInterfaces.clear() ;
+        this.implementInterfaces.clear();
     }
-    
+
     public void resetSDMethods() {
-    	this.sdMethods.clear();
+        this.sdMethods.clear();
     }
-    
+
     public void addSDMethod(Method m) {
         this.sdMethods.add(m);
     }
-    
+
     public Vector getSDMethods() {
-    	return this.sdMethods;
+        return this.sdMethods;
     }
-  
-    
-    public void replaceSDMethod(int index,Method newSDMethod) {
-    	this.sdMethods.set(index,newSDMethod);
+
+    public void replaceSDMethod(int index, Method newSDMethod) {
+        this.sdMethods.set(index, newSDMethod);
     }
-    
-    
-    
+
 }

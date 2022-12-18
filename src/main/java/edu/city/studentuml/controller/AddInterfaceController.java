@@ -20,7 +20,7 @@ public class AddInterfaceController extends AddElementController {
         InterfaceGR graphicalInterface = new InterfaceGR(new Interface(""), new Point(x, y));
 
         UndoableEdit edit = new AddEdit(graphicalInterface, diagramModel);
-        
+
         diagramModel.addGraphicalElement(graphicalInterface);
         if (parentFrame instanceof DCDInternalFrame) {
             ((DCDInternalFrame) parentFrame).setSelectionMode();

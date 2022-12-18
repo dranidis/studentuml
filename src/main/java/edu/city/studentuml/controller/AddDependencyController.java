@@ -19,7 +19,7 @@ import javax.swing.undo.UndoableEdit;
 public class AddDependencyController extends AddElementController {
 
     private ClassGR classA = null;
-    private Vector elements;
+    private Vector<GraphicalElement> elements;
 
     public AddDependencyController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -28,7 +28,7 @@ public class AddDependencyController extends AddElementController {
     public void pressed(int x, int y) {
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
@@ -53,7 +53,7 @@ public class AddDependencyController extends AddElementController {
 
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 

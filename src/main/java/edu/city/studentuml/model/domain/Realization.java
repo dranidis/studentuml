@@ -30,11 +30,9 @@ public class Realization implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("a", SystemWideObjectNamePool.getInstance().getNameForObject(theClass));
         node.setAttribute("b", SystemWideObjectNamePool.getInstance().getNameForObject(theInterface));
     }

@@ -36,13 +36,13 @@ public class ApplicationApplet extends ApplicationGUI {
 
         // NEW STEP, load the node of specified id
         if (applet.getNodeid() != null && !applet.getNodeid().equals("")) {
-            //loadSolution();
+            // loadSolution();
         } // NEW SOLUTION, start a new project as solution to given exercise
         else if (applet.getExid() != null && !applet.getExid().equals("")) {
-            //newSolution();
+            // newSolution();
         } // SANDBOX MODE, start a new project without an exercise
         else {
-            //newProject();
+            // newProject();
         }
     }
 
@@ -55,16 +55,14 @@ public class ApplicationApplet extends ApplicationGUI {
             Node resultNode = doc.getElementsByTagName("result").item(0);
             String resultString = resultNode.getTextContent().trim();
 
-            /* if (!resultString.equals("success"))
-            {
-            JOptionPane.showMessageDialog(this, "Requested node does not exist",
-            "Error", JOptionPane.ERROR_MESSAGE);
-
-            umlProject.setMode(Mode.SANDBOX);
-            newProject();
-
-            return false;
-            } */
+            /*
+             * if (!resultString.equals("success")) { JOptionPane.showMessageDialog(this,
+             * "Requested node does not exist", "Error", JOptionPane.ERROR_MESSAGE);
+             * 
+             * umlProject.setMode(Mode.SANDBOX); newProject();
+             * 
+             * return false; }
+             */
 
             boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
@@ -85,12 +83,13 @@ public class ApplicationApplet extends ApplicationGUI {
             Node commentNode = doc.getElementsByTagName("nodedescription").item(0);
             String comment = commentNode.getTextContent().trim();
 
-            /* Node authoridNode = doc.getElementsByTagName("authorid").item(0);
-            int authorid = Integer.valueOf(authoridNode.getTextContent().trim()); */
+            /*
+             * Node authoridNode = doc.getElementsByTagName("authorid").item(0); int
+             * authorid = Integer.valueOf(authoridNode.getTextContent().trim());
+             */
 
             Node authorNameNode = doc.getElementsByTagName("authornickname").item(0);
             String authorName = authorNameNode.getTextContent().trim();
-
 
             Node isprivateNode = doc.getElementsByTagName("isprivate").item(0);
             String isprivateString = isprivateNode.getTextContent().trim();
@@ -131,13 +130,18 @@ public class ApplicationApplet extends ApplicationGUI {
             umlProject.setTitle(title);
             umlProject.setComment(comment);
 
-            /* String infoString = "Node Id: " + umlProject.getParentid() + "\nExercise Id: " + umlProject.getExid()
-            + "\nNode Type: " + umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle()
-            + "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName
-            + "\nIs Private: " + (isprivate?"Yes":"No"); */
+            /*
+             * String infoString = "Node Id: " + umlProject.getParentid() +
+             * "\nExercise Id: " + umlProject.getExid() + "\nNode Type: " +
+             * umlProject.getNodeType() + "\nTitle: " + umlProject.getTitle() +
+             * "\nComment: " + umlProject.getComment() + "\nAuthor: " + authorName +
+             * "\nIs Private: " + (isprivate?"Yes":"No");
+             */
 
-            /* JOptionPane.showMessageDialog(null, infoString,
-            "Solution Information", JOptionPane.INFORMATION_MESSAGE); */
+            /*
+             * JOptionPane.showMessageDialog(null, infoString, "Solution Information",
+             * JOptionPane.INFORMATION_MESSAGE);
+             */
 
             umlProject.addObserver(this);
             umlProject.projectChanged();
@@ -146,24 +150,23 @@ public class ApplicationApplet extends ApplicationGUI {
 
             // Set the top internal frame (selected) to the one specified by user
             try {
-                DiagramInternalFrame frameToBeSelected =
-                        umlProject.getDiagramModel(Integer.valueOf(applet.getDiagramno()) - 1).getFrame();
+                DiagramInternalFrame frameToBeSelected = umlProject
+                        .getDiagramModel(Integer.valueOf(applet.getDiagramno()) - 1).getFrame();
 
                 // desktopPane.setSelectedFrame(selectedFrame);
                 frameToBeSelected.setSelected(true);
             } catch (NumberFormatException nfe) {
                 // non-integer string, let the default behaviour continue
                 if (applet.getDiagramno() != null && !applet.getDiagramno().equals("")) {
-                    JOptionPane.showMessageDialog(this, "Badly-formed thumbnail number",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Badly-formed thumbnail number", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IndexOutOfBoundsException ioobe) {
                 // non-existing pic number, let the default behaviour continue
-                JOptionPane.showMessageDialog(this, "Non-existing thumbnail number",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Non-existing thumbnail number", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (PropertyVetoException pve) {
-                JOptionPane.showMessageDialog(this, "PropertyVetoException",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "PropertyVetoException", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
@@ -174,9 +177,7 @@ public class ApplicationApplet extends ApplicationGUI {
 
             return true;
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(this,
-                    "There was an API error while loading node",
-                    ace.getMessage(),
+            JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),
                     JOptionPane.ERROR_MESSAGE);
 
             umlProject.setMode(Mode.SANDBOX);
@@ -184,10 +185,8 @@ public class ApplicationApplet extends ApplicationGUI {
 
             return false;
         } catch (AuthenticationFailedException afe) {
-            JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while trying to load node",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User Authentication failed while trying to load node",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
 
             umlProject.setMode(Mode.SANDBOX);
             newProject();
@@ -224,7 +223,6 @@ public class ApplicationApplet extends ApplicationGUI {
 
     @Override
     public void openProject() {
-        // TODO Auto-generated method stub
         String browserURL = "http://" + applet.getApiURL().replaceAll("api.php", "browser.php?exid=-1");
         Browser b = new Browser(browserURL, applet.getServerInterface().currentAuthToken);
 
@@ -250,29 +248,17 @@ public class ApplicationApplet extends ApplicationGUI {
 
             System.out.println(fExid + "->" + fNodeid);
 
-            /* if (isPrivate) {
-            nodeid = "";
-            exid = "";
-
-            newProject();
-            umlProject.setMode(Mode.SANDBOX);
-            } else {
-
-            nodeid = fNodeid;
-            exid = fExid;
-            if (nodeid != null && !nodeid.equals(""))
-            {
-            loadSolution();
-            umlProject.setMode(Mode.NEW_STEP);
-            }
-            // NEW SOLUTION, start a new project as solution to given exercise
-            else if (exid != null && !exid.equals(""))
-            {
-            newSolution();
-            umlProject.setMode(Mode.NEW_SOLUTION);
-            }
-            // SANDBOX MODE, start a new project without an exercise
-            } */
+            /*
+             * if (isPrivate) { nodeid = ""; exid = "";
+             * 
+             * newProject(); umlProject.setMode(Mode.SANDBOX); } else {
+             * 
+             * nodeid = fNodeid; exid = fExid; if (nodeid != null && !nodeid.equals("")) {
+             * loadSolution(); umlProject.setMode(Mode.NEW_STEP); } // NEW SOLUTION, start a
+             * new project as solution to given exercise else if (exid != null &&
+             * !exid.equals("")) { newSolution(); umlProject.setMode(Mode.NEW_SOLUTION); }
+             * // SANDBOX MODE, start a new project without an exercise }
+             */
 
             try {
                 Document doc = applet.getServerInterface().getNode(Integer.valueOf(fNodeid));
@@ -280,16 +266,14 @@ public class ApplicationApplet extends ApplicationGUI {
                 Node resultNode = doc.getElementsByTagName("result").item(0);
                 String resultString = resultNode.getTextContent().trim();
 
-                /* if (!resultString.equals("success"))
-                {
-                JOptionPane.showMessageDialog(this, "Requested node does not exist",
-                "Error", JOptionPane.ERROR_MESSAGE);
-
-                umlProject.setMode(Mode.SANDBOX);
-                newProject();
-
-                return false;
-                } */
+                /*
+                 * if (!resultString.equals("success")) { JOptionPane.showMessageDialog(this,
+                 * "Requested node does not exist", "Error", JOptionPane.ERROR_MESSAGE);
+                 * 
+                 * umlProject.setMode(Mode.SANDBOX); newProject();
+                 * 
+                 * return false; }
+                 */
 
                 boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
@@ -321,25 +305,21 @@ public class ApplicationApplet extends ApplicationGUI {
                     SystemWideObjectNamePool.getInstance().reloadRules();
                 }
             } catch (APICallException ace) {
-                JOptionPane.showMessageDialog(this,
-                        "There was an API error while loading node",
-                        ace.getMessage(),
+                JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),
                         JOptionPane.ERROR_MESSAGE);
 
                 umlProject.setMode(Mode.SANDBOX);
                 newProject();
             } catch (AuthenticationFailedException afe) {
-                JOptionPane.showMessageDialog(this,
-                        "User Authentication failed while trying to load node",
-                        "Authentication failed",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "User Authentication failed while trying to load node",
+                        "Authentication failed", JOptionPane.ERROR_MESSAGE);
 
                 umlProject.setMode(Mode.SANDBOX);
                 newProject();
             }
 
-            //loadSolution();
-            //umlProject.setMode(Mode.NEW_STEP);
+            // loadSolution();
+            // umlProject.setMode(Mode.NEW_STEP);
         }
     }
 
@@ -373,8 +353,8 @@ public class ApplicationApplet extends ApplicationGUI {
 
             if (JOptionPane.showOptionDialog(this, solutionInput, "Your solution info", JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE, null, null, null) != JOptionPane.OK_OPTION) {
-                JOptionPane.showMessageDialog(this, "Solution saving was canceled!",
-                        "Solution was not saved", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Solution saving was canceled!", "Solution was not saved",
+                        JOptionPane.ERROR_MESSAGE);
 
                 return;
             }
@@ -383,12 +363,11 @@ public class ApplicationApplet extends ApplicationGUI {
             title = solutionInput.getTitle();
             comment = solutionInput.getComment();
 
-
             // THIS IS NOT ONLY BECAUSE THE API EXPECTS A NON-EMPTY TITLE
             // BUT ALSO BECAUSE TITLES HAVE TO HAVE ACTUAL TEXT (NOT JUST WHITESPACES)
             if (title == null || title.trim().equals("")) {
-                JOptionPane.showMessageDialog(this, "You need to provide a Title!",
-                        "Solution was not saved", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "You need to provide a Title!", "Solution was not saved",
+                        JOptionPane.ERROR_MESSAGE);
 
                 return;
             }
@@ -398,36 +377,28 @@ public class ApplicationApplet extends ApplicationGUI {
                 comment = " ";
             }
 
-
             savePrivate = solutionInput.isPrivate();
 
             if (mode == Mode.SANDBOX) {
                 savePrivate = true;
             }
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "There was an API error while loading node types",
-                    ace.getMessage(),
+            JOptionPane.showMessageDialog(this, "There was an API error while loading node types", ace.getMessage(),
                     JOptionPane.ERROR_MESSAGE);
 
             return;
         } catch (AuthenticationFailedException afe) {
-            JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while trying to load node types",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User Authentication failed while trying to load node types",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
 
             return;
         }
-
 
         // TRY-CATCH BLOCK WITH THE ACTUAL API CALLS
         // DONE IN TWO PARTS: (1) SAVING NODE and (2) SAVING PIC(S)
         try {
             // (1) SAVING NODE
-            Document saveNodeResponse = applet.getServerInterface().saveNode(
-                    username, exid, parentid, title, comment,
+            Document saveNodeResponse = applet.getServerInterface().saveNode(username, exid, parentid, title, comment,
                     nodeType, savePrivate, solution, "");
 
             Node node = saveNodeResponse.getElementsByTagName("nodeid").item(0);
@@ -440,14 +411,15 @@ public class ApplicationApplet extends ApplicationGUI {
                 umlProject.setMode(Mode.NEW_STEP);
             }
 
-            /* // DISPLAY SAVING RESULT
-            Node resultNode = saveNodeResponse.getElementsByTagName("result").item(0);
-            String result = resultNode.getTextContent().trim();
-
-            if (result.equals("success"))
-            {
-
-            } */
+            /*
+             * // DISPLAY SAVING RESULT Node resultNode =
+             * saveNodeResponse.getElementsByTagName("result").item(0); String result =
+             * resultNode.getTextContent().trim();
+             * 
+             * if (result.equals("success")) {
+             * 
+             * }
+             */
 
             // (2) SAVING PICS
             Vector diagramModels = umlProject.getDiagramModels();
@@ -474,24 +446,17 @@ public class ApplicationApplet extends ApplicationGUI {
             }
 
             // DISPLAY SAVING RESULT; AT THIS POINT EVERYTHING MUST HAVE BEEN SUCCESSFUL
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Solution successfully " + (savePrivate ? "saved!" : "shared!"),
+            JOptionPane.showMessageDialog(this, "Solution successfully " + (savePrivate ? "saved!" : "shared!"),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
-
         } catch (APICallException ace) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "There was an API error while "
-                    + (savePrivate ? "saving" : "sharing") + " the solution!",
+            JOptionPane.showMessageDialog(this,
+                    "There was an API error while " + (savePrivate ? "saving" : "sharing") + " the solution!",
                     ace.getMessage(), JOptionPane.ERROR_MESSAGE);
         } catch (AuthenticationFailedException afe) {
             JOptionPane.showMessageDialog(this,
-                    "User Authentication failed while "
-                    + (savePrivate ? "saving" : "sharing") + " the solution!",
-                    "Authentication failed",
-                    JOptionPane.ERROR_MESSAGE);
+                    "User Authentication failed while " + (savePrivate ? "saving" : "sharing") + " the solution!",
+                    "Authentication failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -552,8 +517,8 @@ public class ApplicationApplet extends ApplicationGUI {
             URL url = new URL(helpString);
             applet.getAppletContext().showDocument(url, "_blank");
         } catch (MalformedURLException mue) {
-            JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL",
-                    "Wrong URL", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

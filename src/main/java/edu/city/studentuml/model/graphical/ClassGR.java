@@ -1,11 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ClassGR.java
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,10 +8,19 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import org.w3c.dom.Element;
 
-public class ClassGR extends AbstractClassGR {
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//ClassGR.java
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.util.XMLStreamer;
 
+@JsonIncludeProperties({ "class", "internalid", "startingPoint" })
+public class ClassGR extends AbstractClassGR {
     private static int nameStereotypeDistance = 4;
     private static int methodFieldXOffset = 4;
     private static int methodFieldYOffset = 3;
@@ -85,8 +88,7 @@ public class ClassGR extends AbstractClassGR {
 
         // consider stereotype text dimensions
         if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
-            TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont,
-                    frc);
+            TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int stereotypeWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
 
@@ -177,7 +179,6 @@ public class ClassGR extends AbstractClassGR {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "designclass", getDesignClass());
         node.setAttribute("x", Integer.toString(startingPoint.x));

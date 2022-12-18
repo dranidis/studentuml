@@ -28,7 +28,7 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
     }
 
     public Stroke getStroke() {
-        float dashes[] = {8};    // the pattern of dashes for drawing the return line
+        float dashes[] = { 8 }; // the pattern of dashes for drawing the return line
 
         return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
@@ -45,7 +45,7 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
 
     public void draw(Graphics2D g) {
         boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
-        
+
         if (showReturnPref) {
             super.draw(g);
             return;
@@ -62,14 +62,14 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
 
         int startingX = getStartingX();
 
-        g.drawLine(startingX - barWidth/2, getY(), startingX + barWidth/2, getY());
+        g.drawLine(startingX - barWidth / 2, getY(), startingX + barWidth / 2, getY());
         // restore the original stroke
         g.setStroke(originalStroke);
-    }    
-    
+    }
+
     public boolean contains(Point2D point) {
         boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
-        
+
         if (showReturnPref) {
             return super.contains(point);
         }
@@ -87,18 +87,15 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
             return bounds.contains(point);
         }
     }
-    
-    
+
     public ReturnMessage getReturnMessage() {
         return (ReturnMessage) getMessage();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         node.setAttribute("y", Integer.toString(getY()));

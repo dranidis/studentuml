@@ -41,7 +41,14 @@ public class TypedCallMessageTest {
 
         umlProject = UMLProject.getInstance();
         umlProject.clear();
-
+        File file = new File(filepath);
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
         umlProject.setFilepath(fullpath);
         umlProject.setFilename("test.xml");
     }

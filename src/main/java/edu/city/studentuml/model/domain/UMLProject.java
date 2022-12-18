@@ -38,11 +38,13 @@ import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import org.w3c.dom.Element;
 
-
+@JsonIncludeProperties({ "diagramModels" })
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
-    
+
     Logger logger = Logger.getLogger(UMLProject.class.getName());
 
     private static UMLProject ref = null;
@@ -50,7 +52,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private CentralRepository repository;
     private boolean projectSaved = true;
     private String user;
-    //for applet
+    // for applet
     private int status;
     private int exid;
     private int parentid;
@@ -58,7 +60,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private String title;
     private String comment;
     private Mode mode;
-    //for desktop application
+    // for desktop application
     private String projectFilename = "";
     private String projectFilepath = "";
     private String projectName = "";
@@ -75,13 +77,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private void projectInit() {
         repository = new CentralRepository();
         diagramModels = new NotifierVector();
-        //applet
+        // applet
         title = "";
         comment = "";
         status = 0;
         nodeType = "";
 
-        //application
+        // application
         projectName = "New Project";
     }
 
@@ -109,7 +111,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public synchronized void addObserver(Observer o) {
         logger.fine("OBSERVER added: " + o.toString());
         super.addObserver(o);
-    }    
+    }
 
     public CentralRepository getCentralRepository() {
         return repository;
@@ -137,7 +139,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         dm.addObserver(this);
         projectChanged();
-        }
+    }
 
     public void removeDiagram(DiagramModel dm) {
         dm.deleteObserver(this);
@@ -148,7 +150,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void projectChanged() {
         logger.fine("Project changed");
         setSaved(false);
-        
+
         logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
@@ -194,7 +196,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
-    //for undo/redo
+    // for undo/redo
     public void loadFromXMLString(String xmlString) {
 
         SystemWideObjectNamePool.getInstance().loading();
@@ -209,7 +211,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
-
     public void streamToXML() {
         if (projectFilepath == null || projectFilepath.length() == 0) {
             logger.severe("Empty or NULL projectFilepath");
@@ -218,7 +219,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         streamToXML(projectFilepath);
         setSaved(true);
     }
-    
+
     public void streamToXML(String path) {
         XMLStreamer streamer = new XMLStreamer();
         streamer.streamObject(null, "project", this);
@@ -230,7 +231,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         }
     }
 
-    //for undo/redo
+    // for undo/redo
     public String streamToXMLString() {
         XMLStreamer streamer = new XMLStreamer();
         streamer.streamObject(null, "project", this);
@@ -289,7 +290,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
                         }
                     }
                     if (currEl instanceof MultiObjectGR) {
-                        if (currEl != el && ((MultiObjectGR) currEl).getMultiObject().getDesignClass() == abstractClass) {
+                        if (currEl != el
+                                && ((MultiObjectGR) currEl).getMultiObject().getDesignClass() == abstractClass) {
                             return true;
                         }
                     }
@@ -442,7 +444,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void setFilepath(String filepath) {
         projectFilepath = filepath;
         if (filepath.length() > 0) {
-            projectFilename = filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);            
+            projectFilename = filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);
             projectName = projectFilename.substring(0, projectFilename.lastIndexOf("."));
         }
     }

@@ -53,7 +53,6 @@ public class DestroyMessageGR extends SDMessageGR implements IXMLCustomStreamabl
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

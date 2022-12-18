@@ -35,7 +35,7 @@ public class CodeGeneratorTest {
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
-        
+
         umlProject = UMLProject.getInstance();
         umlProject.clear();
         File file = new File(filepath);

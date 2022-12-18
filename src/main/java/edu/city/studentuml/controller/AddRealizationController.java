@@ -20,7 +20,7 @@ import javax.swing.undo.UndoableEdit;
 public class AddRealizationController extends AddElementController {
 
     private ClassGR classGR = null;
-    private Vector elements;
+    private Vector<GraphicalElement> elements;
 
     public AddRealizationController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -29,12 +29,12 @@ public class AddRealizationController extends AddElementController {
     public void pressed(int x, int y) {
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if ((element instanceof ClassGR) && element.contains(origin)) {
                 classGR = (ClassGR) element;
@@ -54,12 +54,12 @@ public class AddRealizationController extends AddElementController {
 
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if ((element instanceof InterfaceGR) && element.contains(origin)) {
                 addRealization(classGR, (InterfaceGR) element);
