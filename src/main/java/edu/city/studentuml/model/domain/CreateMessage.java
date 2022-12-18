@@ -17,11 +17,9 @@ public class CreateMessage extends CallMessage {
         super(from, to, new GenericOperation("create"));
     }
 
+    @Override
     public String toString() {
-        String text = "";
-//        text += getRank() + ": ";
-        text += "create(" + getParametersString() + ")";
-        return text;
+        return getRank() + ": " + "create" + getParametersString();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer,

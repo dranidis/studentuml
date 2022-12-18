@@ -103,15 +103,12 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
         text += getRank() + (isIterative() ? "*" : "") + ": ";
 
-        if ((returnValue != null) && !returnValue.equals("")) {
+        if ((returnValue != null) && !returnValue.toString().equals("")) {
             text += returnValue.toString() + " := ";
         }
 
         if ((getName() != null) && !getName().equals("")) {
-            text += getName();
-            text += "(";
-            text += getParametersString();
-            text += ")";
+            text += getName() + getParametersString();
         }
 
         return text;
@@ -125,8 +122,8 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         }
     }
 
-    public String getParametersString() {
-        StringJoiner sj = new StringJoiner(", ");
+    protected String getParametersString() {
+        StringJoiner sj = new StringJoiner(", ", "(", ")");
         for (MethodParameter par : parameters) {
             sj.add(par.toStringShowTypes());
         }
