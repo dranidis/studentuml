@@ -16,11 +16,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
-
 import javax.swing.JPanel;
 
 public abstract class DiagramView extends JPanel implements Observer {
@@ -28,7 +25,7 @@ public abstract class DiagramView extends JPanel implements Observer {
     protected DiagramModel model;
     protected Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
 
-    public DiagramView(DiagramModel m) {
+    protected DiagramView(DiagramModel m) {
         model = m;
 
         if (m != null) {
@@ -48,6 +45,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         this.dragLine = dragLine;
     }
 
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -91,10 +89,8 @@ public abstract class DiagramView extends JPanel implements Observer {
     // to maintain aspect ratio, scalex = scaley
     public BufferedImage getImageByScale(double scalex, double scaley) {
         
-        Point2D.Double maxPoint = crop();
-//
-//        int imageWidth = (int) (getWidth() * scalex);
-//        int imageHeight = (int) (getHeight() * scaley);
+        Point2D.Double maxPoint = getMaxPositionOfElements();
+
         int imageWidth = (int) (maxPoint.getX() * scalex);
         int imageHeight = (int) (maxPoint.getY() * scaley);
 
@@ -131,6 +127,14 @@ public abstract class DiagramView extends JPanel implements Observer {
                 .forEach(ge -> ge.draw(g));
 
         g.setPaint(Color.GRAY);
+
+        // find the maxX and maxY of all the elements of the diagram
+        // and resize the panel accordingly
+        Point2D.Double maxPoint = getMaxPositionOfElements();
+        int maxX = (int) Math.max( maxPoint.getX(), this.getSize().getWidth());
+        int maxY = (int) Math.max( maxPoint.getY(), this.getSize().getHeight());
+        this.setSize(maxX, maxY);
+        
         g.draw(dragLine);
 
         SystemWideObjectNamePool.drawLock.unlock();
@@ -161,15 +165,13 @@ public abstract class DiagramView extends JPanel implements Observer {
         repaint();
     }
 
-    private Point2D.Double crop() {
+    private Point2D.Double getMaxPositionOfElements() {
         double maxX = 0;
         double maxY = 0;
         for(GraphicalElement ge: model.getGraphicalElements()) {
             Rectangle2D bounds = ge.getBounds();
-            double mX = bounds.getMaxX();
-            if (mX > maxX) maxX = mX;
-            double mY = bounds.getMaxY();
-            if (mY > maxY) maxY = mY;            
+            maxX = Math.max(maxX, bounds.getMaxX());            
+            maxY = Math.max(maxY, bounds.getMaxY());            
         } 
         return new Point2D.Double(maxX + 20, maxY + 20);
     }
