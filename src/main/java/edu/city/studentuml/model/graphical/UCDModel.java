@@ -96,17 +96,17 @@ public class UCDModel extends DiagramModel {
         }
 
         // remove all the links to the element
-        Iterator incomingLinks = ucdComponentGR.getIncomingLinks();
+        Iterator<UCLinkGR> incomingLinks = ucdComponentGR.getIncomingLinks();
         while (incomingLinks.hasNext()) {
-            UCLinkGR link = (UCLinkGR) incomingLinks.next();
+            UCLinkGR link = incomingLinks.next();
             removeLink(link);
             // need to update iterator
             incomingLinks = ucdComponentGR.getIncomingLinks();
         }
 
-        Iterator outgoingLinks = ucdComponentGR.getOutgoingLinks();
+        Iterator<UCLinkGR> outgoingLinks = ucdComponentGR.getOutgoingLinks();
         while (outgoingLinks.hasNext()) {
-            UCLinkGR link = (UCLinkGR) outgoingLinks.next();
+            UCLinkGR link = outgoingLinks.next();
             removeLink(link);
             // need to update iterator
             outgoingLinks = ucdComponentGR.getOutgoingLinks();
@@ -127,11 +127,11 @@ public class UCDModel extends DiagramModel {
     @Override
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
 
-        ListIterator listIterator = graphicalElements.listIterator(graphicalElements.size());
+        ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if (element.contains(point)) {
                 if (element instanceof UCDComponentGR) {
@@ -152,11 +152,11 @@ public class UCDModel extends DiagramModel {
      */
     public UCDComponentGR findContext(UCDComponentGR component) {
 
-        Iterator iterator = graphicalElements.iterator();
+        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
         GraphicalElement element = null;
 
         while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+            element = iterator.next();
 
             if (element instanceof UCDComponentGR) {
                 UCDComponentGR myComp = (UCDComponentGR) element;
@@ -180,11 +180,11 @@ public class UCDModel extends DiagramModel {
     // Override: needed because of the composite structure
     @Override
     public void clearSelected() {
-        Iterator iterator = graphicalElements.iterator();
+        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
         GraphicalElement element;
 
         while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+            element = iterator.next();
             if (element instanceof UCDComponentGR) {
                 UCDComponentGR comp = (UCDComponentGR) element;
                 comp.clearSelected();
@@ -198,9 +198,10 @@ public class UCDModel extends DiagramModel {
         }
     }
 
+    @Override
     public void clear() {
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
+        while (!graphicalElements.isEmpty()) {
+            removeGraphicalElement(graphicalElements.get(0));
         }
 
         super.clear();
@@ -242,7 +243,7 @@ public class UCDModel extends DiagramModel {
     private int getFirstLinkIndex() {
         int index;
         for (index = 0; index < graphicalElements.size(); index++) {
-            GraphicalElement el = (GraphicalElement) graphicalElements.get(index);
+            GraphicalElement el = graphicalElements.get(index);
             if (el instanceof UCLinkGR) {
                 return index;
             }
