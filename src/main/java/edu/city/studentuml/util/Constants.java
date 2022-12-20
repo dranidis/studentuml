@@ -17,4 +17,5 @@ public class Constants {
     public static final String RULES_SIMPLE = "/rules/simplerules.txt";
     public static final String RULES_ADVANCED = "/rules/advancedrules.txt";
     public static final String DESKTOP_USER = "Desktop Application User";
+    public static final int CANVAS_MARGIN = 10;
 }
