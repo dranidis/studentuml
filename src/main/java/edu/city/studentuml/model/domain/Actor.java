@@ -8,7 +8,7 @@ import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import org.w3c.dom.Element;
 
-public class Actor extends LeafUCDElement implements Serializable, Classifier, IXMLCustomStreamable {
+public class Actor extends LeafUCDElement implements Serializable, IXMLCustomStreamable {
 
     public Actor(String n) {
         super(n);

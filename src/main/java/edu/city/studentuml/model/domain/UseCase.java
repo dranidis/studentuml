@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
  *
  * @author draganbisercic
  */
-public class UseCase extends LeafUCDElement implements Serializable, Classifier, IXMLCustomStreamable {
+public class UseCase extends LeafUCDElement implements Serializable, IXMLCustomStreamable {
 
     public UseCase(String n) {
         super(n);

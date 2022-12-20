@@ -1,15 +1,11 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//SDObjectGR.java
 import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 import org.w3c.dom.Element;
 
-public class SDObjectGR extends AbstractSDObjectGR implements IXMLCustomStreamable {
+public class SDObjectGR extends AbstractSDObjectGR {
 
     public SDObjectGR(SDObject obj, int x) {
         super(obj, x);
@@ -23,11 +19,13 @@ public class SDObjectGR extends AbstractSDObjectGR implements IXMLCustomStreamab
         roleClassifier = obj;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "sdobject", getSDObject());

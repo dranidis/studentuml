@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -17,9 +16,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.Constants;
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//GraphicalElement.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -38,7 +34,6 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     protected int width;
     protected int height;
     protected String myUid;
-    private Font baseFont = new Font("SansSerif", Font.PLAIN, 8);
     public static final Color DESKTOP_USER_COLOR = Color.yellow;
 
     public Rectangle2D getBounds() {

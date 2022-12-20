@@ -598,8 +598,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 selectedFrame.validate();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-
-                return;
             }
         }
     }

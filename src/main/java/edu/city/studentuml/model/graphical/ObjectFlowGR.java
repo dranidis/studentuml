@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ObjectFlow;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Point;
@@ -12,7 +11,7 @@ import org.w3c.dom.Element;
  *
  * @author Biser
  */
-public class ObjectFlowGR extends EdgeGR implements IXMLCustomStreamable {
+public class ObjectFlowGR extends EdgeGR {
 
     public ObjectFlowGR(NodeComponentGR source, NodeComponentGR target, ObjectFlow flow) {
         super(source, target, flow);

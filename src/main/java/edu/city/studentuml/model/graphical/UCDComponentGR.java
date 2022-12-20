@@ -2,7 +2,6 @@ package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.UCDComponent;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -14,9 +13,7 @@ import java.util.List;
  *
  * @author draganbisercic
  */
-public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
-
-//    Classifier classifier;
+public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR {
 
     protected UCDComponent ucdComponent;
     public static final UCDComponentGR DEFAULT_CONTEXT = null;
@@ -97,7 +94,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract UCDComponentGR getElement(int index);
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<UCDComponentGR> createIterator();
 
     public UCDComponent getUCDComponent() {
         return ucdComponent;

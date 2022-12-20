@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -25,7 +24,7 @@ import javax.swing.JLabel;
 
 import org.w3c.dom.Element;
 
-public class UMLNoteGR extends GraphicalElement implements IXMLCustomStreamable {
+public class UMLNoteGR extends GraphicalElement {
 
     static final BreakIterator LINE_BREAK = BreakIterator.getLineInstance();
     private static Font nameFont = new Font("SansSerif", Font.PLAIN, 12);

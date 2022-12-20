@@ -240,8 +240,6 @@ public class SystemWideObjectNamePool extends Observable {
         objectMap.remove(object);
 
         objectCountChanged();
-
-        return;
     }
 
     // returns name of object
