@@ -218,7 +218,12 @@ public abstract class SelectionController {
              * Make sure that none of the selected elements go beyond the top and left edge margin.
              */
             for(GraphicalElement e: selectedElements) {
-                if (deltaX + e.getX() < Constants.CANVAS_MARGIN || deltaY + e.getY() < Constants.CANVAS_MARGIN) {
+                /**
+                 * First condition is for SD messages: they have getX = 0 and deltaX = 0
+                 * Without the condition messages cannot be moved because they look like they are out of the margin.
+                 */
+                if (!(deltaX == 0 && e.getX() == 0) && 
+                    deltaX + e.getX() < Constants.CANVAS_MARGIN || deltaY + e.getY() < Constants.CANVAS_MARGIN) {
                     return;
                 }
             }
