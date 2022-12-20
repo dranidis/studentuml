@@ -1,11 +1,13 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DiagramInternalFrame.java
+// ~--- JDK imports ------------------------------------------------------------
+// Author: Ervin Ramollari
+// DiagramInternalFrame.java
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.AddElementControllerFactory;
 import edu.city.studentuml.controller.DrawLineController;
+import edu.city.studentuml.controller.EdgeController;
+import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
@@ -30,16 +32,22 @@ import javax.swing.undo.UndoableEditSupport;
 
 public abstract class DiagramInternalFrame extends JInternalFrame {
 
-//    protected JPopupMenu popup;
+    //    protected JPopupMenu popup;
     protected AddElementControllerFactory addElementControllerFactory;
     protected AddElementController addElementController;
     protected DrawLineController drawLineController; //TK draw line
     protected SelectionController selectionController;
+
+    // only in AD and UCD
+    protected ResizeWithCoveredElementsController resizeController;
+    //only in AD
+    protected EdgeController edgeController;
+
     protected DiagramModel model;
     protected DiagramView view;
     protected boolean isActive = false;
     protected boolean isIconified = false;
-    
+
     protected AbstractDrawingToolbar toolbar;
     protected JMenuBar menuBar = new JMenuBar();
 
@@ -47,17 +55,45 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected UndoManager undoManager;
     protected UndoableEditSupport undoSupport;
 
+    public AddElementControllerFactory getAddElementControllerFactory() {
+        return addElementControllerFactory;
+    }
+
+    public AddElementController getAddElementController() {
+        return addElementController;
+    }
+
+    public DrawLineController getDrawLineController() {
+        return drawLineController;
+    }
+
+    public SelectionController getSelectionController() {
+        return selectionController;
+    }
+
+    public UndoManager getUndoManager() {
+        return undoManager;
+    }
+
+    public ResizeWithCoveredElementsController getResizeController() {
+        return resizeController;
+    }
+    
+    public EdgeController getEdgeController() {
+        return edgeController;
+    }    
+
     public DiagramInternalFrame(String title) {
-//        String title, boolean resizable,
-//                      boolean closable,
-//                      boolean maximizable,
-//                      boolean iconifiable)
-//        super(title, true, true, false, true);
+        //        String title, boolean resizable,
+        //                      boolean closable,
+        //                      boolean maximizable,
+        //                      boolean iconifiable)
+        //        super(title, true, true, false, true);
         super(title, true, false, true, true);
-        
+
         createMenuBar();
-        
-//        ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
+
+        //        ((BasicInternalFrameUI) getUI()).getNorthPane().setComponentPopupMenu(popup);
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
         // Undo/Redo
@@ -75,11 +111,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
             public void componentResized(ComponentEvent e) {
                 Container contentPane = getContentPane();
-                int newWidth = ((contentPane.getWidth() > view.getWidth())
-                        ? contentPane.getWidth()
-                        : view.getWidth());
-                int newHeight = ((contentPane.getHeight() > view.getHeight())
-                        ? contentPane.getHeight()
+                int newWidth = ((contentPane.getWidth() > view.getWidth()) ? contentPane.getWidth() : view.getWidth());
+                int newHeight = ((contentPane.getHeight() > view.getHeight()) ? contentPane.getHeight()
                         : view.getHeight());
 
                 view.setSize(new Dimension(newWidth, newHeight));
@@ -88,7 +121,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
     }
-    
+
     private void createMenuBar() {
         this.setJMenuBar(menuBar);
 
@@ -99,17 +132,17 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         JMenuItem undoMenuItem = new JMenuItem();
         undoMenuItem.setText("Undo");
         KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
-        undoMenuItem.setAccelerator(keyStrokeToNew);  
+        undoMenuItem.setAccelerator(keyStrokeToNew);
         undoMenuItem.addActionListener(e -> undo());
         editMenu.add(undoMenuItem);
-        
+
         JMenuItem redoMenuItem = new JMenuItem();
         redoMenuItem.setText("Redo");
         keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
-        redoMenuItem.setAccelerator(keyStrokeToNew);  
+        redoMenuItem.setAccelerator(keyStrokeToNew);
         redoMenuItem.addActionListener(e -> redo());
-        editMenu.add(redoMenuItem);        
-        
+        editMenu.add(redoMenuItem);
+
         JMenuItem rename = new JMenuItem("Rename diagram");
         rename.addActionListener(e -> renameDiagram());
         editMenu.add(rename);
@@ -118,19 +151,19 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         delete.addActionListener(e -> deleteDiagram());
         editMenu.add(delete);
     }
-    
+
     private void redo() {
         if (!undoManager.canRedo())
             return;
         undoManager.redo();
-        refreshUndoRedoButtons();            
+        refreshUndoRedoButtons();
     }
-    
+
     private void undo() {
         if (!undoManager.canUndo())
             return;
         undoManager.undo();
-        refreshUndoRedoButtons();            
+        refreshUndoRedoButtons();
     }
 
     private void renameDiagram() {
@@ -141,11 +174,11 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
             setTitle(newName);
         }
     }
-    
+
     private void deleteDiagram() {
         int response = JOptionPane.showConfirmDialog(this,
-            "This action will delete all the diagram data.\nAre you sure to proceed?",
-            "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                "This action will delete all the diagram data.\nAre you sure to proceed?", "Warning",
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
         if (response == JOptionPane.YES_OPTION) {
             // the action (defined in ApplicationGUI will remove the diagram from the model
@@ -203,7 +236,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     public void setSelectionMode() {
         String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
-        if(selectLast.equals("FALSE")) {
+        if (selectLast.equals("FALSE")) {
             toolbar.setSelectionMode();
         }
     };

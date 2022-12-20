@@ -38,11 +38,11 @@ public abstract class ResizeWithCoveredElementsController {
     private SizeWithCoveredElements lastSize = null;
     private SizeWithCoveredElements undoSize = null;
     private SizeWithCoveredElements redoSize = null;
-    private List<Size> undoContextSizes = new ArrayList<Size>();
-    private List<Size> redoContextSizes = new ArrayList<Size>();
+    private List<Size> undoContextSizes = new ArrayList<>();
+    private List<Size> redoContextSizes = new ArrayList<>();
     private SelectionController selectionController; // need to disable move when resizing
 
-    public ResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
+    protected ResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
         this.frame = f;
         this.model = m;
         this.selectionController = s;
