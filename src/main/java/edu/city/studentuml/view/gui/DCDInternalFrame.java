@@ -25,7 +25,7 @@ public class DCDInternalFrame extends DiagramInternalFrame {
         JPanel drawingPanel = new JPanel();
 
         drawingPanel.add(view);
-        toolbar = new DCDDrawingToolbar(this);
+        toolbar = new DCDToolbar(this);
         toolbar.setFloatable(false);
         toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);

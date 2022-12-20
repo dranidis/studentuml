@@ -27,7 +27,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
         JPanel drawingPanel = new JPanel();
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
-        toolbar = new ADDrawingToolbar(this);
+        toolbar = new ADToolbar(this);
         toolbar.setFloatable(false);
         toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);

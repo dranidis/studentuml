@@ -23,7 +23,7 @@ public class CCDInternalFrame extends DiagramInternalFrame {
         JPanel drawingPanel = new JPanel();
 
         drawingPanel.add(view);
-        toolbar = new CCDDrawingToolbar(this);
+        toolbar = new CCDToolbar(this);
         toolbar.setFloatable(false);
         toolbar.setLayout(new GridLayout(0,1));
         JScrollPane sp = new JScrollPane(toolbar);

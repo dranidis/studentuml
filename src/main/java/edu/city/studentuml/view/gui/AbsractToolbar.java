@@ -12,13 +12,14 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-public abstract class AbsractDiagramDrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
+public abstract class AbsractToolbar extends JToolBar implements ActionListener {
 
     private List<JToggleButton> buttons;
     private JToggleButton selectionButton;
@@ -56,7 +57,7 @@ public abstract class AbsractDiagramDrawingToolbar extends AbstractDrawingToolba
         return button;            
     }
 
-    protected AbsractDiagramDrawingToolbar(DiagramInternalFrame parentFr) {
+    protected AbsractToolbar(DiagramInternalFrame parentFr) {
         parentFrame = parentFr;
 
         buttons = new ArrayList<>();

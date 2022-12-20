@@ -1,7 +1,7 @@
 package edu.city.studentuml.view.gui;
 
-public class UCDDrawingToolbar extends AbsractDiagramDrawingToolbar {
-    public UCDDrawingToolbar(DiagramInternalFrame parentFr) {
+public class UCDToolbar extends AbsractToolbar {
+    public UCDToolbar(DiagramInternalFrame parentFr) {
         super(parentFr);
     }
 
