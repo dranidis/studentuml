@@ -132,7 +132,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         actorInstanceDialog.pack();
         actorInstanceDialog.setResizable(false);
         actorInstanceDialog.setLocationRelativeTo(owner);
-        actorInstanceDialog.show();
+        actorInstanceDialog.setVisible(true);
 
         return ok;
     }

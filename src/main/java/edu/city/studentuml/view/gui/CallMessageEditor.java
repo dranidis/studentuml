@@ -214,7 +214,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         messageDialog.pack();
         messageDialog.setResizable(false);
         messageDialog.setLocationRelativeTo(owner);
-        messageDialog.show();
+        messageDialog.setVisible(true);
 
         return ok;
     }

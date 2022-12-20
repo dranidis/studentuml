@@ -165,7 +165,7 @@ public class MethodEditor extends JPanel implements ActionListener {
         methodDialog.pack();
         methodDialog.setResizable(false);
         methodDialog.setLocationRelativeTo(owner);
-        methodDialog.show();
+        methodDialog.setVisible(true);
 
         return ok;
     }

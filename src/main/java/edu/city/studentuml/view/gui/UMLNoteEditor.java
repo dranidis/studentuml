@@ -96,7 +96,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
         noteDialog.pack();
         noteDialog.setResizable(false);
         noteDialog.setLocationRelativeTo(owner);
-        noteDialog.show();
+        noteDialog.setVisible(true);
 
         return ok;
     }

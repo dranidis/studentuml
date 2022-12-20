@@ -328,12 +328,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private void addPopup(final Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
                 }
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
@@ -375,11 +377,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairButton.setText(" Repair selected");
         repairButton.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 repairButton.setBorder(
                         new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
             }

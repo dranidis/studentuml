@@ -144,7 +144,7 @@ public class AttributeEditor extends JPanel implements ActionListener {
         attributeDialog.pack();
         attributeDialog.setResizable(false);
         attributeDialog.setLocationRelativeTo(owner);
-        attributeDialog.show();
+        attributeDialog.setVisible(true);
 
         return ok;
     }

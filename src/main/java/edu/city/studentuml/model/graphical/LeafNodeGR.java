@@ -10,7 +10,7 @@ import java.util.Iterator;
  */
 public abstract class LeafNodeGR extends NodeComponentGR {
 
-    public LeafNodeGR(LeafNode leafNode, int x, int y) {
+    protected LeafNodeGR(LeafNode leafNode, int x, int y) {
         super(leafNode, x, y);
     }
 

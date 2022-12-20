@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.view.gui.DocumentSizeFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;

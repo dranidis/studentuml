@@ -79,7 +79,7 @@ public class ControlFlowEditor extends JPanel implements ActionListener {
         controlFlowDialog.pack();
         controlFlowDialog.setResizable(false);
         controlFlowDialog.setLocationRelativeTo(owner);
-        controlFlowDialog.show();
+        controlFlowDialog.setVisible(true);
 
         return ok;
     }

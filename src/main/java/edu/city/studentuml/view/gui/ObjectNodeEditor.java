@@ -170,7 +170,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         objectNodeDialog.pack();
         objectNodeDialog.setResizable(false);
         objectNodeDialog.setLocationRelativeTo(owner);
-        objectNodeDialog.show();
+        objectNodeDialog.setVisible(true);
 
         return ok;
     }

@@ -121,7 +121,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         parameterDialog.pack();
         parameterDialog.setResizable(false);
         parameterDialog.setLocationRelativeTo(owner);
-        parameterDialog.show();
+        parameterDialog.setVisible(true);
 
         return ok;
     }

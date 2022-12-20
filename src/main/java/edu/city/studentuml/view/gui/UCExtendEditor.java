@@ -125,7 +125,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         ucExtendDialog.pack();
         ucExtendDialog.setResizable(false);
         ucExtendDialog.setLocationRelativeTo(owner);
-        ucExtendDialog.show();
+        ucExtendDialog.setVisible(true);
 
         return ok;
     }

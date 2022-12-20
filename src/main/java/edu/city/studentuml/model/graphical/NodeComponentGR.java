@@ -20,7 +20,7 @@ public abstract class NodeComponentGR extends GraphicalElement {
     protected List<EdgeGR> incomingEdges;
     protected List<EdgeGR> outgoingEdges;
 
-    public NodeComponentGR(NodeComponent nodeComponent, int x, int y) {
+    protected NodeComponentGR(NodeComponent nodeComponent, int x, int y) {
         this.nodeComponent = nodeComponent;
         startingPoint = new Point(x, y);
         context = DEFAULT_CONTEXT;
@@ -63,7 +63,7 @@ public abstract class NodeComponentGR extends GraphicalElement {
         return incomingEdges.size();
     }
 
-    public Iterator getIncomingEdges() {
+    public Iterator<EdgeGR> getIncomingEdges() {
         return incomingEdges.iterator();
     }
 
@@ -81,7 +81,7 @@ public abstract class NodeComponentGR extends GraphicalElement {
         return outgoingEdges.size();
     }
 
-    public Iterator getOutgoingEdges() {
+    public Iterator<EdgeGR> getOutgoingEdges() {
         return outgoingEdges.iterator();
     }
 

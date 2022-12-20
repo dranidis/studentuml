@@ -79,7 +79,7 @@ public class ActionNodeEditor extends JPanel implements ActionListener {
         actionNodeDialog.pack();
         actionNodeDialog.setResizable(false);
         actionNodeDialog.setLocationRelativeTo(owner);
-        actionNodeDialog.show();
+        actionNodeDialog.setVisible(true);
 
         return ok;
     }
