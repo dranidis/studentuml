@@ -79,7 +79,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
+    private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;

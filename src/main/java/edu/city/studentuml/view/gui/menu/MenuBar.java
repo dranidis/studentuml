@@ -23,7 +23,7 @@ import edu.city.studentuml.view.gui.ApplicationGUI;
  */
 public class MenuBar {
 
-    Logger logger = Logger.getLogger(MenuBar.class.getName());
+    private static final Logger logger = Logger.getLogger(MenuBar.class.getName());
 
     ApplicationGUI app;
     JMenuBar menuBar;

@@ -2,8 +2,6 @@ package edu.city.studentuml.model.domain;
 
 import java.util.StringJoiner;
 import java.util.Vector;
-import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
@@ -16,8 +14,6 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author dimitris
  */
 public class CallMessage extends SDMessage implements IXMLCustomStreamable {
-
-    Logger logger = Logger.getLogger(CallMessage.class.getName());
 
     private GenericOperation genericOperation;
     private boolean iterative;

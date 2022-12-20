@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * @author Biser
  */
 public abstract class FinalNodeGR extends ControlNodeGR {
-    Logger logger = Logger.getLogger(FinalNodeGR.class.getName());
+    private static final Logger logger = Logger.getLogger(FinalNodeGR.class.getName());
 
     public static final int RADIUS = 14;
 

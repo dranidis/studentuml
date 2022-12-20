@@ -42,7 +42,7 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 
 public class CallMessageEditor extends JPanel implements ActionListener {
-    Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
+    private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
     private JButton addParameterButton;
     private JPanel bottomPanel;

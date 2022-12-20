@@ -20,7 +20,7 @@ import edu.city.studentuml.util.Rotate;
  * @author dimitris
  */
 public abstract class LinkGR extends AbstractLinkGR {
-    Logger logger = Logger.getLogger(LinkGR.class.getName());
+    private static final Logger logger = Logger.getLogger(LinkGR.class.getName());
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
      * of classifiers the number of their relationships is stored Note that only on

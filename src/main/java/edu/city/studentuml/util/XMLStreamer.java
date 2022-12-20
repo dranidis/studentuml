@@ -42,7 +42,7 @@ import javax.xml.transform.OutputKeys;
 
 public class XMLStreamer {
 
-    Logger logger = Logger.getLogger(XMLStreamer.class.getName());
+    private static final Logger logger = Logger.getLogger(XMLStreamer.class.getName());
 
     private Document doc = null;
     private boolean fromFile = false;

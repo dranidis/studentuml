@@ -24,7 +24,7 @@ import edu.city.studentuml.view.gui.CollectionTreeModel;
  * Also responsible for consistency checking (to be documented).
  */
 public class SystemWideObjectNamePool extends Observable {
-    Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName());
+    private static final Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName());
 
     private static SystemWideObjectNamePool ref = null;
     private String ruleFile = null;

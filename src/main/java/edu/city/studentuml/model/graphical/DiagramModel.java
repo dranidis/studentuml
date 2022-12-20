@@ -37,7 +37,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(DiagramModel.class.getName());
+    private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     public static final int UCD = 0;
     public static final int SSD = 1;

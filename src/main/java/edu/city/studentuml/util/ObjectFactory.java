@@ -125,7 +125,7 @@ public final class ObjectFactory extends Observable {
         return instance;
     }
 
-    private Logger logger = Logger.getLogger(ObjectFactory.class.getName());
+    private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
     @Override
     public synchronized void addObserver(Observer o) {

@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 public class AddUMLNoteController extends AddElementController {
-    Logger logger = Logger.getLogger(AddUMLNoteController.class.getName());
+    private static final Logger logger = Logger.getLogger(AddUMLNoteController.class.getName());
 
     private static final String MESSAGE = "To create a note you must select an element first, then click the note button and anywhere on the diagram.";
     GraphicalElement selectedElement;
