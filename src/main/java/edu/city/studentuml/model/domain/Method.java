@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +34,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     private int scope; // 1 = instance, 2 = classifier
     private int visibility; // 1 = private, 2 = public, 3 = protected
     private Type returnType;
-    private NotifierVector parameters;
+    private NotifierVector<MethodParameter> parameters;
     @JsonIgnore
     private int priority = 0;
     @JsonIgnore
@@ -149,7 +151,10 @@ public class Method implements Serializable, IXMLCustomStreamable {
     }
 
     public String toString() {
-        return getVisibilityString() + getNameString() + "(" + getParametersString() + ")" + getReturnTypeString();
+        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE");
+
+        return getVisibilityString() + getNameString() + getParametersString()
+                + (showTypesSDPref ? getReturnTypeString() : "");
     }
 
     @JsonIgnore
@@ -180,25 +185,12 @@ public class Method implements Serializable, IXMLCustomStreamable {
     }
 
     @JsonIgnore
-    public String getParametersString() {
-        String parametersString = "";
-        Iterator iterator = parameters.iterator();
-        MethodParameter parameter;
-        int i = 0; // keeps track if it is the first iteration
-
-        while (iterator.hasNext()) {
-            parameter = (MethodParameter) iterator.next();
-
-            if (i == 0) {
-                parametersString += parameter.toString();
-            } else {
-                parametersString = parametersString + ", " + parameter.toString();
-            }
-
-            i++;
+    private String getParametersString() {
+        StringJoiner sj = new StringJoiner(", ", "(", ")");
+        for (MethodParameter par : parameters) {
+            sj.add(par.toStringShowTypes());
         }
-
-        return parametersString;
+        return sj.toString();
     }
 
     @JsonIgnore

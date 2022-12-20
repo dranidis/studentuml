@@ -44,7 +44,6 @@ import edu.city.studentuml.model.domain.InitialNode;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.JoinNode;
 import edu.city.studentuml.model.domain.MergeNode;
-import edu.city.studentuml.model.domain.MessageParameter;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.NodeComponent;
@@ -60,7 +59,6 @@ import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.UCAssociation;
 import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.model.domain.UCExtend;
@@ -127,7 +125,7 @@ public final class ObjectFactory extends Observable {
         return instance;
     }
 
-    private Logger logger = Logger.getLogger(ObjectFactory.class.getName());
+    private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
     @Override
     public synchronized void addObserver(Observer o) {

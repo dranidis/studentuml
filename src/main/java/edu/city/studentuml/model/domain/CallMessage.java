@@ -2,8 +2,6 @@ package edu.city.studentuml.model.domain;
 
 import java.util.StringJoiner;
 import java.util.Vector;
-import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
@@ -16,8 +14,6 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author dimitris
  */
 public class CallMessage extends SDMessage implements IXMLCustomStreamable {
-
-    Logger logger = Logger.getLogger(CallMessage.class.getName());
 
     private GenericOperation genericOperation;
     private boolean iterative;
@@ -103,15 +99,12 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
 
         text += getRank() + (isIterative() ? "*" : "") + ": ";
 
-        if ((returnValue != null) && !returnValue.equals("")) {
+        if ((returnValue != null) && !returnValue.toString().equals("")) {
             text += returnValue.toString() + " := ";
         }
 
         if ((getName() != null) && !getName().equals("")) {
-            text += getName();
-            text += "(";
-            text += getParametersString();
-            text += ")";
+            text += getName() + getParametersString();
         }
 
         return text;
@@ -125,8 +118,8 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         }
     }
 
-    public String getParametersString() {
-        StringJoiner sj = new StringJoiner(", ");
+    protected String getParametersString() {
+        StringJoiner sj = new StringJoiner(", ", "(", ")");
         for (MethodParameter par : parameters) {
             sj.add(par.toStringShowTypes());
         }

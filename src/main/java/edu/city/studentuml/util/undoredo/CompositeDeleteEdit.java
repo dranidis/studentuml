@@ -1,7 +1,6 @@
 package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -11,7 +10,6 @@ import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;

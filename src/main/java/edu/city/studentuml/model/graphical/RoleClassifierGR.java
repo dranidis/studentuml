@@ -1,14 +1,9 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//RoleClassifierGR.java
-import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

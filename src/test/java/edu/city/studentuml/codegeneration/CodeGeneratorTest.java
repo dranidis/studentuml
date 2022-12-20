@@ -17,7 +17,6 @@ import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.codegeneration.CodeGenerator;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;

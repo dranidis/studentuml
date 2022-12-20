@@ -27,7 +27,7 @@ public class ApplicationFrame extends ApplicationGUI {
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
+    private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static String applicationName = "StudentUML";
     private JFileChooser xmlFileChooser;
@@ -54,7 +54,7 @@ public class ApplicationFrame extends ApplicationGUI {
         xmlFileChooser.setFileFilter(new XMLFileFilter());
         xmlFileChooser.setCurrentDirectory(new File(path));
         
-        umlProject.setUser(DESKTOP_USER);
+        umlProject.setUser(Constants.DESKTOP_USER);
     }
 
     @Override

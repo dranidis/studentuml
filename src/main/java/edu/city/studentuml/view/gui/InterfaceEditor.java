@@ -122,7 +122,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
         interfaceDialog.pack();
         interfaceDialog.setResizable(false);
         interfaceDialog.setLocationRelativeTo(owner);
-        interfaceDialog.show();
+        interfaceDialog.setVisible(true);
 
         return ok;
     }

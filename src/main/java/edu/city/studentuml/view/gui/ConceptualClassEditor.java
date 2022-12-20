@@ -128,7 +128,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);
-        classDialog.show();
+        classDialog.setVisible(true);
 
         return ok;
     }

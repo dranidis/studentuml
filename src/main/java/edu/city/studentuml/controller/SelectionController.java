@@ -38,7 +38,7 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 public abstract class SelectionController {
 
-    Logger logger = Logger.getLogger(SelectionController.class.getName());
+    private static final Logger logger = Logger.getLogger(SelectionController.class.getName());
 
     // parent component needed to be set as the owner of any dialog boxes displayed
     protected DiagramInternalFrame parentComponent;

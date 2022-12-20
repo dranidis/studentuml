@@ -79,7 +79,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
+    private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -110,7 +110,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JPanel repairPanel;
     protected JButton repairButton;
     protected int openFrameCounter = 0;
-    public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
     protected DiagramInternalFrame selectedFrame;
 
@@ -177,7 +176,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (isApplet) {
             SystemWideObjectNamePool.uid = applet.getUsername();
         } else {
-            SystemWideObjectNamePool.uid = DESKTOP_USER;
+            SystemWideObjectNamePool.uid = Constants.DESKTOP_USER;
         }
     }
 
@@ -329,12 +328,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private void addPopup(final Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
                 }
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
@@ -376,11 +377,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairButton.setText(" Repair selected");
         repairButton.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 repairButton.setBorder(
                         new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
             }

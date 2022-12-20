@@ -1,16 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2006</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
-
-//import edu.city.studentuml.applet.Application;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -76,7 +65,7 @@ import javax.swing.tree.TreePath;
 
 public class RepositoryTreeView extends JPanel implements Observer {
 
-    private Logger logger = Logger.getLogger(RepositoryTreeView.class.getName());
+    private static final Logger logger = Logger.getLogger(RepositoryTreeView.class.getName());
 
     private DefaultMutableTreeNode datamodelnode;
     private DefaultMutableTreeNode diagrammodelnode;

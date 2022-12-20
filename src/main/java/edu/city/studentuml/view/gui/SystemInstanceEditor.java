@@ -137,7 +137,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         systemInstanceDialog.pack();
         systemInstanceDialog.setResizable(false);
         systemInstanceDialog.setLocationRelativeTo(owner);
-        systemInstanceDialog.show();
+        systemInstanceDialog.setVisible(true);
 
         return ok;
     }

@@ -23,7 +23,7 @@ import edu.city.studentuml.view.gui.ApplicationGUI;
  */
 public class MenuBar {
 
-    Logger logger = Logger.getLogger(MenuBar.class.getName());
+    private static final Logger logger = Logger.getLogger(MenuBar.class.getName());
 
     ApplicationGUI app;
     JMenuBar menuBar;
@@ -153,8 +153,8 @@ public class MenuBar {
         preferencesMenu.addSeparator();
 
         JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
-        showTypesInSDCheckBoxMenuItem.setText("Show types in messages in Sequence Diagrams");
-        showTypesInSDCheckBoxMenuItem.setToolTipText("");
+        showTypesInSDCheckBoxMenuItem.setText("Show types in methods");
+        showTypesInSDCheckBoxMenuItem.setToolTipText("Show types in methods in class diagrams and in sequence diagrams");
         showTypesInSDCheckBoxMenuItem.addActionListener(e -> {
             String boolString = showTypesInSDCheckBoxMenuItem.isSelected() ? "TRUE" : "FALSE";
             Preferences.userRoot().put("SHOW_TYPES_SD", boolString);
@@ -234,7 +234,17 @@ public class MenuBar {
         for (JInternalFrame sdFrame : sdFrames) {
             logger.finer("REPAINT : ");
             sdFrame.repaint();
-        }            
+        }        
+        Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramModel.DCD);
+        for (JInternalFrame sdFrame : cdFrames) {
+            logger.finer("REPAINT : ");
+            sdFrame.repaint();
+        }    
+        cdFrames = app.getInternalFramesOfType(DiagramModel.CCD);
+        for (JInternalFrame sdFrame : cdFrames) {
+            logger.finer("REPAINT : ");
+            sdFrame.repaint();
+        }
     }    
 
     private void createCreateMenu() {

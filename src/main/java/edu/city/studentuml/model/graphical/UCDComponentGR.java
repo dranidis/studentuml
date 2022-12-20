@@ -24,18 +24,13 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     protected List<UCLinkGR> incomingLinks;
     protected List<UCLinkGR> outgoingLinks;
 
-    public UCDComponentGR(UCDComponent ucdComponent, int x, int y) {
+    protected UCDComponentGR(UCDComponent ucdComponent, int x, int y) {
         this.ucdComponent = ucdComponent;
         startingPoint = new Point(x, y);
         context = DEFAULT_CONTEXT;
-        incomingLinks = new ArrayList<UCLinkGR>();
-        outgoingLinks = new ArrayList<UCLinkGR>();
+        incomingLinks = new ArrayList<>();
+        outgoingLinks = new ArrayList<>();
     }
-
-//    protected UCDComponentGR(Classifier classifier, int x, int y) {
-//        setClassifier(classifier);
-//        startingPoint = new Point(x, y);
-//    }
 
     // composite pattern
     public void add(UCDComponentGR component) {
@@ -73,7 +68,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return incomingLinks.size();
     }
 
-    public Iterator getIncomingLinks() {
+    public Iterator<UCLinkGR> getIncomingLinks() {
         return incomingLinks.iterator();
     }
 
@@ -91,7 +86,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return outgoingLinks.size();
     }
 
-    public Iterator getOutgoingLinks() {
+    public Iterator<UCLinkGR> getOutgoingLinks() {
         return outgoingLinks.iterator();
     }
 
@@ -116,16 +111,9 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract void clearSelected();
 
-//    public void setClassifier(Classifier classifier) {
-//        this.classifier = classifier;
-//    }
-
-//    public Classifier getClassifier() {
-//        throw new UnsupportedOperationException();
-//    }
     @Override
     public Classifier getClassifier() {
-        return (Classifier) ucdComponent;
+        return ucdComponent;
     }
     
     public void refreshDimensions(Graphics2D g) {

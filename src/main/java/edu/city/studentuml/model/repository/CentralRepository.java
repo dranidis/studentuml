@@ -64,7 +64,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 public class CentralRepository extends Observable implements Serializable {
-    Logger logger = Logger.getLogger(CentralRepository.class.getName());
+    private static final Logger logger = Logger.getLogger(CentralRepository.class.getName());
 
     private Vector datatypes;
     private NotifierVector useCases;

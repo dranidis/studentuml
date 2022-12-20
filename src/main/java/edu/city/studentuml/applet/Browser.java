@@ -1,7 +1,5 @@
 package edu.city.studentuml.applet;
 
-import javax.swing.text.html.*;
-import javax.swing.text.*;
 import javax.swing.event.*;
 import javax.swing.*;
 

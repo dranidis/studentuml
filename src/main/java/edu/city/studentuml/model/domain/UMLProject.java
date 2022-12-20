@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
 @JsonIncludeProperties({ "diagramModels" })
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
 
-    Logger logger = Logger.getLogger(UMLProject.class.getName());
+    private static final Logger logger = Logger.getLogger(UMLProject.class.getName());
 
     private static UMLProject ref = null;
     private NotifierVector<DiagramModel> diagramModels;

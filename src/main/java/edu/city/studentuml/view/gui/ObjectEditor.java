@@ -130,7 +130,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         objectDialog.pack();
         objectDialog.setResizable(false);
         objectDialog.setLocationRelativeTo(owner);
-        objectDialog.show();
+        objectDialog.setVisible(true);
         
         return ok;
     }

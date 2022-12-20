@@ -16,19 +16,19 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.util.Constants;
 //~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
 //GraphicalElement.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.view.gui.ApplicationGUI;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__type")
 public abstract class GraphicalElement implements Serializable, IXMLCustomStreamable {
 
-    Logger logger = Logger.getLogger(GraphicalElement.class.getName());
+    private static final Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
     protected Color fillColor;
@@ -67,7 +67,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         }
         logger.fine("============= UID: " + getMyUid());
         SystemWideObjectNamePool.userColorMap.put(getMyUid(),
-                getMyUid().equals(ApplicationGUI.DESKTOP_USER) ? DESKTOP_USER_COLOR
+                getMyUid().equals(Constants.DESKTOP_USER) ? DESKTOP_USER_COLOR
                         : new Color((int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128),
                                 (int) (Math.random() * 128.0 + 128)));
         return this.myColor();
@@ -128,11 +128,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     public void draw(Graphics2D g) {
-        /*
-         * if (SystemWideObjectNamePool.userColorMap.size() > 1 && this instanceof
-         * UMLNoteGR) { g.setFont(baseFont); g.drawString("user: "+this.myUid, getX(),
-         * getY()-5); }
-         */
+
     }
 
     public abstract void move(int x, int y);

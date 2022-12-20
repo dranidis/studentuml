@@ -15,10 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 // JPanel with components for inputting drawing view size
 public class SolutionInputPanel extends JPanel {
 

@@ -199,7 +199,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);
-        classDialog.show();
+        classDialog.setVisible(true);
 
         return ok;
     }

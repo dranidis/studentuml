@@ -92,23 +92,7 @@ public class Application extends JApplet implements Observer, KeyListener {
      */
     private static final long serialVersionUID = 1L;
     private static Application instance;
-    /*
-     * private JRadioButtonMenuItem advancedModeRadioButtonMenuItem; private
-     * JRadioButtonMenuItem simpleModeRadioButtonMenuItem; private ButtonGroup
-     * bgroup; private JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem;
-     * private JMenuItem newDesignClassMenuItem; private JMenuItem
-     * newConceptualClassMenuItem; private JMenuItem newSequenceDiagramMenuItem;
-     * private JMenuItem newSystemSequenceMenuItem; private JCheckBoxMenuItem
-     * showFactsTabCheckBoxMenuItem; private JCheckBoxMenuItem
-     * showRuleEditorCheckBoxMenuItem; private JMenu preferencesMenu; private
-     * JMenuItem reloadRulesMenuItem; private JMenuItem resizeDrawingAreaMenuItem;
-     * private JMenuItem exitMenuItem; private JMenuItem exportToImageMenuItem;
-     * private JMenuItem openProjectMenuItem; private JMenuItem
-     * saveProjectAsMenuItem; private JMenuItem saveProjectMenuItem; private
-     * JMenuItem newProjectMenuItem; private JMenu helpMenu; private JMenu
-     * createMenu; private JMenu editMenu; private JMenu fileMenu; private JMenuBar
-     * menuBar;
-     */
+
     private JButton repairButton;
     private JPanel repairPanel;
     private JPanel panel;

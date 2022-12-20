@@ -30,7 +30,7 @@ import edu.city.studentuml.model.domain.UMLProject;
 
 public class CodeGenerator {
 
-	public static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
+	private static final Logger LOG = Logger.getLogger(CodeGenerator.class.getName());
 	private boolean lfBeforeCurly;
 	private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 	private boolean isUpdate = false;
