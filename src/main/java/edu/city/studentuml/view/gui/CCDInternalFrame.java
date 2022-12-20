@@ -17,7 +17,7 @@ public class CCDInternalFrame extends DiagramInternalFrame {
         model = ccdModel;
         view = new CCDView((CCDModel) model);
         selectionController = new CCDSelectionController(this, (CCDModel) model);
-        drawLineController = new DrawLineController(view, (CCDModel) model);
+        drawLineController = new DrawLineController(view, model);
         view.addMouseListener(selectionController.getMouseListener());
         view.addMouseMotionListener(selectionController.getMouseMotionListener());
         JPanel drawingPanel = new JPanel();

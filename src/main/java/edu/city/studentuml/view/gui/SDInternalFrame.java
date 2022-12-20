@@ -30,7 +30,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
         
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
-        toolbar = new SDDrawingToolbar(this);
+        toolbar = new SDToolbar(this);
         toolbar.setFloatable(false);
         toolbar.setLayout(new GridLayout(0, 1));
         JScrollPane sp = new JScrollPane(toolbar);
