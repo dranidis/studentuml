@@ -19,7 +19,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -295,7 +294,6 @@ public class SSDInternalFrame extends DiagramInternalFrame {
                 selectionController.setSelectionMode(getSelectionMode());
                 addElementController.setSelectionMode(getSelectionMode());
                 drawLineController.setSelectionMode(getSelectionMode());//TK draw line
-            } else if (command.equals("Validate")) {
             } else {    // the rest of the buttons are for adding UML elements
 
                 // Factory Method hides instantiation details and the variety of subclasses

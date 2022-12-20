@@ -13,12 +13,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -27,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -41,7 +38,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
         model = sdModel;
         view = new SDView((SDModel) model);
         selectionController = new SDSelectionController(this, (SDModel) model);
-        drawLineController = new DrawLineController(view, (SDModel) model);//TK draw line
+        drawLineController = new DrawLineController(view, model);//TK draw line
         view.addMouseListener(selectionController.getMouseListener());
         view.addMouseMotionListener(selectionController.getMouseMotionListener());
 
@@ -76,274 +73,80 @@ public class SDInternalFrame extends DiagramInternalFrame {
     
     private class DrawingToolbar extends AbstractDrawingToolbar implements ActionListener {
 
-        private JToggleButton actorButton;
-        private Vector buttons;
-        private JToggleButton callMessageButton;
-        private JToggleButton createMessageButton;
-        private JToggleButton destroyMessageButton;
-        private JToggleButton multiObjectButton;
-        private JToggleButton objectButton;
-        private JToggleButton returnMessageButton;
+        private List<JToggleButton> buttons;
         private JToggleButton selectionButton;
-        private JToggleButton noteButton;
-        private SDInternalFrame parent;
-        //Undo/Redo
+        private SDInternalFrame parentFrame;
         private JToggleButton undoButton;
         private JToggleButton redoButton;
 
-        public DrawingToolbar(SDInternalFrame parentFr) {
-            parent = parentFr;
+        private JToggleButton addToolBarButton(String gif, String actionCommand, String text, ActionListener actionListener) {
+            Icon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + gif));
+            JToggleButton button = new JToggleButton(icon);
+            button.addMouseListener(new MouseAdapter() {
 
-            Icon selectionIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "selection.gif"));
-            selectionButton = new JToggleButton(selectionIcon);
-            selectionButton.addMouseListener(new MouseAdapter() {
-
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    selectionButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                    button.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
-                    selectionButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+                    button.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
             });
-            selectionButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            selectionButton.setActionCommand("Selection");
-            selectionButton.setToolTipText("Select/Edit/Drag & Drop");
-
-            Icon objectIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "object.gif"));
-            objectButton = new JToggleButton(objectIcon);
-            objectButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    objectButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    objectButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            objectButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            objectButton.setActionCommand("SDObjectGR");
-            objectButton.setToolTipText("Object");
-
-            Icon actorIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "actor.gif"));
-            actorButton = new JToggleButton(actorIcon);
-            actorButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    actorButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    actorButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            actorButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            actorButton.setActionCommand("ActorInstanceGR");
-            actorButton.setToolTipText("Actor");
-
-            Icon multiObjectIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "multiobject.gif"));
-            multiObjectButton = new JToggleButton(multiObjectIcon);
-            multiObjectButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    multiObjectButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    multiObjectButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            multiObjectButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            multiObjectButton.setActionCommand("MultiObjectGR");
-            multiObjectButton.setToolTipText("Multiobject");
-
-            Icon callMessageIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "call_message.gif"));
-            callMessageButton = new JToggleButton(callMessageIcon);
-            callMessageButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    callMessageButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    callMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            callMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            callMessageButton.setActionCommand("CallMessageGR");
-            callMessageButton.setToolTipText("Call Message");
-
-            Icon returnMessageIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "return_message.gif"));
-            returnMessageButton = new JToggleButton(returnMessageIcon);
-            returnMessageButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    returnMessageButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    returnMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            returnMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            returnMessageButton.setActionCommand("ReturnMessageGR");
-            returnMessageButton.setToolTipText("Return Message");
-
-            Icon createMessageIcon = new ImageIcon(DrawingToolbar.class.getResource(Constants.IMAGES_DIR + "create_message.gif"));
-            createMessageButton = new JToggleButton(createMessageIcon);
-            createMessageButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    createMessageButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    createMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            createMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            createMessageButton.setActionCommand("CreateMessageGR");
-            createMessageButton.setToolTipText("Create Message");
-
-            Icon destroyMessageIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "destroy_message.gif"));
-            destroyMessageButton = new JToggleButton(destroyMessageIcon);
-            destroyMessageButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    destroyMessageButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    destroyMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            destroyMessageButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            destroyMessageButton.setActionCommand("DestroyMessageGR");
-            destroyMessageButton.setToolTipText("Destroy Message");
-
-            Icon noteIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "note.gif"));
-            noteButton = new JToggleButton(noteIcon);
-            noteButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    noteButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                    //System.out.println("bla");
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    noteButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            noteButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            noteButton.setActionCommand("UMLNoteGR");
-            noteButton.setToolTipText("UML Note");
-
-            // Undo/Redo
-            Icon undoIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "undo.gif"));
-            undoButton = new JToggleButton(undoIcon);
-            undoButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    undoButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    undoButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            undoButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            undoButton.setActionCommand("SDUndo");
-            //undoButton.setToolTipText(undoManager.getUndoPresentationName());
-
-            Icon redoIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "redo.gif"));
-            redoButton = new JToggleButton(redoIcon);
-            redoButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    redoButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    redoButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            redoButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            redoButton.setActionCommand("SDRedo");
-            //redoButton.setToolTipText(undoManager.getRedoPresentationName());
-            refreshUndoRedoButtons();
+            button.setBorder(new EmptyBorder(5, 5, 5, 5));
+            button.setActionCommand(actionCommand);
+            button.setToolTipText(text);
 
             // add the toolbar as the action listener of button events
-            selectionButton.addActionListener(this);
-            objectButton.addActionListener(this);
-            actorButton.addActionListener(this);
-            multiObjectButton.addActionListener(this);
-            callMessageButton.addActionListener(this);
-            returnMessageButton.addActionListener(this);
-            createMessageButton.addActionListener(this);
-            destroyMessageButton.addActionListener(this);
-            noteButton.addActionListener(this);
+            button.addActionListener(actionListener);
 
-            // Undo/Redo
-            undoButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    undoManager.undo();
-                    refreshUndoRedoButtons();
-                }
-            });
-            redoButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    undoManager.redo();
-                    refreshUndoRedoButtons();
-                }
-            });
-
-            // add the toolbar buttons to the vector list
-            buttons = new Vector();
-            buttons.add(selectionButton);
-            buttons.add(objectButton);
-            buttons.add(actorButton);
-            buttons.add(multiObjectButton);
-            buttons.add(callMessageButton);
-            buttons.add(returnMessageButton);
-            buttons.add(createMessageButton);
-            buttons.add(destroyMessageButton);
-            buttons.add(noteButton);
-            // Undo/Redo
-            buttons.add(undoButton);
-            buttons.add(redoButton);
+            buttons.add(button);
 
             // add the toggle buttons to the toolbar component
-            add(selectionButton);
+            add(button);
+
+            return button;            
+        }
+
+        public DrawingToolbar(SDInternalFrame parentFr) {
+            parentFrame = parentFr;
+
+            buttons = new ArrayList<>();
+
+            selectionButton = addToolBarButton("selection.gif", "Selection", "Select/Edit/Drag & Drop", this);
             addSeparator();
-            add(objectButton);
-            add(actorButton);
-            add(multiObjectButton);
-            add(callMessageButton);
-            add(returnMessageButton);
-            add(createMessageButton);
-            add(destroyMessageButton);
+            
+            addToolBarButton("object.gif", "SDObjectGR", "Object", this);
+            addToolBarButton("actor.gif", "ActorInstanceGR", "Actor", this);
+            addToolBarButton("multiobject.gif", "MultiObjectGR", "Multiobject", this);
+            addToolBarButton("call_message.gif", "CallMessageGR", "Call Message", this);
+            addToolBarButton("return_message.gif", "ReturnMessageGR", "Return Message", this);
+            addToolBarButton("create_message.gif", "CreateMessageGR", "Create Message", this);
+            addToolBarButton("destroy_message.gif", "DestroyMessageGR", "Destroy Message", this);
             addSeparator();
-            add(noteButton);
+
+            addToolBarButton("note.gif", "UMLNoteGR", "UML Note: select an element, then click this button and then at the place of the comment", this);
             addSeparator();
+
             setOrientation(SwingConstants.VERTICAL);
             setSelectedButton(selectionButton);
+            undoButton = addToolBarButton("undo.gif", "SDUndo", "Undo", e -> {
+                undoManager.undo();
+                refreshUndoRedoButtons();
+            });
 
-            // Undo/Redo
-            add(undoButton);
-            add(redoButton);
+            redoButton = addToolBarButton("redo.gif", "SDRedo", "Redo", e -> {
+                undoManager.redo();
+                refreshUndoRedoButtons();
+            });
+
+            refreshUndoRedoButtons();
         }
 
         // this method ensures that only one toggle button is pressed at a time
         public void setSelectedButton(JToggleButton button) {
-            JToggleButton b = null;
-            Iterator iterator = buttons.iterator();
-
-            // unselect all buttons in the group
-            while (iterator.hasNext()) {
-                b = (JToggleButton) iterator.next();
+            for(JToggleButton b: buttons) {
                 b.setSelected(false);
                 b.setBackground(UIManager.getColor("Button.background"));
             }
@@ -374,14 +177,15 @@ public class SDInternalFrame extends DiagramInternalFrame {
                 selectionController.setSelectionMode(getSelectionMode());
                 addElementController.setSelectionMode(getSelectionMode());
                 drawLineController.setSelectionMode(getSelectionMode());//TK draw line
-            } else if (command.equals("Validate")) {
             } else {    // the rest of the buttons are for adding UML elements
 
                 // Factory Method hides instantiation details and the variety of subclasses
                 // of AddElementController that may exist
-                setAddElementController(addElementControllerFactory.newAddElementController(model, parent, command));
+                setAddElementController(addElementControllerFactory.newAddElementController(model, parentFrame, command));
                 setDrawLineController(drawLineController);//TK draw line
-                model.clearSelected();
+                if (!command.equals("UMLNoteGR")) {
+                    model.clearSelected();
+                }
             }
         }
 

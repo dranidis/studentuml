@@ -39,6 +39,8 @@ import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
 import edu.city.studentuml.view.gui.UMLNoteEditor;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -47,6 +49,8 @@ import javax.swing.undo.UndoableEdit;
  * @author Biser
  */
 public class ADSelectionController extends SelectionController {
+
+    private static final Logger logger1 = Logger.getLogger(ADSelectionController.class.getName());
     
     public ADSelectionController(DiagramInternalFrame parent, ADModel m) {
         super(parent, m);
@@ -69,7 +73,7 @@ public class ADSelectionController extends SelectionController {
         } else if (edgeGR instanceof ObjectFlowGR) {
             editObjectFlow((ObjectFlowGR) edgeGR);
         } else {
-            java.lang.System.err.println("Error in editEdge(edge)");
+            logger1.severe("Error in editEdge(edge)");
         }
     }
     
@@ -193,7 +197,7 @@ public class ADSelectionController extends SelectionController {
         } else if (nodeComponentGR instanceof DecisionNodeGR) {
             editDecisionNode((DecisionNodeGR) nodeComponentGR);
         }else {
-            java.lang.System.err.println("Error in editNode(node)");
+            logger1.severe("Error in editNode(node)");
         }
     }
     

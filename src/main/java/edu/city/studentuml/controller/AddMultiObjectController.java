@@ -16,6 +16,7 @@ public class AddMultiObjectController extends AddElementController {
         super(model, frame);
     }
 
+    @Override
     public void pressed(int x, int y) {
         MultiObjectGR graphicalMultiObject = new MultiObjectGR(new MultiObject("", new DesignClass("")), x);
 

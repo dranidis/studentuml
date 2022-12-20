@@ -110,7 +110,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JPanel repairPanel;
     protected JButton repairButton;
     protected int openFrameCounter = 0;
-    public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
     protected DiagramInternalFrame selectedFrame;
 
@@ -177,7 +176,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (isApplet) {
             SystemWideObjectNamePool.uid = applet.getUsername();
         } else {
-            SystemWideObjectNamePool.uid = DESKTOP_USER;
+            SystemWideObjectNamePool.uid = Constants.DESKTOP_USER;
         }
     }
 
