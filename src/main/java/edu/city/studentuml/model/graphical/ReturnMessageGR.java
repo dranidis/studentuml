@@ -1,27 +1,18 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ReturnMessageGR.java
-import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.domain.SDMessage;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.prefs.Preferences;
 
 import org.w3c.dom.Element;
 
-public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable {
+public class ReturnMessageGR extends SDMessageGR {
 
     public ReturnMessageGR(RoleClassifierGR from, RoleClassifierGR to, ReturnMessage message, int y) {
         super(from, to, message, y);

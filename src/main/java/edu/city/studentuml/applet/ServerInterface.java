@@ -14,8 +14,6 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-
 public class ServerInterface {
 
     private String toolkey = "studentuml-toolkey-t63r5nlh";

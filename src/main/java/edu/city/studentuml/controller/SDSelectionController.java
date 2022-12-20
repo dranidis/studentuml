@@ -8,7 +8,6 @@ import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditSDObjectEdit;

@@ -77,7 +77,7 @@ public class StateEditor extends JPanel implements ActionListener {
         stateDialog.pack();
         stateDialog.setResizable(false);
         stateDialog.setLocationRelativeTo(owner);
-        stateDialog.show();
+        stateDialog.setVisible(true);
 
         return ok;
     }

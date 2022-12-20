@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 

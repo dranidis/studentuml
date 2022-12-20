@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-
 import edu.city.studentuml.util.Rotate;
 
 //Author: Ervin Ramollari
