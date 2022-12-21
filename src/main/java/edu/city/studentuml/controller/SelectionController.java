@@ -167,7 +167,9 @@ public abstract class SelectionController {
                     selectedElements.add(element);
                 }
 
-                model.selectGraphicalElement(lastPressed);
+                for (GraphicalElement el: selectedElements) {
+                    model.selectGraphicalElement(el);
+                }
 
                 // check if the event is a popup trigger event
                 managePopup(event);
@@ -256,22 +258,23 @@ public abstract class SelectionController {
             lastX = x;
             lastY = y;
 
+            logger.fine("Delta: " + deltaX + ", " + deltaY);
+
             /**
              * Make sure that none of the selected elements go beyond the top and left edge margin.
              */
             for (GraphicalElement e : selectedElements) {
                 /**
-                 * First condition is for SD messages: they have getX = 0 and deltaX = 0 Without
+                 * First condition is for SD messages: they have getX = 0. Without
                  * the condition messages cannot be moved because they look like they are out of
                  * the margin.
                  */
-                if (deltaX != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
+                if (e.getX() != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
                     return;
                 }
-                if (deltaY != 0 && deltaY + e.getY() < Constants.CANVAS_MARGIN) {
+                if (deltaY + e.getY() < Constants.CANVAS_MARGIN) {
                     return;
                 }
-             
             }
 
             for(GraphicalElement e: selectedElements) {
