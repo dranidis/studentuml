@@ -40,6 +40,8 @@ import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.util.undoredo.MultiObjectEdit;
 import edu.city.studentuml.util.undoredo.ObjectEdit;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -50,8 +52,51 @@ import javax.swing.undo.UndoableEdit;
 //handles all events when the "selection" button in the SD toolbar is pressed
 public class SDSelectionController extends SelectionController {
 
+    private List<Integer> oldXList = new ArrayList<>();
+    private List<Integer> oldYList = new ArrayList<>();
+
     public SDSelectionController(DiagramInternalFrame parent, SDModel m) {
         super(parent, m);
+    }
+
+    /**
+     * Objects are always at the top. Their Y is not changing.
+     * Messages x is always 0. Only their height is changings.  
+     * Store all X, Y coord of selected elements.
+     */
+    @Override
+    protected void setUndoCoordinates() {
+        oldXList.clear();
+        oldYList.clear();
+
+        for (GraphicalElement el: selectedElements) {
+            oldXList.add(el.getX());
+            oldYList.add(el.getY());
+        }
+        // undo/redo [move]
+    }
+
+    /**
+     * Compare old X with new X to see what is the X distance
+     * Same for old Y and new Y for the Y distance
+     */
+    @Override
+    protected void setRedoCoordinates() {
+        int newIndexX = 0;
+        int newIndexY = 0;
+        for (int i = 0; i < oldXList.size(); i++) {
+            int oldX = oldXList.get(i);
+            if (oldX != selectedElements.get(i).getX()) {
+                newIndexX = i;
+            }
+            int oldY = oldYList.get(i);
+            if (oldY != selectedElements.get(i).getY()) {
+                newIndexY = i;
+            }
+        }
+
+        undoCoordinates.setLocation(oldXList.get(newIndexX), oldYList.get(newIndexY));
+        redoCoordinates.setLocation(selectedElements.get(newIndexX).getX(), selectedElements.get(newIndexY).getY());
     }
 
     public void editElement(GraphicalElement selectedElement) {

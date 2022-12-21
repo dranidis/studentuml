@@ -163,9 +163,6 @@ public abstract class SelectionController {
         // if graphical element identified where the drag action started
         lastPressed = element;
 
-        // undo/redo [move]
-        undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
-
         if (event.isShiftDown() && event.isControlDown()) {
             handleCtrlShiftSelect(element);
 
@@ -190,8 +187,15 @@ public abstract class SelectionController {
             model.selectGraphicalElement(el);
         }
 
+        setUndoCoordinates();
+
         // check if the event is a popup trigger event
         managePopup(event);
+    }
+
+    protected void setUndoCoordinates() {
+        // undo/redo [move]
+        undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
     }
 
     protected void myMouseReleased(MouseEvent event) {
@@ -204,13 +208,20 @@ public abstract class SelectionController {
 
             SystemWideObjectNamePool.getInstance().reload();
 
-            // undo/redo [move]
-            redoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
+            setRedoCoordinates();
+
             if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {
+                logger.fine(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
+                logger.fine(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }
         }
+    }
+
+    protected void setRedoCoordinates() {
+        // undo/redo [move]
+        redoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
     }
 
     protected void myMouseClicked(MouseEvent event) {
