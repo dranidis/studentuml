@@ -33,7 +33,6 @@ import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -284,10 +283,16 @@ public class DCDSelectionController extends SelectionController {
             CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
         }
         synchronized (this) {
-            for (Object o : model.getGraphicalElements()) {
+            /**
+             * uses for loop to avoid ConcurrentModificationException
+             */
+            NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+            for (int i = 0; i < elements.size(); i++) {
+                GraphicalElement o = elements.get(i);
                 if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
                     model.removeGraphicalElement((UMLNoteGR) o);
-                }
+                    i--;
+                }                
             }
         }
         parentComponent.getUndoSupport().postEdit(edit);

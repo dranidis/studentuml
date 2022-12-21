@@ -336,6 +336,7 @@ public class SDSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
+    @Override
     public void handleCtrlShiftSelect(GraphicalElement element) {
         if(element instanceof SDMessageGR) {
             if (!selectedElements.contains(element)) {
