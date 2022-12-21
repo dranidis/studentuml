@@ -15,7 +15,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -51,7 +50,7 @@ public abstract class SelectionController {
     // mouse listeners are supplied by the view to listen for mouse events
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
-    private Action actionListener;
+    private Action deleteActionListener;
     private Action selectAllActionListener;
     // this boolean variable determines whether the selection controller or
     // an add-element-controller should take control of mouse events
@@ -109,17 +108,13 @@ public abstract class SelectionController {
             }
         };
 
-        actionListener = new AbstractAction() {
+        deleteActionListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 if (selectionMode && !selectedElements.isEmpty()) {
                     deleteSelected();
                 }
             }
         };
-
-        KeyStroke del = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, false);
-        parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(del, "del");
-        parentComponent.getActionMap().put("del", actionListener);
 
         selectAllActionListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -129,14 +124,19 @@ public abstract class SelectionController {
                 }
             }
         };
-        
+
+        KeyStroke del = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, false);
+        parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(del, "del");
+        parentComponent.getActionMap().put("del", deleteActionListener);
+
         KeyStroke selAll = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
         parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(selAll, "ctrl-a");
         parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);        
- 
     }
 
     protected void myMousePressed(MouseEvent event) {
+        logger.info("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+
         if (selectionMode) {
             lastX = event.getX();
             lastY = event.getY();
@@ -159,7 +159,9 @@ public abstract class SelectionController {
                     if (!selectedElements.contains(element)) {
                         selectedElements.add(element);
                     }
-                } else {
+                } else 
+                if (!selectedElements.contains(element)) 
+                {
                     selectedElements.clear();
                     model.clearSelected();
                     selectedElements.add(element);
@@ -180,6 +182,8 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
+        logger.info("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+
         if (selectionMode && lastPressed != null) {
 
             // check if the event is a popup trigger event
@@ -195,11 +199,13 @@ public abstract class SelectionController {
             }
 
             // start over again
-            lastPressed = null;
+            // lastPressed = null;
         }
     }
 
     protected void myMouseClicked(MouseEvent event) {
+        logger.info("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
             Point2D origin = new Point2D.Double(event.getX(), event.getY());
@@ -211,17 +217,38 @@ public abstract class SelectionController {
             if (element != null) {
                 editElement(element);
             }
+        } 
+        else {
+
+            if (event.isControlDown()) {
+                if (!selectedElements.contains(lastPressed)) {
+                    selectedElements.add(lastPressed);
+                }
+            } else {
+                selectedElements.clear();
+                model.clearSelected();
+            }
+
+
+            if (lastPressed != null) {
+                selectedElements.add(lastPressed);
+                model.selectGraphicalElement(lastPressed);     
+            }
+
         }
 
     }
 
     protected void myMouseDragged(MouseEvent event) {
+        logger.info("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
         }
     }
 
     public void moveElement(int x, int y) {
+        
         if (lastPressed != null) {
             int deltaX = x - lastX;
             int deltaY = y - lastY;
@@ -232,15 +259,19 @@ public abstract class SelectionController {
             /**
              * Make sure that none of the selected elements go beyond the top and left edge margin.
              */
-            for(GraphicalElement e: selectedElements) {
+            for (GraphicalElement e : selectedElements) {
                 /**
-                 * First condition is for SD messages: they have getX = 0 and deltaX = 0
-                 * Without the condition messages cannot be moved because they look like they are out of the margin.
+                 * First condition is for SD messages: they have getX = 0 and deltaX = 0 Without
+                 * the condition messages cannot be moved because they look like they are out of
+                 * the margin.
                  */
-                if (!(deltaX == 0 && e.getX() == 0) && 
-                    deltaX + e.getX() < Constants.CANVAS_MARGIN || deltaY + e.getY() < Constants.CANVAS_MARGIN) {
+                if (deltaX != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
                     return;
                 }
+                if (deltaY != 0 && deltaY + e.getY() < Constants.CANVAS_MARGIN) {
+                    return;
+                }
+             
             }
 
             for(GraphicalElement e: selectedElements) {
@@ -327,6 +358,7 @@ public abstract class SelectionController {
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
         for (GraphicalElement selectedElement : selectedElements) {
+            logger.info("DEL:" + selectedElement.toString());
             deleteElement(selectedElement);
         }
         selectedElements.clear();
