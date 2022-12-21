@@ -138,7 +138,7 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        // logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode) {
             lastX = event.getX();
@@ -158,22 +158,29 @@ public abstract class SelectionController {
 
                 if (event.isShiftDown() && event.isControlDown()) {
                     handleCtrlShiftSelect(element);
-                } else if (event.isControlDown()) {
+                } 
+                else if (event.isControlDown()) {
                     logger.fine("Elements: " + selectedElements.size());
 
                     if (!selectedElements.contains(element)) {
                         selectedElements.add(element);
-                        logger.fine("Elements: " + selectedElements.size() + "    " + selectedElements);
-
+                        logger.fine("Elements after add: " + selectedElements.size() + "    " + selectedElements);
+                    } else {
+                        selectedElements.remove(element);
+                        logger.fine("Elements removed: " + selectedElements.size() + "    " + selectedElements);
                     }
-                } else 
-                if (!selectedElements.contains(element)) 
+                } 
+                else if (!selectedElements.contains(element)) 
                 {
                     selectedElements.clear();
                     model.clearSelected();
                     selectedElements.add(element);
-                }
+                } else {
 
+                }
+                
+
+                model.clearSelected();
                 for (GraphicalElement el: selectedElements) {
                     model.selectGraphicalElement(el);
                 }
@@ -191,7 +198,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        // logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && lastPressed != null) {
 
@@ -213,7 +220,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        // logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
@@ -230,26 +237,24 @@ public abstract class SelectionController {
         else {
 
             if (event.isControlDown()) {
-                if (!selectedElements.contains(lastPressed)) {
-                    selectedElements.add(lastPressed);
-                }
+                // if (!selectedElements.contains(lastPressed)) {
+                //     selectedElements.add(lastPressed);
+                // }
             } else {
                 selectedElements.clear();
                 model.clearSelected();
+
+                if (lastPressed != null) {
+                    selectedElements.add(lastPressed);
+                    model.selectGraphicalElement(lastPressed);
+                }
             }
-
-
-            if (lastPressed != null) {
-                selectedElements.add(lastPressed);
-                model.selectGraphicalElement(lastPressed);     
-            }
-
         }
 
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        // logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+        logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
 
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
