@@ -138,7 +138,7 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine(() -> "Pressed: " + event.getX() + ", " + event.getY());
 
         if (selectionMode) {
             lastX = event.getX();
@@ -150,38 +150,7 @@ public abstract class SelectionController {
             GraphicalElement element = model.getContainingGraphicalElement(origin);
 
             if (element != null) {
-                // if graphical element identified where the drag action started
-                lastPressed = element;
-
-                // undo/redo [move]
-                undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
-
-                if (event.isShiftDown() && event.isControlDown()) {
-                    handleCtrlShiftSelect(element);
-
-                } else if (event.isControlDown()) {
-                    logger.fine("Elements: " + selectedElements.size());
-
-                    if (!selectedElements.contains(element)) {
-                        selectedElements.add(element);
-                        logger.fine("Elements after add: " + selectedElements.size() + "    " + selectedElements);
-                    } else {
-                        selectedElements.remove(element);
-                        logger.fine("Elements removed: " + selectedElements.size() + "    " + selectedElements);
-                    }
-                } else if (!selectedElements.contains(element)) {
-                    selectedElements.clear();
-                    model.clearSelected();
-                    selectedElements.add(element);
-                } 
-
-                model.clearSelected();
-                for (GraphicalElement el : selectedElements) {
-                    model.selectGraphicalElement(el);
-                }
-
-                // check if the event is a popup trigger event
-                managePopup(event);
+                mousePressedOnElement(event, element);
             } else {
                 selectedElements.clear();
                 model.clearSelected();
@@ -190,8 +159,43 @@ public abstract class SelectionController {
         }
     }
 
+    private void mousePressedOnElement(MouseEvent event, GraphicalElement element) {
+        // if graphical element identified where the drag action started
+        lastPressed = element;
+
+        // undo/redo [move]
+        undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
+
+        if (event.isShiftDown() && event.isControlDown()) {
+            handleCtrlShiftSelect(element);
+
+        } else if (event.isControlDown()) {
+            logger.fine(() -> "Elements: " + selectedElements.size());
+
+            if (!selectedElements.contains(element)) {
+                selectedElements.add(element);
+                logger.fine(() -> "Elements after add: " + selectedElements.size() + "    " + selectedElements);
+            } else {
+                selectedElements.remove(element);
+                logger.fine(() -> "Elements removed: " + selectedElements.size() + "    " + selectedElements);
+            }
+        } else if (!selectedElements.contains(element)) {
+            selectedElements.clear();
+            model.clearSelected();
+            selectedElements.add(element);
+        } 
+
+        model.clearSelected();
+        for (GraphicalElement el : selectedElements) {
+            model.selectGraphicalElement(el);
+        }
+
+        // check if the event is a popup trigger event
+        managePopup(event);
+    }
+
     protected void myMouseReleased(MouseEvent event) {
-        logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine(() -> "Released: " + event.getX() + ", " + event.getY());
 
         if (selectionMode && lastPressed != null) {
 
@@ -206,14 +210,11 @@ public abstract class SelectionController {
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }
-
-            // start over again
-            // lastPressed = null;
         }
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine(() -> "Clicked: " + event.getX() + ", " + event.getY());
 
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
@@ -241,7 +242,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+        logger.fine(() -> "Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
 
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
@@ -249,15 +250,12 @@ public abstract class SelectionController {
     }
 
     public void moveElement(int x, int y) {
-        
         if (lastPressed != null) {
             int deltaX = x - lastX;
             int deltaY = y - lastY;
 
             lastX = x;
             lastY = y;
-
-            // logger.fine("Delta: " + deltaX + ", " + deltaY);
 
             /**
              * Make sure that none of the selected elements go beyond the top and left edge margin.
@@ -342,8 +340,7 @@ public abstract class SelectionController {
             if ((event.getSource() == editMenuItem) && (selectedElements.size() == 1)) {
 
                 // call abstract method editElement that is to be overridden by subclasses
-                editElement(selectedElements.get(0));//TODO SMENI
-
+                editElement(selectedElements.get(0));
             } else if (event.getSource() == deleteMenuItem) {
                 deleteSelected();
             }
@@ -351,12 +348,6 @@ public abstract class SelectionController {
     }
 
     private void deleteSelected() {
-//        int response = JOptionPane.showConfirmDialog(parentComponent, "Are you sure?", "Delete",
-//                JOptionPane.YES_NO_OPTION);
-//
-//        if (response != JOptionPane.YES_OPTION) {
-//            return;
-//        }
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
         for (GraphicalElement toDelete : selectedElements) {
