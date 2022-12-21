@@ -135,7 +135,7 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        logger.info("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode) {
             lastX = event.getX();
@@ -182,7 +182,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        logger.info("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && lastPressed != null) {
 
@@ -204,7 +204,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        logger.info("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
@@ -240,7 +240,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        logger.info("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+        logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
 
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
@@ -357,9 +357,12 @@ public abstract class SelectionController {
 //        }
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
-        for (GraphicalElement selectedElement : selectedElements) {
-            logger.info("DEL:" + selectedElement.toString());
-            deleteElement(selectedElement);
+        for (GraphicalElement toDelete : selectedElements) {
+            if (model.getGraphicalElements().contains(toDelete)) {
+                logger.fine(() -> ("DEL:" + toDelete.getInternalid() + " " + toDelete.toString()));
+                deleteElement(toDelete);
+            }
+
         }
         selectedElements.clear();
     }
