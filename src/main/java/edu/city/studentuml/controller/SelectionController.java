@@ -5,6 +5,7 @@ package edu.city.studentuml.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -51,6 +52,7 @@ public abstract class SelectionController {
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
     private Action actionListener;
+    private Action selectAllActionListener;
     // this boolean variable determines whether the selection controller or
     // an add-element-controller should take control of mouse events
     protected boolean selectionMode = false;
@@ -119,6 +121,19 @@ public abstract class SelectionController {
         parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(del, "del");
         parentComponent.getActionMap().put("del", actionListener);
 
+        selectAllActionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                for (GraphicalElement el: model.getGraphicalElements()) {
+                    selectedElements.add(el);
+                    model.selectGraphicalElement(el);
+                }
+            }
+        };
+        
+        KeyStroke selAll = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
+        parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(selAll, "ctrl-a");
+        parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);        
+ 
     }
 
     protected void myMousePressed(MouseEvent event) {
