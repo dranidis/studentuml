@@ -118,6 +118,9 @@ public abstract class SelectionController {
 
         selectAllActionListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                selectedElements.clear();
+                model.clearSelected();
+
                 for (GraphicalElement el: model.getGraphicalElements()) {
                     selectedElements.add(el);
                     model.selectGraphicalElement(el);
@@ -135,7 +138,7 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        // logger.fine("Pressed: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode) {
             lastX = event.getX();
@@ -156,8 +159,12 @@ public abstract class SelectionController {
                 if (event.isShiftDown() && event.isControlDown()) {
                     handleCtrlShiftSelect(element);
                 } else if (event.isControlDown()) {
+                    logger.fine("Elements: " + selectedElements.size());
+
                     if (!selectedElements.contains(element)) {
                         selectedElements.add(element);
+                        logger.fine("Elements: " + selectedElements.size() + "    " + selectedElements);
+
                     }
                 } else 
                 if (!selectedElements.contains(element)) 
@@ -184,7 +191,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        // logger.fine("Released: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && lastPressed != null) {
 
@@ -206,7 +213,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
+        // logger.fine("Clicked: " + event.getX() + ", " + event.getY() + " lastPressed: " + lastPressed);
 
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
@@ -242,7 +249,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+        // logger.fine("Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
 
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
@@ -258,7 +265,7 @@ public abstract class SelectionController {
             lastX = x;
             lastY = y;
 
-            logger.fine("Delta: " + deltaX + ", " + deltaY);
+            // logger.fine("Delta: " + deltaX + ", " + deltaY);
 
             /**
              * Make sure that none of the selected elements go beyond the top and left edge margin.
