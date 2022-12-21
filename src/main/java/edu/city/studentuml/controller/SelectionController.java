@@ -158,8 +158,8 @@ public abstract class SelectionController {
 
                 if (event.isShiftDown() && event.isControlDown()) {
                     handleCtrlShiftSelect(element);
-                } 
-                else if (event.isControlDown()) {
+
+                } else if (event.isControlDown()) {
                     logger.fine("Elements: " + selectedElements.size());
 
                     if (!selectedElements.contains(element)) {
@@ -169,29 +169,22 @@ public abstract class SelectionController {
                         selectedElements.remove(element);
                         logger.fine("Elements removed: " + selectedElements.size() + "    " + selectedElements);
                     }
-                } 
-                else if (!selectedElements.contains(element)) 
-                {
+                } else if (!selectedElements.contains(element)) {
                     selectedElements.clear();
                     model.clearSelected();
                     selectedElements.add(element);
-                } else {
-
-                }
-                
+                } 
 
                 model.clearSelected();
-                for (GraphicalElement el: selectedElements) {
+                for (GraphicalElement el : selectedElements) {
                     model.selectGraphicalElement(el);
                 }
 
                 // check if the event is a popup trigger event
                 managePopup(event);
             } else {
-                if(!selectedElements.isEmpty()) {
-                    selectedElements.clear();
-                    model.clearSelected();
-                }
+                selectedElements.clear();
+                model.clearSelected();
                 lastPressed = null;
             }
         }
@@ -233,14 +226,8 @@ public abstract class SelectionController {
             if (element != null) {
                 editElement(element);
             }
-        } 
-        else {
-
-            if (event.isControlDown()) {
-                // if (!selectedElements.contains(lastPressed)) {
-                //     selectedElements.add(lastPressed);
-                // }
-            } else {
+        } else {
+            if (!event.isControlDown()) {
                 selectedElements.clear();
                 model.clearSelected();
 
