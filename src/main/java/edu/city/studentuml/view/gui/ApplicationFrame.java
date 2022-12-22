@@ -157,6 +157,7 @@ public class ApplicationFrame extends ApplicationGUI {
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
         xmlFileChooser.setSelectedFile(new File(umlProject.getFilename()));
+        xmlFileChooser.setDialogTitle("Save as");
         int response = xmlFileChooser.showSaveDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;

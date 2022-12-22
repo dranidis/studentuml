@@ -1111,7 +1111,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             });
             add(saveButton);
 
-            ImageIcon saveAsIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "save_as.gif"));
+            ImageIcon saveAsIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "save_as2.gif"));
             saveAsButton = new JButton(saveAsIcon);
             saveAsButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             saveAsButton.setToolTipText("Save As...");
