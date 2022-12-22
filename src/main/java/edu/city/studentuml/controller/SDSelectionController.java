@@ -41,7 +41,6 @@ import edu.city.studentuml.util.undoredo.MultiObjectEdit;
 import edu.city.studentuml.util.undoredo.ObjectEdit;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -50,53 +49,12 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 //handles all events when the "selection" button in the SD toolbar is pressed
-public class SDSelectionController extends SelectionController {
+public class SDSelectionController extends AbstractSDSelectionController {
 
-    private List<Integer> oldXList = new ArrayList<>();
-    private List<Integer> oldYList = new ArrayList<>();
+    private static final String WARNING = "Warning";
 
     public SDSelectionController(DiagramInternalFrame parent, SDModel m) {
         super(parent, m);
-    }
-
-    /**
-     * Objects are always at the top. Their Y is not changing.
-     * Messages x is always 0. Only their height is changings.  
-     * Store all X, Y coord of selected elements.
-     */
-    @Override
-    protected void setUndoCoordinates() {
-        oldXList.clear();
-        oldYList.clear();
-
-        for (GraphicalElement el: selectedElements) {
-            oldXList.add(el.getX());
-            oldYList.add(el.getY());
-        }
-        // undo/redo [move]
-    }
-
-    /**
-     * Compare old X with new X to see what is the X distance
-     * Same for old Y and new Y for the Y distance
-     */
-    @Override
-    protected void setRedoCoordinates() {
-        int newIndexX = 0;
-        int newIndexY = 0;
-        for (int i = 0; i < oldXList.size(); i++) {
-            int oldX = oldXList.get(i);
-            if (oldX != selectedElements.get(i).getX()) {
-                newIndexX = i;
-            }
-            int oldY = oldYList.get(i);
-            if (oldY != selectedElements.get(i).getY()) {
-                newIndexY = i;
-            }
-        }
-
-        undoCoordinates.setLocation(oldXList.get(newIndexX), oldYList.get(newIndexY));
-        redoCoordinates.setLocation(selectedElements.get(newIndexX).getX(), selectedElements.get(newIndexY).getY());
     }
 
     public void editElement(GraphicalElement selectedElement) {
@@ -165,7 +123,7 @@ public class SDSelectionController extends SelectionController {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing object with the given name already.\n"
                     + "Do you want this diagram object to refer to the existing one?",
-                    "Warning",
+                    WARNING,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -174,12 +132,6 @@ public class SDSelectionController extends SelectionController {
                 if (originalObject.getName().equals("")) {
                     repository.removeObject(originalObject);
                 }
-
-                // UNDO/REDO
-                //originalObject = object.getSDObject();
-                //originalEdit = new ObjectEdit(originalObject, originalObject.getDesignClass().getName());
-                //UndoableEdit e = new EditSDObjectEdit(originalEdit, undoEdit, model);
-                //parentComponent.getUndoSupport().postEdit(e);
             }
         } else {
             repository.editObject(originalObject, newObject);
@@ -219,7 +171,7 @@ public class SDSelectionController extends SelectionController {
                 && !newMultiObject.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing multiobject with the given name already.\n"
-                    + "Do you want this diagram object to refer to the existing one?", "Warning",
+                    + "Do you want this diagram object to refer to the existing one?", WARNING,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -269,7 +221,7 @@ public class SDSelectionController extends SelectionController {
                 && !newActorInstance.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing actor instance with the given name already.\n"
-                    + "Do you want this diagram actor instance to refer to the existing one?", "Warning",
+                    + "Do you want this diagram actor instance to refer to the existing one?",WARNING,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -344,9 +296,9 @@ public class SDSelectionController extends SelectionController {
             CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
         }
         synchronized (this) {
-            for (Object o : model.getGraphicalElements()) {
+            for (GraphicalElement o : model.getGraphicalElements()) {
                 if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                    model.removeGraphicalElement((UMLNoteGR) o);
+                    model.removeGraphicalElement(o);
                 }
             }
         }
@@ -366,11 +318,11 @@ public class SDSelectionController extends SelectionController {
         }
 
 
-        Vector parameters = createMessageEditor.getParameters();
-        Iterator iterator = parameters.iterator();
-        message.setParameters(new Vector());
+        List<MethodParameter> parameters = createMessageEditor.getParameters();
+        Iterator<MethodParameter> iterator = parameters.iterator();
+        message.setParameters(new Vector<>());
         while (iterator.hasNext()) {
-            message.addParameter((MethodParameter) iterator.next());
+            message.addParameter(iterator.next());
         }
 
         // UNDO/REDO

@@ -36,7 +36,7 @@ import edu.city.studentuml.view.gui.UMLNoteEditor;
  *
  * @author draganbisercic
  */
-public class SSDSelectionController extends SelectionController {
+public class SSDSelectionController extends AbstractSDSelectionController {
 
     public SSDSelectionController(DiagramInternalFrame parent, SSDModel m) {
         super(parent, m);
