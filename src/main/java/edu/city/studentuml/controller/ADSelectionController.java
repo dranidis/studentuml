@@ -21,6 +21,7 @@ import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
@@ -316,17 +317,24 @@ public class ADSelectionController extends SelectionController {
     @Override
     public void deleteElement(GraphicalElement selectedElement) {
         UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
-        
-        model.removeGraphicalElement(selectedElement);
-        synchronized(this){
-        for (Object o : model.getGraphicalElements()) {
+
+        /**
+         * uses for loop to avoid ConcurrentModificationException
+         */
+        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+        int i = 0;
+        while (i < elements.size()) {
+            GraphicalElement o = elements.get(i);
             if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                model.removeGraphicalElement((UMLNoteGR) o);
+                deleteElement(o);
+            } else {
+                i++;
             }
         }
-        }
-        parentComponent.setSelectionMode();
+        
+        // parentComponent.setSelectionMode();
         
         parentComponent.getUndoSupport().postEdit(edit);
+        model.removeGraphicalElement(selectedElement);
     }
 }

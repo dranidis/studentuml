@@ -244,7 +244,8 @@ public class AssociationEditor extends JPanel implements ActionListener {
             roleBMultiplicityComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < multiplicities.length; i++) {
-                if (roleB.getMultiplicity().equals(multiplicities[i])) {
+                if (roleB.getMultiplicity
+                ().equals(multiplicities[i])) {
                     roleBMultiplicityComboBox.setSelectedIndex(i);
 
                     break;
@@ -257,7 +258,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getAssociationName() {
-        if (nameField.getText() == "") {
+        if (nameField.getText().equals("")) {
             return null;
         } else {
             return nameField.getText();
@@ -283,7 +284,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getRoleAName() {
-        if (roleANameField.getText() == "") {
+        if (roleANameField.getText().equals("")) {
             return null;
         } else {
             return roleANameField.getText();
@@ -299,7 +300,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getRoleBName() {
-        if (roleBNameField.getText() == "") {
+        if (roleBNameField.getText().equals("")) {
             return null;
         } else {
             return roleBNameField.getText();
