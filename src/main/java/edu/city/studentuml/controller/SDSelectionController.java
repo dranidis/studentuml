@@ -9,7 +9,6 @@ import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
@@ -23,7 +22,6 @@ import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.view.gui.ObjectEditor;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
@@ -66,35 +64,12 @@ public class SDSelectionController extends AbstractSDSelectionController {
             editActorInstance((ActorInstanceGR) selectedElement);
         } else if (selectedElement instanceof ReturnMessageGR) {
             editReturnMessage((ReturnMessageGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
         } else if (selectedElement instanceof CreateMessageGR) {
         	editCreateMessage((CreateMessageGR) selectedElement);
         // callMessage should be after create since create is a subclass
         } else if (selectedElement instanceof CallMessageGR) {
             editCallMessage((CallMessageGR) selectedElement);
         }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
     }
 
     public void editSDObject(SDObjectGR object) {

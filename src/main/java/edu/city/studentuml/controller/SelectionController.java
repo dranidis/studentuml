@@ -14,7 +14,10 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -27,10 +30,13 @@ import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  * The SelectionController is the Controller component in MVC that handles all
@@ -67,7 +73,18 @@ public abstract class SelectionController {
     JMenuItem editMenuItem;
     JPopupMenu popupMenuOne;
 
+    /**
+     * A map mapping a class to its editor.
+     * Each subclass of SelectionController implements editors for the
+     * elements that the diagram implements.
+     */
+    protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
+
     protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+
+        editElementMapper = new HashMap<>();
+        editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
+        
         parentComponent = parent;
         model = m;
 
@@ -135,6 +152,36 @@ public abstract class SelectionController {
         KeyStroke selAll = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
         parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(selAll, "ctrl-a");
         parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);        
+    }
+
+    private void mapeditElement(GraphicalElement element) {
+        Consumer<GraphicalElement> editElementConsumer = editElementMapper.get(element.getClass());
+        if (editElementConsumer != null) {
+            editElementConsumer.accept(element);
+        } else {
+            editElement(element);
+        }
+    }
+
+    private void editUMLNote(UMLNoteGR noteGR) {
+        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
+
+        // Undo/Redo
+        String undoText = noteGR.getText();
+
+        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
+            return;
+        }
+
+        noteGR.setText(noteEditor.getText());
+
+        // Undo/Redo
+        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
+        parentComponent.getUndoSupport().postEdit(edit);
+
+        // set observable model to changed in order to notify its views
+        model.modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
     }
 
     protected void myMousePressed(MouseEvent event) {
@@ -236,7 +283,7 @@ public abstract class SelectionController {
             GraphicalElement element = model.getContainingGraphicalElement(origin);
 
             if (element != null) {
-                editElement(element);
+                mapeditElement(element);
             }
         } else {
             if (!event.isControlDown()) {

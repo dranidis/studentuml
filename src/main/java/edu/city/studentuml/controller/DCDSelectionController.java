@@ -13,7 +13,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditAssociationEdit;
 import edu.city.studentuml.util.undoredo.EditDCDClassEdit;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.view.gui.ClassEditor;
@@ -23,7 +22,6 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.view.gui.InterfaceEditor;
 import edu.city.studentuml.model.graphical.InterfaceGR;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
@@ -53,30 +51,7 @@ public class DCDSelectionController extends SelectionController {
             editAssociation((AssociationGR) selectedElement);
         } else if (selectedElement instanceof AssociationClassGR) {
             editAssociationClass((AssociationClassGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
+        } 
     }
 
     // Editing the selected graphical element if it is a class

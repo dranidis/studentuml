@@ -22,7 +22,6 @@ import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
 import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.util.undoredo.EditSystemInstanceEdit;
 import edu.city.studentuml.util.undoredo.SystemEdit;
@@ -30,7 +29,6 @@ import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.SystemInstanceEditor;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  *
@@ -51,30 +49,7 @@ public class SSDSelectionController extends AbstractSDSelectionController {
             editCallMessage((CallMessageGR) selectedElement);
         } else if (selectedElement instanceof ReturnMessageGR) {
             editReturnMessage((ReturnMessageGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
+        } 
     }
 
     public void editSystemInstance(SystemInstanceGR systemInstanceGR) {

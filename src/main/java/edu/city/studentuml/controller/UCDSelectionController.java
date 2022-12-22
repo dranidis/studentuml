@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.graphical.UCDModel;
@@ -11,7 +10,6 @@ import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActorEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditSystemEdit;
 import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -47,9 +45,7 @@ public class UCDSelectionController extends SelectionController {
             editSystem((SystemGR) selectedElement);
         } else if (selectedElement instanceof UCExtendGR) {
             editExtend((UCExtendGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
+        } 
     }
 
     private void editActor(UCActorGR uCActorGR) {
@@ -163,27 +159,6 @@ public class UCDSelectionController extends SelectionController {
         // Undo/Redo [edit]
         UndoableEdit edit = new EditUCExtendEdit(originalUCExtend, newUCExtend, model);
         model.getCentralRepository().editUCExtend(originalUCExtend, newUCExtend);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
         parentComponent.getUndoSupport().postEdit(edit);
 
         // set observable model to changed in order to notify its views
