@@ -26,13 +26,14 @@ public class ApplicationFrame extends ApplicationGUI {
      *
      */
     private static final long serialVersionUID = 1L;
+    private static final String DEFAULT_PATH = "DEFAULT_PATH";
 
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
-    public static String applicationName = "StudentUML";
+    public static final String APPLICATION_NAME = "StudentUML";
     private JFileChooser xmlFileChooser;
-    Preferences pref= Preferences.userRoot();
-    String path = pref.get("DEFAULT_PATH", "");
+    private static final Preferences pref= Preferences.userRoot();
+    String path = pref.get(DEFAULT_PATH, "");
     
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
@@ -66,15 +67,9 @@ public class ApplicationFrame extends ApplicationGUI {
     private void updateFrameTitle() {
         if (closingOrLoading) return;
 
-        // if (SystemWideObjectNamePool.getInstance().isLoading()) {
-        //     return;
-        // }
+        logger.finer("Updating title: saved: " + umlProject.isSaved());
 
-        if (logger != null) {
-            logger.finer("Updating title: saved: " + umlProject.isSaved());
-        }
-
-        String title = applicationName + " - " + umlProject.getName();
+        String title = APPLICATION_NAME + " - " + umlProject.getName();
         if (!umlProject.isSaved()) {
             title += " (not saved)";
         }
@@ -140,16 +135,16 @@ public class ApplicationFrame extends ApplicationGUI {
 
     @Override
     public void saveProject() {
-        String path = umlProject.getFilepath();
+        String umlProjectFilePath = umlProject.getFilepath();
 
-        if ((path == null) || path.equals("")) {
+        if ((umlProjectFilePath == null) || umlProjectFilePath.equals("")) {
             // if no file has yet been chosen, prompt via method saveProjectAs
             saveProjectAs();
         } else {
             umlProject.streamToXML();
             updateFrameTitle();
 
-            pref.put("DEFAULT_PATH", path);
+            pref.put(DEFAULT_PATH, umlProjectFilePath);
         }
     }
 
@@ -157,6 +152,7 @@ public class ApplicationFrame extends ApplicationGUI {
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
         xmlFileChooser.setSelectedFile(new File(umlProject.getFilename()));
+        xmlFileChooser.setDialogTitle("Save as");
         int response = xmlFileChooser.showSaveDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
@@ -181,7 +177,7 @@ public class ApplicationFrame extends ApplicationGUI {
         umlProject.streamToXML();
         updateFrameTitle();
         
-        pref.put("DEFAULT_PATH", filePath);
+        pref.put(DEFAULT_PATH, filePath);
     }
 
     @Override
@@ -190,13 +186,12 @@ public class ApplicationFrame extends ApplicationGUI {
 
         if (selectedFrame != null) {
             DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
-
-            //ImageExporter.exportToPNGImageString(view);
             ImageExporter.exportToImage(view, this);
         }
     }
 
     @Override
     public void help() {
+        // to be implemented
     }
 }

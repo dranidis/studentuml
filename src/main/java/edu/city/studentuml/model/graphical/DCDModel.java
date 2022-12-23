@@ -30,6 +30,7 @@ public class DCDModel extends DiagramModel {
 
     // override the superclass method addGraphicalElement to handle different
     // classes
+    @Override
     public void addGraphicalElement(GraphicalElement element) {
         SystemWideObjectNamePool.getInstance().loading();
         if (element instanceof ClassGR) {
@@ -206,6 +207,7 @@ public class DCDModel extends DiagramModel {
     }
 
     // override superclass method removeGraphicalElement()
+    @Override
     public void removeGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
         if (e instanceof ClassGR) {
@@ -504,6 +506,7 @@ public class DCDModel extends DiagramModel {
         super.removeGraphicalElement(r);
     }
 
+    @Override
     public void clear() {
 
         while (graphicalElements.size() > 0) {

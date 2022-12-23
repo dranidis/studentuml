@@ -33,18 +33,7 @@ public class MenuBar {
 
         this.app = app;
         createFileMenu();
-
-        /**
-         * Not necessary?
-         */
-        // createEditMenu();
-
         createCreateMenu();
-
-        /**
-         * TODO: Remove till implemented
-         */
-        // createHelpMenu();
     }
 
     public JMenuBar getMenuBar() {
@@ -109,25 +98,6 @@ public class MenuBar {
             exportToImageMenuItem.setEnabled(false);
             exitMenuItem.setEnabled(false);
         }
-    }
-
-    public void createEditMenu() {
-        JMenu editMenu = new JMenu();
-        editMenu.setText(" Edit ");
-        menuBar.add(editMenu);
-
-        JMenuItem resizeDrawingAreaMenuItem = new JMenuItem();
-        resizeDrawingAreaMenuItem.setText("Resize Drawing Area");
-        resizeDrawingAreaMenuItem.addActionListener(e -> app.resizeView());
-        editMenu.add(resizeDrawingAreaMenuItem);
-
-        JMenuItem reloadRulesMenuItem = new JMenuItem();
-        reloadRulesMenuItem.setText("Reload Rules");
-        reloadRulesMenuItem.addActionListener(e -> app.reloadRules());
-        editMenu.add(reloadRulesMenuItem);
-
-        editMenu.addSeparator();
-
     }
 
     private void createPreferencesSubmenu(JMenu editMenu) {
