@@ -840,7 +840,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
-        public void internalFrameDeActivated(InternalFrameEvent e) {
+        @Override
+        public void internalFrameDeactivated(InternalFrameEvent e) {
             logger.finer("Frame deactivated");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
@@ -853,7 +854,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
-        public void internalFrameDeIconified(InternalFrameEvent e) {
+        @Override
+        public void internalFrameDeiconified(InternalFrameEvent e) {
             logger.finer("Frame deiconified");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);
@@ -1144,11 +1146,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         }
 
-
-
-        public void setSaveActionEnabled(boolean enabled) {
-            saveButton.setEnabled(enabled);
-        }
     }
 
 }
