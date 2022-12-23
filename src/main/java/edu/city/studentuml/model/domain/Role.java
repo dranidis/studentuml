@@ -34,7 +34,7 @@ public class Role implements Serializable, IXMLCustomStreamable {
     // 'get' methods
     public String getName() {
         if (roleName == null)
-            return "";        
+            return "";
         return roleName.trim();
     }
 
@@ -49,15 +49,14 @@ public class Role implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setMultiplicity(node.getAttribute("multiplicity"));
-        referredClass = (Classifier) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute("classifier"));
+        referredClass = (Classifier) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(node.getAttribute("classifier"));
 
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("multiplicity", getMultiplicity());
 

@@ -137,7 +137,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         multiObjectDialog.pack();
         multiObjectDialog.setResizable(false);
         multiObjectDialog.setLocationRelativeTo(owner);
-        multiObjectDialog.show();
+        multiObjectDialog.setVisible(true);
 
         return ok;
     }

@@ -185,7 +185,7 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         associationDialog.pack();
         associationDialog.setResizable(false);
         associationDialog.setLocationRelativeTo(owner);
-        associationDialog.show();
+        associationDialog.setVisible(true);
 
         return ok;
     }

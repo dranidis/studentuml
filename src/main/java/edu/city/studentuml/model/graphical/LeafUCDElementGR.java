@@ -1,15 +1,15 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.LeafUCDElement;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
+
+import edu.city.studentuml.model.domain.LeafUCDElement;
 
 /**
  *
  * @author draganbisercic
  */
-public abstract class LeafUCDElementGR extends UCDComponentGR implements ClassifierGR, IXMLCustomStreamable {
+public abstract class LeafUCDElementGR extends UCDComponentGR {
 
     public LeafUCDElementGR(LeafUCDElement leafElement, int x, int y) {
         super(leafElement, x, y);
@@ -23,8 +23,7 @@ public abstract class LeafUCDElementGR extends UCDComponentGR implements Classif
     }
 
     public UCDComponentGR getElement(int index) {
-        throw new IndexOutOfBoundsException("Index: " + index +
-                ", Size: " + 0);
+        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + 0);
     }
 
     @Override
@@ -56,5 +55,5 @@ public abstract class LeafUCDElementGR extends UCDComponentGR implements Classif
     @Override
     public void move(int x, int y) {
         startingPoint.setLocation(x, y);
-    }   
+    }
 }

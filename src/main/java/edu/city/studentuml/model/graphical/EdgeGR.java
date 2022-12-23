@@ -33,24 +33,24 @@ public abstract class EdgeGR extends GraphicalElement {
     /*
      * This constructor is used in persistency module only (ObjectFactory)
      */
-    public EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
+    protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
         this.source = source;
         this.target = target;
         this.edge = edge;
 
-        points = new ArrayList<AbstractPointGR>();
+        points = new ArrayList<>();
 
         font = new Font("SansSerif", Font.PLAIN, 10);
         outlineColor = Color.black;
         highlightColor = Color.blue;
     }
 
-    public EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
+    protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
         this.source = source;
         this.target = target;
         this.edge = edge;
 
-        points = new ArrayList<AbstractPointGR>();
+        points = new ArrayList<>();
         points.add(getInitialPoint(srcPoint));
         points.add(getInitialPoint(trgPoint));
 
@@ -87,7 +87,7 @@ public abstract class EdgeGR extends GraphicalElement {
         points.remove(point);
     }
 
-    public Iterator getPoints() {
+    public Iterator<AbstractPointGR> getPoints() {
         return points.iterator();
     }
 

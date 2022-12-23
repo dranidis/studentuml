@@ -1,6 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 
 import org.w3c.dom.Element;
 
-public class UMLNoteGR extends GraphicalElement implements IXMLCustomStreamable {
+public class UMLNoteGR extends GraphicalElement {
 
     static final BreakIterator LINE_BREAK = BreakIterator.getLineInstance();
     private static Font nameFont = new Font("SansSerif", Font.PLAIN, 12);
@@ -65,7 +65,10 @@ public class UMLNoteGR extends GraphicalElement implements IXMLCustomStreamable 
 
         // REPLACE super.draw(g) because only UMLNoteGR should show user
         g.setFont(new Font("SansSerif", Font.PLAIN, 8));
-        g.drawString("user: " + this.myUid, getX(), getY() - 5);
+        
+        if (!this.myUid.equals(Constants.DESKTOP_USER)) {
+            g.drawString("user: " + this.myUid, getX(), getY() - 5);
+        }
 
         g.setStroke(new BasicStroke(0.3f));
         Rectangle2D toBounds = to.getBounds();

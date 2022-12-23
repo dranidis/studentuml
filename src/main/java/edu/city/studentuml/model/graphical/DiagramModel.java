@@ -8,6 +8,10 @@ import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.UMLProject;
@@ -25,14 +29,15 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
+@JsonIncludeProperties({ "name", "internalid", "graphicalElements" })
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
-    
+
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(DiagramModel.class.getName());
+    private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     public static final int UCD = 0;
     public static final int SSD = 1;
@@ -40,17 +45,24 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public static final int CCD = 3;
     public static final int DCD = 4;
     public static final int AD = 5;
-    
+
+    @JsonProperty("name")
     protected String diagramName;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;
     protected Vector<GraphicalElement> selected;
 
-    // every diagram has to have a reference to the central repository of UML elements
+    // every diagram has to have a reference to the central repository of UML
+    // elements
     protected CentralRepository repository;
     protected UMLProject umlProject;
 
     public DiagramModel() {
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     public DiagramModel(String name, UMLProject umlp) {
@@ -71,7 +83,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return frame;
     }
 
-    // This method adds a graphical element to the diagram, triggered by the controller.
+    // This method adds a graphical element to the diagram, triggered by the
+    // controller.
     // The default behavior is to simply add the graphical element to the list
     // and notify the view observers, but subclasses may override this behavior,
     // for example in case the addition of one element affects other elements
@@ -88,10 +101,14 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         modelChanged();
     }
 
-    // This method removes a graphical element from the diagram, triggered by the controller.
-    // The default behavior is to simply remove the graphical element from the list, if
-    // it exists, and notify the observers, but subclasses may override this behavior,
-    // for example in case the deletion of one element (e.g. design class) triggers the
+    // This method removes a graphical element from the diagram, triggered by the
+    // controller.
+    // The default behavior is to simply remove the graphical element from the list,
+    // if
+    // it exists, and notify the observers, but subclasses may override this
+    // behavior,
+    // for example in case the deletion of one element (e.g. design class) triggers
+    // the
     // deletion of other elements (associations, dependencies, etc.)
     public void removeGraphicalElement(GraphicalElement e) {
         e.objectRemoved(e);
@@ -99,21 +116,29 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         modelChanged();
     }
 
-    // This method moves a graphical element in the drawing area, by changing its coordinates.
-    // The method is usually triggered by a drag event caused by the drag-and-drop controller.
+    // This method moves a graphical element in the drawing area, by changing its
+    // coordinates.
+    // The method is usually triggered by a drag event caused by the drag-and-drop
+    // controller.
     // Each element responds polymorphically with its move() method.
-    // The simplest behavior is implemented by calling the element's move method, but
-    // subclasses may override this behavior in case the movement of one element affects
+    // The simplest behavior is implemented by calling the element's move method,
+    // but
+    // subclasses may override this behavior in case the movement of one element
+    // affects
     // other elements
     public void moveGraphicalElement(GraphicalElement e, int x, int y) {
         e.move(x, y);
         modelChanged();
     }
 
-    // This method moves a graphical element in the drawing area, but in difference from
-    // moveGraphicalElement(), it is triggered by a releasing of the mouse button after
-    // dragging, in case the moved element may have to be validated in its new position.
-    // The simplest behavior is exactly the same as move(), but subclasses may override it.
+    // This method moves a graphical element in the drawing area, but in difference
+    // from
+    // moveGraphicalElement(), it is triggered by a releasing of the mouse button
+    // after
+    // dragging, in case the moved element may have to be validated in its new
+    // position.
+    // The simplest behavior is exactly the same as move(), but subclasses may
+    // override it.
     public void settleGraphicalElement(GraphicalElement e, int x, int y) {
         moveGraphicalElement(e, x, y);
     }
@@ -128,12 +153,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             selected.add(e);
             e.setSelected(true);
             modelChanged();
-            //SystemWideObjectNamePool.getInstance().reload();
+            // SystemWideObjectNamePool.getInstance().reload();
         }
     }
 
     public void clearSelected() {
-        for(GraphicalElement element : graphicalElements) {
+        for (GraphicalElement element : graphicalElements) {
             element.setSelected(false);
         }
 
@@ -141,7 +166,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             selected.clear();
             modelChanged();
         }
-        //SystemWideObjectNamePool.getInstance().reload();
+        // SystemWideObjectNamePool.getInstance().reload();
     }
 
     // retrieves the currently selected graphical element, if any
@@ -182,7 +207,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     // Usually triggered by a select, drag-and-drop, and addition event.
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
 
-        // get the first element that contains the point, starting from the end of the list,
+        // get the first element that contains the point, starting from the end of the
+        // list,
         // i.e. from the most recently drawn grapical element, so that the uppermost is
         // returned in case elements are overlayed one on top of the other
         ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
@@ -204,7 +230,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return this.getContainingGraphicalElement(new Point2D.Double(x, y));
     }
 
-    // clears the drawing area of a diagram by setting all graphical elements to empty
+    // clears the drawing area of a diagram by setting all graphical elements to
+    // empty
     public void clear() {
         while (graphicalElements.size() > 0) {
             removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
@@ -224,13 +251,15 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public String toString() {
         return diagramName;
     }
-    
+
     @Override
     public synchronized void addObserver(Observer o) {
         logger.fine("OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
-    // this custom method is called whenever a change in the diagram occurs to notify observers
+
+    // this custom method is called whenever a change in the diagram occurs to
+    // notify observers
     public void modelChanged() {
         logger.fine("Notifying observers: " + this.countObservers());
         setChanged();
@@ -247,7 +276,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getDiagramName());
         if (frame != null) {
-            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + "," + frame.getBounds().height;
+            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + ","
+                    + frame.getBounds().height;
             node.setAttribute("framex", values);
             node.setAttribute("selected", Boolean.toString(frame.isSelected()));
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));

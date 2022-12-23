@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.graphical.UCDModel;
@@ -9,9 +8,11 @@ import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
+import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.EditActorEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditSystemEdit;
 import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -47,9 +48,7 @@ public class UCDSelectionController extends SelectionController {
             editSystem((SystemGR) selectedElement);
         } else if (selectedElement instanceof UCExtendGR) {
             editExtend((UCExtendGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
+        } 
     }
 
     private void editActor(UCActorGR uCActorGR) {
@@ -170,40 +169,30 @@ public class UCDSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
     @Override
     public void deleteElement(GraphicalElement selectedElement) {
         UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
-        synchronized (this) {
-            for (Object o : model.getGraphicalElements()) {
-                if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                    model.removeGraphicalElement((UMLNoteGR) o);
-                }
+        if (edit instanceof CompositeDeleteEdit) {
+            CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
+        }
+        
+        /**
+         * uses for loop to avoid ConcurrentModificationException
+         */
+        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+        int i = 0;
+        while (i < elements.size()) {
+            GraphicalElement o = elements.get(i);
+            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
+                deleteElement(o);
+            } else {
+                i++;
             }
         }
-        model.removeGraphicalElement(selectedElement);
-        parentComponent.setSelectionMode();
+
+        // parentComponent.setSelectionMode();
 
         parentComponent.getUndoSupport().postEdit(edit);
+        model.removeGraphicalElement(selectedElement);
     }
 }

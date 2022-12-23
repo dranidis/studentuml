@@ -1,7 +1,6 @@
 package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -11,7 +10,6 @@ import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -33,7 +31,7 @@ import javax.swing.undo.CannotUndoException;
 public class CompositeDeleteEdit extends DeleteEditComponent {
 
     List deleteEditComponents = new ArrayList();
-    Object clone;   //need to store model elements before they are cleared at deletion
+    Object clone; // need to store model elements before they are cleared at deletion
 
     CompositeDeleteEdit(GraphicalElement element, DiagramModel model) {
         super(element, model);
@@ -118,7 +116,7 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
             MultiObject m = ((MultiObjectGR) element).getMultiObject();
             MultiObject n = (MultiObject) clone;
             model.getCentralRepository().editMultiObject(m, n.clone());
-        } 
+        }
     }
 
     @Override

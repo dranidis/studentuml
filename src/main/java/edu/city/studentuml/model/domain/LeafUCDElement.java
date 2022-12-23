@@ -8,7 +8,7 @@ import java.util.Iterator;
  */
 public abstract class LeafUCDElement extends UCDComponent {
 
-    public LeafUCDElement(String name) {
+    protected LeafUCDElement(String name) {
         super(name);
     }
 

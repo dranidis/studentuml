@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,19 +11,19 @@ import org.w3c.dom.Element;
  *
  * @author Biser
  */
-public abstract class AbstractPointGR extends GraphicalElement implements IXMLCustomStreamable {
+public abstract class AbstractPointGR extends GraphicalElement {
 
     protected Point myPoint;
 
-    public AbstractPointGR() {
+    protected AbstractPointGR() {
         this(new Point(0, 0));
     }
 
-    public AbstractPointGR(int x, int y) {
+    protected AbstractPointGR(int x, int y) {
         this(new Point(x, y));
     }
 
-    public AbstractPointGR(Point p) {
+    protected AbstractPointGR(Point p) {
         myPoint = new Point(p);
 
         width = 6;

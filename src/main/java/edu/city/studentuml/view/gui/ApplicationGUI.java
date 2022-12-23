@@ -2,9 +2,7 @@ package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -31,7 +29,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,7 +36,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.UIManager;
@@ -69,17 +65,16 @@ import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
-import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
-    
+
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
+    private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
@@ -91,7 +86,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected String advancedRulesFile;
     protected String currentRuleFile;
     private ProjectToolBar toolbar;
-    protected JDesktopPane desktopPane;   //holds internal frames
+    protected JDesktopPane desktopPane; // holds internal frames
     protected RepositoryTreeView repositoryTreeView;
     protected JScrollPane treePane;
     protected JTree factsTree;
@@ -110,18 +105,19 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JPanel repairPanel;
     protected JButton repairButton;
     protected int openFrameCounter = 0;
-    public static String DESKTOP_USER = "Desktop Application User";
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
     protected DiagramInternalFrame selectedFrame;
 
     protected boolean closingOrLoading = false;
 
-    public ApplicationGUI(StudentUMLFrame frame) {
-        if (Preferences.userRoot().get("SELECT_LAST", "").equals("")) {
-            Preferences.userRoot().put("SELECT_LAST", "TRUE");
+    private static final String SELECT_LAST = "SELECT_LAST";
+
+    protected ApplicationGUI(StudentUMLFrame frame) {
+        if (Preferences.userRoot().get(SELECT_LAST, "").equals("")) {
+            Preferences.userRoot().put(SELECT_LAST, "TRUE");
         }
-        String selectLast = Preferences.userRoot().get("SELECT_LAST", "");
-        logger.fine("SELECT_LAST:" + selectLast);
+        String selectLast = Preferences.userRoot().get(SELECT_LAST, "");
+        logger.fine(() -> ("SELECT_LAST:" + selectLast));
         isApplet = false;
         this.frame = frame;
         instance = this;
@@ -132,12 +128,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
+
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
     }
 
-    public ApplicationGUI(StudentUMLApplet applet) {
+    protected ApplicationGUI(StudentUMLApplet applet) {
         isApplet = true;
         this.applet = applet;
         instance = this;
@@ -177,18 +173,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (isApplet) {
             SystemWideObjectNamePool.uid = applet.getUsername();
         } else {
-            SystemWideObjectNamePool.uid = DESKTOP_USER;
+            SystemWideObjectNamePool.uid = Constants.DESKTOP_USER;
         }
     }
 
     private void createLookAndFeel() {
-//        System.setProperty("lipstikLF.theme", "LightGrayTheme");
-//
-//        try {
-//            UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        // System.setProperty("lipstikLF.theme", "LightGrayTheme");
+        //
+        // try {
+        // UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
     }
 
     private void createInterface() {
@@ -253,11 +249,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane_p);
 
-        //scrollPane_f = new JScrollPane();
-        //scrollPane_f.setViewportView(factsTree);
+        // scrollPane_f = new JScrollPane();
+        // scrollPane_f.setViewportView(factsTree);
         tabbedPane.addTab("Problems", null, panel, null);
-        //tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile), null);
-        //tabbedPane.addTab("Facts", null, scrollPane_f, null);
+        // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
+        // null);
+        // tabbedPane.addTab("Facts", null, scrollPane_f, null);
     }
 
     private void createFactsAndMessageTree() {
@@ -289,10 +286,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             public void actionPerformed(ActionEvent e) {
                 String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-                //SystemWideObjectNamePool.getInstance().loading();
+                // SystemWideObjectNamePool.getInstance().loading();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-                //SystemWideObjectNamePool.getInstance().done();
-                ////SystemWideObjectNamePool.getInstance().reloadRules();
+                // SystemWideObjectNamePool.getInstance().done();
+                //// SystemWideObjectNamePool.getInstance().reloadRules();
                 SystemWideObjectNamePool.getInstance().reload();
                 SystemWideObjectNamePool.getInstance().setSelectedRule(null);
             }
@@ -316,8 +313,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                         // do something about this
                     }
                 } catch (MalformedURLException mue) {
-                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL",
-                            "Wrong URL", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -328,12 +325,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     private void addPopup(final Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
                 }
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
@@ -342,19 +341,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             private void showMenu(MouseEvent e) {
                 TreePath path = ((JTree) component).getSelectionPath();
-                if (path != null) {
-                    if (path.getPathCount() == 3) {
-                        if (isRepairMode()) {
-                            popup.removeAll();
-                            popup.add(popupHelp);
-                            popup.add(popupRepair);
-                        } else {
-                            popup.removeAll();
-                            popup.add(popupHelp);
-                        }
-
-                        popup.show(e.getComponent(), e.getX(), e.getY());
+                if (path != null && path.getPathCount() == 3) {
+                    if (isRepairMode()) {
+                        popup.removeAll();
+                        popup.add(popupHelp);
+                        popup.add(popupRepair);
+                    } else {
+                        popup.removeAll();
+                        popup.add(popupHelp);
                     }
+
+                    popup.show(e.getComponent(), e.getX(), e.getY());
+
                 }
             }
         });
@@ -369,31 +367,21 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.add(repairPanel, BorderLayout.PAGE_END);
 
         repairButton = new JButton();
-        //repairButton.setMargin(new Insets(2, 2, 2, 2));
         repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
-        repairButton.addMouseListener(new MouseAdapter() {
-
-            public void mouseEntered(MouseEvent e) {
-                repairButton.setBorder(new CompoundBorder(
-                        new LineBorder(UIManager.getColor("blue"), 1),
-                        new EmptyBorder(1, 4, 1, 4)));
-            }
-
-            public void mouseExited(MouseEvent e) {
-                repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
-            }
-        });
+        addBorderListener(repairButton);
         repairButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                TreePath checkedPaths[] = checkTreeManager.getSelectionModel().getSelectionPaths();
+                TreePath[] checkedPaths = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-                //String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
+                // String rulename =
+                // messageTree.getSelectionPath().getLastPathComponent().toString();
                 if (checkedPaths != null) {
                     for (int i = 0; i < checkedPaths.length; i++) {
-                        SystemWideObjectNamePool.getInstance().setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
+                        SystemWideObjectNamePool.getInstance()
+                                .setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
                         SystemWideObjectNamePool.getInstance().reload();
                     }
                 }
@@ -409,12 +397,29 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairPanel.setVisible(false);
         showRepairButton(messageTree, repairButton);
 
-        setRepairMode(true);	// Sets on/off the REPAIR feature
+        setRepairMode(true); // Sets on/off the REPAIR feature
+    }
+
+    private void addBorderListener(JButton button) {
+        button.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBorder(
+                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBorder(new EmptyBorder(5, 5, 5, 5));
+            }
+        });
     }
 
     protected void showRepairButton(final Component component, final JButton button) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseClicked(MouseEvent e) {
                 if (checkTreeManager.getSelectionModel().getSelectionPaths() != null) {
                     button.setEnabled(true);
@@ -427,7 +432,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-            System.out.println(e);
+        System.out.println(e);
         if (c != KeyEvent.CHAR_UNDEFINED) {
             System.out.println(c);
             repaint();
@@ -436,11 +441,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void keyPressed(KeyEvent e) {
-            System.out.println(e);
+        System.out.println(e);
     }
 
     public void keyReleased(KeyEvent e) {
-            System.out.println(e);
+        System.out.println(e);
     }
 
     public void update(Observable observable, Object object) {
@@ -448,40 +453,39 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (object != null) {
             objString = object.getClass().getSimpleName();
         }
-        logger.fine("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
+        final String objStringFinal = objString;
+        logger.fine(() -> ("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal));
 
-        if (object != null && object instanceof SystemWideObjectNamePool) {
+        if (object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
             CollectionTreeModel facts = SystemWideObjectNamePool.getInstance().getFacts();
 
             String messTreeState = null;
 
-            if ((messageTree.getModel() != null) && (messageTree.getModel() instanceof CollectionTreeModel)) {
+            if (messageTree.getModel() instanceof CollectionTreeModel) {
                 messTreeState = getExpansionState(messageTree, 0);
                 checkTreeManager.getSelectionModel().clearSelection();
                 repairButton.setEnabled(false);
             }
 
-            if (messageTree != null) {
-                messageTree.setModel(messages);
-                if (messTreeState != null) {
-                    restoreExpanstionState(messageTree, 0, messTreeState);
-                }
+            messageTree.setModel(messages);
+            if (messTreeState != null) {
+                restoreExpanstionState(messageTree, 0, messTreeState);
+            }
 
-                if (repairPanel != null && messages != null && messages.size() > 0 && isRepairMode()) {
-                    repairPanel.setVisible(true);
-                } else if (repairPanel != null && messages != null && messages.size() == 0) {
-                    repairPanel.setVisible(false);
-                }
+            if (repairPanel != null && messages != null && messages.size() > 0 && isRepairMode()) {
+                repairPanel.setVisible(true);
+            } else if (repairPanel != null && messages != null && messages.size() == 0) {
+                repairPanel.setVisible(false);
             }
 
             if (factsTree != null) {
                 factsTree.setModel(facts);
             }
-            
+
             umlProject.projectChanged();
         }
-        if (object != null && object instanceof FrameProperties) {
+        if (object instanceof FrameProperties) {
             FrameProperties fp = (FrameProperties) object;
             addInternalFrame(fp.model, fp.R);
 
@@ -490,12 +494,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
             try {
                 // TODO: refactor
-                ((DiagramInternalFrame) fp.model.getFrame()).setSelected(fp.selected);
-                ((DiagramInternalFrame) fp.model.getFrame()).setIcon(fp.iconified);
+                fp.model.getFrame().setSelected(fp.selected);
+                fp.model.getFrame().setIcon(fp.iconified);
             } catch (PropertyVetoException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-            }            
+            }
         }
     }
 
@@ -510,8 +513,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public abstract void exportImage();
 
     /*
-     * creates a new empty diagram within the appropriate internal frame,
-     * depending on the type integer
+     * creates a new empty diagram within the appropriate internal frame, depending
+     * on the type integer
      */
     public void createNewInternalFrame(int type) {
         DiagramModel model;
@@ -533,7 +536,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             } else {
                 return;
             }
-            
+
             addInternalFrame(model);
         }
     }
@@ -542,62 +545,35 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String dialogText;
         String initialName;
         switch (type) {
-            case DiagramModel.UCD:
-                dialogText = "Use Case Diagram Name: ";
-                initialName = "ucd";
-                break;
-            case DiagramModel.SSD:
-                dialogText = "System Sequence Diagram Name:";
-                initialName = "ssd";
-                break;
-            case DiagramModel.SD:
-                dialogText = "Sequence Diagram Name: ";
-                initialName = "sd";
-                break;
-            case DiagramModel.CCD:
-                dialogText = "Conceptual Class Diagram Name: ";
-                initialName = "ccd";
-                break;
-            case DiagramModel.DCD:
-                dialogText = "Design Class Diagram Name: ";
-                initialName = "dcd";
-                break;
-            case DiagramModel.AD:
-                dialogText = "Activity Diagram Name: ";
-                initialName = "ad";
-                break;
-            default:
-                throw new RuntimeException("Unknown diagram (int) type: " + type);
+        case DiagramModel.UCD:
+            dialogText = "Use Case Diagram Name: ";
+            initialName = "ucd";
+            break;
+        case DiagramModel.SSD:
+            dialogText = "System Sequence Diagram Name:";
+            initialName = "ssd";
+            break;
+        case DiagramModel.SD:
+            dialogText = "Sequence Diagram Name: ";
+            initialName = "sd";
+            break;
+        case DiagramModel.CCD:
+            dialogText = "Conceptual Class Diagram Name: ";
+            initialName = "ccd";
+            break;
+        case DiagramModel.DCD:
+            dialogText = "Design Class Diagram Name: ";
+            initialName = "dcd";
+            break;
+        case DiagramModel.AD:
+            dialogText = "Activity Diagram Name: ";
+            initialName = "ad";
+            break;
+        default:
+            throw new RuntimeException("Unknown diagram (int) type: " + type);
         }
-        String modelName = JOptionPane.showInputDialog(dialogText, initialName);
-        return modelName;
-    }
-
-    public void resizeView() {
-        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
-
-        if (selectedFrame != null) {
-            DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
-            SizeInputPanel sizeInput = new SizeInputPanel();
-            sizeInput.setWidth((int) view.getSize().getWidth());
-            sizeInput.setHeight((int) view.getSize().getHeight());
-
-            if (JOptionPane.showOptionDialog(this, sizeInput, "Size Input", JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE, null, null, null) != JOptionPane.OK_OPTION) {
-                return;
-            }
-
-            try {
-                Dimension dimension = sizeInput.getSize();
-
-                view.setSize(dimension);
-                selectedFrame.validate();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
-        }
+        // modelName
+        return JOptionPane.showInputDialog(dialogText, initialName);
     }
 
     public abstract void help();
@@ -623,7 +599,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     protected void setRuleFile(String ruleFile) {
-        SystemWideObjectNamePool.getInstance().setRuleFile(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFile(ruleFile);
     }
 
     private void addWindowClosing(StudentUMLFrame f) {
@@ -631,6 +607,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         f.addWindowListener(new WindowAdapter() {
 
+            @Override
             public void windowClosing(WindowEvent event) {
                 exitApplication();
             }
@@ -640,16 +617,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * opens appropriate frames based on a vector of diagram model objects
      */
-//    private void openFrames(Vector diagramModels) {
-//        DiagramModel model;
-//        Iterator iterator = diagramModels.iterator();
-//
-//        while (iterator.hasNext()) {
-//            model = (DiagramModel) iterator.next();
-//            model.addObserver(this);
-//            addInternalFrame(model);
-//        }
-//    }
+    // private void openFrames(Vector diagramModels) {
+    // DiagramModel model;
+    // Iterator iterator = diagramModels.iterator();
+    //
+    // while (iterator.hasNext()) {
+    // model = (DiagramModel) iterator.next();
+    // model.addObserver(this);
+    // addInternalFrame(model);
+    // }
+    // }
 
     /*
      * closes all existing internal frames (diagrams) in the application
@@ -667,43 +644,47 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /*
-     * utilized by other methods trying to embed a diagram model
-     * in the appropriate internal frame
+     * utilized by other methods trying to embed a diagram model in the appropriate
+     * internal frame
      */
-    public void addInternalFrame(DiagramModel model, Rectangle R) {
-        DiagramInternalFrame f = null;
+    public void addInternalFrame(DiagramModel model, Rectangle rectangle) {
+        DiagramInternalFrame diagramInternalFrame = null;
 
         if (model instanceof UCDModel) {
-            f = new UCDInternalFrame((UCDModel) model);
+            diagramInternalFrame = new UCDInternalFrame((UCDModel) model);
         } else if (model instanceof SSDModel) {
-            f = new SSDInternalFrame((SSDModel) model);
+            diagramInternalFrame = new SSDInternalFrame((SSDModel) model);
         } else if (model instanceof CCDModel) {
-            f = new CCDInternalFrame((CCDModel) model);
+            diagramInternalFrame = new CCDInternalFrame((CCDModel) model);
         } else if (model instanceof SDModel) {
-            f = new SDInternalFrame((SDModel) model);
+            diagramInternalFrame = new SDInternalFrame((SDModel) model);
         } else if (model instanceof DCDModel) {
-            f = new DCDInternalFrame((DCDModel) model, /*advancedModeRadioButtonMenuItem.isSelected()*/ true);
+            diagramInternalFrame = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         } else if (model instanceof ADModel) {
-            f = new ADInternalFrame((ADModel) model);
-        } //else if (model instanceof StateModel) {
-        //f = new StateInternalFrame((StateModel) model);
-        //}
+            diagramInternalFrame = new ADInternalFrame((ADModel) model);
+        } // else if (model instanceof StateModel) {
+          // f = new StateInternalFrame((StateModel) model);
+          // }
 
-        if (R != null) {
-            f.setBounds(R);
-            f.getView().setSize((int) R.getWidth(), (int) R.getHeight());
+        if (diagramInternalFrame == null) {
+            logger.severe("Diagram Internal frame is null. Unknown model!");
+            return;
         }
 
-        model.setFrame(f);
-        f.addInternalFrameListener(new DiagramInternalFrameListener());
-        desktopPane.add(f);
-        //f.setLocation(xOffset * openFrameCounter, yOffset * openFrameCounter);
+        if (rectangle != null) {
+            diagramInternalFrame.setBounds(rectangle);
+            diagramInternalFrame.getView().setSize((int) rectangle.getWidth(), (int) rectangle.getHeight());
+        }
+
+        model.setFrame(diagramInternalFrame);
+        diagramInternalFrame.addInternalFrameListener(new DiagramInternalFrameListener());
+        desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
-        f.setOpaque(true);
-        f.setVisible(true);
+        diagramInternalFrame.setOpaque(true);
+        diagramInternalFrame.setVisible(true);
 
         try {
-            f.setSelected(true);
+            diagramInternalFrame.setSelected(true);
         } catch (PropertyVetoException vetoException) {
             vetoException.printStackTrace();
         }
@@ -733,7 +714,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Vector<JInternalFrame> ccdFrames = new Vector<>();
         Vector<JInternalFrame> dcdFrames = new Vector<>();
         Vector<JInternalFrame> adFrames = new Vector<>();
-        //Vector stateFrames = new Vector();
+        // Vector stateFrames = new Vector();
         JInternalFrame[] frames = desktopPane.getAllFrames();
         JInternalFrame f;
 
@@ -752,9 +733,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dcdFrames.add(f);
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
-            } //else if (f instanceof StateInternalFrame) {
-            //stateFrames.add(f);
-            //}
+            } // else if (f instanceof StateInternalFrame) {
+              // stateFrames.add(f);
+              // }
         }
 
         if (type == DiagramModel.UCD) {
@@ -769,9 +750,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             return dcdFrames;
         } else if (type == DiagramModel.AD) {
             return adFrames;
-        } //else if () {
-        //return stateFrames;
-        //}
+        } // else if () {
+          // return stateFrames;
+          // }
 
         return new Vector<JInternalFrame>();
     }
@@ -784,12 +765,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             splitPane_1.setDividerLocation(getHeight() * 360 / 600);
             reloadRules();
         } else {
-            splitPane_1.setDividerSize(0);   
+            splitPane_1.setDividerSize(0);
         }
     }
 
     public void showRuleEditorTab(boolean b) {
-        if(b) {
+        if (b) {
             ruleEditorTabPlacement = tabbedPane.getTabCount();
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
             tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
@@ -801,7 +782,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public int getRuleEditorTabPlacement() {
         return ruleEditorTabPlacement;
-    }    
+    }
 
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
@@ -813,7 +794,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             factsTreeTabPlacement = -1;
         }
     }
-    
+
     public void simpleMode() {
         currentRuleFile = simpleRulesFile;
         setRuleFile(simpleRulesFile);
@@ -827,9 +808,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
-        }        
+        }
     }
-    
+
     public void advancedMode() {
         currentRuleFile = advancedRulesFile;
         setRuleFile(advancedRulesFile);
@@ -845,37 +826,42 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
         }
     }
-    
+
     /*
-     * inner class listens for events from internal frames;
-     * overrides default behavior when the user closes the frame
+     * inner class listens for events from internal frames; overrides default
+     * behavior when the user closes the frame
      */
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
 
+        @Override
         public void internalFrameActivated(InternalFrameEvent e) {
             logger.finer("Frame activated");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(true);
         }
 
-        public void internalFrameDeActivated(InternalFrameEvent e) {
+        @Override
+        public void internalFrameDeactivated(InternalFrameEvent e) {
             logger.finer("Frame deactivated");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setActive(false);
         }
 
+        @Override
         public void internalFrameIconified(InternalFrameEvent e) {
             logger.finer("Frame iconified");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(true);
         }
 
-        public void internalFrameDeIconified(InternalFrameEvent e) {
+        @Override
+        public void internalFrameDeiconified(InternalFrameEvent e) {
             logger.finer("Frame deiconified");
             umlProject.setSaved(false);
             ((DiagramInternalFrame) e.getInternalFrame()).setIconified(false);
         }
 
+        @Override
         public void internalFrameClosing(InternalFrameEvent event) {
             logger.finer("Frame closing");
 
@@ -886,12 +872,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             removeInternalFrame((DiagramInternalFrame) event.getSource());
         }
     }
-        
+
     /*
-     * Prompts the user to save changes, closes the project, and finally exits application
+     * Prompts the user to save changes, closes the project, and finally exits
+     * application
      */
     private void exitApplication() {
-        //exit app if the user decided to close project and didn't cancel
+        // exit app if the user decided to close project and didn't cancel
         if (closeProject()) {
             System.exit(0);
         }
@@ -902,7 +889,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /*
-     * closes the current project while prompting the user to save changes if necessary
+     * closes the current project while prompting the user to save changes if
+     * necessary
      */
     public boolean closeProject() {
         boolean runtimeChecking = isRuntimeChecking();
@@ -915,10 +903,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             if (response == JOptionPane.YES_OPTION) {
                 saveProject();
-                
-                if(!isSaved()) // saving was cancelled
+
+                if (!isSaved()) // saving was cancelled
                     return false;
-                
+
                 closeFrames();
                 umlProject.clear();
                 centralRepository.clear();
@@ -930,14 +918,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 centralRepository.clear();
                 setRuntimeChecking(runtimeChecking);
                 return true;
-            } else {		// user pressed the cancel option
+            } else { // user pressed the cancel option
                 setRuntimeChecking(runtimeChecking);
                 return false;
             }
 
         } else {
             closingOrLoading = true;
-            
+
             closeFrames();
             setRuntimeChecking(runtimeChecking);
 
@@ -970,8 +958,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return isApplet;
     }
     /*
-     * Below methods are used for remembering the tree expansion state for messageTree
-     * is path1 descendant of path2
+     * Below methods are used for remembering the tree expansion state for
+     * messageTree is path1 descendant of path2
      */
 
     public static boolean isDescendant(TreePath path1, TreePath path2) {
@@ -989,13 +977,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public static String getExpansionState(JTree tree, int row) {
         TreePath rowPath = tree.getPathForRow(row);
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int rowCount = tree.getRowCount();
         for (int i = row; i < rowCount; i++) {
             TreePath path = tree.getPathForRow(i);
             if (i == row || isDescendant(path, rowPath)) {
                 if (tree.isExpanded(path)) {
-                    buf.append("," + String.valueOf(i - row));
+                    buf.append("," + (i - row));
                 }
             } else {
                 break;
@@ -1031,383 +1019,113 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         private JButton dcdButton;
         private JButton adButton;
         private JButton forwardEngineerButton;
-        private JButton resizeButton;
         private JButton helpButton;
         JButton reloadRulesButton;
         // private JButton validateSD_DCDButton;
 
+        private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
+            ImageIcon newIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + iconFileName));
+            JButton button = new JButton(newIcon);
+            button.setBorder(new EmptyBorder(5, 5, 5, 5));
+            button.setToolTipText(toolTipText);
+            addBorderListener(button);
+            button.addActionListener(listener);
+            return button;
+        }
+
         public ProjectToolBar() {
             setFloatable(false);
-            ImageIcon newIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "new.gif"));
-            newButton = new JButton(newIcon);
-            newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            newButton.setToolTipText("New Project");
-            newButton.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    newButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
 
-                public void mouseExited(MouseEvent e) {
-                    newButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            newButton.addActionListener(new ActionListener() {
+            newButton = createToolBarButton("new.gif", "New Project", e -> newProject());
+            openButton = createToolBarButton("open.gif", "Open Project", e -> openProject());
+            saveButton = createToolBarButton("save.gif", "Save Project", e -> saveProject());
+            saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> saveProjectAs());
+            exportButton = createToolBarButton("export.gif", "Export to image", e -> exportImage());
 
-                public void actionPerformed(ActionEvent e) {
-                    newProject();
-                }
-            });
-            if (!isApplet) {  //applet version does not allow creation of new project
+            if (!isApplet) { // applet version does not allow creation of new project
                 add(newButton);
             }
-            ImageIcon openIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "open.gif"));
-            openButton = new JButton(openIcon);
-            openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            openButton.setToolTipText("Open Project");
-            openButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            openButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    openProject();
-                }
-            });
             add(openButton);
-
-            ImageIcon saveIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "save.gif"));
-            saveButton = new JButton(saveIcon);
-            saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            saveButton.setToolTipText("Save");
-            saveButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            saveButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    saveProject();
-                }
-            });
             add(saveButton);
-
-            ImageIcon saveAsIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "save_as.gif"));
-            saveAsButton = new JButton(saveAsIcon);
-            saveAsButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            saveAsButton.setToolTipText("Save As...");
-            saveAsButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    saveAsButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    saveAsButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            saveAsButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    saveProjectAs();
-                }
-            });
             if (!isApplet) {
                 add(saveAsButton);
-            }
-
-            addSeparator();
-
-            ImageIcon exportIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "export.gif"));
-            exportButton = new JButton(exportIcon);
-            exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            exportButton.setToolTipText("Export to image");
-            exportButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    exportButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    exportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            exportButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    exportImage();
-                }
-            });
-            if (!isApplet) {
                 add(exportButton);
                 addSeparator();
             }
 
-            ImageIcon useCaseIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "useCaseDiagram.gif"));
-            useCaseButton = new JButton(useCaseIcon);
-            useCaseButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            useCaseButton.setToolTipText("New Use Case Diagram");
-            useCaseButton.addMouseListener(new MouseAdapter() {
+            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram", e -> createNewInternalFrame(DiagramModel.UCD));
+            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram", e -> createNewInternalFrame(DiagramModel.SSD));
+            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram", e -> createNewInternalFrame(DiagramModel.CCD));
+            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram", e -> createNewInternalFrame(DiagramModel.SD));
+            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram", e -> createNewInternalFrame(DiagramModel.DCD));
+            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram", e -> createNewInternalFrame(DiagramModel.AD));
 
-                public void mouseEntered(MouseEvent e) {
-                    useCaseButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    useCaseButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            useCaseButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.UCD);
-                }
-            });
-
-            ImageIcon ssdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
-            ssdButton = new JButton(ssdIcon);
-            ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            ssdButton.setToolTipText("New System Sequence Diagram");
-            ssdButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            ssdButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.SSD);
-                }
-            });
-
-            ImageIcon ccdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ccd.gif"));
-            ccdButton = new JButton(ccdIcon);
-            ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            ccdButton.setToolTipText("New Conceptual Class Diagram");
-            ccdButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            ccdButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.CCD);
-                }
-            });
-
-            ImageIcon sdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "sd.gif"));
-            sdButton = new JButton(sdIcon);
-            sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            sdButton.setToolTipText("New Sequence Diagram");
-            sdButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            sdButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.SD);
-                }
-            });
-
-            ImageIcon dcdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "dcd.gif"));
-            dcdButton = new JButton(dcdIcon);
-            dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            dcdButton.setToolTipText("New Design Class Diagram");
-            dcdButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            dcdButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.DCD);
-                }
-            });
-
-            ImageIcon adIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "activityDiagram.gif"));
-            adButton = new JButton(adIcon);
-            adButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            adButton.setToolTipText("New Activity Diagram");
-            adButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    adButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    adButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            adButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    createNewInternalFrame(DiagramModel.AD);
-                }
-            });
             add(adButton);
             add(useCaseButton);
             add(ccdButton);
             add(ssdButton);
             add(sdButton);
             add(dcdButton);
+
+
+            // Icon validateSD_DCDIcon = new
+            // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
+            // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
+            // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
+            // validateSD_DCDButton.addActionListener(this);
             addSeparator();
 
-            ImageIcon resizeIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "resize.gif"));
-            resizeButton = new JButton(resizeIcon);
-            resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            resizeButton.setToolTipText("Resize Drawing Area");
-            resizeButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            resizeButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    resizeView();
-                }
-            });
-
-            /**
-             * REMOVE the button
-             * 
-             * TODO: Is it necessary as a feature?
-             * 
-             */
-            // add(resizeButton);
-
-            //Icon validateSD_DCDIcon = new ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
-            //validateSD_DCDButton = new JButton(validateSD_DCDIcon);
-            //validateSD_DCDButton.setToolTipText("Validate SD against DCD");
-            //validateSD_DCDButton.addActionListener(this);
-            addSeparator();
-
-            ImageIcon reloadIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "reload.gif"));
-            reloadRulesButton = new JButton(reloadIcon);
-            reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            reloadRulesButton.setToolTipText("Reload Rules");
-            reloadRulesButton.addMouseListener(new MouseAdapter() {
-
-                public void mouseEntered(MouseEvent e) {
-                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            reloadRulesButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    reloadRules();
-                }
-            });
+            reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
 
             /**
              * TODO: REMOVE TILL it is clear what it does!
-             */
             // add(reloadRulesButton);
+             */
 
             addSeparator();
-            
-            ImageIcon forwardEngineerIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
+
+            ImageIcon forwardEngineerIcon = new ImageIcon(
+                    this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
             Image img2 = forwardEngineerIcon.getImage();
             Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             forwardEngineerIcon.setImage(imgScaled2);
             forwardEngineerButton = new JButton(forwardEngineerIcon);
             forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             forwardEngineerButton.setToolTipText("Generate Code");
-            forwardEngineerButton.addMouseListener(new MouseAdapter() {
+            addBorderListener(forwardEngineerButton);
 
-                public void mouseEntered(MouseEvent e) {
-                	forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                	forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            forwardEngineerButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                	JCheckBox checkBox = new JCheckBox("Update Current Files",false);
-                	String message = "Do you Want to Generate Code? \n"
-                		    + "Make Sure You Have Created and Saved the Approrpiate\n"
+            forwardEngineerButton.addActionListener(e -> {
+                    JCheckBox checkBox = new JCheckBox("Update Current Files", false);
+                    String message = "Do you Want to Generate Code? \n"
+                            + "Make Sure You Have Created and Saved the Approrpiate\n"
                             + "Design (first) and Sequence Diagrams!";
-                	Object[] params= {message, checkBox};
-                	//0 for yes and 1 for no
-                	int codeGenerationConfirm = JOptionPane.showConfirmDialog(
-                		    frame,
-                		    params,
-                            "Code Generation",
-                		    JOptionPane.YES_NO_OPTION);
-                	boolean update = checkBox.isSelected();
-                	if (codeGenerationConfirm == 0) {
-                                CodePreparation codePreparation = new CodePreparation();
-                		int genFilesCount = codePreparation.generateCode(update);
-                		if (genFilesCount>0) {
-                			JOptionPane.showMessageDialog(frame,
-                			"Success!! \n" +
-                			"You have generated " + genFilesCount + " files in\n" +
-                			umlProject.getFilepath().replace(".xml", File.separator),
-                			"Code Generator",JOptionPane.INFORMATION_MESSAGE);		
-                		}else {
-                			JOptionPane.showMessageDialog(frame,
-                        			"No Input - New Files Not Generated",
-                					"Code Generator",JOptionPane.INFORMATION_MESSAGE);
-                		}
-                	}
+                    Object[] params = { message, checkBox };
+                    // 0 for yes and 1 for no
+                    int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
+                            JOptionPane.YES_NO_OPTION);
+                    boolean update = checkBox.isSelected();
+                    if (codeGenerationConfirm == 0) {
+                        CodePreparation codePreparation = new CodePreparation();
+                        int genFilesCount = codePreparation.generateCode(update);
+                        if (genFilesCount > 0) {
+                            JOptionPane.showMessageDialog(frame,
+                                    "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
+                                            + umlProject.getFilepath().replace(".xml", File.separator),
+                                    "Code Generator", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
                 }
-            });
+            );
 
-            /** 
-             * TODO: REMOVE THE BUTTON TILL  code generation is completed!
-             */
+            /**
+             * TODO: REMOVE THE BUTTON TILL code generation is completed!
             // add(forwardEngineerButton);
-            
-            addSeparator();
+             */
 
+            addSeparator();
 
             ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
@@ -1416,96 +1134,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             helpButton = new JButton(helpIcon);
             helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
             helpButton.setToolTipText("Get help on using StudentUML");
-            helpButton.addMouseListener(new MouseAdapter() {
+            addBorderListener(helpButton);
 
-                public void mouseEntered(MouseEvent e) {
-                    helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                public void mouseExited(MouseEvent e) {
-                    helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            helpButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    help();
-                }
-            });
+            helpButton.addActionListener(e -> help());
 
             /**
              * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED
-             */
             // add(helpButton);
+             */
 
             setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         }
 
-        public void setSaveActionEnabled(boolean enabled) {
-            saveButton.setEnabled(enabled);
-        }
     }
 
-    // JPanel with components for inputting drawing view size
-    private class SizeInputPanel extends JPanel {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        private JTextField heightField;
-        private JLabel heightLabel;
-        private JPanel heightPanel;
-        private JTextField widthField;
-        private JLabel widthLabel;
-        private JPanel widthPanel;
-
-        public SizeInputPanel() {
-            widthLabel = new JLabel("Width (pixels): ");
-            widthField = new JTextField(8);
-            heightLabel = new JLabel("Height (pixels): ");
-            heightField = new JTextField(8);
-            widthPanel = new JPanel();
-            widthPanel.setLayout(new FlowLayout());
-            widthPanel.add(widthLabel);
-            widthPanel.add(widthField);
-            heightPanel = new JPanel();
-            heightPanel.setLayout(new FlowLayout());
-            heightPanel.add(heightLabel);
-            heightPanel.add(heightField);
-            setLayout(new GridLayout(2, 1, 5, 5));
-            add(widthPanel);
-            add(heightPanel);
-        }
-
-        public void setWidth(int width) {
-            widthField.setText(String.valueOf(width));
-        }
-
-        public void setHeight(int height) {
-            heightField.setText(String.valueOf(height));
-        }
-
-        public Dimension getSize() throws NumberFormatException {
-            int width = 0,
-                    height = 0;
-
-            try {
-                width = Integer.parseInt(widthField.getText());
-                height = Integer.parseInt(heightField.getText());
-
-                if (width < 0) {
-                    width = 0;
-                }
-
-                if (height < 0) {
-                    height = 0;
-                }
-            } catch (NumberFormatException e) {
-                throw e;
-            }
-
-            return new Dimension(width, height);
-        }
-    }
 }

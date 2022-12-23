@@ -1,16 +1,11 @@
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//SelectionController.java
-//Class SelectionController is the Controller component in MVC that handles
-//all events when the "selection" button in the drawing toolbar is pressed
-//Serves as the superclass of all selection controllers of particular diagrams.
-//Dragging and dropping, and other mouse events are handled by this superclass,
-//while the details of editing and deleting elements are left to subclasses.
+
+
 
 package edu.city.studentuml.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,8 +13,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -32,13 +30,24 @@ import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
+import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.UMLNoteEditor;
 
+/**
+ * The SelectionController is the Controller component in MVC that handles all
+ * events when the "selection" button in the drawing toolbar is pressed. Serves
+ * as the superclass of all selection controllers of particular diagrams.
+ * Dragging and dropping, and other mouse events are handled by this superclass,
+ * while the details of editing and deleting elements are left to subclasses.
+ */
 public abstract class SelectionController {
 
-    Logger logger = Logger.getLogger(SelectionController.class.getName());
+    private static final Logger logger = Logger.getLogger(SelectionController.class.getName());
 
     // parent component needed to be set as the owner of any dialog boxes displayed
     protected DiagramInternalFrame parentComponent;
@@ -47,11 +56,12 @@ public abstract class SelectionController {
     // mouse listeners are supplied by the view to listen for mouse events
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
-    private Action actionListener;
+    private Action deleteActionListener;
+    private Action selectAllActionListener;
     // this boolean variable determines whether the selection controller or
     // an add-element-controller should take control of mouse events
     protected boolean selectionMode = false;
-    protected Vector<GraphicalElement> selectedElements = new Vector<>();
+    protected List<GraphicalElement> selectedElements = new ArrayList<>();
     // data required for drag-and-drop
     protected int lastX;
     protected int lastY;
@@ -63,7 +73,18 @@ public abstract class SelectionController {
     JMenuItem editMenuItem;
     JPopupMenu popupMenuOne;
 
-    public SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+    /**
+     * A map mapping a class to its editor.
+     * Each subclass of SelectionController implements editors for the
+     * elements that the diagram implements.
+     */
+    protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
+
+    protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+
+        editElementMapper = new HashMap<>();
+        editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
+        
         parentComponent = parent;
         model = m;
 
@@ -81,7 +102,6 @@ public abstract class SelectionController {
         redoCoordinates = new Point2D.Double();
 
         mouseListener = new MouseAdapter() {
-
             @Override
             public void mousePressed(MouseEvent event) {
                 myMousePressed(event);
@@ -99,31 +119,74 @@ public abstract class SelectionController {
         };
 
         mouseMotionListener = new MouseMotionAdapter() {
-
             @Override
             public void mouseDragged(MouseEvent event) {
                 myMouseDragged(event);
             }
         };
 
-        actionListener = new AbstractAction() {
-
+        deleteActionListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                if (selectionMode) {
-                    if (selectedElements.size() > 0) {
-                        deleteSelected();
-                    }
+                if (selectionMode && !selectedElements.isEmpty()) {
+                    deleteSelected();
+                }
+            }
+        };
+
+        selectAllActionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                selectedElements.clear();
+                model.clearSelected();
+
+                for (GraphicalElement el: model.getGraphicalElements()) {
+                    selectedElements.add(el);
+                    model.selectGraphicalElement(el);
                 }
             }
         };
 
         KeyStroke del = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, false);
-        ((DiagramInternalFrame) parentComponent).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(del, "del");
-        ((DiagramInternalFrame) parentComponent).getActionMap().put("del", actionListener);
+        parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(del, "del");
+        parentComponent.getActionMap().put("del", deleteActionListener);
 
+        KeyStroke selAll = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
+        parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(selAll, "ctrl-a");
+        parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);        
+    }
+
+    private void mapeditElement(GraphicalElement element) {
+        Consumer<GraphicalElement> editElementConsumer = editElementMapper.get(element.getClass());
+        if (editElementConsumer != null) {
+            editElementConsumer.accept(element);
+        } else {
+            editElement(element);
+        }
+    }
+
+    private void editUMLNote(UMLNoteGR noteGR) {
+        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
+
+        // Undo/Redo
+        String undoText = noteGR.getText();
+
+        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
+            return;
+        }
+
+        noteGR.setText(noteEditor.getText());
+
+        // Undo/Redo
+        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
+        parentComponent.getUndoSupport().postEdit(edit);
+
+        // set observable model to changed in order to notify its views
+        model.modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
     }
 
     protected void myMousePressed(MouseEvent event) {
+        logger.fine(() -> "Pressed: " + event.getX() + ", " + event.getY());
+
         if (selectionMode) {
             lastX = event.getX();
             lastY = event.getY();
@@ -134,101 +197,142 @@ public abstract class SelectionController {
             GraphicalElement element = model.getContainingGraphicalElement(origin);
 
             if (element != null) {
-                // if graphical element identified where the drag action started
-                lastPressed = element;
-
-                // undo/redo [move]
-                undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
-
-                if (event.isShiftDown() && event.isControlDown()) {
-                    handleCtrlShiftSelect(element);
-                } else if (event.isControlDown()) {
-                    if (!selectedElements.contains(element)) {
-                        selectedElements.add(element);
-                    }
-                } else {
-                    selectedElements.clear();
-                    model.clearSelected();
-                    selectedElements.add(element);
-                }
-
-                model.selectGraphicalElement(lastPressed);
-
-                // check if the event is a popup trigger event
-                managePopup(event);
+                mousePressedOnElement(event, element);
             } else {
-                if(!selectedElements.isEmpty()) {
-                    selectedElements.clear();
-                    model.clearSelected();
-                }
+                selectedElements.clear();
+                model.clearSelected();
                 lastPressed = null;
             }
         }
+    }
+
+    private void mousePressedOnElement(MouseEvent event, GraphicalElement element) {
+        // if graphical element identified where the drag action started
+        lastPressed = element;
+
+        if (event.isShiftDown() && event.isControlDown()) {
+            handleCtrlShiftSelect(element);
+
+        } else if (event.isControlDown()) {
+            logger.fine(() -> "Elements: " + selectedElements.size());
+
+            if (!selectedElements.contains(element)) {
+                selectedElements.add(element);
+                logger.fine(() -> "Elements after add: " + selectedElements.size() + "    " + selectedElements);
+            } else {
+                selectedElements.remove(element);
+                logger.fine(() -> "Elements removed: " + selectedElements.size() + "    " + selectedElements);
+            }
+        } else if (!selectedElements.contains(element)) {
+            selectedElements.clear();
+            model.clearSelected();
+            selectedElements.add(element);
+        } 
+
+        model.clearSelected();
+        for (GraphicalElement el : selectedElements) {
+            model.selectGraphicalElement(el);
+        }
+
+        setUndoCoordinates();
+
+        // check if the event is a popup trigger event
+        managePopup(event);
+    }
+
+    protected void setUndoCoordinates() {
+        // undo/redo [move]
+        undoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        if (selectionMode) {
-            if (lastPressed != null) {
+        logger.fine(() -> "Released: " + event.getX() + ", " + event.getY());
 
-                // check if the event is a popup trigger event
-                managePopup(event);
+        if (selectionMode && lastPressed != null) {
 
-                SystemWideObjectNamePool.getInstance().reload();
+            // check if the event is a popup trigger event
+            managePopup(event);
 
-                // undo/redo [move]
-                redoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
-                if (redoCoordinates.getX() != undoCoordinates.getX()
-                        || redoCoordinates.getY() != undoCoordinates.getY()) {
-                    UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
-                    parentComponent.getUndoSupport().postEdit(edit);
-                }
+            SystemWideObjectNamePool.getInstance().reload();
 
-                // start over again
-                lastPressed = null;
+            setRedoCoordinates();
+
+            if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {
+                logger.fine(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
+                logger.fine(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
+                UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
+                parentComponent.getUndoSupport().postEdit(edit);
             }
         }
+    }
+
+    protected void setRedoCoordinates() {
+        // undo/redo [move]
+        redoCoordinates.setLocation(lastPressed.getX(), lastPressed.getY());
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        if (selectionMode) {
-            if ((event.getButton() == MouseEvent.BUTTON1) 
-                    && (event.getClickCount() == 2)
-                    && (selectedElements.size() == 1)) {
-                Point2D origin = new Point2D.Double(event.getX(), event.getY());
-                lastX = event.getX();
-                lastY = event.getY();
-                // find the source graphical element
-                GraphicalElement element = model.getContainingGraphicalElement(origin);
+        logger.fine(() -> "Clicked: " + event.getX() + ", " + event.getY());
 
-                if (element != null) {
-                    editElement(element);
+        if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
+                && selectedElements.size() == 1) {
+            Point2D origin = new Point2D.Double(event.getX(), event.getY());
+            lastX = event.getX();
+            lastY = event.getY();
+            // find the source graphical element
+            GraphicalElement element = model.getContainingGraphicalElement(origin);
+
+            if (element != null) {
+                mapeditElement(element);
+            }
+        } else {
+            if (!event.isControlDown()) {
+                selectedElements.clear();
+                model.clearSelected();
+
+                if (lastPressed != null) {
+                    selectedElements.add(lastPressed);
+                    model.selectGraphicalElement(lastPressed);
                 }
             }
         }
+
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        if (selectionMode) {
-            if (lastPressed != null) {
-                moveElement(event.getX(), event.getY());
-            }
+        logger.fine(() -> "Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
+
+        if (selectionMode && lastPressed != null) {
+            moveElement(event.getX(), event.getY());
         }
     }
 
     public void moveElement(int x, int y) {
         if (lastPressed != null) {
-            Iterator<GraphicalElement> i = selectedElements.iterator();
-            GraphicalElement e;
-
             int deltaX = x - lastX;
             int deltaY = y - lastY;
 
             lastX = x;
             lastY = y;
 
-            while (i.hasNext()) {
-                e = (GraphicalElement) i.next();
+            /**
+             * Make sure that none of the selected elements go beyond the top and left edge margin.
+             */
+            for (GraphicalElement e : selectedElements) {
+                /**
+                 * First condition is for SD messages: they have getX = 0. Without
+                 * the condition messages cannot be moved because they look like they are out of
+                 * the margin.
+                 */
+                if (e.getX() != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
+                    return;
+                }
+                if (deltaY + e.getY() < Constants.CANVAS_MARGIN) {
+                    return;
+                }
+            }
 
+            for(GraphicalElement e: selectedElements) {
                 model.moveGraphicalElement(e, deltaX + e.getX(), deltaY + e.getY());
             }
         }
@@ -294,8 +398,7 @@ public abstract class SelectionController {
             if ((event.getSource() == editMenuItem) && (selectedElements.size() == 1)) {
 
                 // call abstract method editElement that is to be overridden by subclasses
-                editElement(selectedElements.get(0));//TODO SMENI
-
+                editElement(selectedElements.get(0));
             } else if (event.getSource() == deleteMenuItem) {
                 deleteSelected();
             }
@@ -303,16 +406,14 @@ public abstract class SelectionController {
     }
 
     private void deleteSelected() {
-//        int response = JOptionPane.showConfirmDialog(parentComponent, "Are you sure?", "Delete",
-//                JOptionPane.YES_NO_OPTION);
-//
-//        if (response != JOptionPane.YES_OPTION) {
-//            return;
-//        }
         // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
-        for (GraphicalElement selectedElement : selectedElements) {
-            deleteElement(selectedElement);
+        for (GraphicalElement toDelete : selectedElements) {
+            if (model.getGraphicalElements().contains(toDelete)) {
+                logger.fine(() -> ("DEL:" + toDelete.getInternalid() + " " + toDelete.toString()));
+                deleteElement(toDelete);
+            }
+
         }
         selectedElements.clear();
     }

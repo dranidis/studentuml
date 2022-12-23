@@ -1,10 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.AbstractClass;
-import edu.city.studentuml.model.domain.Attribute;
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,13 +13,20 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.AbstractClass;
+import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author draganbisercic
  */
-public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
+public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR {
 
     protected static int minimumAttributeFieldHeight = 20;
     protected static int minimumMethodFieldHeight = 20;
@@ -36,6 +38,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     protected static int attributeFieldYOffset = 3;
     protected Font nameFont;
     protected Font attributeFont;
+    @JsonProperty("class")
     protected AbstractClass abstractClass;
 
     public AbstractClassGR(AbstractClass c, Point start) {
@@ -52,7 +55,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         attributeFont = new Font("SansSerif", Font.PLAIN, 12);
     }
 
-    // template method pattern; code reuse for both conceptual and design class drawing
+    // template method pattern; code reuse for both conceptual and design class
+    // drawing
     // hooks used in subclasses to override certain methods
     // this is default drawing for conceptual class
     public final void draw(Graphics2D g) {
@@ -99,7 +103,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         FontRenderContext frc = g.getFontRenderContext();
         int currentY = 0;
 
-        currentY = drawStereotype(g, frc, startingX, startingY, currentY);  //hook for design class
+        currentY = drawStereotype(g, frc, startingX, startingY, currentY); // hook for design class
 
         // draw class name
         if (!abstractClass.getName().equals("")) {
@@ -153,8 +157,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     public boolean contains(Point2D p) {
-        Rectangle2D.Double rect = new Rectangle2D.Double(
-                startingPoint.getX(), startingPoint.getY(), getWidth(), getHeight());
+        Rectangle2D.Double rect = new Rectangle2D.Double(startingPoint.getX(), startingPoint.getY(), getWidth(),
+                getHeight());
 
         return rect.contains(p);
     }
@@ -168,7 +172,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     protected final int calculateWidth(Graphics2D g) {
         int newWidth = minimumWidth;
         FontRenderContext frc = g.getFontRenderContext();
-        //ConceptualClass conceptualClass = (ConceptualClass) abstractClass;
+        // ConceptualClass conceptualClass = (ConceptualClass) abstractClass;
 
         // consider name text dimensions
         if (abstractClass.getName().length() != 0) {
@@ -223,7 +227,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         return height;
     }
 
-    // default implementation for calculating name field height; ClassGR needs to override hooks
+    // default implementation for calculating name field height; ClassGR needs to
+    // override hooks
     public final int calculateNameFieldHeight(Graphics2D g) {
         int height = 0;
         FontRenderContext frc = g.getFontRenderContext();
@@ -276,7 +281,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         }
     }
 
-    //default implementation; conceptual class does not have methods; design class should override
+    // default implementation; conceptual class does not have methods; design class
+    // should override
     public int calculateMethodFieldHeight(Graphics2D g) {
         return minimumMethodFieldHeight;
     }
@@ -290,9 +296,9 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
-        //DesignClass d = (DesignClass)streamer.readObjectByID(node, "designclass", this);
-        //setDesignClass(d);
+        // DesignClass d = (DesignClass)streamer.readObjectByID(node, "designclass",
+        // this);
+        // setDesignClass(d);
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -300,10 +306,9 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
     // need to be redifined in subclass
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
     }
-    
+
     public String toString() {
         return abstractClass.getName();
     }

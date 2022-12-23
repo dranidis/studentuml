@@ -1,13 +1,11 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
@@ -21,13 +19,13 @@ import org.w3c.dom.Element;
  *
  * @author draganbisercic
  */
-public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXMLCustomStreamable {
+public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
     private Font nameFont;
 
-    public AbstractSDObjectGR(RoleClassifier obj, int x) {
+    protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
         width = minimumNameBoxWidth;
         height = nameBoxHeight;

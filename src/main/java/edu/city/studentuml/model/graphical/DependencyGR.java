@@ -1,23 +1,29 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DependencyGR.java
-import edu.city.studentuml.model.domain.Dependency;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
-public class DependencyGR extends LinkGR implements IXMLCustomStreamable {
+//~--- JDK imports ------------------------------------------------------------
+//Author: Ervin Ramollari
+//DependencyGR.java
+import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+@JsonIncludeProperties({ "internalid", "from", "to", "dependency" })
+public class DependencyGR extends LinkGR {
 
     // the graphical classes that the dependency line connects in the diagram
+    @JsonProperty("from")
     private ClassGR classA;
+    @JsonProperty("to")
     private ClassGR classB;
     private Dependency dependency;
 
@@ -84,7 +90,7 @@ public class DependencyGR extends LinkGR implements IXMLCustomStreamable {
         Stroke originalStroke = g.getStroke();
 
         // the pattern of dashes for drawing the dependency line
-        float dashes[] = {8};
+        float dashes[] = { 8 };
         if (isSelected()) {
             g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
             g.setPaint(highlightColor);
@@ -129,11 +135,9 @@ public class DependencyGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
         node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));
 

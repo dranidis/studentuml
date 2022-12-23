@@ -4,7 +4,6 @@ package edu.city.studentuml.model.graphical;
 //Author: Ervin Ramollari
 //MultiObjectGR.java
 import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -19,7 +18,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 
-public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStreamable {
+public class MultiObjectGR extends AbstractSDObjectGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
@@ -35,6 +34,7 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         highlightColor = Color.blue;
     }
 
+    @Override
     public boolean contains(Point2D point) {
 
         // The "stacked" rectangles
@@ -42,12 +42,13 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + 10, getY() - 8, width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle3 = new Rectangle2D.Double(getX() + width / 2 - 8,
-                getY() + height, 16, endingY - (getY() + height));
+        Rectangle2D rectangle3 = new Rectangle2D.Double(getX() + width / 2 - 8, getY() + height, 16,
+                endingY - (getY() + height));
 
         return (rectangle1.contains(point) || rectangle2.contains(point) || rectangle3.contains(point));
     }
 
+    @Override
     public void draw(Graphics2D g) {
         if (fillColor == null) {
             fillColor = this.myColor();
@@ -110,14 +111,14 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         int underlineY = nameY + (int) bounds.getY() + (int) bounds.getHeight();
 
         g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                startingX + underlineX + (int) bounds.getWidth() + 2, startingY
-                + underlineY + 2);
+                startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
 
     }
 
     // Calculates the width of the name box as it appears on the screen.
     // The width will depend on the length of the name string and the graphics
     // context.
+    @Override
     public int calculateWidth(Graphics2D g) {
         FontRenderContext frc = g.getFontRenderContext();
         String boxText = roleClassifier.toString();
@@ -141,14 +142,14 @@ public class MultiObjectGR extends AbstractSDObjectGR implements IXMLCustomStrea
         roleClassifier = mo;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "multiobject", getMultiObject());
         node.setAttribute("x", Integer.toString(startingPoint.x));

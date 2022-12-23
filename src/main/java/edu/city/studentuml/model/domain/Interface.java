@@ -5,9 +5,12 @@ package edu.city.studentuml.model.domain;
 //Interface.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.Iterator;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import org.w3c.dom.Element;
 
@@ -19,6 +22,11 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     public Interface(String n) {
         name = n;
         methods = new NotifierVector();
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     public void setName(String n) {
@@ -82,7 +90,6 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         methods.clear();
         setName(node.getAttribute("name"));
         streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
@@ -90,7 +97,6 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         streamer.streamObjects(streamer.addChild(node, "methods"), methods.iterator());
     }

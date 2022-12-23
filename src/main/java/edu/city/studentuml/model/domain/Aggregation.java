@@ -1,17 +1,12 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Aggregation.java
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
-import java.io.Serializable;
-
 import org.w3c.dom.Element;
 
-public class Aggregation extends Association implements Serializable, IXMLCustomStreamable {
+import edu.city.studentuml.util.XMLStreamer;
 
-    private boolean isStrong;    // true if composition, false if simple aggregation
+public class Aggregation extends Association {
+
+    private boolean isStrong; // true if composition, false if simple aggregation
 
     public Aggregation(Classifier w, Classifier p) {
         super(w, p);
@@ -52,14 +47,12 @@ public class Aggregation extends Association implements Serializable, IXMLCustom
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
 
         setStrong(Boolean.valueOf(node.getAttribute("strong")));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("strong", Boolean.toString(isStrong));
 
         super.streamToXML(node, streamer);

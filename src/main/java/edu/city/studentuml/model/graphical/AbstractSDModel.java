@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
+
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
@@ -25,6 +27,7 @@ import javax.swing.undo.UndoableEdit;
  * @author dimitris
  */
 public abstract class AbstractSDModel extends DiagramModel {
+    private static final Logger logger = Logger.getLogger(AbstractSDModel.class.getName());
 
     // minimum distance that can be kept between messages
     public static final int MINIMUM_MESSAGE_DISTANCE = 10;

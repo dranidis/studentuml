@@ -22,12 +22,11 @@ public class GenericClass implements Serializable, IXMLCustomStreamable {
     }
 
     public String getName() {
-        //SystemWideObjectNamePool.getNameForObject(this);
+        // SystemWideObjectNamePool.getNameForObject(this);
         return name;
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

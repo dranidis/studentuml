@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class ConsistencyChecker {
     
-    Logger logger = Logger.getLogger(ConsistencyChecker.class.getName());
+    private static final Logger logger = Logger.getLogger(ConsistencyChecker.class.getName());
 
     private RuleBasedSystemGenerator rbsg = new RuleBasedSystemGenerator();
     protected RuleBasedEngine rbs = new RuleBasedEngine();

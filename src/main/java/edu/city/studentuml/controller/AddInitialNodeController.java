@@ -1,13 +1,13 @@
 package edu.city.studentuml.controller;
 
+import javax.swing.undo.UndoableEdit;
+
 import edu.city.studentuml.model.domain.InitialNode;
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.InitialNodeGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.awt.Point;
-import javax.swing.undo.UndoableEdit;
 
 /**
  *

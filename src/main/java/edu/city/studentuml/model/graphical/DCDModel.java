@@ -28,7 +28,9 @@ public class DCDModel extends DiagramModel {
         super(title, umlp);
     }
 
-    // override the superclass method addGraphicalElement to handle different classes
+    // override the superclass method addGraphicalElement to handle different
+    // classes
+    @Override
     public void addGraphicalElement(GraphicalElement element) {
         SystemWideObjectNamePool.getInstance().loading();
         if (element instanceof ClassGR) {
@@ -50,7 +52,7 @@ public class DCDModel extends DiagramModel {
         } else if (element instanceof UMLNoteGR) {
             super.addGraphicalElement(element);
         }
-        
+
         SystemWideObjectNamePool.getInstance().done();
     }
 
@@ -61,11 +63,12 @@ public class DCDModel extends DiagramModel {
         repository.addClass(c.getDesignClass());
         super.addGraphicalElement(c);
     }
-    
-/**
- * TODO: not used?
- * @param dc 
- */
+
+    /**
+     * TODO: not used?
+     * 
+     * @param dc
+     */
     public void addC(DesignClass dc) {
         SystemWideObjectNamePool.getInstance().loading();
         Random rn = new Random();
@@ -94,8 +97,8 @@ public class DCDModel extends DiagramModel {
     }
 
     /*
-    TODO: Not used?
-    */
+     * TODO: Not used?
+     */
     public void addAssoc(ClassifierGR classA, ClassifierGR classB) {
         SystemWideObjectNamePool.getInstance().loading();
 
@@ -122,8 +125,8 @@ public class DCDModel extends DiagramModel {
         // try to add the dependency to the repository first, if it doesn't exist
         if (!repository.addDependency(dependency)) {
             JOptionPane.showMessageDialog(null,
-                    "Dependency from \"" + from.getName() + "\" to \"" + to.getName()
-                    + "\" already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                    "Dependency from \"" + from.getName() + "\" to \"" + to.getName() + "\" already exists!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
             return;
         }
@@ -154,8 +157,8 @@ public class DCDModel extends DiagramModel {
     }
 
     /*
-    TODO: Not used?
-    */
+     * TODO: Not used?
+     */
     public void addAggreg(ClassGR whole, ClassGR part) {
         SystemWideObjectNamePool.getInstance().loading();
 
@@ -177,8 +180,7 @@ public class DCDModel extends DiagramModel {
 
         // try to add the generalization to the repository first, if it doesn't exist
         if (!repository.addGeneralization(generalization)) {
-            JOptionPane.showMessageDialog(null,
-                    "Class \"" + baseClass.getName() + "\" already inherits from class \""
+            JOptionPane.showMessageDialog(null, "Class \"" + baseClass.getName() + "\" already inherits from class \""
                     + superClass.getName() + "\".", "Error", JOptionPane.ERROR_MESSAGE);
 
             return;
@@ -195,8 +197,8 @@ public class DCDModel extends DiagramModel {
 
         if (!repository.addRealization(realization)) {
             JOptionPane.showMessageDialog(null,
-                    "Class \"" + theClass.getName() + "\" already realizes interface \""
-                    + theInterface.getName(), "Error", JOptionPane.ERROR_MESSAGE);
+                    "Class \"" + theClass.getName() + "\" already realizes interface \"" + theInterface.getName(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
 
             return;
         }
@@ -205,6 +207,7 @@ public class DCDModel extends DiagramModel {
     }
 
     // override superclass method removeGraphicalElement()
+    @Override
     public void removeGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
         if (e instanceof ClassGR) {
@@ -215,7 +218,7 @@ public class DCDModel extends DiagramModel {
             removeAssociation((AssociationGR) e);
         } else if (e instanceof AssociationClassGR) {
             removeAssociationClass((AssociationClassGR) e);
-        }else if (e instanceof DependencyGR) {
+        } else if (e instanceof DependencyGR) {
             removeDependency((DependencyGR) e);
         } else if (e instanceof AggregationGR) {
             removeAggregation((AggregationGR) e);
@@ -294,7 +297,8 @@ public class DCDModel extends DiagramModel {
         while (iterator.hasNext()) {
             associationClass = (DesignAssociationClass) iterator.next();
 
-            if ((associationClass.getClassA() == c.getDesignClass()) || (associationClass.getClassB() == c.getDesignClass())) {
+            if ((associationClass.getClassA() == c.getDesignClass())
+                    || (associationClass.getClassB() == c.getDesignClass())) {
                 iterGE = graphicalElements.iterator();
 
                 while (iterGE.hasNext()) {
@@ -476,7 +480,8 @@ public class DCDModel extends DiagramModel {
     }
 
     public void removeAssociationClass(AssociationClassGR a) {
-//        a.clear();  //removes association object from links instances in AssociationClassGR
+        // a.clear(); //removes association object from links instances in
+        // AssociationClassGR
         repository.removeAssociationClass((DesignAssociationClass) a.getAssociationClass());
         super.removeGraphicalElement(a);
     }
@@ -501,6 +506,7 @@ public class DCDModel extends DiagramModel {
         super.removeGraphicalElement(r);
     }
 
+    @Override
     public void clear() {
 
         while (graphicalElements.size() > 0) {

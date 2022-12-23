@@ -4,7 +4,6 @@ package edu.city.studentuml.view.gui;
 //Author: Ervin Ramollari
 //CallMessageEditor.java
 import edu.city.studentuml.model.graphical.UMLNoteGR;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -96,7 +95,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
         noteDialog.pack();
         noteDialog.setResizable(false);
         noteDialog.setLocationRelativeTo(owner);
-        noteDialog.show();
+        noteDialog.setVisible(true);
 
         return ok;
     }

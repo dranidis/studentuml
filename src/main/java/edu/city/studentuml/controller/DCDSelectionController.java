@@ -13,7 +13,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditAssociationEdit;
 import edu.city.studentuml.util.undoredo.EditDCDClassEdit;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.view.gui.ClassEditor;
@@ -23,7 +22,6 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.view.gui.InterfaceEditor;
 import edu.city.studentuml.model.graphical.InterfaceGR;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
@@ -33,7 +31,6 @@ import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -54,30 +51,7 @@ public class DCDSelectionController extends SelectionController {
             editAssociation((AssociationGR) selectedElement);
         } else if (selectedElement instanceof AssociationClassGR) {
             editAssociationClass((AssociationClassGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
+        } 
     }
 
     // Editing the selected graphical element if it is a class
@@ -107,15 +81,15 @@ public class DCDSelectionController extends SelectionController {
         }
 
         // edit the class if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalClass.getName().equals(newClass.getName())
-                && (repository.getDesignClass(newClass.getName()) != null)
-                && !newClass.getName().equals("")) {
+                && (repository.getDesignClass(newClass.getName()) != null) && !newClass.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing class with the given name already.\n"
-                    + "Do you want this diagram class to refer to the existing one?", "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram class to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 classGR.setDesignClass(repository.getDesignClass(newClass.getName()));
@@ -145,7 +119,8 @@ public class DCDSelectionController extends SelectionController {
         InterfaceEditor interfaceEditor = new InterfaceEditor(interfaceGR, repository);
         Interface originalInterface = interfaceGR.getInterface();
 
-        // show the interface editor dialog and check whether the user has pressed cancel
+        // show the interface editor dialog and check whether the user has pressed
+        // cancel
         if (!interfaceEditor.showDialog(parentComponent, "Interface Editor")) {
             return;
         }
@@ -159,14 +134,15 @@ public class DCDSelectionController extends SelectionController {
         }
 
         // edit the interface if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if there is a change in the name but the new name doesn't bring any
+        // conflict
         // or if the new name is blank
         if (!originalInterface.getName().equals(newInterface.getName())
                 && (repository.getInterface(newInterface.getName()) != null) && !newInterface.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing interface with the given name already.\n"
-                    + "Do you want this diagram interface to refer to the existing one?", "Warning",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            + "Do you want this diagram interface to refer to the existing one?",
+                    "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
                 interfaceGR.setInterface(repository.getInterface(newInterface.getName()));
@@ -194,7 +170,8 @@ public class DCDSelectionController extends SelectionController {
         AssociationEditor associationEditor = new AssociationEditor(associationGR);
         Association association = associationGR.getAssociation();
 
-        // show the association editor dialog and check whether the user has pressed cancel
+        // show the association editor dialog and check whether the user has pressed
+        // cancel
         if (!associationEditor.showDialog(parentComponent, "Association Editor")) {
             return;
         }
@@ -229,7 +206,8 @@ public class DCDSelectionController extends SelectionController {
         DesignAssociationClassEditor associationClassEditor = new DesignAssociationClassEditor(associationClassGR, r);
         DesignAssociationClass associationClass = (DesignAssociationClass) associationClassGR.getAssociationClass();
 
-        // show the association class editor dialog and check whether the user has pressed cancel
+        // show the association class editor dialog and check whether the user has
+        // pressed cancel
         if (!associationClassEditor.showDialog(parentComponent, "Association Class Editor")) {
             return;
         }
@@ -279,13 +257,21 @@ public class DCDSelectionController extends SelectionController {
         if (edit instanceof CompositeDeleteEdit) {
             CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
         }
-        synchronized (this) {
-            for (Object o : model.getGraphicalElements()) {
-                if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                    model.removeGraphicalElement((UMLNoteGR) o);
-                }
+
+        /**
+         * uses for loop to avoid ConcurrentModificationException
+         */
+        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+        int i = 0;
+        while (i < elements.size()) {
+            GraphicalElement o = elements.get(i);
+            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
+                deleteElement(o);
+            } else {
+                i++;
             }
         }
+        
         parentComponent.getUndoSupport().postEdit(edit);
         model.removeGraphicalElement(selectedElement);
     }

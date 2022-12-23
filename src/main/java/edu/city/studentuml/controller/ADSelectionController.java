@@ -21,12 +21,12 @@ import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
 import edu.city.studentuml.util.undoredo.RemoveEditFactory;
@@ -37,8 +37,9 @@ import edu.city.studentuml.view.gui.DecisionNodeEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -47,6 +48,8 @@ import javax.swing.undo.UndoableEdit;
  * @author Biser
  */
 public class ADSelectionController extends SelectionController {
+
+    private static final Logger logger1 = Logger.getLogger(ADSelectionController.class.getName());
     
     public ADSelectionController(DiagramInternalFrame parent, ADModel m) {
         super(parent, m);
@@ -58,9 +61,7 @@ public class ADSelectionController extends SelectionController {
             editEdge((EdgeGR) selectedElement);
         } else if (selectedElement instanceof NodeComponentGR) {
             editNodeComponent((NodeComponentGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
+        } 
     }
     
     private void editEdge(EdgeGR edgeGR) {
@@ -69,7 +70,7 @@ public class ADSelectionController extends SelectionController {
         } else if (edgeGR instanceof ObjectFlowGR) {
             editObjectFlow((ObjectFlowGR) edgeGR);
         } else {
-            java.lang.System.err.println("Error in editEdge(edge)");
+            logger1.severe("Error in editEdge(edge)");
         }
     }
     
@@ -193,7 +194,7 @@ public class ADSelectionController extends SelectionController {
         } else if (nodeComponentGR instanceof DecisionNodeGR) {
             editDecisionNode((DecisionNodeGR) nodeComponentGR);
         }else {
-            java.lang.System.err.println("Error in editNode(node)");
+            logger1.severe("Error in editNode(node)");
         }
     }
     
@@ -313,41 +314,27 @@ public class ADSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-        
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-        
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-    
     @Override
     public void deleteElement(GraphicalElement selectedElement) {
         UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
-        
-        model.removeGraphicalElement(selectedElement);
-        synchronized(this){
-        for (Object o : model.getGraphicalElements()) {
+
+        /**
+         * uses for loop to avoid ConcurrentModificationException
+         */
+        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+        int i = 0;
+        while (i < elements.size()) {
+            GraphicalElement o = elements.get(i);
             if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                model.removeGraphicalElement((UMLNoteGR) o);
+                deleteElement(o);
+            } else {
+                i++;
             }
         }
-        }
-        parentComponent.setSelectionMode();
+        
+        // parentComponent.setSelectionMode();
         
         parentComponent.getUndoSupport().postEdit(edit);
+        model.removeGraphicalElement(selectedElement);
     }
 }

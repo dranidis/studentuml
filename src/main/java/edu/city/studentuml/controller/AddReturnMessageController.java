@@ -19,7 +19,7 @@ import javax.swing.undo.UndoableEdit;
 public class AddReturnMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;
-    private Vector elements;
+    private Vector<GraphicalElement> elements;
 
     public AddReturnMessageController(SDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -32,12 +32,12 @@ public class AddReturnMessageController extends AddElementController {
     public void pressed(int x, int y) {
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if ((element instanceof RoleClassifierGR) && element.contains(origin)) {
                 source = (RoleClassifierGR) element;
@@ -57,12 +57,12 @@ public class AddReturnMessageController extends AddElementController {
 
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             // a return message goes to any role classifier
             if ((element instanceof RoleClassifierGR) && element.contains(origin)) {

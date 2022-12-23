@@ -1,23 +1,18 @@
 package edu.city.studentuml.view.gui;
 
-import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.Toolkit;
 
 public class DocumentSizeFilter extends DocumentFilter {
 
     int maxCharacters;
-    boolean DEBUG = false;
 
     public DocumentSizeFilter(int maxChars) {
         maxCharacters = maxChars;
     }
 
+    @Override
     public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
-        if (DEBUG) {
-            System.out.println("in DocumentSizeFilter's insertString method");
-        }
-
         //This rejects the entire insertion if it would make the contents too long.
         //Another option would be to truncate the inserted string so the contents
         //would be exactly maxCharacters in length.
@@ -28,10 +23,8 @@ public class DocumentSizeFilter extends DocumentFilter {
         }
     }
 
+    @Override
     public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet a) throws BadLocationException {
-        if (DEBUG) {
-            System.out.println("in DocumentSizeFilter's replace method");
-        }
         //This rejects the entire replacement if it would make the contents too long.
         //Another option would be to truncate the replacement string so the contents
         //would be exactly maxCharacters in length.

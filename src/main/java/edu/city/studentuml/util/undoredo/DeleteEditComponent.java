@@ -15,7 +15,7 @@ public abstract class DeleteEditComponent extends AbstractUndoableEdit{
     protected GraphicalElement element;
     protected DiagramModel model;
 
-    public DeleteEditComponent(GraphicalElement element, DiagramModel model) {
+    protected DeleteEditComponent(GraphicalElement element, DiagramModel model) {
         this.element = element;
         this.model = model;
     }

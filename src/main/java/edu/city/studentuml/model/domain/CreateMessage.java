@@ -11,19 +11,18 @@ import edu.city.studentuml.util.XMLStreamer;
 
 public class CreateMessage extends CallMessage {
 
-    Logger logger = Logger.getLogger(CreateMessage.class.getName());
+    private static final Logger logger = Logger.getLogger(CreateMessage.class.getName());
 
     public CreateMessage(RoleClassifier from, RoleClassifier to) {
         super(from, to, new GenericOperation("create"));
     }
 
+    @Override
     public String toString() {
-        String text = "";
-//        text += getRank() + ": ";
-        text += "create(" + getParametersString() + ")";
-        return text;
+        return getRank() + ": " + "create" + getParametersString();
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer,
             Object instance) {
         parameters.clear();
@@ -35,6 +34,7 @@ public class CreateMessage extends CallMessage {
         }
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));

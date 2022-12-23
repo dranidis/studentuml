@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="84" y="47">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="241" y="57">
+        <object class="Interface" id="interface" internalid="interface0" name="">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr0" id="" interfaceb="interfacegr0" internalid="realizationgr0">
+        <object a="designclass0" b="interface0" class="Realization" id="realization" internalid="realization0"/>
+      </object>
+    </object>
+  </object>
+</uml>

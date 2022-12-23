@@ -90,7 +90,7 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);
-        classDialog.show();
+        classDialog.setVisible(true);
 
         return ok;
     }
