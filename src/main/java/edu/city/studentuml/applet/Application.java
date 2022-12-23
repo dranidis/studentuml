@@ -327,7 +327,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
         });
 
-        // repairButton.setMargin(new Insets(2, 2, 2, 2));
         repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
@@ -336,7 +335,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         repairPanel.setVisible(false);
         showRepairButton(messageTree, repairButton);
 
-        setRepairMode(false); // Sets on/off the REPAIR feature
+        setRepairMode(true); // Sets on/off the REPAIR feature
 
         setVisible(true);
 
