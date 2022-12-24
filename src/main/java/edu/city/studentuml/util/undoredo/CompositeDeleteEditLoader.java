@@ -15,6 +15,7 @@ import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
@@ -30,6 +31,9 @@ import java.util.Vector;
  * @author draganbisercic
  */
 public class CompositeDeleteEditLoader {
+    private CompositeDeleteEditLoader() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void loadCompositeDeleteEdit(GraphicalElement e, CompositeDeleteEdit edit, DiagramModel model) {
         if (e instanceof ConceptualClassGR) {
@@ -145,7 +149,8 @@ public class CompositeDeleteEditLoader {
         }
     }
 
-    private static void loadDCDClassCompositeDeleteEdit(ClassGR c, CompositeDeleteEdit edit, DiagramModel model) {
+    private static void 
+    loadDCDClassCompositeDeleteEdit(ClassGR c, CompositeDeleteEdit edit, DiagramModel model) {
         LeafDeleteEdit leaf;
         Vector associations, aggregations, generalizations, associationClasses, dependencies, realizations;
         Association association;
@@ -296,81 +301,14 @@ public class CompositeDeleteEditLoader {
     }
 
     private static void loadInterfaceCompositeDeleteEdit(InterfaceGR i, CompositeDeleteEdit edit, DiagramModel model) {
-        LeafDeleteEdit leaf;
-        Vector realizations, aggregations, associations;
-        Realization realization;
-        Aggregation aggregation;
-        Association association;
-        GraphicalElement grElement;
-        Iterator iterator, iterGE;
-        CentralRepository repository = model.getCentralRepository();
+        edit.add(new LeafDeleteEdit(i, model));
 
-        leaf = new LeafDeleteEdit(i, model);
-        edit.add(leaf);
-
-        associations = repository.getAssociations();
-        iterator = associations.iterator();
-        while (iterator.hasNext()) {
-            association = (Association) iterator.next();
-
-            if (association.getClassB() == i.getInterface()) {
-                iterGE = model.getGraphicalElements().iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AssociationGR) {
-                        if (((AssociationGR) grElement).getAssociation() == association) {
-                            leaf = new LeafDeleteEdit(grElement, model);
-                            edit.add(leaf);
-                        }
-                    }
-                }
-            }
-        }
-
-        aggregations = repository.getAggregations();
-        iterator = aggregations.iterator();
-        while (iterator.hasNext()) {
-            aggregation = (Aggregation) iterator.next();
-
-            if (aggregation.getPart() == i.getInterface()) {
-                iterGE = model.getGraphicalElements().iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AggregationGR) {
-                        if (((AggregationGR) grElement).getAggregation() == aggregation) {
-                            leaf = new LeafDeleteEdit(grElement, model);
-                            edit.add(leaf);
-                        }
-                    }
-                }
-            }
-        }
-
-        realizations = repository.getRealizations();
-        iterator = realizations.iterator();
-
-        while (iterator.hasNext()) {
-            realization = (Realization) iterator.next();
-
-            if (realization.getTheInterface() == i.getInterface()) {
-                iterGE = model.getGraphicalElements().iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof RealizationGR) {
-                        if (((RealizationGR) grElement).getRealization() == realization) {
-                            leaf = new LeafDeleteEdit(grElement, model);
-                            edit.add(leaf);
-                        }
-                    }
-                }
-            }
-        }
+        /**
+         * aggregations are associations
+         */
+        ((DCDModel) model).getInterfaceGRAssociationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        ((DCDModel) model).getInterfaceGRGeneralizationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        ((DCDModel) model).getInterfaceGRRealizationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
     }
 
     private static void loadRoleClassifierCompositeDeleteEdit(RoleClassifierGR rc, CompositeDeleteEdit edit, DiagramModel model) {

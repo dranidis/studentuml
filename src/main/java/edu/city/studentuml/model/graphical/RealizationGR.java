@@ -77,6 +77,7 @@ public class RealizationGR extends LinkGR {
         return interfaceGR.getHeight();
     }
 
+    @Override
     public void draw(Graphics2D g) {
         classGR.refreshDimensions(g);
         interfaceGR.refreshDimensions(g);
@@ -91,7 +92,7 @@ public class RealizationGR extends LinkGR {
         Stroke originalStroke = g.getStroke();
 
         // the pattern of dashes for drawing the realization line
-        float dashes[] = { 8 };
+        float[] dashes = { 8 };
         if (isSelected()) {
             g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
             g.setPaint(highlightColor);
@@ -149,9 +150,11 @@ public class RealizationGR extends LinkGR {
         return interfaceGR;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
 
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classGR));

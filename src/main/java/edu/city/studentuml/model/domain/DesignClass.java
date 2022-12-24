@@ -10,9 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Class.java
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -20,19 +17,19 @@ import edu.city.studentuml.util.XMLStreamer;
 public class DesignClass extends AbstractClass {
 
     private String stereotype;
-    private NotifierVector methods;
+    private NotifierVector<Method> methods;
     @JsonIgnore
-    private AbstractClass extendClass;
+    private Classifier extendClass;
     @JsonIgnore
-    private List<Interface> implementInterfaces = new ArrayList();
+    private List<Interface> implementInterfaces = new ArrayList<>();
 
     @JsonIgnore
-    private Vector sdMethods = new Vector();
+    private Vector<Method> sdMethods = new Vector<>();
 
     public DesignClass(GenericClass gc) {
         super(gc);
         stereotype = null;
-        methods = new NotifierVector();
+        methods = new NotifierVector<>();
     }
 
     public DesignClass(String name) {
@@ -42,7 +39,7 @@ public class DesignClass extends AbstractClass {
     public DesignClass(GenericClass gc, String st) {
         this(gc);
         stereotype = st;
-        methods = new NotifierVector();
+        methods = new NotifierVector<>();
     }
 
     public void setStereotype(String st) {
@@ -61,42 +58,30 @@ public class DesignClass extends AbstractClass {
         methods.remove(m);
     }
 
-    public void setMethods(NotifierVector meths) {
+    public void setMethods(NotifierVector<Method> meths) {
         methods.clear();
         methods = meths;
     }
 
-    public NotifierVector getMethods() {
+    public NotifierVector<Method> getMethods() {
         return methods;
     }
 
-    public Method getMethodByName(String n) {
-        Method meth;
-        Iterator iterator = methods.iterator();
+    public Method getMethodByName(String name) {
+        Iterator<Method> iterator = methods.iterator();
 
         while (iterator.hasNext()) {
-            meth = (Method) iterator.next();
+            Method method = iterator.next();
 
-            if (meth.getName().equals(n)) {
-                return meth;
+            if (method.getName().equals(name)) {
+                return method;
             }
         }
 
         return null;
     }
 
-    public Method getMethodByIndex(int index) {
-        Method meth = null;
-
-        try {
-            meth = (Method) methods.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-
-        return meth;
-    }
-
+    @Override
     public void clear() {
         super.clear();
         methods.clear();
@@ -126,27 +111,27 @@ public class DesignClass extends AbstractClass {
         }
 
         Attribute attribute;
-        Iterator attributeIterator = attributes.iterator();
+        Iterator<Attribute> attributeIterator = attributes.iterator();
         while (attributeIterator.hasNext()) {
-            attribute = (Attribute) attributeIterator.next();
+            attribute = attributeIterator.next();
             copyClass.addAttribute(attribute.clone());
         }
 
         Method method;
-        Iterator methodIterator = methods.iterator();
+        Iterator<Method> methodIterator = methods.iterator();
         while (methodIterator.hasNext()) {
-            method = (Method) methodIterator.next();
+            method = methodIterator.next();
             copyClass.addMethod(method.clone());
         }
 
         return copyClass;
     }
 
-    public void setExtendClass(AbstractClass newExtendClass) {
+    public void setExtendClass(Classifier newExtendClass) {
         this.extendClass = newExtendClass;
     }
 
-    public AbstractClass getExtendClass() {
+    public Classifier getExtendClass() {
         return this.extendClass;
     }
 
@@ -162,15 +147,11 @@ public class DesignClass extends AbstractClass {
         this.implementInterfaces.clear();
     }
 
-    public void resetSDMethods() {
-        this.sdMethods.clear();
-    }
-
     public void addSDMethod(Method m) {
         this.sdMethods.add(m);
     }
 
-    public Vector getSDMethods() {
+    public Vector<Method> getSDMethods() {
         return this.sdMethods;
     }
 

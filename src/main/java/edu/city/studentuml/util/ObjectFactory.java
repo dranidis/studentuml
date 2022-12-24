@@ -1,6 +1,5 @@
 package edu.city.studentuml.util;
 
-//import edu.city.studentuml.applet.Application;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -11,7 +10,6 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
-import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -68,7 +66,6 @@ import edu.city.studentuml.model.domain.UCInclude;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.graphical.ADModel;
-import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityFinalNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
@@ -116,6 +113,8 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 public final class ObjectFactory extends Observable {
+    private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
+    
     private static ObjectFactory instance = new ObjectFactory();
 
     protected ObjectFactory() {
@@ -125,11 +124,9 @@ public final class ObjectFactory extends Observable {
         return instance;
     }
 
-    private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
-
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
 
@@ -155,8 +152,7 @@ public final class ObjectFactory extends Observable {
                         Class v = Class.forName(viewGUIPackageName + className);
                         return newInstance(v, parent, stream, streamer);
                     } catch (ClassNotFoundException except) {
-                        java.lang.System.err
-                                .println("ERROR in ObjectFactory in newInstance(className, parent, stream, streamer)");
+                        logger.severe("ERROR in ObjectFactory in newInstance(className, parent, stream, streamer)");
                         return null;
                     }
                 }
@@ -777,16 +773,16 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
         Generalization generalization = (Generalization) streamer.readObjectByID(stream, "generalization", null);
 
-        AbstractClassGR base = (AbstractClassGR) SystemWideObjectNamePool.getInstance()
+        ClassifierGR base = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("base"));
-        AbstractClassGR superclass = (AbstractClassGR) SystemWideObjectNamePool.getInstance()
+                ClassifierGR superclass = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("super"));
 
         GeneralizationGR g = null;
-        if (base instanceof ConceptualClassGR && superclass instanceof ConceptualClassGR) {
-            g = new GeneralizationGR((ConceptualClassGR) superclass, (ConceptualClassGR) base, generalization);
-        } else if (base instanceof ClassGR && superclass instanceof ClassGR) {
-            g = new GeneralizationGR((ClassGR) superclass, (ClassGR) base, generalization);
+        if (base instanceof ConceptualClassGR && superclass instanceof ConceptualClassGR
+                || base instanceof ClassGR && superclass instanceof ClassGR
+                || base instanceof InterfaceGR && superclass instanceof InterfaceGR) {
+            g = new GeneralizationGR(superclass, base, generalization);
         }
 
         if (parent instanceof CCDModel) {
@@ -799,16 +795,16 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newgeneralization(Object parent, Element stream, XMLStreamer streamer) {
-        AbstractClass base = (AbstractClass) SystemWideObjectNamePool.getInstance()
+        Classifier base = (Classifier) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("base"));
-        AbstractClass superclass = (AbstractClass) SystemWideObjectNamePool.getInstance()
+        Classifier superclass = (Classifier) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("super"));
 
         Generalization g = null;
-        if (base instanceof ConceptualClass && superclass instanceof ConceptualClass) {
-            g = new Generalization((ConceptualClass) superclass, (ConceptualClass) base);
-        } else if (base instanceof DesignClass && superclass instanceof DesignClass) {
-            g = new Generalization((DesignClass) superclass, (DesignClass) base);
+        if (base instanceof ConceptualClass && superclass instanceof ConceptualClass
+                || (base instanceof DesignClass && superclass instanceof DesignClass)
+                || (base instanceof Interface && superclass instanceof Interface)) {
+            g = new Generalization(superclass, base);
         }
 
         return g;

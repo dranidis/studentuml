@@ -185,8 +185,6 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        logger.fine(() -> "Pressed: " + event.getX() + ", " + event.getY());
-
         if (selectionMode) {
             lastX = event.getX();
             lastY = event.getY();
@@ -246,8 +244,6 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        logger.fine(() -> "Released: " + event.getX() + ", " + event.getY());
-
         if (selectionMode && lastPressed != null) {
 
             // check if the event is a popup trigger event
@@ -272,8 +268,6 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        logger.fine(() -> "Clicked: " + event.getX() + ", " + event.getY());
-
         if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
             Point2D origin = new Point2D.Double(event.getX(), event.getY());
@@ -296,12 +290,9 @@ public abstract class SelectionController {
                 }
             }
         }
-
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        logger.fine(() -> "Dragged: " + event.getX() + ", " + event.getY() + lastPressed);
-
         if (selectionMode && lastPressed != null) {
             moveElement(event.getX(), event.getY());
         }

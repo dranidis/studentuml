@@ -337,18 +337,16 @@ public class AssociationGR extends LinkGR {
         return association;
     }
 
-    public AbstractClassGR getClassA() {
-        return (AbstractClassGR) classA;
+    public ClassifierGR getClassA() {
+        return classA;
     }
 
-    public AbstractClassGR getClassB() {
-        return (AbstractClassGR) classB;
+    public ClassifierGR getClassB() {
+        return classB;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        super.streamFromXML(node, streamer, instance);
-    }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 

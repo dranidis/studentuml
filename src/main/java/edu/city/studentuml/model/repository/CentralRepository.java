@@ -598,7 +598,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     // retrieves the generalization that exists between two classes, if any
-    public Generalization getGeneralization(AbstractClass parent, AbstractClass child) {
+    public Generalization getGeneralization(Classifier parent, Classifier child) {
         Generalization generalization;
         Iterator iterator = generalizations.iterator();
         while (iterator.hasNext()) {

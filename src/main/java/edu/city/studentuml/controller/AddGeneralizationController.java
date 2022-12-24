@@ -1,26 +1,25 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddGeneralizationController.java
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.InterfaceGR;
+
 import java.awt.geom.Point2D;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
 public class AddGeneralizationController extends AddElementController {
 
-    private Object baseClass = null;
-    private Vector<GraphicalElement> elements;
+    private ClassifierGR baseClass = null;
 
     public AddGeneralizationController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -31,28 +30,23 @@ public class AddGeneralizationController extends AddElementController {
     }
 
     public void pressed(int x, int y) {
-        elements = diagramModel.getGraphicalElements();
+        List<GraphicalElement> elements = diagramModel.getGraphicalElements();
 
         ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            GraphicalElement element = listIterator.previous();
 
-            if ((element instanceof ClassGR) && element.contains(origin)) {
-                baseClass = (ClassGR) element;
-
-                break;
-            } else if ((element instanceof ConceptualClassGR) && element.contains(origin)) {
-                baseClass = (ConceptualClassGR) element;
-
+            if (element instanceof ClassifierGR && element.contains(origin)) {
+                baseClass = (ClassifierGR) element;
                 break;
             }
         }
     }
 
     public void dragged(int x, int y) {
+        /** Intentionally empty */
     }
 
     public void released(int x, int y) {
@@ -60,32 +54,31 @@ public class AddGeneralizationController extends AddElementController {
             return;
         }
 
-        elements = diagramModel.getGraphicalElements();
+        List<GraphicalElement> elements = diagramModel.getGraphicalElements();
 
         ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
-
-            if ((element instanceof ClassGR) && element.contains(origin) && (element != baseClass)) {
-                addDCDGeneralization((ClassGR) element, (ClassGR) baseClass);
-
-                break;
-            } else if ((element instanceof ConceptualClassGR) && (element.contains(origin)) && (element != baseClass)) {
-                addCCDGeneralization((ConceptualClassGR) element, (ConceptualClassGR) baseClass);
+            GraphicalElement element = listIterator.previous();
+            if (element != baseClass && element.contains(origin)) {
+                if (element instanceof ClassGR && baseClass instanceof ClassGR) {
+                    addGeneralization((ClassGR) element, (ClassGR) baseClass);
+                } else if (element instanceof InterfaceGR && baseClass instanceof InterfaceGR) {
+                    addGeneralization((InterfaceGR) element, (InterfaceGR) baseClass);
+                } else if (element instanceof ConceptualClassGR && baseClass instanceof ConceptualClassGR) {
+                    addGeneralization((ConceptualClassGR) element, (ConceptualClassGR) baseClass);
+                }
 
                 break;
             }
         }
-
         // set base class to null to start over again
         baseClass = null;
     }
 
-    public void addDCDGeneralization(ClassGR superClass, ClassGR baseClass) {
-        Generalization generalization = new Generalization(superClass.getDesignClass(), baseClass.getDesignClass());
+    private void addGeneralization(ClassifierGR superClass, ClassifierGR baseClass) {
+        Generalization generalization = new Generalization(superClass.getClassifier(), baseClass.getClassifier());
         GeneralizationGR generalizationGR = new GeneralizationGR(superClass, baseClass, generalization);
 
         UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);
@@ -97,17 +90,4 @@ public class AddGeneralizationController extends AddElementController {
         parentFrame.getUndoSupport().postEdit(edit);
     }
 
-    private void addCCDGeneralization(ConceptualClassGR superClass, ConceptualClassGR baseClass) {
-        Generalization generalization = new Generalization(superClass.getConceptualClass(),
-                baseClass.getConceptualClass());
-        GeneralizationGR generalizationGR = new GeneralizationGR(superClass, baseClass, generalization);
-
-        UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);
-
-        diagramModel.addGraphicalElement(generalizationGR);
-
-        parentFrame.setSelectionMode();
-
-        parentFrame.getUndoSupport().postEdit(edit);
-    }
 }

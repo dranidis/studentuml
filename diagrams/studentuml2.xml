@@ -2,12 +2,12 @@
 <uml>
   <object class="UMLProject" id="project">
     <object class="DCDModel" framex="0,0,766,607" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
-      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="128" y="25">
+      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="135" y="26">
         <object class="Interface" id="interface" internalid="interface0" name="Classifier">
           <object id="methods"/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="223" y="153">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="222" y="136">
         <object class="DesignClass" id="designclass" internalid="designclass0" name="AbstractClass" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="AbstractClass"/>
           <object id="attributes"/>
@@ -72,6 +72,17 @@
           <object class="Role" classifier="designclass5" id="rolea" multiplicity="" name=""/>
           <object class="Role" classifier="designclass4" id="roleb" multiplicity="" name=""/>
         </object>
+      </object>
+      <object base="classgr4" class="GeneralizationGR" id="" internalid="generalizationgr3" super="classgr2">
+        <object base="designclass4" class="Generalization" id="generalization" internalid="generalization3" super="designclass2"/>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr1" uid="Desktop Application User" x="324" y="20">
+        <object class="Interface" id="interface" internalid="interface1" name="Inter">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="interfacegr0" class="GeneralizationGR" id="" internalid="generalizationgr4" super="interfacegr1">
+        <object base="interface0" class="Generalization" id="generalization" internalid="generalization4" super="interface1"/>
       </object>
     </object>
   </object>
