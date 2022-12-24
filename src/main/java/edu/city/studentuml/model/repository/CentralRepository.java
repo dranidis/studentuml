@@ -11,7 +11,6 @@ package edu.city.studentuml.model.repository;
 //Whatever UML element is added in a diagram, its corresponding domain concept
 //is added to this repository. There exists only one Central Repository for each project.
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
-import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -75,19 +74,19 @@ public class CentralRepository extends Observable implements Serializable {
     private NotifierVector actors;
     private NotifierVector aggregations;
     private NotifierVector associations;
-    private NotifierVector classes;
+    private NotifierVector<DesignClass> classes;
     private NotifierVector concepts;
     private NotifierVector conceptualAssociationClasses;
     private NotifierVector designAssociationClasses;
     private NotifierVector dependencies;
-    private NotifierVector generalizations;
+    private NotifierVector<Generalization> generalizations;
     private NotifierVector genericAttributes;
     private NotifierVector genericClasses;
     private NotifierVector genericOperations;
-    private NotifierVector interfaces;
+    private NotifierVector<Interface> interfaces;
     private NotifierVector multiObjects;
     private NotifierVector objects;
-    private NotifierVector realizations;
+    private NotifierVector<Realization> realizations;
     private NotifierVector sdMessages;
     private NotifierVector ssdMessages;
     private NotifierVector controlFlows;
@@ -116,8 +115,8 @@ public class CentralRepository extends Observable implements Serializable {
         genericAttributes = new NotifierVector();
         genericOperations = new NotifierVector();
 
-        classes = new NotifierVector();
-        interfaces = new NotifierVector();
+        classes = new NotifierVector<>();
+        interfaces = new NotifierVector<>();
         associations = new NotifierVector();
         generalizations = new NotifierVector();
         aggregations = new NotifierVector();
@@ -422,7 +421,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getClasses() {
+    public Vector<DesignClass> getClasses() {
         return classes;
     }
 
@@ -487,7 +486,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getInterfaces() {
+    public Vector<Interface> getInterfaces() {
         return interfaces;
     }
 
@@ -498,10 +497,10 @@ public class CentralRepository extends Observable implements Serializable {
     // inteface with the same name.
     public Interface getInterface(String name) {
         Interface interf;
-        Iterator iterator = interfaces.iterator();
+        Iterator<Interface> iterator = interfaces.iterator();
 
         while (iterator.hasNext()) {
-            interf = (Interface) iterator.next();
+            interf = iterator.next();
 
             if (interf.getName().equals(name)) {
                 return interf;
@@ -593,7 +592,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getGeneralizations() {
+    public Vector<Generalization> getGeneralizations() {
         return generalizations;
     }
 
@@ -658,7 +657,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getRealizations() {
+    public Vector<Realization> getRealizations() {
         return realizations;
     }
 

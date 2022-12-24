@@ -49,6 +49,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -95,7 +96,10 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     public void update(Observable o, Object arg) {
         DefaultMutableTreeNode dnode;
-        Vector diagrams, classes, interfaces, roleClassifiers;
+        Vector diagrams;
+        Vector<DesignClass> classes;
+        Vector<Interface> interfaces;
+        Vector roleClassifiers;
         DiagramModel diagram;
         DesignClass designClass;
         Interface designInterface;
@@ -115,13 +119,27 @@ public class RepositoryTreeView extends JPanel implements Observer {
         treeModel.reload();
 
         classes = umlProject.getCentralRepository().getClasses();
+        classes.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
+        
         iterator = classes.iterator();
         while (iterator.hasNext()) {
-            designClass = (DesignClass) iterator.next();
-            addObject(datamodelnode, designClass);
+            DesignClass dc = (DesignClass) iterator.next();
+            DefaultMutableTreeNode designClassNode = addObject(datamodelnode, dc);
+
+            DefaultMutableTreeNode generalizationsNode = addObject(designClassNode, "extends");
+            umlProject.getCentralRepository().getGeneralizations().stream()
+                    .filter(g -> g.getBaseClass().getName().equals(dc.getName()))
+                    .collect(Collectors.toList()).forEach(cg -> addObject(generalizationsNode, cg.getSuperClass()));
+
+            DefaultMutableTreeNode raelizationsNode = addObject(designClassNode, "realizes");
+            umlProject.getCentralRepository().getRealizations().stream()
+                    .filter(g -> g.getTheClass().getName().equals(dc.getName()))
+                    .collect(Collectors.toList()).forEach(cg -> addObject(raelizationsNode, cg.getTheInterface()));       
         }
 
         interfaces = umlProject.getCentralRepository().getInterfaces();
+        interfaces.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
+
         iterator = interfaces.iterator();
         while (iterator.hasNext()) {
             designInterface = (Interface) iterator.next();
@@ -491,6 +509,10 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 nodeText = userObject.toString();
                 setText(nodeText);
                 setToolTipText("Activity Node - " + nodeText);
+            } else if (userObject.equals("extends")) {
+                setIcon(createImageIcon("generalization.gif"));
+            } else if (userObject.equals("realizes")) {
+                setIcon(createImageIcon("realization.gif"));
             } else {
                 setToolTipText(null); // no tool tip
             }

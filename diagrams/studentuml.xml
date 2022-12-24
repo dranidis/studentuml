@@ -1420,7 +1420,7 @@
         <object base="designclass77" class="Generalization" id="generalization" internalid="generalization50" super="designclass75"/>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1457,916" iconified="false" id="" internalid="sdmodel2" name="SD: deleteElement" selected="false">
+    <object class="SDModel" framex="0,0,1457,916" iconified="false" id="" internalid="sdmodel2" name="SD: deleteElement" selected="true">
       <object class="SDObjectGR" id="" internalid="sdobjectgr9" uid="Desktop Application User" x="102">
         <object class="SDObject" designclass="designclass79" id="sdobject" internalid="sdobject9" name="">
           <object class="DesignClass" id="designclass" internalid="designclass79" name="DCDSelectionController" stereotype="">
@@ -1499,7 +1499,7 @@
       <object class="SDObjectGR" id="" internalid="sdobjectgr12" uid="Desktop Application User" x="581">
         <object class="SDObject" designclass="designclass26" id="sdobject" internalid="sdobject12" name="e">
           <object class="DesignClass" id="designclass" internalid="designclass26" name="GraphicalElement" stereotype="abstract">
-            <object class="GenericClass" id="generic" internalid="genericclass7" name="GraphicalElement"/>
+            <object class="GenericClass" id="generic" name="GraphicalElement"/>
             <object id="attributes"/>
             <object id="methods"/>
           </object>
@@ -1600,15 +1600,15 @@
       </object>
     </object>
     <object class="DCDModel" framex="0,0,988,731" iconified="false" id="" internalid="dcdmodel7" name="DCD: Undo" selected="false">
-      <object class="ClassGR" id="" internalid="classgr92" uid="Desktop Application User" x="140" y="12">
-        <object class="DesignClass" id="designclass" internalid="designclass85" name="AbstractUndoableEdit" stereotype="&lt;&lt;javax.swing.undo&gt;&gt;">
+      <object class="ClassGR" id="" internalid="classgr92" uid="Desktop Application User" x="127" y="51">
+        <object class="DesignClass" id="designclass" internalid="designclass85" name="AbstractUndoableEdit" stereotype="javax.swing.undo">
           <object class="GenericClass" id="generic" name="AbstractUndoableEdit"/>
           <object id="attributes"/>
           <object id="methods"/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr93" uid="Desktop Application User" x="141" y="140">
-        <object class="DesignClass" id="designclass" internalid="designclass86" name="DeleteEditComponent" stereotype="&lt;&lt;abstract&gt;&gt;">
+      <object class="ClassGR" id="" internalid="classgr93" uid="Desktop Application User" x="128" y="179">
+        <object class="DesignClass" id="designclass" internalid="designclass86" name="DeleteEditComponent" stereotype="abstract">
           <object class="GenericClass" id="generic" name="DeleteEditComponent"/>
           <object id="attributes"/>
           <object id="methods"/>
@@ -1617,7 +1617,7 @@
       <object base="classgr93" class="GeneralizationGR" id="" internalid="generalizationgr55" super="classgr92">
         <object base="designclass86" class="Generalization" id="generalization" internalid="generalization55" super="designclass85"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr94" uid="Desktop Application User" x="439" y="59">
+      <object class="ClassGR" id="" internalid="classgr94" uid="Desktop Application User" x="426" y="98">
         <object class="DesignClass" id="designclass" internalid="designclass26" name="GraphicalElement" stereotype="abstract">
           <object class="GenericClass" id="generic" internalid="genericclass7" name="GraphicalElement"/>
           <object id="attributes"/>
@@ -1630,7 +1630,7 @@
           <object class="Role" classifier="designclass26" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr95" uid="Desktop Application User" x="439" y="164">
+      <object class="ClassGR" id="" internalid="classgr95" uid="Desktop Application User" x="426" y="203">
         <object class="DesignClass" id="designclass" internalid="designclass6" name="DiagramModel" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass6" name="DiagramModel"/>
           <object id="attributes"/>
@@ -1643,7 +1643,7 @@
           <object class="Role" classifier="designclass6" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr96" uid="Desktop Application User" x="58" y="263">
+      <object class="ClassGR" id="" internalid="classgr96" uid="Desktop Application User" x="34" y="299">
         <object class="DesignClass" id="designclass" internalid="designclass91" name="LeafDeleteEdit" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass84" name="LeafDeleteEdit"/>
           <object id="attributes"/>
@@ -1653,7 +1653,7 @@
       <object base="classgr96" class="GeneralizationGR" id="" internalid="generalizationgr56" super="classgr93">
         <object base="designclass91" class="Generalization" id="generalization" internalid="generalization56" super="designclass86"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr97" uid="Desktop Application User" x="224" y="264">
+      <object class="ClassGR" id="" internalid="classgr97" uid="Desktop Application User" x="227" y="303">
         <object class="DesignClass" id="designclass" internalid="designclass84" name="CompositeDeleteEdit" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass80" name="CompositeDeleteEdit"/>
           <object id="attributes"/>
