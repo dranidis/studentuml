@@ -256,13 +256,4 @@ public class DCDModel extends DiagramModel {
         super.removeGraphicalElement(r);
     }
 
-    @Override
-    public void clear() {
-
-        while (!graphicalElements.isEmpty()) {
-            removeGraphicalElement(graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
 }

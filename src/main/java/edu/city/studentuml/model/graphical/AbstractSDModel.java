@@ -327,15 +327,6 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
-    @Override
-    public final void clear() {
-        while (!graphicalElements.isEmpty()) {
-            removeGraphicalElement(graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
-
     // override superclass method removeGraphicalElement
     @Override
     public final void removeGraphicalElement(GraphicalElement e) {

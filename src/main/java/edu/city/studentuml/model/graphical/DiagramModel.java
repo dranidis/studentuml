@@ -15,13 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.UMLProject;
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DiagramModel.java
-//Class DiagramModel is a Model component of the MVC architecture
-//It stores the graphical representation of UML concepts that are part of a UML diagram.
-//This class is abstract with known subclasses including SSD/SD/CCD/DCDModel.
-//It extends Observable to notify the views of any changes that occur.
+
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
@@ -29,22 +23,18 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
+/**
+ * Class DiagramModel is a Model component of the MVC architecture It stores the
+ * graphical representation of UML concepts that are part of a UML diagram. This
+ * class is abstract with known subclasses including SSD/SD/CCD/DCDModel. It
+ * extends Observable to notify the views of any changes that occur.
+ */
 @JsonIncludeProperties({ "name", "internalid", "graphicalElements" })
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
-
-    public static final int UCD = 0;
-    public static final int SSD = 1;
-    public static final int SD = 2;
-    public static final int CCD = 3;
-    public static final int DCD = 4;
-    public static final int AD = 5;
 
     @JsonProperty("name")
     protected String diagramName;
@@ -233,8 +223,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     // clears the drawing area of a diagram by setting all graphical elements to
     // empty
     public void clear() {
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
+        while (!graphicalElements.isEmpty()) {
+            removeGraphicalElement(graphicalElements.get(0));
         }
         graphicalElements.clear();
         graphicalElements = new NotifierVector<>();

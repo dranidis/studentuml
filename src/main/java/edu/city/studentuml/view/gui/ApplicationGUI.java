@@ -56,6 +56,7 @@ import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
@@ -521,17 +522,17 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String modelName = inputModelName(type);
 
         if ((modelName != null) && (modelName.length() > 0)) {
-            if (type == DiagramModel.SSD) {
+            if (type == DiagramType.SSD) {
                 model = new SSDModel("SSD: " + modelName, umlProject);
-            } else if (type == DiagramModel.SD) {
+            } else if (type == DiagramType.SD) {
                 model = new SDModel("SD: " + modelName, umlProject);
-            } else if (type == DiagramModel.CCD) {
+            } else if (type == DiagramType.CCD) {
                 model = new CCDModel("CCD: " + modelName, umlProject);
-            } else if (type == DiagramModel.DCD) {
+            } else if (type == DiagramType.DCD) {
                 model = new DCDModel("DCD: " + modelName, umlProject);
-            } else if (type == DiagramModel.AD) {
+            } else if (type == DiagramType.AD) {
                 model = new ADModel("AD: " + modelName, umlProject);
-            } else if (type == DiagramModel.UCD) {
+            } else if (type == DiagramType.UCD) {
                 model = new UCDModel("UCD: " + modelName, umlProject);
             } else {
                 return;
@@ -545,27 +546,27 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String dialogText;
         String initialName;
         switch (type) {
-        case DiagramModel.UCD:
+        case DiagramType.UCD:
             dialogText = "Use Case Diagram Name: ";
             initialName = "ucd";
             break;
-        case DiagramModel.SSD:
+        case DiagramType.SSD:
             dialogText = "System Sequence Diagram Name:";
             initialName = "ssd";
             break;
-        case DiagramModel.SD:
+        case DiagramType.SD:
             dialogText = "Sequence Diagram Name: ";
             initialName = "sd";
             break;
-        case DiagramModel.CCD:
+        case DiagramType.CCD:
             dialogText = "Conceptual Class Diagram Name: ";
             initialName = "ccd";
             break;
-        case DiagramModel.DCD:
+        case DiagramType.DCD:
             dialogText = "Design Class Diagram Name: ";
             initialName = "dcd";
             break;
-        case DiagramModel.AD:
+        case DiagramType.AD:
             dialogText = "Activity Diagram Name: ";
             initialName = "ad";
             break;
@@ -738,17 +739,17 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
               // }
         }
 
-        if (type == DiagramModel.UCD) {
+        if (type == DiagramType.UCD) {
             return ucdFrames;
-        } else if (type == DiagramModel.SSD) {
+        } else if (type == DiagramType.SSD) {
             return ssdFrames;
-        } else if (type == DiagramModel.CCD) {
+        } else if (type == DiagramType.CCD) {
             return ccdFrames;
-        } else if (type == DiagramModel.SD) {
+        } else if (type == DiagramType.SD) {
             return sdFrames;
-        } else if (type == DiagramModel.DCD) {
+        } else if (type == DiagramType.DCD) {
             return dcdFrames;
-        } else if (type == DiagramModel.AD) {
+        } else if (type == DiagramType.AD) {
             return adFrames;
         } // else if () {
           // return stateFrames;
@@ -805,7 +806,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
             tabbedPane.setSelectedIndex(selected);
         }
-        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramType.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
         }
@@ -821,7 +822,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
             tabbedPane.setSelectedIndex(selected);
         }
-        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramModel.DCD);
+        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramType.DCD);
         for (int i = 0; i < dcdFrames.size(); i++) {
             ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
         }
@@ -1053,12 +1054,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 addSeparator();
             }
 
-            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram", e -> createNewInternalFrame(DiagramModel.UCD));
-            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram", e -> createNewInternalFrame(DiagramModel.SSD));
-            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram", e -> createNewInternalFrame(DiagramModel.CCD));
-            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram", e -> createNewInternalFrame(DiagramModel.SD));
-            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram", e -> createNewInternalFrame(DiagramModel.DCD));
-            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram", e -> createNewInternalFrame(DiagramModel.AD));
+            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram", e -> createNewInternalFrame(DiagramType.UCD));
+            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram", e -> createNewInternalFrame(DiagramType.SSD));
+            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram", e -> createNewInternalFrame(DiagramType.CCD));
+            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram", e -> createNewInternalFrame(DiagramType.SD));
+            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram", e -> createNewInternalFrame(DiagramType.DCD));
+            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram", e -> createNewInternalFrame(DiagramType.AD));
 
             add(adButton);
             add(useCaseButton);

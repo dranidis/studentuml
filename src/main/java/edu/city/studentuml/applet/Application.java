@@ -68,6 +68,7 @@ import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -775,16 +776,16 @@ public class Application extends JApplet implements Observer, KeyListener {
         String dialogText;
         DiagramModel model;
         switch (type) {
-        case DiagramModel.SSD:
+        case DiagramType.SSD:
             dialogText = "System Sequence Diagram Name :";
             break;
-        case DiagramModel.SD:
+        case DiagramType.SD:
             dialogText = "Sequence Diagram Name: ";
             break;
-        case DiagramModel.CCD:
+        case DiagramType.CCD:
             dialogText = "Conceptual Class Diagram Name: ";
             break;
-        case DiagramModel.DCD:
+        case DiagramType.DCD:
             dialogText = "Design Class Diagram Name: ";
             break;
         default:
@@ -792,16 +793,16 @@ public class Application extends JApplet implements Observer, KeyListener {
         }
         String modelName = JOptionPane.showInputDialog(dialogText);
         if ((modelName != null) && (modelName.length() > 0)) {
-            if (type == DiagramModel.SSD) {
+            if (type == DiagramType.SSD) {
                 model = new SSDModel(modelName, umlProject);
 
-            } else if (type == DiagramModel.SD) {
+            } else if (type == DiagramType.SD) {
                 model = new SDModel(modelName, umlProject);
 
-            } else if (type == DiagramModel.CCD) {
+            } else if (type == DiagramType.CCD) {
                 model = new CCDModel(modelName, umlProject);
 
-            } else if (type == DiagramModel.DCD) {
+            } else if (type == DiagramType.DCD) {
                 model = new DCDModel(modelName, umlProject);
             } else {
                 return;
@@ -893,13 +894,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
         }
 
-        if (type == DiagramModel.SSD) {
+        if (type == DiagramType.SSD) {
             return ssdFrames;
-        } else if (type == DiagramModel.SD) {
+        } else if (type == DiagramType.SD) {
             return sdFrames;
-        } else if (type == DiagramModel.CCD) {
+        } else if (type == DiagramType.CCD) {
             return ccdFrames;
-        } else if (type == DiagramModel.DCD) {
+        } else if (type == DiagramType.DCD) {
             return dcdFrames;
         }
 
@@ -1283,13 +1284,13 @@ public class Application extends JApplet implements Observer, KeyListener {
         // ProjectToolbar listens for its own events coming from the buttons
         public void actionPerformed(ActionEvent event) {
             if (event.getSource() == ssdButton) {
-                createNewInternalFrame(DiagramModel.SSD);
+                createNewInternalFrame(DiagramType.SSD);
             } else if (event.getSource() == sdButton) {
-                createNewInternalFrame(DiagramModel.SD);
+                createNewInternalFrame(DiagramType.SD);
             } else if (event.getSource() == ccdButton) {
-                createNewInternalFrame(DiagramModel.CCD);
+                createNewInternalFrame(DiagramType.CCD);
             } else if (event.getSource() == dcdButton) {
-                createNewInternalFrame(DiagramModel.DCD);
+                createNewInternalFrame(DiagramType.DCD);
             } else if (event.getSource() == newButton) {
                 newProject();
             } else if (event.getSource() == openButton) {

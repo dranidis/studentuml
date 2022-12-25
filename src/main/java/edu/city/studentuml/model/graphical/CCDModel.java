@@ -154,16 +154,6 @@ public class CCDModel extends DiagramModel {
         super.removeGraphicalElement(g);
     }
 
-    @Override
-    public void clear() {
-
-        while (!graphicalElements.isEmpty()) {
-            removeGraphicalElement(graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
-
     public Vector<ConceptualClassGR> getConceptualClasses() {
         Vector<ConceptualClassGR> v = new Vector<>();
         Iterator<GraphicalElement> i = getGraphicalElements().iterator();

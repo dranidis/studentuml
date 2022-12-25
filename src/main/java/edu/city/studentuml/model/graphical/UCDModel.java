@@ -198,15 +198,6 @@ public class UCDModel extends DiagramModel {
         }
     }
 
-    @Override
-    public void clear() {
-        while (!graphicalElements.isEmpty()) {
-            removeGraphicalElement(graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
-
     /*
      * Override: need to take care of the context of the ucd component
      * after move is completed.

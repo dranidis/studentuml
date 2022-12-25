@@ -200,16 +200,6 @@ public class ADModel extends DiagramModel {
         }
     }
 
-    @Override
-    public void clear() {
-
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
-
     /*
      * Override: need to take care of the context of the node component
      * after move is completed.

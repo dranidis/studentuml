@@ -14,7 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 /**
@@ -195,22 +195,22 @@ public class MenuBar {
     }    
 
     private void repaintSDandSSDDiagrams() {
-        Vector<JInternalFrame> sdFrames = app.getInternalFramesOfType(DiagramModel.SD);
+        Vector<JInternalFrame> sdFrames = app.getInternalFramesOfType(DiagramType.SD);
         for (JInternalFrame sdFrame : sdFrames) {
             logger.finer("REPAINT : ");
             sdFrame.repaint();
         }
-        sdFrames = app.getInternalFramesOfType(DiagramModel.SSD);
+        sdFrames = app.getInternalFramesOfType(DiagramType.SSD);
         for (JInternalFrame sdFrame : sdFrames) {
             logger.finer("REPAINT : ");
             sdFrame.repaint();
         }        
-        Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramModel.DCD);
+        Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramType.DCD);
         for (JInternalFrame sdFrame : cdFrames) {
             logger.finer("REPAINT : ");
             sdFrame.repaint();
         }    
-        cdFrames = app.getInternalFramesOfType(DiagramModel.CCD);
+        cdFrames = app.getInternalFramesOfType(DiagramType.CCD);
         for (JInternalFrame sdFrame : cdFrames) {
             logger.finer("REPAINT : ");
             sdFrame.repaint();
@@ -224,27 +224,27 @@ public class MenuBar {
 
         JMenuItem newUseCaseMenuItem = new JMenuItem();
         newUseCaseMenuItem.setText("New Use Case Diagram");
-        newUseCaseMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.UCD));
+        newUseCaseMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.UCD));
 
         JMenuItem newSystemSequenceMenuItem = new JMenuItem();
         newSystemSequenceMenuItem.setText("New System Sequence Diagram");
-        newSystemSequenceMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.SSD));
+        newSystemSequenceMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.SSD));
 
         JMenuItem newConceptualClassMenuItem = new JMenuItem();
         newConceptualClassMenuItem.setText("New Conceptual Class Diagram");
-        newConceptualClassMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.CCD));
+        newConceptualClassMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.CCD));
 
         JMenuItem newSequenceDiagramMenuItem = new JMenuItem();
         newSequenceDiagramMenuItem.setText("New Sequence Diagram");
-        newSequenceDiagramMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.SD));
+        newSequenceDiagramMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.SD));
 
         JMenuItem newDesignClassMenuItem = new JMenuItem();
         newDesignClassMenuItem.setText("New Design Class Diagram");
-        newDesignClassMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.DCD));
+        newDesignClassMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.DCD));
 
         JMenuItem newActivityDiagramMenuItem = new JMenuItem();
         newActivityDiagramMenuItem.setText("New Activity Diagram");
-        newActivityDiagramMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramModel.AD));
+        newActivityDiagramMenuItem.addActionListener(e -> app.createNewInternalFrame(DiagramType.AD));
         createMenu.add(newActivityDiagramMenuItem);
         createMenu.add(newUseCaseMenuItem);
         createMenu.add(newConceptualClassMenuItem);
