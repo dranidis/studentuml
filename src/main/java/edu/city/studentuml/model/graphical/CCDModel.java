@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author draganbisercic
  */
-public class CCDModel extends DiagramModel {
+public class CCDModel extends AbstractCDModel {
 
     public CCDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -41,32 +41,6 @@ public class CCDModel extends DiagramModel {
         // add the class to the project repository first and then to the diagram
         repository.addConceptualClass(c.getConceptualClass());
         super.addGraphicalElement(c);
-    }
-
-    // add a new diagram association
-    public void addAssociation(AssociationGR a) {
-
-        // add the association to the project repository first and then to the diagram
-        repository.addAssociation(a.getAssociation());
-        super.addGraphicalElement(a);
-    }
-
-    public void addAssociationClass(AssociationClassGR a) {
-        // in ccd model only conceptual assoc classes allowed; no design assoc classes
-        repository.addAssociationClass(a.getAssociationClass());
-        super.addGraphicalElement(a);
-    }
-
-    public void addAggregation(AggregationGR a) {
-        repository.addAggregation(a.getAggregation());
-
-        super.addGraphicalElement(a);
-    }
-
-    public void addGeneralization(GeneralizationGR g) {
-        repository.addGeneralization(g.getGeneralization());
-
-        super.addGraphicalElement(g);
     }
 
     // override superclass method removeGraphicalElement()
@@ -129,30 +103,6 @@ public class CCDModel extends DiagramModel {
                         || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getAbstractClass()))
                 .collect(Collectors.toList());
     }    
-
-    // since graphical associations, dependencies, and other links
-    // have a one-to one association with their domain representations,
-    // remove them both from the central repository and from the diagram
-    public void removeAssociation(AssociationGR a) {
-        repository.removeAssociation(a.getAssociation());
-        super.removeGraphicalElement(a);
-    }
-
-    public void removeAssociationClass(AssociationClassGR a) {
-//        a.clear();  //removes association object from links instances in AssociationClassGR
-        repository.removeAssociationClass(a.getAssociationClass());
-        super.removeGraphicalElement(a);
-    }
-
-    private void removeAggregation(AggregationGR aggregationGR) {
-        repository.removeAggregation(aggregationGR.getAggregation());
-        super.removeGraphicalElement(aggregationGR);
-    }
-
-    private void removeGeneralization(GeneralizationGR g) {
-        repository.removeGeneralization(g.getGeneralization());
-        super.removeGraphicalElement(g);
-    }
 
     public Vector<ConceptualClassGR> getConceptualClasses() {
         Vector<ConceptualClassGR> v = new Vector<>();

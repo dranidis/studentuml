@@ -8,7 +8,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DCDModel extends DiagramModel {
+public class DCDModel extends AbstractCDModel {
 
     public DCDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -58,19 +58,6 @@ public class DCDModel extends DiagramModel {
         super.addGraphicalElement(i);
     }
 
-    // add a new diagram association
-    public void addAssociation(AssociationGR a) {
-
-        // add the association to the project repository first and then to the diagram
-        repository.addAssociation(a.getAssociation());
-        super.addGraphicalElement(a);
-    }
-
-    public void addAssociationClass(AssociationClassGR a) {
-        repository.addAssociationClass(a.getAssociationClass());
-        super.addGraphicalElement(a);
-    }
-
     // add a new diagram dependency
     public void addDependency(DependencyGR d) {
         Dependency dependency = d.getDependency();
@@ -79,24 +66,6 @@ public class DCDModel extends DiagramModel {
         repository.addDependency(dependency);
 
         super.addGraphicalElement(d);
-    }
-
-    // add a new diagram aggregation
-    public void addAggregation(AggregationGR a) {
-
-        // add the aggregation to the project repository first and then to the diagram
-        repository.addAggregation(a.getAggregation());
-
-        super.addGraphicalElement(a);
-    }
-
-    // add a new diagram generalization
-    public void addGeneralization(GeneralizationGR g) {
-        Generalization generalization = g.getGeneralization();
-
-        // try to add the generalization to the repository first, if it doesn't exist
-        repository.addGeneralization(generalization);
-        super.addGraphicalElement(g);
     }
 
     // add a new diagram realization
@@ -221,34 +190,9 @@ public class DCDModel extends DiagramModel {
                 .collect(Collectors.toList());
     }    
 
-    // since graphical associations, dependencies, and other links
-    // have a one-to one association with their domain representations,
-    // remove them both from the central repository and from the diagram
-    public void removeAssociation(AssociationGR a) {
-        repository.removeAssociation(a.getAssociation());
-        super.removeGraphicalElement(a);
-    }
-
-    public void removeAssociationClass(AssociationClassGR a) {
-        // a.clear(); //removes association object from links instances in
-        // AssociationClassGR
-        repository.removeAssociationClass(a.getAssociationClass());
-        super.removeGraphicalElement(a);
-    }
-
     public void removeDependency(DependencyGR d) {
         repository.removeDependency(d.getDependency());
         super.removeGraphicalElement(d);
-    }
-
-    public void removeAggregation(AggregationGR a) {
-        repository.removeAggregation(a.getAggregation());
-        super.removeGraphicalElement(a);
-    }
-
-    public void removeGeneralization(GeneralizationGR g) {
-        repository.removeGeneralization(g.getGeneralization());
-        super.removeGraphicalElement(g);
     }
 
     public void removeRealization(RealizationGR r) {

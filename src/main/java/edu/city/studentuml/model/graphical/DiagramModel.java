@@ -47,15 +47,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     protected CentralRepository repository;
     protected UMLProject umlProject;
 
-    public DiagramModel() {
-    }
-
     @JsonGetter("internalid")
     public String getInternalid() {
         return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
-    public DiagramModel(String name, UMLProject umlp) {
+    protected DiagramModel(String name, UMLProject umlp) {
         diagramName = name;
         graphicalElements = new NotifierVector<>();
         selected = null;
@@ -73,11 +70,15 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return frame;
     }
 
-    // This method adds a graphical element to the diagram, triggered by the
-    // controller.
-    // The default behavior is to simply add the graphical element to the list
-    // and notify the view observers, but subclasses may override this behavior,
-    // for example in case the addition of one element affects other elements
+    /**
+     * This method adds a graphical element to the diagram, triggered by the
+     * controller. The default behavior is to simply add the graphical element to
+     * the list and notify the view observers, but subclasses may override this
+     * behavior, for example in case the addition of one element affects other
+     * elements
+     * 
+     * @param e
+     */
     public void addGraphicalElement(GraphicalElement e) {
         logger.fine("Adding Element e: " + e.getClass().getSimpleName());
         e.objectAdded(e);
