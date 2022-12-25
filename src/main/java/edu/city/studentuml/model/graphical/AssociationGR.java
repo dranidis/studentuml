@@ -27,9 +27,9 @@ public class AssociationGR extends LinkGR {
     private Association association;
     // the graphical classes that the association line connects in the diagram
     @JsonProperty("from")
-    private ClassifierGR classA;
+    protected ClassifierGR classA;
     @JsonProperty("to")
-    private ClassifierGR classB;
+    protected ClassifierGR classB;
     private Font nameFont;
     private Font roleFont;
 
@@ -355,4 +355,9 @@ public class AssociationGR extends LinkGR {
 
         streamer.streamObject(node, "association", association);
     }
+
+    public String toString() {
+        return "" + classA + " ---association---> " + classB;
+    }
+
 }

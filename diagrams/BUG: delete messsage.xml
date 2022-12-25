@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="SDModel" framex="0,0,550,450" iconified="false" id="" internalid="sdmodel0" name="SD: sd" selected="true">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="9">
+        <object class="SDObject" designclass="" id="sdobject" internalid="sdobject0" name="">
+          <object class="DesignClass" id="designclass" name="" stereotype="">
+            <object class="GenericClass" id="generic" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="91">
+        <object class="SDObject" designclass="" id="sdobject" internalid="sdobject1" name="">
+          <object class="DesignClass" id="designclass" name="" stereotype="">
+            <object class="GenericClass" id="generic" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr0" to="sdobjectgr0" y="100">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage0" name="" to="sdobject0"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr0" to="sdobjectgr1" y="60">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage0" iterative="false" name="" returnType="" returns="" to="sdobject1">
+          <object class="GenericOperation" id="operation" name=""/>
+          <object id="parameters"/>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

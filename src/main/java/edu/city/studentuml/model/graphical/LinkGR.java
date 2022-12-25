@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -12,24 +10,29 @@ import java.util.logging.Logger;
 
 import edu.city.studentuml.util.Rotate;
 
-//Author: Ervin Ramollari
-//LinkGR.java
 /**
  * A superclass that connects two classifiers.
  * 
- * @author dimitris
  */
 public abstract class LinkGR extends AbstractLinkGR {
     private static final Logger logger = Logger.getLogger(LinkGR.class.getName());
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
-     * of classifiers the number of their relationships is stored Note that only on
+     * of classifiers the number of their relationships is stored Note that only one of
      * the pairs A,B or B,A is stored.
      */
     private static Map<Link, Integer> links = new HashMap<>();
 
     private final ClassifierGR a;
     private final ClassifierGR b;
+
+    public ClassifierGR getA() {
+        return a;
+    }
+
+    public ClassifierGR getB() {
+        return b;
+    }
 
     protected LinkGR(ClassifierGR a, ClassifierGR b) {
         this.a = a;

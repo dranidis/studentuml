@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
@@ -37,18 +38,17 @@ public abstract class AbstractSDModel extends DiagramModel {
     // consistency purposes, ordering, etc.
     protected NotifierVector<RoleClassifierGR> roleClassifiers;
     protected NotifierVector<SDMessageGR> messages;
-    private boolean orderChanged = false;
     private boolean automove = false;
     private CompoundEdit compoundEdit;
 
-    public AbstractSDModel(String title, UMLProject umlp) {
+    protected AbstractSDModel(String title, UMLProject umlp) {
         super(title, umlp);
-        roleClassifiers = new NotifierVector();
-        messages = new NotifierVector();
+        roleClassifiers = new NotifierVector<>();
+        messages = new NotifierVector<>();
     }
 
-    // override superclass method addGraphicalElement
     // The element type is determined and the appropriate add method is called.
+    @Override
     public final void addGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
         if (e instanceof RoleClassifierGR) {
@@ -91,7 +91,6 @@ public abstract class AbstractSDModel extends DiagramModel {
 
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
-        orderChanged = true;
         messagesChanged();
         if (automove) {
             if (m instanceof CallMessageGR) {
@@ -111,9 +110,9 @@ public abstract class AbstractSDModel extends DiagramModel {
         this.automove = automove;
     }
     
-    // override superclass method moveGraphicalElement
     // to handle cases when the movement of one element affects other
     // elements, rather than simply moving alone
+    @Override
     public final void moveGraphicalElement(GraphicalElement e, int x, int y) {
         if (e instanceof RoleClassifierGR) {
             moveRoleClassifier((RoleClassifierGR) e, x, y);
@@ -134,9 +133,9 @@ public abstract class AbstractSDModel extends DiagramModel {
         messagesChanged();
     }
 
-    // override superclass method settleGraphicalElement
     // apart from just moving the dragged and dropped element
-    // this method also rearrangeds the elements to keep the distance
+    // this method also rearranges the elements to keep the distance
+    @Override
     public final void settleGraphicalElement(GraphicalElement e, int x, int y) {
         if (e instanceof RoleClassifierGR) {
             settleRoleClassifier((RoleClassifierGR) e, x, y);
@@ -156,7 +155,6 @@ public abstract class AbstractSDModel extends DiagramModel {
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
         messagesChanged();
-//        restoreMessagesDistances();
     }
 
     // subclasses that need to validate create and destroy messages need to override this method
@@ -205,11 +203,10 @@ public abstract class AbstractSDModel extends DiagramModel {
 
         for (int pass = 1; pass < messages.size(); pass++) {
             for (int element = 0; element < (messages.size() - 1); element++) {
-                message1 = (SDMessageGR) messages.elementAt(element);
-                message2 = (SDMessageGR) messages.elementAt(element + 1);
+                message1 = messages.elementAt(element);
+                message2 = messages.elementAt(element + 1);
 
                 if (message1.getY() > message2.getY()) {
-                    orderChanged = true;
                     swap(messages, element, element + 1);
                 }
             }
@@ -219,7 +216,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
         // reset the messages numbering according to their rank
         for (int i = 0; i < messages.size(); i++) {
-            message1 = (SDMessageGR) messages.elementAt(i);
+            message1 = messages.elementAt(i);
             m = message1.getMessage();
             m.setRank(i + 1);
         }
@@ -256,8 +253,8 @@ public abstract class AbstractSDModel extends DiagramModel {
         SDMessageGR message2;
 
         for (int i = 0; i < messages.size() - 1; i++) {
-            message1 = (SDMessageGR) messages.elementAt(i);
-            message2 = (SDMessageGR) messages.elementAt(i + 1);
+            message1 = messages.elementAt(i);
+            message2 = messages.elementAt(i + 1);
 
             if (message2.getY() - message1.getY() < MINIMUM_MESSAGE_DISTANCE) {
                 List<GraphicalElement> movedElements = new ArrayList<>();
@@ -277,20 +274,20 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // retrieves the list of all role classifiers
-    public Vector getRoleClassifiers() {
+    public Vector<RoleClassifierGR> getRoleClassifiers() {
         return roleClassifiers;
     }
 
     // retrieves the list of all messages
-    public Vector getMessages() {
+    public Vector<SDMessageGR> getMessages() {
         return messages;
     }
 
     // updates the lifeline lengths of role classifiers whenever
     // a message is added or moved
-    public final void updateLifelineLengths() {
-        if (messages.size() != 0) {
-            int highestMessageY = ((SDMessageGR) messages.lastElement()).getY();
+    private final void updateLifelineLengths() {
+        if (!messages.isEmpty()) {
+            int highestMessageY = messages.lastElement().getY();
 
             // extend the life lines if any message is too down the drawing view
             setEndingY(highestMessageY + RoleClassifierGR.MINIMUM_LIFELINE_LENGTH);
@@ -301,11 +298,11 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // returns true if the argument object has been destroyed
     public boolean isDestroyed(RoleClassifierGR rc) {
-        Iterator iterator = messages.iterator();
+        Iterator<SDMessageGR> iterator = messages.iterator();
         SDMessageGR message;
 
         while (iterator.hasNext()) {
-            message = (SDMessageGR) iterator.next();
+            message = iterator.next();
 
             if ((message instanceof DestroyMessageGR) && (message.getTarget() == rc)) {
                 return true;
@@ -318,12 +315,11 @@ public abstract class AbstractSDModel extends DiagramModel {
     // this changes the lifeline lengths of all the role classifiers,
     // except those that have been destroyed (i.e. have a determined lifeline length
     public final void setEndingY(int y) {
-        Vector objects = getRoleClassifiers();
-        Iterator iterator = objects.iterator();
-        RoleClassifierGR object;
+        Vector<RoleClassifierGR> objects = getRoleClassifiers();
+        Iterator<RoleClassifierGR> iterator = objects.iterator();
 
         while (iterator.hasNext()) {
-            object = (RoleClassifierGR) iterator.next();
+            RoleClassifierGR object = iterator.next();
 
             if (!isDestroyed(object)) {
                 object.setEndingY(y);
@@ -331,15 +327,17 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
+    @Override
     public final void clear() {
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
+        while (!graphicalElements.isEmpty()) {
+            removeGraphicalElement(graphicalElements.get(0));
         }
 
         super.clear();
     }
 
     // override superclass method removeGraphicalElement
+    @Override
     public final void removeGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
         if (e instanceof RoleClassifierGR) {
@@ -352,22 +350,14 @@ public abstract class AbstractSDModel extends DiagramModel {
         SystemWideObjectNamePool.getInstance().done();
     }
 
+    public List<SDMessageGR> getRoleClaffierGRMessages(RoleClassifierGR rc) {
+        return messages.stream().filter(message -> ((message.getSource() == rc) || (message.getTarget() == rc)))
+                .collect(Collectors.toList());
+    }
+
     public final void removeRoleClassifier(RoleClassifierGR rc) {
         // Remove messages associated with the RoleClassifier
-        Iterator iterator = messages.iterator();
-        SDMessageGR message;
-
-        while (iterator.hasNext()) {
-            message = (SDMessageGR) iterator.next();
-
-            if ((message.getSource() == rc) || (message.getTarget() == rc)) {
-                removeMessage(message);
-
-                // refresh the iterator
-                iterator = messages.iterator();
-            }
-        }
-
+        getRoleClaffierGRMessages(rc).forEach(this::removeMessage);
 
         removeFromRepository(rc);
 
@@ -404,7 +394,6 @@ public abstract class AbstractSDModel extends DiagramModel {
         removeOtherMessages(e); //hook for subclasses
 
         messagesChanged();
-//        restoreMessagesDistances();
         super.removeGraphicalElement(e);
     }
 
@@ -424,14 +413,12 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     private void validateInOut() {
-//        if(!orderChanged) 
-//            return;
         
         for(RoleClassifierGR sdObject: roleClassifiers) {
             sdObject.clearInOutStacks();
         }
         
-        if(messages.size() > 0) {
+        if(!messages.isEmpty()) {
             RoleClassifierGR obj = messages.get(0).source;
             obj.setActiveIn();
         }
@@ -439,8 +426,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         for(SDMessageGR message:messages) {
             message.outlineColor = Color.BLACK;
             message.setErrorMsg("");
-//            System.out.println(message.message + ": " + message.source + " -> " + message.target);
-            boolean validated;
+            logger.finer(() -> message.message + ": " + message.source + " -> " + message.target);
             String validatedStr = "";
             if (message instanceof CallMessageGR || message instanceof CreateMessageGR) {
                 validatedStr += message.source.validateOut(message.target);
@@ -452,7 +438,6 @@ public abstract class AbstractSDModel extends DiagramModel {
             } else if (message instanceof ReturnMessageGR) {
                 validatedStr += message.source.validateOutReturn(message.target);
                 validatedStr += message.target.validateInReturn(message.source);
-//                validatedStr += message.target.validateInReturn(message.source);
                 if (validatedStr.length() > 0) {
                     message.outlineColor = Color.RED;
                     message.setErrorMsg(validatedStr);
@@ -468,7 +453,6 @@ public abstract class AbstractSDModel extends DiagramModel {
             else
                 message.target.addActivationHeight(message.getY());
         }
-        orderChanged = false;
     }
 
     private void moveMessagesBelowBy(SDMessageGR m, int dis) {

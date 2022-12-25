@@ -179,14 +179,13 @@ public class RepositoryTreeView extends JPanel implements Observer {
             if (diagram instanceof CCDModel) {
                 concepts = ((CCDModel) diagram).getConceptualClasses();
 
-                if (concepts != null) {
-                    iterator2 = concepts.iterator();
+                iterator2 = concepts.iterator();
 
-                    while (iterator2.hasNext()) {
-                        concept = ((ConceptualClassGR) iterator2.next()).getConceptualClass();
-                        addObject(dnode, concept);
-                    }
+                while (iterator2.hasNext()) {
+                    concept = ((ConceptualClassGR) iterator2.next()).getConceptualClass();
+                    addObject(dnode, concept);
                 }
+
             }
 
             if (diagram instanceof SDModel) {

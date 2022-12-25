@@ -1,16 +1,11 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Dependency;
-import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 public class DCDModel extends DiagramModel {
@@ -123,13 +118,12 @@ public class DCDModel extends DiagramModel {
         } else if (e instanceof InterfaceGR) {
             removeInterface((InterfaceGR) e);
         } else if (e instanceof AssociationGR) {
+            // also aggregations are removed
             removeAssociation((AssociationGR) e);
         } else if (e instanceof AssociationClassGR) {
             removeAssociationClass((AssociationClassGR) e);
         } else if (e instanceof DependencyGR) {
             removeDependency((DependencyGR) e);
-        } else if (e instanceof AggregationGR) {
-            removeAggregation((AggregationGR) e);
         } else if (e instanceof GeneralizationGR) {
             removeGeneralization((GeneralizationGR) e);
         } else if (e instanceof RealizationGR) {
@@ -144,158 +138,15 @@ public class DCDModel extends DiagramModel {
     // to the same domain representation, just remove the graphical representation
     // from the diagram, and not the domain representation from the repository
     public void removeClass(ClassGR c) {
-        Vector aggregations, associations, associationClasses, dependencies, generalizations, realizations;
-        Aggregation agr;
-        Association ass;
-        DesignAssociationClass associationClass;
-        Dependency dep;
-        Generalization gen;
-        Realization rea;
-        GraphicalElement grElement;
-        Iterator iterator, iterGE;
-
-        aggregations = repository.getAggregations();
-        iterator = aggregations.iterator();
-
-        while (iterator.hasNext()) {
-            agr = (Aggregation) iterator.next();
-
-            if ((agr.getPart() == c.getDesignClass()) || (agr.getWhole() == c.getDesignClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AggregationGR) {
-                        if (((AggregationGR) grElement).getAggregation() == agr) {
-                            removeAggregation((AggregationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = aggregations.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        associations = repository.getAssociations();
-        iterator = associations.iterator();
-
-        while (iterator.hasNext()) {
-            ass = (Association) iterator.next();
-
-            if ((ass.getClassA() == c.getDesignClass()) || (ass.getClassB() == c.getDesignClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AssociationGR) {
-                        if (((AssociationGR) grElement).getAssociation() == ass) {
-                            removeAssociation((AssociationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = associations.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        associationClasses = repository.getDesignAssociationClasses();
-        iterator = associationClasses.iterator();
-        while (iterator.hasNext()) {
-            associationClass = (DesignAssociationClass) iterator.next();
-
-            if ((associationClass.getClassA() == c.getDesignClass())
-                    || (associationClass.getClassB() == c.getDesignClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AssociationClassGR) {
-                        if (((AssociationClassGR) grElement).getAssociationClass() == associationClass) {
-                            removeAssociationClass((AssociationClassGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = associationClasses.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        dependencies = repository.getDependencies();
-        iterator = dependencies.iterator();
-
-        while (iterator.hasNext()) {
-            dep = (Dependency) iterator.next();
-
-            if ((dep.getFrom() == c.getDesignClass()) || (dep.getTo() == c.getDesignClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof DependencyGR) {
-                        if (((DependencyGR) grElement).getDependency() == dep) {
-                            removeDependency((DependencyGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = dependencies.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        generalizations = repository.getGeneralizations();
-        iterator = generalizations.iterator();
-
-        while (iterator.hasNext()) {
-            gen = (Generalization) iterator.next();
-
-            if ((gen.getSuperClass() == c.getDesignClass()) || (gen.getBaseClass() == c.getDesignClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof GeneralizationGR) {
-                        if (((GeneralizationGR) grElement).getGeneralization() == gen) {
-                            removeGeneralization((GeneralizationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = generalizations.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        realizations = repository.getRealizations();
-        iterator = realizations.iterator();
-
-        while (iterator.hasNext()) {
-            rea = (Realization) iterator.next();
-
-            if (rea.getTheClass() == c.getDesignClass()) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof RealizationGR) {
-                        if (((RealizationGR) grElement).getRealization() == rea) {
-                            removeRealization((RealizationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = realizations.iterator();
-                        }
-                    }
-                }
-            }
-        }
+        getClassGRDependencyGRs(c).forEach(e -> removeDependency((DependencyGR) e));
+        getClassGRAssociationGRs(c).forEach(e -> removeAssociation((AssociationGR) e));
+        getClassGRAssociationClassGRs(c).forEach(e -> removeAssociationClass((AssociationClassGR) e));
+        getClassGRRealizationGRs(c).forEach(e -> removeRealization((RealizationGR) e));
+        getClassGRGeneralizationGRs(c).forEach(e -> removeGeneralization((GeneralizationGR) e));
 
         if (!umlProject.isClassReferenced(c, c.getDesignClass())) {
             c.getDesignClass().clear();
             repository.removeClass(c.getDesignClass());
-
         }
         super.removeGraphicalElement(c);
     }
@@ -310,26 +161,63 @@ public class DCDModel extends DiagramModel {
         super.removeGraphicalElement(i);
     }
 
+    public List<GraphicalElement> getClassGRDependencyGRs(ClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof DependencyGR
+                        && (((DependencyGR) grElement).getDependency().getFrom() == c.getDesignClass()
+                                || ((DependencyGR) grElement).getDependency().getTo() == c.getDesignClass())))
+                .collect(Collectors.toList());
+    }
+
+    public List<GraphicalElement> getClassGRAssociationGRs(ClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof AssociationGR
+                        && (((AssociationGR) grElement).getAssociation().getClassB() == c.getDesignClass()
+                                || ((AssociationGR) grElement).getAssociation().getClassA() == c.getDesignClass())))
+                .collect(Collectors.toList());
+    }
+
+    public List<GraphicalElement> getClassGRAssociationClassGRs(ClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof AssociationClassGR
+                        && (((AssociationClassGR) grElement).getAssociationClass().getClassB() == c.getDesignClass()
+                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getDesignClass())))
+                .collect(Collectors.toList());
+    }    
+
+    public List<GraphicalElement> getClassGRRealizationGRs(ClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof RealizationGR
+                        && ((RealizationGR) grElement).getRealization().getTheClass() == c.getDesignClass()))
+                .collect(Collectors.toList());
+    }
+
+    public List<GraphicalElement> getClassGRGeneralizationGRs(ClassGR c) {
+        return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
+                && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getDesignClass())
+                        || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getDesignClass()))
+                .collect(Collectors.toList());
+    }    
+
+
     public List<GraphicalElement> getInterfaceGRRealizationGRs(InterfaceGR interf) {
         return graphicalElements.stream()
                 .filter(grElement -> (grElement instanceof RealizationGR
-                && ((RealizationGR) grElement).getRealization().getTheInterface() == interf.getInterface()))
+                        && ((RealizationGR) grElement).getRealization().getTheInterface() == interf.getInterface()))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getInterfaceGRAssociationGRs(InterfaceGR interf) {
         return graphicalElements.stream()
                 .filter(grElement -> (grElement instanceof AssociationGR
-                        && ((AssociationGR) grElement).getAssociation().getClassB()  == interf.getInterface()))
+                        && ((AssociationGR) grElement).getAssociation().getClassB() == interf.getInterface()))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getInterfaceGRGeneralizationGRs(InterfaceGR interf) {
-        return graphicalElements.stream()
-                .filter(grElement -> grElement instanceof GeneralizationGR
+        return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
                 && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == interf.getInterface())
-                        || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == interf
-                                .getInterface()))
+                        || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == interf.getInterface()))
                 .collect(Collectors.toList());
     }    
 

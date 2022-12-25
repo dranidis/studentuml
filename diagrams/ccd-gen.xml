@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="CCDModel" framex="0,0,550,450" iconified="false" id="" internalid="ccdmodel0" name="CCD: ccd" selected="true">
+      <object class="ConceptualClassGR" id="" internalid="conceptualclassgr0" uid="Desktop Application User" x="26" y="57">
+        <object class="ConceptualClass" id="conceptualclass" internalid="conceptualclass0" name="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+          <object id="attributes"/>
+        </object>
+      </object>
+      <object class="ConceptualClassGR" id="" internalid="conceptualclassgr1" uid="Desktop Application User" x="161" y="18">
+        <object class="ConceptualClass" id="conceptualclass" internalid="conceptualclass1" name="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name=""/>
+          <object id="attributes"/>
+        </object>
+      </object>
+      <object base="conceptualclassgr0" class="GeneralizationGR" id="" internalid="generalizationgr0" super="conceptualclassgr1">
+        <object base="conceptualclass0" class="Generalization" id="generalization" internalid="generalization0" super="conceptualclass1"/>
+      </object>
+    </object>
+  </object>
+</uml>

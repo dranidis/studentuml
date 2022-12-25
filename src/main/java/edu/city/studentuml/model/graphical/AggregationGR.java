@@ -96,4 +96,10 @@ public class AggregationGR extends AssociationGR {
 
         streamer.streamObject(node, "aggregation", getAggregation());
     }
+
+
+    @Override
+    public String toString() {
+        return "" + classA + " ---aggregation---> " + classB;
+    }    
 }

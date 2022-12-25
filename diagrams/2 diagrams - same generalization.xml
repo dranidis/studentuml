@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <uml>
   <object class="UMLProject" id="project">
-    <object class="DCDModel" framex="0,0,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
+    <object class="DCDModel" framex="0,0,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="false">
       <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="62" y="78">
         <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
@@ -20,7 +20,7 @@
         <object base="designclass0" class="Generalization" id="generalization" internalid="generalization0" super="designclass1"/>
       </object>
     </object>
-    <object class="DCDModel" framex="551,-2,550,450" iconified="false" id="" internalid="dcdmodel1" name="DCD: dcd" selected="false">
+    <object class="DCDModel" framex="551,-2,550,450" iconified="false" id="" internalid="dcdmodel1" name="DCD: dcd" selected="true">
       <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="27" y="74">
         <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
@@ -36,7 +36,7 @@
         </object>
       </object>
       <object base="classgr2" class="GeneralizationGR" id="" internalid="generalizationgr1" super="classgr3">
-        <object base="designclass0" class="Generalization" id="generalization" super="designclass1"/>
+        <object base="designclass0" class="Generalization" id="generalization" internalid="generalization0" super="designclass1"/>
       </object>
     </object>
   </object>

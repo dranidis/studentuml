@@ -153,4 +153,9 @@ public class GeneralizationGR extends LinkGR {
 
         streamer.streamObject(node, "generalization", generalization);
     }
+
+    @Override
+    public String toString() {
+        return "" + baseClass + " ---generalization---> " + superClass;
+    }      
 }
