@@ -13,66 +13,63 @@ import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
 import java.awt.geom.Point2D;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
 public class AddRealizationController extends AddElementController {
 
-    private ClassGR classGR = null;
-    private Vector<GraphicalElement> elements;
+    private ClassGR fromClassGR = null;
 
     public AddRealizationController(DCDModel model, DiagramInternalFrame frame) {
         super(model, frame);
     }
 
+    @Override
     public void pressed(int x, int y) {
-        elements = diagramModel.getGraphicalElements();
+        List<GraphicalElement> elements = diagramModel.getGraphicalElements();
 
         ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = listIterator.previous();
+            GraphicalElement element = listIterator.previous();
 
             if ((element instanceof ClassGR) && element.contains(origin)) {
-                classGR = (ClassGR) element;
-
+                fromClassGR = (ClassGR) element;
                 break;
             }
         }
     }
 
     public void dragged(int x, int y) {
+        /** Intentionally empty */
     }
 
     public void released(int x, int y) {
-        if (classGR == null) {
+        if (fromClassGR == null) {
             return;
         }
 
-        elements = diagramModel.getGraphicalElements();
+        List<GraphicalElement> elements = diagramModel.getGraphicalElements();
 
         ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = listIterator.previous();
+            GraphicalElement element = listIterator.previous();
 
             if ((element instanceof InterfaceGR) && element.contains(origin)) {
-                addRealization(classGR, (InterfaceGR) element);
-
+                addRealization(fromClassGR, (InterfaceGR) element);
                 break;
             }
         }
 
         // set starting class to null to start over again
-        classGR = null;
+        fromClassGR = null;
     }
 
-    public void addRealization(ClassGR classGR, InterfaceGR interfaceGR) {
+    private void addRealization(ClassGR classGR, InterfaceGR interfaceGR) {
         Realization realization = new Realization(classGR.getDesignClass(), interfaceGR.getInterface());
         RealizationGR realizationGR = new RealizationGR(classGR, interfaceGR, realization);
 

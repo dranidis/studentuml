@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -12,18 +10,15 @@ import java.util.logging.Logger;
 
 import edu.city.studentuml.util.Rotate;
 
-//Author: Ervin Ramollari
-//LinkGR.java
 /**
  * A superclass that connects two classifiers.
  * 
- * @author dimitris
  */
 public abstract class LinkGR extends AbstractLinkGR {
     private static final Logger logger = Logger.getLogger(LinkGR.class.getName());
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
-     * of classifiers the number of their relationships is stored Note that only on
+     * of classifiers the number of their relationships is stored Note that only one of
      * the pairs A,B or B,A is stored.
      */
     private static Map<Link, Integer> links = new HashMap<>();
@@ -31,7 +26,15 @@ public abstract class LinkGR extends AbstractLinkGR {
     private final ClassifierGR a;
     private final ClassifierGR b;
 
-    public LinkGR(ClassifierGR a, ClassifierGR b) {
+    public ClassifierGR getA() {
+        return a;
+    }
+
+    public ClassifierGR getB() {
+        return b;
+    }
+
+    protected LinkGR(ClassifierGR a, ClassifierGR b) {
         this.a = a;
         this.b = b;
     }
@@ -119,7 +122,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         logger.finest("objectRemoved (before): links " + links);
         logger.finest("Link to remove: link " + link);
         if (!removeLink(new Link(link.a, link.b)) && !removeLink(new Link(link.b, link.a))) {
-            System.err.println("ERROR: Non existing link when objectRemoved:" + obj + " from links:" + links);
+            logger.severe("Non existing link when objectRemoved:" + obj + " from links:" + links);
             throw new RuntimeException();
         }
         logger.finest("objectRemoved (after): links " + links);
@@ -131,9 +134,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         Point2D pa = getEndPointRoleA();
         Point2D pb = getEndPointRoleB();
 
-        Rectangle2D r1 = new Rectangle2D.Double(pa.getX(), pa.getY(), pb.getX() - pa.getX(), pb.getY() - pa.getY());
-
-        return r1;
+        return new Rectangle2D.Double(pa.getX(), pa.getY(), pb.getX() - pa.getX(), pb.getY() - pa.getY());
     }
 
     private double getAngle() {
@@ -204,15 +205,11 @@ public abstract class LinkGR extends AbstractLinkGR {
     }
 
     public double getAngleRoleA() {
-        double angle = getAngle(new Point2D.Double(getXA(), getYA()), new Point2D.Double(getXB(), getYB()));
-
-        return angle;
+        return getAngle(new Point2D.Double(getXA(), getYA()), new Point2D.Double(getXB(), getYB()));
     }
 
     public double getAngleRoleB() {
-        double angle = getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
-
-        return angle;
+        return getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
     }
 
 }

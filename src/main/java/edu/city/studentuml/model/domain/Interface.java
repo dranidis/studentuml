@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Interface.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -16,12 +13,12 @@ import org.w3c.dom.Element;
 
 public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
-    private NotifierVector methods;
+    private NotifierVector<Method> methods;
     private String name;
 
     public Interface(String n) {
         name = n;
-        methods = new NotifierVector();
+        methods = new NotifierVector<>();
     }
 
     @JsonGetter("internalid")
@@ -50,11 +47,10 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     }
 
     public Method getMethodByName(String n) {
-        Method meth;
-        Iterator iterator = methods.iterator();
+        Iterator<Method> iterator = methods.iterator();
 
         while (iterator.hasNext()) {
-            meth = (Method) iterator.next();
+            Method meth = iterator.next();
 
             if (meth.getName().equals(n)) {
                 return meth;
@@ -64,23 +60,11 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
         return null;
     }
 
-    public Method getMethodByIndex(int index) {
-        Method meth = null;
-
-        try {
-            meth = (Method) methods.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-
-        return meth;
-    }
-
-    public NotifierVector getMethods() {
+    public NotifierVector<Method> getMethods() {
         return methods;
     }
 
-    public void setMethods(NotifierVector meths) {
+    public void setMethods(NotifierVector<Method> meths) {
         methods = meths;
     }
 
@@ -105,9 +89,9 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
         Interface copyInterface = new Interface(this.getName());
 
         Method method;
-        Iterator methodIterator = methods.iterator();
+        Iterator<Method> methodIterator = methods.iterator();
         while (methodIterator.hasNext()) {
-            method = (Method) methodIterator.next();
+            method = methodIterator.next();
             copyInterface.addMethod(method.clone());
         }
 

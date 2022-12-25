@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddElementController.java
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import java.awt.event.MouseAdapter;
@@ -70,9 +67,7 @@ public abstract class AddElementController {
         selectionMode = selMode;
     }
 
-    // to be implemented by subclasses that handle the addition of particular UML elements
-    public void pressed(int x, int y) {
-    }
+    public abstract void pressed(int x, int y);
 
     public abstract void dragged(int x, int y);
 

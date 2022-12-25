@@ -1,8 +1,5 @@
 package edu.city.studentuml.view;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DiagramView.java
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -23,7 +20,7 @@ import javax.swing.JPanel;
 public abstract class DiagramView extends JPanel implements Observer {
 
     protected DiagramModel model;
-    protected Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
+    protected transient Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
 
     protected DiagramView(DiagramModel m) {
         model = m;
@@ -119,7 +116,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         SystemWideObjectNamePool.drawLock.lock();
         
         model.getGraphicalElements().stream()
-                .filter(ge -> ge instanceof LinkGR)
+                .filter(LinkGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
         model.getGraphicalElements().stream()
@@ -157,6 +154,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         return model;
     }
 
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(getWidth(), getHeight());
     }

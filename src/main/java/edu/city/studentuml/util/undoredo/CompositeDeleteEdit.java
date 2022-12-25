@@ -30,8 +30,8 @@ import javax.swing.undo.CannotUndoException;
  */
 public class CompositeDeleteEdit extends DeleteEditComponent {
 
-    List deleteEditComponents = new ArrayList();
-    Object clone; // need to store model elements before they are cleared at deletion
+    private List<DeleteEditComponent> deleteEditComponents = new ArrayList<>();
+    private Object clone; // need to store model elements before they are cleared at deletion
 
     CompositeDeleteEdit(GraphicalElement element, DiagramModel model) {
         super(element, model);
@@ -58,24 +58,27 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
         }
     }
 
+    @Override
     public void add(DeleteEditComponent edit) {
         deleteEditComponents.add(edit);
     }
 
+    @Override
     public void remove(DeleteEditComponent edit) {
         deleteEditComponents.remove(edit);
     }
 
+    @Override
     public DeleteEditComponent getChild(int i) {
-        return (DeleteEditComponent) deleteEditComponents.get(i);
+        return deleteEditComponents.get(i);
     }
 
     @Override
     public void undo() throws CannotUndoException {
         DeleteEditComponent comp;
-        Iterator i = deleteEditComponents.iterator();
+        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
         while (i.hasNext()) {
-            comp = (DeleteEditComponent) i.next();
+            comp = i.next();
             comp.undo();
         }
 
@@ -122,9 +125,9 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
     @Override
     public void redo() throws CannotRedoException {
         DeleteEditComponent comp;
-        Iterator i = deleteEditComponents.iterator();
+        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
         while (i.hasNext()) {
-            comp = (DeleteEditComponent) i.next();
+            comp = i.next();
             comp.redo();
         }
     }

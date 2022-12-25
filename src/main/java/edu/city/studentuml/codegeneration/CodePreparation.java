@@ -286,12 +286,10 @@ public class CodePreparation {
 
         if (currEl instanceof SDObjectGR) {
             dc = ((SDObjectGR) currEl).getSDObject().getDesignClass();
-            dc.resetSDMethods();
             return dc;
         }
         if (currEl instanceof MultiObjectGR) {
             dc = ((MultiObjectGR) currEl).getMultiObject().getDesignClass();
-            dc.resetSDMethods();
             return dc;
         }
         return dc;

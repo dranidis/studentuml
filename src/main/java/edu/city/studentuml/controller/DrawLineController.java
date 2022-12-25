@@ -7,6 +7,7 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
@@ -17,17 +18,19 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.logging.Logger;
 
-public class DrawLineController { //TODO inherit from AddElementController???
+public class DrawLineController { 
+
+    private static final Logger logger = Logger.getLogger(DrawLineController.class.getName());
 
     private boolean selectionMode = false;
     private DiagramView diagramView;
     private DiagramModel diagramModel;
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
-    private Vector elements;
     private int startX;
     private int startY;
     private boolean drawLine = false;
@@ -37,6 +40,7 @@ public class DrawLineController { //TODO inherit from AddElementController???
         diagramModel = model;
         mouseListener = new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
 
                 // return without doing anything if the controller is in selection mode
@@ -48,6 +52,7 @@ public class DrawLineController { //TODO inherit from AddElementController???
                 pressed(e.getX(), e.getY());
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.isMetaDown() || e.isAltDown()) {
                     return;
@@ -59,6 +64,7 @@ public class DrawLineController { //TODO inherit from AddElementController???
 
         mouseMotionListener = new MouseMotionAdapter() {
 
+            @Override
             public void mouseDragged(MouseEvent e) {
                 if (selectionMode || e.isMetaDown() || e.isAltDown()) {
                     return;
@@ -90,21 +96,23 @@ public class DrawLineController { //TODO inherit from AddElementController???
     }
 
     public void pressed(int x, int y) {
-        elements = diagramModel.getGraphicalElements();
+        List<GraphicalElement> elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if ((element instanceof AbstractClassGR
                     || element instanceof RoleClassifierGR
                     || element instanceof MultiObjectGR
                     || element instanceof UCDComponentGR
-                    || element instanceof NodeComponentGR)
+                    || element instanceof NodeComponentGR
+                    || element instanceof InterfaceGR)
                     && element.contains(origin)) {
+                        logger.finer("Pressed" + element.getClass().getSimpleName());
                 startX = x;
                 startY = y;
                 drawLine = true;

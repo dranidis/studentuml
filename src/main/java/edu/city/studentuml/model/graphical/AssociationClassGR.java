@@ -256,4 +256,9 @@ public class AssociationClassGR extends LinkGR {
     public Rectangle2D getBounds() {
         return classElement.getBounds();
     }
+
+    @Override
+    public String toString() {
+        return "" + classifierA + " ---associationClass---> " + classifierB;
+    }      
 }
