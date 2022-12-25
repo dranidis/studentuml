@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -27,8 +28,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     private static final Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
+    @JsonIgnore
     protected Color fillColor;
+    @JsonIgnore
     protected Color highlightColor;
+    @JsonIgnore
     protected Color outlineColor;
     protected Point startingPoint;
     protected int width;
@@ -36,6 +40,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     protected String myUid;
     public static final Color DESKTOP_USER_COLOR = Color.yellow;
 
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return new Rectangle2D.Double(this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
@@ -110,7 +115,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return outlineColor;
     }
 
-    public Color getHightlightColor() {
+    public Color getHighlightColor() {
         return highlightColor;
     }
 

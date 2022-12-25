@@ -33,7 +33,7 @@ public interface ClassifierGR {
 
     public abstract Color getOutlineColor();
 
-    public abstract Color getHightlightColor();
+    public abstract Color getHighlightColor();
 
     public abstract void setSelected(boolean sel);
 

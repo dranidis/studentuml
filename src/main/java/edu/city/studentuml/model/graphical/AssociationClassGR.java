@@ -22,6 +22,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author draganbisercic
@@ -253,6 +255,7 @@ public class AssociationClassGR extends LinkGR {
     }
 
     @Override
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return classElement.getBounds();
     }

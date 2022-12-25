@@ -188,7 +188,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
             g.setStroke(new BasicStroke(2));
-            g.setPaint(getHightlightColor());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
             g.setPaint(getOutlineColor());

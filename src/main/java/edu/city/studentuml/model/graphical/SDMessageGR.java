@@ -17,6 +17,8 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author  Kristi
  */
@@ -173,7 +175,8 @@ public abstract class SDMessageGR extends GraphicalElement {
         }
     }
 
-    // OVERRIDE ABSTRACT METHOD getBounds() of GraphicalElement
+    @Override
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return new Rectangle2D.Double(
                 Math.min(getStartingX(), getEndingX()) - 5,

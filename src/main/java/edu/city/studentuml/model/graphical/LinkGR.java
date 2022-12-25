@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import edu.city.studentuml.util.Rotate;
 
 /**
@@ -130,6 +132,7 @@ public abstract class LinkGR extends AbstractLinkGR {
     }
 
     @Override
+    @JsonIgnore
     public Rectangle2D getBounds() {
         Point2D pa = getEndPointRoleA();
         Point2D pb = getEndPointRoleB();
