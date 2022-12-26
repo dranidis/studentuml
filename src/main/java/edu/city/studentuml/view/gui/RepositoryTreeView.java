@@ -91,7 +91,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         datamodelnode = addObject("Data Model");
         diagrammodelnode = addObject("Diagram Model");
         tree.addTreeSelectionListener(new RepositoryTreeSelectionListener());
-        umlProject.addObserver(this);
+        umlProject.getCentralRepository().addObserver(this);
     }
 
     public void update(Observable o, Object arg) {
