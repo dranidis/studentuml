@@ -69,16 +69,10 @@ public class DCDSelectionController extends SelectionController {
         newClass.setStereotype(classEditor.getStereotype());
 
         // add the attributes to the new class
-        Iterator attributeIterator = classEditor.getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            newClass.addAttribute((Attribute) attributeIterator.next());
-        }
+        classEditor.getAttributes().forEach(newClass::addAttribute);
 
         // add the methods to the new class
-        Iterator methodIterator = classEditor.getMethods().iterator();
-        while (methodIterator.hasNext()) {
-            newClass.addMethod((Method) methodIterator.next());
-        }
+        classEditor.getMethods().forEach(newClass::addMethod);
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any

@@ -27,6 +27,7 @@ public class GenericClass implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

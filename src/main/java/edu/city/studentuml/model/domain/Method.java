@@ -9,7 +9,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.Vector;
@@ -40,7 +39,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
     @JsonIgnore
     private String returnParameter = "x";
     @JsonIgnore
-    private List<String> calledMethods = new ArrayList<String>();
+    private List<String> calledMethods = new ArrayList<>(); // used by codegeneration; refactor
     @JsonIgnore
     private boolean iterative = false;
 
@@ -49,7 +48,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
         scope = INSTANCE;
         visibility = PUBLIC;
         returnType = DataType.VOID;
-        parameters = new NotifierVector();
+        parameters = new NotifierVector<>();
     }
 
     public Method(String name) {
@@ -135,14 +134,15 @@ public class Method implements Serializable, IXMLCustomStreamable {
 
     public void setParameters(Vector param) {
         parameters.clear();
-        parameters = NotifierVector.from(param);
+        parameters = (NotifierVector<MethodParameter>) NotifierVector.from(param);
     }
 
+    // used by codegeneration; refactor
     public MethodParameter getParameter(int index) {
         MethodParameter p;
 
         try {
-            p = (MethodParameter) parameters.elementAt(index);
+            p = parameters.elementAt(index);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -168,6 +168,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
         }
     }
 
+    // used by codegeneration
     @JsonIgnore
     public String getVisibilityAsString() {
         if (visibility == PRIVATE) {
@@ -236,12 +237,7 @@ public class Method implements Serializable, IXMLCustomStreamable {
             copyMethod.setReturnTypeByName(this.returnType.getName());
         }
 
-        MethodParameter parameter;
-        Iterator parameterIterator = parameters.iterator();
-        while (parameterIterator.hasNext()) {
-            parameter = (MethodParameter) parameterIterator.next();
-            copyMethod.addParameter(parameter.clone());
-        }
+        parameters.forEach(parameter -> copyMethod.addParameter(parameter.clone()));
 
         return copyMethod;
     }
@@ -274,6 +270,8 @@ public class Method implements Serializable, IXMLCustomStreamable {
     public String getReturnParameter() {
         return this.returnParameter;
     }
+
+// used by codegeneration; refactor
 
     public void addCalledMethod(DesignClass homeClass, Method m, DesignClass calledClass, RoleClassifier object,
             boolean isReflective) {
