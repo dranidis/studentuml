@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="SDModel" framex="74,93,728,442" iconified="false" id="" internalid="sdmodel0" name="SD: sd" selected="true">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="36">
+        <object class="SDObject" designclass="designclass22" id="sdobject" internalid="sdobject0" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass22" name="A1" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="A1"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="110">
+        <object class="SDObject" designclass="designclass2" id="sdobject" internalid="sdobject1" name="a">
+          <object class="DesignClass" id="designclass" internalid="designclass2" name="B" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass1" name="B"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="192">
+        <object class="SDObject" designclass="designclass22" id="sdobject" internalid="sdobject2" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass22" name="A1" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="A1"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr3" uid="Desktop Application User" x="264">
+        <object class="SDObject" designclass="designclass9" id="sdobject" internalid="sdobject3" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass9" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr4" uid="Desktop Application User" x="389">
+        <object class="SDObject" designclass="designclass9" id="sdobject" internalid="sdobject4" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass9" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr5" uid="Desktop Application User" x="327">
+        <object class="SDObject" designclass="designclass14" id="sdobject" internalid="sdobject5" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass14" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass4" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr6" uid="Desktop Application User" x="466">
+        <object class="SDObject" designclass="" id="sdobject" internalid="sdobject6" name="">
+          <object class="DesignClass" id="designclass" name="" stereotype="">
+            <object class="GenericClass" id="generic" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr7" uid="Desktop Application User" x="557">
+        <object class="SDObject" designclass="" id="sdobject" internalid="sdobject7" name="">
+          <object class="DesignClass" id="designclass" name="" stereotype="">
+            <object class="GenericClass" id="generic" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

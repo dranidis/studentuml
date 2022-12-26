@@ -376,9 +376,11 @@ public class CentralRepository extends Observable implements Serializable {
             }
 
             repositoryChanged();
+            logger.fine("Classes:" + classes);
 
             return true;
         } else {
+            logger.fine("Already in repository:" + c.getName());
             return false;
         }
     }
