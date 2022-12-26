@@ -1,14 +1,14 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
-//ClassEditorDialog.java
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AutocompleteJComboBox;
+import edu.city.studentuml.view.gui.components.StringSearchable;
 import edu.city.studentuml.model.graphical.ClassGR;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -20,9 +20,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -59,7 +60,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private JPanel methodsButtonsPanel;
     private JList methodsList;
     private JPanel methodsPanel;
-    private JTextField nameField;
+    private AutocompleteJComboBox nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
     private boolean ok;         // stores whether the user has pressed ok
@@ -80,10 +81,17 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
         setLayout(new BorderLayout());
         nameLabel = new JLabel("Class Name: ");
-        nameField = new JTextField(15);
-        nameField.addActionListener(this);
-        nameField.addKeyListener(this);
-        nameField.setFocusTraversalKeysEnabled(true);
+
+        /**
+         * read existing classes to populate the nameField
+         */
+        Vector<DesignClass> types = repository.getClasses();
+        List<String> existingDesignClasses = new ArrayList<>();
+        types.stream().filter(dc -> !dc.getName().equals("")).forEach(dc -> existingDesignClasses.add(dc.getName()));
+
+        nameField = new AutocompleteJComboBox(new StringSearchable(existingDesignClasses));
+        nameField.setPrototypeDisplayValue("some long text for the class name");
+
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
         stereotypeField.addActionListener(this);
@@ -205,7 +213,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public String getClassName() {
-        return nameField.getText();
+        return (String) nameField.getSelectedItem();
     }
 
     public String getStereotype() {
@@ -237,7 +245,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
 
         if (designClass != null) {
-            nameField.setText(designClass.getName());
+            nameField.setSelectedItem(designClass.getName());
 
             if (designClass.getStereotype() != null) {
                 stereotypeField.setText(designClass.getStereotype());
@@ -419,9 +427,8 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)
-                || (event.getSource() == stereotypeField)) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+        if ((event.getSource() == okButton) || (event.getSource() == stereotypeField)) {
+            if (getClassName().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a class name", "Warning",
                         JOptionPane.WARNING_MESSAGE);
 
