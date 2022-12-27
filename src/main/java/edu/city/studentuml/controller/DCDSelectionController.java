@@ -31,10 +31,13 @@ import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 public class DCDSelectionController extends SelectionController {
+    private static final Logger logger = Logger.getLogger(DCDSelectionController.class.getName());
 
     public DCDSelectionController(DiagramInternalFrame parent, DCDModel m) {
         super(parent, m);
@@ -97,7 +100,10 @@ public class DCDSelectionController extends SelectionController {
             // Undo/Redo [edit]
             UndoableEdit edit = new EditDCDClassEdit(originalClass, newClass, model);
 
-            repository.editClass(originalClass, newClass);
+            boolean edited = repository.editClass(originalClass, newClass);
+            if (!edited) {
+                logger.severe("EDIT NOT SUCCESSFUL");
+            }
 
             parentComponent.getUndoSupport().postEdit(edit);
         }

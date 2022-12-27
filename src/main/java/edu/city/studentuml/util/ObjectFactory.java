@@ -201,7 +201,7 @@ public final class ObjectFactory extends Observable {
         return null;
     }
 
-    public Rectangle readRect(String val) {
+    private Rectangle readRect(String val) {
         if (val == null) {
             return null;
         }

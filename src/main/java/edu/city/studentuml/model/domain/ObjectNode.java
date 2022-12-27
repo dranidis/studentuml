@@ -27,7 +27,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
     public ObjectNode() {
         this("");
         type = null;
-        states = new ArrayList<State>();
+        states = new ArrayList<>();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
         states.remove(state);
     }
 
-    public Iterator getStates() {
+    public Iterator<State> getStates() {
         return states.iterator();
     }
 

@@ -6,9 +6,7 @@ import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
-//CallMessageGR.java
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -37,9 +35,12 @@ public class CallMessageGR extends SDMessageGR {
         return (CallMessage) getMessage();
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
