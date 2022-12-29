@@ -20,11 +20,10 @@ import edu.city.studentuml.view.gui.MethodEditor;
 
 public class MethodsPanel extends JPanel implements ActionListener {
 
-    private JButton addMethodButton;
-
-    private JButton deleteMethodButton;
-    private JButton editMethodButton;
-    private JPanel methodsButtonsPanel;
+    private JButton addButton;
+    private JButton deleteButton;
+    private JButton editButton;
+    private JPanel buttonsPanel;
     private JList<Method> methodsList;
 
     private Vector<Method> methods;
@@ -54,28 +53,28 @@ public class MethodsPanel extends JPanel implements ActionListener {
         methodsList = new JList<>();
         methodsList.setFixedCellWidth(400);
         methodsList.setVisibleRowCount(5);
-        addMethodButton = new JButton("Add...");
-        addMethodButton.addActionListener(this);
-        editMethodButton = new JButton("Edit...");
-        editMethodButton.addActionListener(this);
-        deleteMethodButton = new JButton("Delete");
-        deleteMethodButton.addActionListener(this);
-        methodsButtonsPanel = new JPanel();
-        methodsButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        methodsButtonsPanel.add(addMethodButton);
-        methodsButtonsPanel.add(editMethodButton);
-        methodsButtonsPanel.add(deleteMethodButton);
+        addButton = new JButton("Add...");
+        addButton.addActionListener(this);
+        editButton = new JButton("Edit...");
+        editButton.addActionListener(this);
+        deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(this);
+        buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
+        buttonsPanel.add(addButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(deleteButton);
         this.add(new JScrollPane(methodsList), BorderLayout.CENTER);
-        this.add(methodsButtonsPanel, BorderLayout.SOUTH);
+        this.add(buttonsPanel, BorderLayout.SOUTH);
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == addMethodButton) {
+        if (event.getSource() == addButton) {
             addMethod();
-        } else if (event.getSource() == editMethodButton) {
+        } else if (event.getSource() == editButton) {
             editMethod();
-        } else if (event.getSource() == deleteMethodButton) {
+        } else if (event.getSource() == deleteButton) {
             deleteMethod();
         }        
     }
@@ -87,13 +86,7 @@ public class MethodsPanel extends JPanel implements ActionListener {
             return;
         }
 
-        Method method = new Method(methodEditor.getMethodName());
-
-        method.setReturnType(methodEditor.getReturnType());
-        method.setVisibility(methodEditor.getVisibility());
-        method.setScope(methodEditor.getScope());
-        method.setParameters(methodEditor.getParameters());
-        methods.add(method);
+        methods.add(methodEditor.createMethod());
         updateMethodsList();
     }
 
@@ -109,11 +102,7 @@ public class MethodsPanel extends JPanel implements ActionListener {
             return;
         }
 
-        method.setName(methodEditor.getMethodName());
-        method.setReturnType(methodEditor.getReturnType());
-        method.setVisibility(methodEditor.getVisibility());
-        method.setScope(methodEditor.getScope());
-        method.setParameters(methodEditor.getParameters());
+        methodEditor.editMethod();
         updateMethodsList();
     }
 

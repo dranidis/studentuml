@@ -329,4 +329,22 @@ public class MethodEditor extends JPanel implements ActionListener {
             deleteParameter();
         }
     }
+
+    public Method createMethod() {
+        Method method = new Method(this.getMethodName());
+
+        method.setReturnType(this.getReturnType());
+        method.setVisibility(this.getVisibility());
+        method.setScope(this.getScope());
+        method.setParameters(this.getParameters());    
+        return method;
+    }
+
+    public void editMethod() {
+        method.setName(this.getMethodName());
+        method.setReturnType(this.getReturnType());
+        method.setVisibility(this.getVisibility());
+        method.setScope(this.getScope());
+        method.setParameters(this.getParameters());
+    }
 }

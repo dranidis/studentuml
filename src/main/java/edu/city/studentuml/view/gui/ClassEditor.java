@@ -6,6 +6,7 @@ import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AttributesPanel;
 import edu.city.studentuml.view.gui.components.AutocompleteJComboBox;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 import edu.city.studentuml.view.gui.components.StringSearchable;
@@ -25,35 +26,25 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.border.TitledBorder;
 
 public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private static final Logger logger = Logger.getLogger(ClassEditor.class.getName());
 
-    private JButton addAttributeButton;
-    private Vector<Attribute> attributes;
     private Vector<Attribute> tempAttributes;
-    private JPanel attributesButtonsPanel;
-    private JList<Attribute> attributesList;
-    private JPanel attributesPanel;
+    private AttributesPanel attributesPanel;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JPanel centerPanel;
     private JDialog classDialog;
     private ClassGR classGR;    // the design class that the dialog edits
-    private JButton deleteAttributeButton;
-    private JButton editAttributeButton;
     private JPanel fieldsPanel;
     private MethodsPanel methodsPanel;
     private AutocompleteJComboBox nameField;
@@ -111,6 +102,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         addAttributesPanel.add(addAttributesLabel);
         addAttributesPanel.add(addAttributesButton);
         cardPanel.add("empty", emptyPanel);
+        
         cardPanel.add("nonempty", addAttributesPanel);
 
         fieldsPanel = new JPanel();
@@ -118,28 +110,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         fieldsPanel.add(namePanel);
         fieldsPanel.add(stereotypePanel);
         fieldsPanel.add(cardPanel);
-        attributesPanel = new JPanel();
-        attributesPanel.setLayout(new BorderLayout());       
 
-        TitledBorder title2 = BorderFactory.createTitledBorder("Class Attributes");
-
-        attributesPanel.setBorder(title2);
-        attributesList = new JList<>();
-        attributesList.setFixedCellWidth(400);
-        attributesList.setVisibleRowCount(5);
-        addAttributeButton = new JButton("Add...");
-        addAttributeButton.addActionListener(this);
-        editAttributeButton = new JButton("Edit...");
-        editAttributeButton.addActionListener(this);
-        deleteAttributeButton = new JButton("Delete");
-        deleteAttributeButton.addActionListener(this);
-        attributesButtonsPanel = new JPanel();
-        attributesButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        attributesButtonsPanel.add(addAttributeButton);
-        attributesButtonsPanel.add(editAttributeButton);
-        attributesButtonsPanel.add(deleteAttributeButton);
-        attributesPanel.add(new JScrollPane(attributesList), BorderLayout.CENTER);
-        attributesPanel.add(attributesButtonsPanel, BorderLayout.SOUTH);
 
         okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -149,6 +120,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
         centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
+        attributesPanel = new AttributesPanel("Class attributes", cr);
         centerPanel.add(attributesPanel);
 
         methodsPanel = new MethodsPanel("Class Methods", cr);
@@ -204,7 +176,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public Vector<Attribute> getAttributes() {
-        return attributes;
+        return attributesPanel.getAttributes();
     }
 
     public Vector<Method> getMethods() {
@@ -218,7 +190,6 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
         // initialize the attributes and methods to an empty list
         // in order to populate them with COPIES of the class attributes and methods
-        attributes = new Vector<>();
         tempAttributes = new Vector<>();
 
         if (designClass != null) {
@@ -228,76 +199,13 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
                 stereotypeField.setText(designClass.getStereotype());
             }
 
-            // make an exact copy of the attributes for editing purposes
-            // which may be discarded if the user presses <<Cancel>>
-            attributes = cloneAttributes(designClass.getAttributes());
-
-            // show the attributes in the list
-            updateAttributesList();
-
-            // show the methods in the list
+            attributesPanel.setAttributes(designClass.getAttributes());
             methodsPanel.setMethods(designClass.getMethods());
 
             setTempAttributes();
         }
     }
 
-    // make an exact copy of the passed attributes list
-    private Vector<Attribute> cloneAttributes(Vector<Attribute> originalAttributes) {
-        Vector<Attribute> copyOfAttributes = new Vector<>();
-        originalAttributes.forEach(originalAttribute -> copyOfAttributes.add(originalAttribute.clone()));
-
-        return copyOfAttributes;
-    }
-
-
-    private void updateAttributesList() {
-        attributesList.setListData(attributes);
-    }
-
-    private void addAttribute() {
-        AttributeEditor attributeEditor = new AttributeEditor(null, repository);
-
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {    // cancel pressed
-            return;
-        }
-
-        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
-
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        attributes.add(attribute);
-        updateAttributesList();
-    }
-
-    private void editAttribute() {
-        if (attributes.isEmpty() || attributesList.getSelectedIndex() < 0) {
-            return;
-        }
-
-        Attribute attribute = attributes.elementAt(attributesList.getSelectedIndex());
-        AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
-
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {    // cancel pressed
-            return;
-        }
-
-        attribute.setName(attributeEditor.getAttributeName());
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        updateAttributesList();
-    }
-
-    private void deleteAttribute() {
-        if (attributes.isEmpty() || attributesList.getSelectedIndex() < 0) {
-            return;
-        }
-
-        attributes.remove(attributesList.getSelectedIndex());
-        updateAttributesList();
-    }
 
     @Override
     public void actionPerformed(ActionEvent event) {
@@ -313,15 +221,10 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             ok = true;
         } else if (event.getSource() == cancelButton) {
             classDialog.setVisible(false);
-        } else if (event.getSource() == addAttributeButton) {
-            addAttribute();
-        } else if (event.getSource() == editAttributeButton) {
-            editAttribute();
-        } else if (event.getSource() == deleteAttributeButton) {
-            deleteAttribute();
         } else if (event.getSource() == addAttributesButton) {
+            Vector<Attribute> attributes = attributesPanel.getAttributes();
             tempAttributes.forEach(attributes::add);
-            updateAttributesList();
+            attributesPanel.updateAttributesList();
             tempAttributes.clear();
             updateAddAttributesPanel();
         }
@@ -342,23 +245,17 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private void setTempAttributes() {
         tempAttributes.clear();
 
-        if (getClassName().equals("")) {
-            updateAddAttributesPanel();
-            return;
-        }
-
-        ConceptualClass concept = repository.getConceptualClass(getClassName());
-        if (concept == null) {
-            updateAddAttributesPanel();
-            return;
-        }
-
-        concept.getAttributes().forEach(conceptualAttribute -> {
-            if ((!isAttributeInList(conceptualAttribute, attributes))
-                    && (!isAttributeInList(conceptualAttribute, tempAttributes))) {
-                tempAttributes.add(conceptualAttribute.clone());
+        if (!getClassName().equals("")) {
+            ConceptualClass concept = repository.getConceptualClass(getClassName());
+            if (concept != null) {
+                concept.getAttributes().forEach(conceptualAttribute -> {
+                    if ((!isAttributeInList(conceptualAttribute, getAttributes()))
+                            && (!isAttributeInList(conceptualAttribute, tempAttributes))) {
+                        tempAttributes.add(conceptualAttribute.clone());
+                    }
+                });
             }
-        });
+        }
 
         updateAddAttributesPanel();
     }

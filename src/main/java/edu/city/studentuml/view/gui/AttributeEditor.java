@@ -1,8 +1,6 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
-//AttributeEditor.java
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.Type;
@@ -230,4 +228,23 @@ public class AttributeEditor extends JPanel implements ActionListener {
             attributeDialog.setVisible(false);
         }
     }
+
+    public Attribute createAttribute() {
+
+        Attribute editedAttribute = new Attribute(this.getAttributeName());
+
+        editedAttribute.setType(this.getType());
+        editedAttribute.setVisibility(this.getVisibility());
+        editedAttribute.setScope(this.getScope());
+
+        return editedAttribute;
+    }
+
+    public void editAttribute() {
+        attribute.setName(this.getAttributeName());
+        attribute.setType(this.getType());
+        attribute.setVisibility(this.getVisibility());
+        attribute.setScope(this.getScope());
+    }
+
 }
