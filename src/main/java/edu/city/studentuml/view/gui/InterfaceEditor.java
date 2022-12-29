@@ -1,8 +1,6 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
-//InterfaceEditorDialog.java
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
@@ -40,7 +38,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     private JButton editMethodButton;
     private JDialog interfaceDialog;
     private InterfaceGR interfaceGR; // the interface that the dialog edits
-    private Vector methods;
+    private Vector<Method> methods;
     private JPanel methodsButtonsPanel;
     private JList methodsList;
     private JPanel methodsPanel;
@@ -131,7 +129,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
         return nameField.getText();
     }
 
-    public Vector getMethods() {
+    public Vector<Method> getMethods() {
         return methods;
     }
 
@@ -140,7 +138,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     public void initialize() {
         Interface coreInterface = interfaceGR.getInterface();
 
-        methods = new Vector();
+        methods = new Vector<>();
 
         if (coreInterface != null) {
             nameField.setText(coreInterface.getName());
@@ -153,15 +151,15 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     }
 
     // make an exact copy of the passed methods list
-    public Vector cloneMethods(Vector originalMethods) {
-        Iterator iterator = originalMethods.iterator();
-        Vector copyOfMethods = new Vector();
+    public Vector<Method> cloneMethods(Vector<Method> originalMethods) {
+        Iterator<Method> iterator = originalMethods.iterator();
+        Vector<Method> copyOfMethods = new Vector<>();
         Method originalMethod;
         Method copyOfMethod;
 
         while (iterator.hasNext()) {
-            originalMethod = (Method) iterator.next();
-            copyOfMethod = new Method(new String(originalMethod.getName()));
+            originalMethod = iterator.next();
+            copyOfMethod = new Method(originalMethod.getName());
             copyOfMethod.setReturnType(originalMethod.getReturnType());
 
             // use method cloneParameters() to make a copy of the parameters
@@ -175,15 +173,15 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     }
 
     // to be used by cloneMethods()
-    public Vector cloneParameters(Vector originalParameters) {
-        Iterator iterator = originalParameters.iterator();
-        Vector copyOfParameters = new Vector();
+    public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
+        Iterator<MethodParameter> iterator = originalParameters.iterator();
+        Vector<MethodParameter> copyOfParameters = new Vector<>();
         MethodParameter originalParameter;
         MethodParameter copyOfParameter;
 
         while (iterator.hasNext()) {
-            originalParameter = (MethodParameter) iterator.next();
-            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
+            originalParameter = iterator.next();
+            copyOfParameter = new MethodParameter(originalParameter.getName());
             copyOfParameter.setType(originalParameter.getType());
             copyOfParameters.add(copyOfParameter);
         }

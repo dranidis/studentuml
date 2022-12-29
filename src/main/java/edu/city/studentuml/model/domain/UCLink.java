@@ -25,7 +25,7 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
 //        this.to = to;
 //    }
 
-    public UCLink(UCDComponent source, UCDComponent target) {
+    protected UCLink(UCDComponent source, UCDComponent target) {
         this.name = "";
         this.source = source;
         this.target = target;
@@ -66,7 +66,7 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
         throw new UnsupportedOperationException("Not supported!");
     }
 
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         throw new UnsupportedOperationException("Not supported!");
     }
 

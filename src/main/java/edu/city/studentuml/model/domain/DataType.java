@@ -16,9 +16,7 @@ public class DataType implements Serializable, Type {
     public static final DataType DOUBLE = new DataType("double");
     public static final DataType BYTE = new DataType("byte");
     public static final DataType BOOLEAN = new DataType("boolean");
-    public static final String[] STANDARD = {
-        VOID.getName(), STRING.getName(), LONG.getName(), INTEGER.getName(),
-        FLOAT.getName(), DOUBLE.getName(), BYTE.getName(), BOOLEAN.getName()};
+
     private String name;
 
     public DataType(String n) {
@@ -35,5 +33,12 @@ public class DataType implements Serializable, Type {
 
     public String toString() {
         return getName();
+    }
+
+    public static String[] getDataTypeNames() {
+        String[] standardDatatypeNames = {
+            VOID.getName(), STRING.getName(), LONG.getName(), INTEGER.getName(),
+            FLOAT.getName(), DOUBLE.getName(), BYTE.getName(), BOOLEAN.getName()};
+        return standardDatatypeNames;
     }
 }

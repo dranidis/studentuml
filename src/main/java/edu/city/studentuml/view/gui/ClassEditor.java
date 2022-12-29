@@ -1,14 +1,13 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ervin Ramollari
-//ClassEditorDialog.java
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AutocompleteJComboBox;
+import edu.city.studentuml.view.gui.components.StringSearchable;
 import edu.city.studentuml.model.graphical.ClassGR;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -20,8 +19,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -37,13 +38,14 @@ import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
 public class ClassEditor extends JPanel implements ActionListener, KeyListener {
+    private static final Logger logger = Logger.getLogger(ClassEditor.class.getName());
 
     private JButton addAttributeButton;
     private JButton addMethodButton;
-    private Vector attributes;
-    private Vector tempAttributes;
+    private Vector<Attribute> attributes;
+    private Vector<Attribute> tempAttributes;
     private JPanel attributesButtonsPanel;
-    private JList attributesList;
+    private JList<Attribute> attributesList;
     private JPanel attributesPanel;
     private JPanel bottomPanel;
     private JButton cancelButton;
@@ -55,11 +57,11 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private JButton editAttributeButton;
     private JButton editMethodButton;
     private JPanel fieldsPanel;
-    private Vector methods;
+    private Vector<Method> methods;
     private JPanel methodsButtonsPanel;
-    private JList methodsList;
+    private JList<Method> methodsList;
     private JPanel methodsPanel;
-    private JTextField nameField;
+    private AutocompleteJComboBox nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
     private boolean ok;         // stores whether the user has pressed ok
@@ -75,15 +77,23 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private CentralRepository repository;
 
     public ClassEditor(ClassGR cl, CentralRepository cr) {
+        logger.finest("creating ClassEditor");
         classGR = cl;
         repository = cr;
 
         setLayout(new BorderLayout());
         nameLabel = new JLabel("Class Name: ");
-        nameField = new JTextField(15);
-        nameField.addActionListener(this);
-        nameField.addKeyListener(this);
-        nameField.setFocusTraversalKeysEnabled(true);
+
+        /**
+         * read existing classes to populate the nameField
+         */
+        Vector<DesignClass> types = repository.getClasses();
+        List<String> existingDesignClasses = new ArrayList<>();
+        types.stream().filter(dc -> !dc.getName().equals("")).forEach(dc -> existingDesignClasses.add(dc.getName()));
+
+        nameField = new AutocompleteJComboBox(new StringSearchable(existingDesignClasses));
+        nameField.setPrototypeDisplayValue("some long text for the class name");
+
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
         stereotypeField.addActionListener(this);
@@ -119,7 +129,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         TitledBorder title2 = BorderFactory.createTitledBorder("Class Attributes");
 
         attributesPanel.setBorder(title2);
-        attributesList = new JList();
+        attributesList = new JList<>();
         attributesList.setFixedCellWidth(400);
         attributesList.setVisibleRowCount(5);
         addAttributeButton = new JButton("Add...");
@@ -141,7 +151,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         TitledBorder title3 = BorderFactory.createTitledBorder("Class Methods");
 
         methodsPanel.setBorder(title3);
-        methodsList = new JList();
+        methodsList = new JList<>();
         methodsList.setFixedCellWidth(400);
         methodsList.setVisibleRowCount(5);
         addMethodButton = new JButton("Add...");
@@ -157,15 +167,16 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         methodsButtonsPanel.add(deleteMethodButton);
         methodsPanel.add(new JScrollPane(methodsList), BorderLayout.CENTER);
         methodsPanel.add(methodsButtonsPanel, BorderLayout.SOUTH);
-        centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
-        centerPanel.add(attributesPanel);
-        centerPanel.add(methodsPanel);
         okButton = new JButton("OK");
         okButton.addActionListener(this);
         cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
         bottomPanel = new JPanel();
+
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
+        centerPanel.add(attributesPanel);
+        centerPanel.add(methodsPanel);
 
         FlowLayout bottomLayout = new FlowLayout();
 
@@ -205,22 +216,22 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public String getClassName() {
-        return nameField.getText();
+        return (String) nameField.getSelectedItem();
     }
 
     public String getStereotype() {
-        if ((stereotypeField.getText() == null) || (stereotypeField.getText() == "")) {
+        if (stereotypeField.getText() == null || "".equals(stereotypeField.getText())) {
             return null;
         } else {
             return stereotypeField.getText();
         }
     }
 
-    public Vector getAttributes() {
+    public Vector<Attribute> getAttributes() {
         return attributes;
     }
 
-    public Vector getMethods() {
+    public Vector<Method> getMethods() {
         return methods;
     }
 
@@ -231,13 +242,13 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
         // initialize the attributes and methods to an empty list
         // in order to populate them with COPIES of the class attributes and methods
-        attributes = new Vector();
-        tempAttributes = new Vector();
-        methods = new Vector();
+        attributes = new Vector<>();
+        tempAttributes = new Vector<>();
+        methods = new Vector<>();
 
 
         if (designClass != null) {
-            nameField.setText(designClass.getName());
+            nameField.setSelectedItem(designClass.getName());
 
             if (designClass.getStereotype() != null) {
                 stereotypeField.setText(designClass.getStereotype());
@@ -262,61 +273,19 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     // make an exact copy of the passed attributes list
-    public Vector cloneAttributes(Vector originalAttributes) {
-        Iterator iterator = originalAttributes.iterator();
-        Vector copyOfAttributes = new Vector();
-        Attribute originalAttribute;
-        Attribute copyOfAttribute;
-
-        while (iterator.hasNext()) {
-            originalAttribute = (Attribute) iterator.next();
-            copyOfAttribute = new Attribute(new String(originalAttribute.getName()));
-            copyOfAttribute.setType(originalAttribute.getType());
-            copyOfAttribute.setVisibility(originalAttribute.getVisibility());
-            copyOfAttribute.setScope(originalAttribute.getScope());
-            copyOfAttributes.add(copyOfAttribute);
-        }
+    public Vector<Attribute> cloneAttributes(Vector<Attribute> originalAttributes) {
+        Vector<Attribute> copyOfAttributes = new Vector<>();
+        originalAttributes.forEach(originalAttribute -> copyOfAttributes.add(originalAttribute.clone()));
 
         return copyOfAttributes;
     }
 
     // make an exact copy of the passed methods list
-    public Vector cloneMethods(Vector originalMethods) {
-        Iterator iterator = originalMethods.iterator();
-        Vector copyOfMethods = new Vector();
-        Method originalMethod;
-        Method copyOfMethod;
-
-        while (iterator.hasNext()) {
-            originalMethod = (Method) iterator.next();
-            copyOfMethod = new Method(new String(originalMethod.getName()));
-            copyOfMethod.setReturnType(originalMethod.getReturnType());
-
-            // use method cloneParameters() to make a copy of the parameters
-            copyOfMethod.setParameters(cloneParameters(originalMethod.getParameters()));
-            copyOfMethod.setVisibility(originalMethod.getVisibility());
-            copyOfMethod.setScope(originalMethod.getScope());
-            copyOfMethods.add(copyOfMethod);
-        }
+    public Vector<Method> cloneMethods(Vector<Method> originalMethods) {
+        Vector<Method> copyOfMethods = new Vector<>();
+        originalMethods.forEach(originalMethod -> copyOfMethods.add(originalMethod.clone()));
 
         return copyOfMethods;
-    }
-
-    // to be used by cloneMethods()
-    public Vector cloneParameters(Vector originalParameters) {
-        Iterator iterator = originalParameters.iterator();
-        Vector copyOfParameters = new Vector();
-        MethodParameter originalParameter;
-        MethodParameter copyOfParameter;
-
-        while (iterator.hasNext()) {
-            originalParameter = (MethodParameter) iterator.next();
-            copyOfParameter = new MethodParameter(new String(originalParameter.getName()));
-            copyOfParameter.setType(originalParameter.getType());
-            copyOfParameters.add(copyOfParameter);
-        }
-
-        return copyOfParameters;
     }
 
     public void updateAttributesList() {
@@ -344,11 +313,11 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void editAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
+        if (attributes.isEmpty() || attributesList.getSelectedIndex() < 0) {
             return;
         }
 
-        Attribute attribute = (Attribute) attributes.elementAt(attributesList.getSelectedIndex());
+        Attribute attribute = attributes.elementAt(attributesList.getSelectedIndex());
         AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
 
         if (!attributeEditor.showDialog(this, "Attribute Editor")) {    // cancel pressed
@@ -363,7 +332,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void deleteAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
+        if (attributes.isEmpty() || attributesList.getSelectedIndex() < 0) {
             return;
         }
 
@@ -389,18 +358,17 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void editMethod() {
-        if ((methods == null) || (methods.size() == 0) || (methodsList.getSelectedIndex() < 0)) {
+        if (methods.isEmpty() || methodsList.getSelectedIndex() < 0) {
             return;
         }
 
-        Method method = (Method) methods.elementAt(methodsList.getSelectedIndex());
+        Method method = methods.elementAt(methodsList.getSelectedIndex());
         MethodEditor methodEditor = new MethodEditor(method, repository);
 
         if (!methodEditor.showDialog(this, "Method Editor")) {    // cancel pressed
             return;
         }
 
-        System.out.println("Setting name");
         method.setName(methodEditor.getMethodName());
         method.setReturnType(methodEditor.getReturnType());
         method.setVisibility(methodEditor.getVisibility());
@@ -410,7 +378,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void deleteMethod() {
-        if ((methods == null) || (methods.size() == 0) || (methodsList.getSelectedIndex() < 0)) {
+        if (methods.isEmpty() || methodsList.getSelectedIndex() < 0) {
             return;
         }
 
@@ -419,9 +387,8 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)
-                || (event.getSource() == stereotypeField)) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+        if (event.getSource() == okButton || event.getSource() == stereotypeField) {
+            if (getClassName().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a class name", "Warning",
                         JOptionPane.WARNING_MESSAGE);
 
@@ -445,7 +412,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         } else if (event.getSource() == deleteMethodButton) {
             deleteMethod();
         } else if (event.getSource() == addAttributesButton) {
-            addAttributes();
+            tempAttributes.forEach(attributes::add);
             updateAttributesList();
             tempAttributes.clear();
             updateAddAttributesPanel();
@@ -453,9 +420,11 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public void keyTyped(KeyEvent e) {
+        // empty
     }
 
     public void keyPressed(KeyEvent e) {
+        // empty
     }
 
     public void keyReleased(KeyEvent e) {
@@ -476,43 +445,23 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        Attribute conceptualAttribute;
-        Vector conceptualAttributes = concept.getAttributes();
-        Iterator attributesIterator = conceptualAttributes.iterator();
-        while (attributesIterator.hasNext()) {
-            conceptualAttribute = (Attribute) attributesIterator.next();
+        concept.getAttributes().forEach(conceptualAttribute -> {
             if ((!isAttributeInList(conceptualAttribute, attributes))
                     && (!isAttributeInList(conceptualAttribute, tempAttributes))) {
                 tempAttributes.add(conceptualAttribute.clone());
             }
-        }
+        });
+
         updateAddAttributesPanel();
     }
 
-    private boolean isAttributeInList(Attribute a, Vector v) {
-        Iterator i = v.iterator();
-        while (i.hasNext()) {
-            Attribute b = (Attribute) i.next();
-            if (a.getName().equals(b.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void addAttributes() {
-        Attribute a;
-        Iterator i = tempAttributes.iterator();
-
-        while (i.hasNext()) {
-            a = (Attribute) i.next();
-            attributes.add(a);
-        }
+    private boolean isAttributeInList(Attribute attribute, Vector<Attribute> attributes) {
+        return attributes.stream().anyMatch(a -> attribute.getName().equals(a.getName()));
     }
 
     private void updateAddAttributesPanel() {
         CardLayout cl = (CardLayout) cardPanel.getLayout();
-        if (tempAttributes.size() < 1) {
+        if (tempAttributes.isEmpty()) {
             cl.show(cardPanel, "empty");
         } else {
             addAttributesLabel.setText("Add attributes from the conceptual class "

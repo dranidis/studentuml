@@ -16,6 +16,7 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -95,7 +96,7 @@ public class TypedCallMessageTest {
         umlProject.loadFromXML(fullpath);
 
         boolean found = false;
-        Vector sds = umlProject.getCentralRepository().getSDMessages();
+        Vector<SDMessage> sds = umlProject.getCentralRepository().getSDMessages();
         for (Object o : sds) {
             if (o instanceof CallMessage) {
                 CallMessage m = (CallMessage) o;

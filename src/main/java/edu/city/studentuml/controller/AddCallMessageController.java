@@ -43,6 +43,7 @@ public class AddCallMessageController extends AddElementController {
 
     @Override
     public void dragged(int x, int y) {
+        // empty
     }
 
     @Override

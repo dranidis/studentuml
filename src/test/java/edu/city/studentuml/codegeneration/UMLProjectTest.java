@@ -409,7 +409,6 @@ public class UMLProjectTest {
         DesignClass dc2 = new DesignClass("Class2");
         DesignClass dc3 = new DesignClass("Class3");
         GenericOperation mtd1 = new GenericOperation("mtd1");
-        GenericOperation mtd2 = new GenericOperation("mtd2");
         SDObject sd1 = new SDObject("sd1", dc1);
         SDObject sd2 = new SDObject("sd2", dc2);
         SDObject sd3 = new SDObject("sd3", dc3);
@@ -456,7 +455,6 @@ public class UMLProjectTest {
         DesignClass dc2 = new DesignClass("Class2");
         DesignClass dc3 = new DesignClass("Class3");
         GenericOperation mtd1 = new GenericOperation("mtd1");
-        GenericOperation mtd2 = new GenericOperation("mtd2");
         SDObject sd1 = new SDObject("sd1", dc1);
         SDObject sd2 = new SDObject("sd2", dc2);
         SDObject sd3 = new SDObject("sd3", dc3);
@@ -499,7 +497,7 @@ public class UMLProjectTest {
     @Test
     public void testNotGenerateForNoInput() {
         int generatedFiles = codePreparation.generateCode(false);
-        assertTrue(generatedFiles == 0);
+        assertEquals(0, generatedFiles);
     }
 
     @Test

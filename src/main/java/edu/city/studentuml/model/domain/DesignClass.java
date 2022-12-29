@@ -19,12 +19,12 @@ public class DesignClass extends AbstractClass {
     private String stereotype;
     private NotifierVector<Method> methods;
     @JsonIgnore
-    private Classifier extendClass;
+    private Classifier extendClass; // used by codegeneration; refactor
     @JsonIgnore
-    private List<Interface> implementInterfaces = new ArrayList<>();
+    private List<Interface> implementInterfaces = new ArrayList<>(); // used by codegeneration; refactor
 
     @JsonIgnore
-    private Vector<Method> sdMethods = new Vector<>();
+    private Vector<Method> sdMethods = new Vector<>(); // used by codegeneration; refactor
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -126,6 +126,8 @@ public class DesignClass extends AbstractClass {
 
         return copyClass;
     }
+
+    // all methods below used by codegeneration; refactor
 
     public void setExtendClass(Classifier newExtendClass) {
         this.extendClass = newExtendClass;

@@ -92,7 +92,7 @@ public abstract class NodeComponentGR extends GraphicalElement {
 
     public abstract NodeComponentGR getNodeComponent(int index);
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<NodeComponentGR> createIterator();
 
     public NodeComponent getNodeComponent() {
         return nodeComponent;

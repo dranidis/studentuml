@@ -55,9 +55,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
         int deltaY = y - startingPoint.y;
         startingPoint.setLocation(x, y);
 
-        Iterator iterator = nodeComponents.iterator();
+        Iterator<NodeComponentGR> iterator = nodeComponents.iterator();
         while (iterator.hasNext()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.next();
+            NodeComponentGR node = iterator.next();
             node.move(node.getStartingPoint().x + deltaX, node.getStartingPoint().y + deltaY);
         }
     }
@@ -97,9 +97,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
-        ListIterator iterator = nodeComponents.listIterator(nodeComponents.size());
+        ListIterator<NodeComponentGR> iterator = nodeComponents.listIterator(nodeComponents.size());
         while (iterator.hasPrevious()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.previous();
+            NodeComponentGR node = iterator.previous();
             if (node.contains(point)) {
                 return node.getContainingGraphicalElement(point);
             }
@@ -109,9 +109,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public NodeComponentGR findContext(NodeComponentGR node) {
-        Iterator iterator = nodeComponents.iterator();
+        Iterator<NodeComponentGR> iterator = nodeComponents.iterator();
         while (iterator.hasNext()) {
-            NodeComponentGR myNode = (NodeComponentGR) iterator.next();
+            NodeComponentGR myNode = iterator.next();
             if (myNode.contains(node)) {
                 return myNode.findContext(node);
             }
@@ -121,9 +121,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public void clearSelected() {
-        Iterator iterator = nodeComponents.iterator();
+        Iterator<NodeComponentGR> iterator = nodeComponents.iterator();
         while (iterator.hasNext()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.next();
+            NodeComponentGR node = iterator.next();
             node.clearSelected();
         }
 

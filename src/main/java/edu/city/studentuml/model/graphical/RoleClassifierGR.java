@@ -37,7 +37,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     protected Map<Integer, Integer> activationAt =  new HashMap<>();
 
     // of the x and y coordinates, x is significant
-    public RoleClassifierGR(RoleClassifier rc, int x) {
+    protected RoleClassifierGR(RoleClassifier rc, int x) {
         roleClassifier = rc;
         startingPoint = new Point(x, VERTICAL_OFFSET);
         endingY = VERTICAL_OFFSET + MINIMUM_LIFELINE_LENGTH;

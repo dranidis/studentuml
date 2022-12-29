@@ -102,7 +102,7 @@ public abstract class UCLinkGR extends LinkGR {
         link.removeExtensionPoint(extensionPoint);
     }
 
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         return link.getExtensionPoints();
     }
 

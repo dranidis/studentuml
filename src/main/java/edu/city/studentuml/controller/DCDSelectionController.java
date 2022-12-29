@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.graphical.DCDModel;
@@ -31,10 +30,13 @@ import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 public class DCDSelectionController extends SelectionController {
+    private static final Logger logger = Logger.getLogger(DCDSelectionController.class.getName());
 
     public DCDSelectionController(DiagramInternalFrame parent, DCDModel m) {
         super(parent, m);
@@ -69,16 +71,10 @@ public class DCDSelectionController extends SelectionController {
         newClass.setStereotype(classEditor.getStereotype());
 
         // add the attributes to the new class
-        Iterator attributeIterator = classEditor.getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            newClass.addAttribute((Attribute) attributeIterator.next());
-        }
+        classEditor.getAttributes().forEach(newClass::addAttribute);
 
         // add the methods to the new class
-        Iterator methodIterator = classEditor.getMethods().iterator();
-        while (methodIterator.hasNext()) {
-            newClass.addMethod((Method) methodIterator.next());
-        }
+        classEditor.getMethods().forEach(newClass::addMethod);
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -103,7 +99,10 @@ public class DCDSelectionController extends SelectionController {
             // Undo/Redo [edit]
             UndoableEdit edit = new EditDCDClassEdit(originalClass, newClass, model);
 
-            repository.editClass(originalClass, newClass);
+            boolean edited = repository.editClass(originalClass, newClass);
+            if (!edited) {
+                logger.severe("EDIT NOT SUCCESSFUL");
+            }
 
             parentComponent.getUndoSupport().postEdit(edit);
         }
@@ -128,10 +127,7 @@ public class DCDSelectionController extends SelectionController {
         Interface newInterface = new Interface(interfaceEditor.getInterfaceName());
 
         // add the methods to the new interface
-        Iterator methodIterator = interfaceEditor.getMethods().iterator();
-        while (methodIterator.hasNext()) {
-            newInterface.addMethod((Method) methodIterator.next());
-        }
+        interfaceEditor.getMethods().forEach(newInterface::addMethod);
 
         // edit the interface if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any

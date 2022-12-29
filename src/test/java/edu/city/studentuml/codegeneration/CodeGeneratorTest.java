@@ -502,6 +502,6 @@ public class CodeGeneratorTest {
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
-        assertTrue(path == null);
+        assertNull(path);
     }
 }
