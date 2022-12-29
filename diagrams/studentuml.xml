@@ -1830,15 +1830,6 @@
       <object class="ReturnMessageGR" from="sdobjectgr17" id="" internalid="returnmessagegr38" to="sdobjectgr17" y="327">
         <object class="ReturnMessage" from="sdobject17" id="message" internalid="returnmessage38" name="" to="sdobject17"/>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr7" uid="Desktop Application User" x="752">
-        <object class="SDObject" designclass="designclass7" id="sdobject" internalid="sdobject7" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass7" name="" stereotype="">
-            <object class="GenericClass" id="generic" name=""/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
     </object>
   </object>
 </uml>

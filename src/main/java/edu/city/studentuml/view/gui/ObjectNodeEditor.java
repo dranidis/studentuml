@@ -445,7 +445,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
     private void updateAddTypePanel() {
         String s = getSelectedItem();
-        if (s.equals("(unnamed)") || Arrays.asList(DataType.STANDARD).contains(s)) {
+        if (s.equals("(unnamed)") || Arrays.asList(DataType.getDataTypeNames()).contains(s)) {
             editObjectTypeButton.setEnabled(false);
             deleteObjectTypeButton.setEnabled(false);
         } else {

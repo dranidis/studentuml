@@ -233,7 +233,6 @@ public class ADSelectionController extends SelectionController {
         }
 
         // Undo/Redo
-        ObjectNode undoObjectNode = (ObjectNode) objectNode.clone();
 
         // do not edit if name and type are both empty
         if ((objectNodeEditor.getObjectName().isEmpty())

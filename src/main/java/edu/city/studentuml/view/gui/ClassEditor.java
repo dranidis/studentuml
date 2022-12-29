@@ -167,15 +167,16 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         methodsButtonsPanel.add(deleteMethodButton);
         methodsPanel.add(new JScrollPane(methodsList), BorderLayout.CENTER);
         methodsPanel.add(methodsButtonsPanel, BorderLayout.SOUTH);
-        centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
-        centerPanel.add(attributesPanel);
-        centerPanel.add(methodsPanel);
         okButton = new JButton("OK");
         okButton.addActionListener(this);
         cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
         bottomPanel = new JPanel();
+
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
+        centerPanel.add(attributesPanel);
+        centerPanel.add(methodsPanel);
 
         FlowLayout bottomLayout = new FlowLayout();
 

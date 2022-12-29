@@ -2,28 +2,28 @@
 <uml>
   <object class="UMLProject" id="project">
     <object class="DCDModel" framex="0,0,1472,916" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
-      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="27" y="39">
-        <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="92" y="25">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
           <object id="attributes"/>
           <object id="methods"/>
         </object>
       </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;" to="classgr0" uid="Desktop Application User" x="121" y="28"/>
-      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="305" y="35">
-        <object class="DesignClass" id="designclass" internalid="designclass1" name="" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass1" name=""/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;" to="classgr0" uid="Desktop Application User" x="16" y="143"/>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="284" y="24">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="B" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="B"/>
           <object id="attributes"/>
           <object id="methods"/>
         </object>
       </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr1" textData="one line" to="classgr1" uid="Desktop Application User" x="407" y="15"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr2" textData="one line&#10;second line" to="classgr1" uid="Desktop Application User" x="393" y="86"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr3" textData="one line&#10;second line&#10;third line" to="classgr1" uid="Desktop Application User" x="395" y="167"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr1" textData="one line" to="classgr1" uid="Desktop Application User" x="423" y="19"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr2" textData="one line&#10;second line" to="classgr1" uid="Desktop Application User" x="417" y="95"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr3" textData="one line&#10;second line&#10;third line" to="classgr1" uid="Desktop Application User" x="386" y="167"/>
       <object class="UMLNoteGR" id="" internalid="umlnotegr4" textData="1 a&#10;2&#10;3&#10;4 adsa " to="classgr1" uid="Desktop Application User" x="289" y="153"/>
       <object class="UMLNoteGR" id="" internalid="umlnotegr5" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr1" uid="Desktop Application User" x="598" y="11"/>
       <object class="UMLNoteGR" id="" internalid="umlnotegr6" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&#10;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr1" uid="Desktop Application User" x="527" y="166"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr7" textData="protected int calculateHeight(Graphics2D g) {&#10;        String noteText = getNoteText();&#10;&#10;        String[] lines = noteText.split(&quot;\\R&quot;);&#10;&#10;        int height = 0;&#10;        for(int i=0; i &lt; lines.length; i++) {&#10;            height += calculateLineHeight(g, noteText);&#10;        }&#10;        return height  + 2 * paddingVertical;&#10; }" to="classgr0" uid="Desktop Application User" x="78" y="260"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr7" textData="protected int calculateHeight(Graphics2D g) {&#10;        String noteText = getNoteText();&#10;&#10;        String[] lines = noteText.split(&quot;\\R&quot;);&#10;&#10;        int height = 0;&#10;        for(int i=0; i &lt; lines.length; i++) {&#10;            height += calculateLineHeight(g, noteText);&#10;        }&#10;        return height  + 2 * paddingVertical;&#10; }" to="classgr0" uid="Desktop Application User" x="96" y="241"/>
     </object>
   </object>
 </uml>

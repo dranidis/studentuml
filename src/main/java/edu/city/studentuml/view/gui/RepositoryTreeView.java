@@ -96,18 +96,15 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     public void update(Observable o, Object arg) {
         DefaultMutableTreeNode dnode;
-        Vector diagrams;
+        Vector<DiagramModel> diagrams;
         Vector<DesignClass> classes;
         Vector<Interface> interfaces;
-        Vector roleClassifiers;
+        Vector<RoleClassifierGR> roleClassifiers;
         DiagramModel diagram;
-        DesignClass designClass;
         Interface designInterface;
-        Iterator iterator, iterator2;
         RoleClassifier classifier;
 
-        // dodaj
-        Vector concepts;
+        Vector<ConceptualClassGR> concepts;
         UCDComponent ucdComponent;
         ConceptualClass concept;
         NodeComponent nodeComponent;
@@ -121,9 +118,9 @@ public class RepositoryTreeView extends JPanel implements Observer {
         classes = umlProject.getCentralRepository().getClasses();
         classes.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
         
-        iterator = classes.iterator();
-        while (iterator.hasNext()) {
-            DesignClass dc = (DesignClass) iterator.next();
+        Iterator<DesignClass> designClassIterator = classes.iterator();
+        while (designClassIterator.hasNext()) {
+            DesignClass dc = designClassIterator.next();
             DefaultMutableTreeNode designClassNode = addObject(datamodelnode, dc);
 
             DefaultMutableTreeNode generalizationsNode = addObject(designClassNode, "extends");
@@ -140,22 +137,22 @@ public class RepositoryTreeView extends JPanel implements Observer {
         interfaces = umlProject.getCentralRepository().getInterfaces();
         interfaces.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-        iterator = interfaces.iterator();
-        while (iterator.hasNext()) {
-            designInterface = (Interface) iterator.next();
+        Iterator<Interface> interfaceIterator = interfaces.iterator();
+        while (interfaceIterator.hasNext()) {
+            designInterface = interfaceIterator.next();
             addObject(datamodelnode, designInterface);
         }
 
         diagrams = umlProject.getDiagramModels();
-        iterator = diagrams.iterator();
-        while (iterator.hasNext()) {
-            diagram = (DiagramModel) iterator.next();
+        Iterator<DiagramModel> diagramIterator = diagrams.iterator();
+        while (diagramIterator.hasNext()) {
+            diagram = diagramIterator.next();
             dnode = addObject(diagrammodelnode, diagram);
 
             if (diagram instanceof UCDModel) {
-                Iterator i = ((UCDModel) diagram).getGraphicalElements().iterator();
+                Iterator<GraphicalElement> i = ((UCDModel) diagram).getGraphicalElements().iterator();
                 while (i.hasNext()) {
-                    GraphicalElement e = (GraphicalElement) i.next();
+                    GraphicalElement e = i.next();
                     if (e instanceof UCDComponentGR) {
                         ucdComponent = ((UCDComponentGR) e).getUCDComponent();
                         addUCDComponent(dnode, ucdComponent);
@@ -167,10 +164,10 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 roleClassifiers = ((SSDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
-                    iterator2 = roleClassifiers.iterator();
+                    Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
 
                     while (iterator2.hasNext()) {
-                        classifier = ((RoleClassifierGR) iterator2.next()).getRoleClassifier();
+                        classifier = (iterator2.next()).getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }
@@ -179,10 +176,10 @@ public class RepositoryTreeView extends JPanel implements Observer {
             if (diagram instanceof CCDModel) {
                 concepts = ((CCDModel) diagram).getConceptualClasses();
 
-                iterator2 = concepts.iterator();
+                Iterator<ConceptualClassGR> iterator2 = concepts.iterator();
 
                 while (iterator2.hasNext()) {
-                    concept = ((ConceptualClassGR) iterator2.next()).getConceptualClass();
+                    concept = (iterator2.next()).getConceptualClass();
                     addObject(dnode, concept);
                 }
 
@@ -192,22 +189,21 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 roleClassifiers = ((SDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
-                    iterator2 = roleClassifiers.iterator();
+                    Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
 
                     while (iterator2.hasNext()) {
-                        classifier = ((RoleClassifierGR) iterator2.next()).getRoleClassifier();
+                        classifier = (iterator2.next()).getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }
             }
 
             if (diagram instanceof ADModel) {
-                Iterator i = ((ADModel) diagram).getGraphicalElements().iterator();
+                Iterator<GraphicalElement> i = ((ADModel) diagram).getGraphicalElements().iterator();
                 while (i.hasNext()) {
-                    GraphicalElement e = (GraphicalElement) i.next();
+                    GraphicalElement e = i.next();
                     if (e instanceof NodeComponentGR) {
                         nodeComponent = ((NodeComponentGR) e).getNodeComponent();
-                        // addObject(dnode, nodeComponent);
                         addNodeComponent(dnode, nodeComponent);
                     }
                 }
@@ -283,7 +279,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            java.lang.System.err.println("[createImageIcon] Couldn't find file: " + img);
+            logger.severe(() -> "[createImageIcon] Couldn't find file: " + img);
 
             return null;
         }
@@ -312,8 +308,8 @@ public class RepositoryTreeView extends JPanel implements Observer {
             } catch (NullPointerException exc) {
             }
 
-            java.lang.System.out.println("The user has finished editing the node.");
-            java.lang.System.out.println("New value: " + node.getUserObject());
+            logger.fine("The user has finished editing the node.");
+            logger.fine("New value: " + node.getUserObject());
         }
 
         public void treeNodesInserted(TreeModelEvent e) {

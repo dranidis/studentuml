@@ -25,30 +25,30 @@ public class ADView extends DiagramView {
         // draw edges after the target node is drawn
         SystemWideObjectNamePool.drawLock.lock();
 
-        Iterator iterator = model.getGraphicalElements().iterator();
+        Iterator<GraphicalElement> iterator = model.getGraphicalElements().iterator();
         GraphicalElement element;
 
         while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+            element = iterator.next();
             if (element instanceof EdgeGR) {
                 // do nothing
             } else if (element instanceof NodeComponentGR) {
                 NodeComponentGR node = (NodeComponentGR) element;
                 node.draw(g);
-                Iterator incomingEdges = node.getIncomingEdges();
+                Iterator<EdgeGR> incomingEdges = node.getIncomingEdges();
                 while (incomingEdges.hasNext()) {
-                    EdgeGR edge = (EdgeGR) incomingEdges.next();
+                    EdgeGR edge = incomingEdges.next();
                     edge.draw(g);
                 }
 
-                Iterator subnodes = node.createIterator();
+                Iterator<NodeComponentGR> subnodes = node.createIterator();
                 while (subnodes.hasNext()) {
-                    NodeComponentGR subnode = (NodeComponentGR) subnodes.next();
+                    NodeComponentGR subnode = subnodes.next();
                     subnode.draw(g);
 
                     incomingEdges = subnode.getIncomingEdges();
                     while (incomingEdges.hasNext()) {
-                        EdgeGR edge = (EdgeGR) incomingEdges.next();
+                        EdgeGR edge = incomingEdges.next();
                         edge.draw(g);
                     }
                 }

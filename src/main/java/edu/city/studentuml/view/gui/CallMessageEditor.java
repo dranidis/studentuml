@@ -293,19 +293,19 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             // so that changes are made only on the copy
             parameters = cloneParameters(message.getParameters());
         } else {
-            parameters = new Vector();
+            parameters = new Vector<>();
         }
 
         updateParametersList();
     }
 
     public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
-        Iterator iterator = originalParameters.iterator();
-        Vector copyOfParameters = new Vector();
+        Iterator<MethodParameter> iterator = originalParameters.iterator();
+        Vector<MethodParameter> copyOfParameters = new Vector<>();
         MethodParameter originalParameter;
 
         while (iterator.hasNext()) {
-            originalParameter = (MethodParameter) iterator.next();
+            originalParameter = iterator.next();
             copyOfParameters.add(originalParameter.clone());
         }
 
@@ -354,11 +354,11 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void editParameter() {
-        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
+        if ((parameters == null) || (parameters.isEmpty()) || (parametersList.getSelectedIndex() < 0)) {
             return;
         }
 
-        MethodParameter parameter = (MethodParameter) parameters.elementAt(parametersList.getSelectedIndex());
+        MethodParameter parameter = parameters.elementAt(parametersList.getSelectedIndex());
         MethodParameterEditor parameterEditor = new MethodParameterEditor(parameter, repository);
 
         if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
@@ -371,7 +371,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void deleteParameter() {
-        if ((parameters == null) || (parameters.size() == 0) || (parametersList.getSelectedIndex() < 0)) {
+        if (parameters == null || parameters.isEmpty() || parametersList.getSelectedIndex() < 0) {
             return;
         }
 

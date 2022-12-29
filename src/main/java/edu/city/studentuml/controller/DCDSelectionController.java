@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.graphical.DCDModel;
@@ -128,10 +127,7 @@ public class DCDSelectionController extends SelectionController {
         Interface newInterface = new Interface(interfaceEditor.getInterfaceName());
 
         // add the methods to the new interface
-        Iterator methodIterator = interfaceEditor.getMethods().iterator();
-        while (methodIterator.hasNext()) {
-            newInterface.addMethod((Method) methodIterator.next());
-        }
+        interfaceEditor.getMethods().forEach(newInterface::addMethod);
 
         // edit the interface if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any

@@ -20,11 +20,11 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
  */
 public class ActivityResizeWithCoveredElementsController extends ResizeWithCoveredElementsController {
 
-    private List coveredNodes;
+    private List<NodeComponentGR> coveredNodes;
 
     public ActivityResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
         super(f, m, s);
-        coveredNodes = new ArrayList();
+        coveredNodes = new ArrayList<>();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
             NodeComponentGR context = node.getContext();
 
             // set undo containing elements
-            List undoContainingElements = new ArrayList();
+            List<NodeComponentGR> undoContainingElements = new ArrayList<>();
             for (int i = 0; i < node.getNumberOfNodeComponents(); i++) {
                 undoContainingElements.add(node.getNodeComponent(i));
             }
@@ -44,7 +44,7 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
             // get the newly covered elements
             addContainingElements(node, context);
 
-            if (coveredNodes.size() > 0) {
+            if (!coveredNodes.isEmpty()) {
                 // prompt the user to add the covered nodes
                 int answer = prompt(
                         "Would you like to add covered nodes to the activity node?",
@@ -57,7 +57,7 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
             }
 
             // set redo containing elements
-            List redoContainingElements = new ArrayList();
+            List<NodeComponentGR > redoContainingElements = new ArrayList<>();
             for (int i = 0; i < node.getNumberOfNodeComponents(); i++) {
                 redoContainingElements.add(node.getNodeComponent(i));
             }
@@ -69,9 +69,9 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
 
     private void addContainingElements(NodeComponentGR node, NodeComponentGR context) {
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
-            Iterator it = getModel().getGraphicalElements().iterator();
+           Iterator<GraphicalElement> it = getModel().getGraphicalElements().iterator();
             while (it.hasNext()) {
-                GraphicalElement e = (GraphicalElement) it.next();
+                GraphicalElement e = it.next();
                 if (e instanceof NodeComponentGR) {
                     NodeComponentGR temp = (NodeComponentGR) e;
                     if (temp != node && node.contains(temp)) {
@@ -100,9 +100,9 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
     }
 
     private void addElementsTo(NodeComponentGR node) {
-        Iterator it = coveredNodes.iterator();
+         Iterator<NodeComponentGR> it = coveredNodes.iterator();
         while (it.hasNext()) {
-            NodeComponentGR coveredNode = (NodeComponentGR) it.next();
+            NodeComponentGR coveredNode = it.next();
             NodeComponentGR coveredNodeContext = coveredNode.getContext();
 
             if (coveredNodeContext == NodeComponentGR.DEFAULT_CONTEXT) {
