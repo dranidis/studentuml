@@ -471,16 +471,16 @@
         <object class="Dependency" from="designclass2" id="dependency" internalid="dependency6" to="designclass3"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1472,917" iconified="false" id="" internalid="dcdmodel2" name="DCD: Classifier" selected="false">
+    <object class="DCDModel" framex="0,0,1472,917" iconified="false" id="" internalid="dcdmodel2" name="DCD: Classifier" selected="true">
       <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="416" y="28">
         <object class="Interface" id="interface" internalid="interface0" name="Classifier">
           <object id="methods">
-            <object class="Method" id="" internalid="method0" name="getName" returntype="String" scope="1" visibility="2">
+            <object class="Method" id="" internalid="method8" name="getName" returntype="String" scope="1" visibility="2">
               <object id="parameters"/>
             </object>
-            <object class="Method" id="" internalid="method1" name="setName" returntype="void" scope="1" visibility="2">
+            <object class="Method" id="" internalid="method9" name="setName" returntype="void" scope="1" visibility="2">
               <object id="parameters">
-                <object class="MethodParameter" id="" internalid="methodparameter3" name="name" type="String"/>
+                <object class="MethodParameter" id="" internalid="methodparameter28" name="name" type="String"/>
               </object>
             </object>
           </object>
@@ -498,9 +498,15 @@
       </object>
       <object class="ClassGR" id="" internalid="classgr18" uid="Desktop Application User" x="396" y="168">
         <object class="DesignClass" id="designclass" internalid="designclass17" name="AbstractClass" stereotype="abstract">
-          <object class="GenericClass" id="generic" internalid="genericclass13" name="AbstractClass"/>
+          <object class="GenericClass" id="generic" name="AbstractClass"/>
           <object id="attributes"/>
-          <object id="methods"/>
+          <object id="methods">
+            <object class="Method" id="" internalid="method4" name="addAttribute" returntype="void" scope="1" visibility="2">
+              <object id="parameters">
+                <object class="MethodParameter" id="" internalid="methodparameter10" name="a" type="Attribute"/>
+              </object>
+            </object>
+          </object>
         </object>
       </object>
       <object class="ClassGR" id="" internalid="classgr19" uid="Desktop Application User" x="60" y="167">
@@ -611,7 +617,11 @@
       </object>
       <object class="InterfaceGR" id="" internalid="interfacegr1" uid="Desktop Application User" x="813" y="31">
         <object class="Interface" id="interface" internalid="interface1" name="ClassifierGR">
-          <object id="methods"/>
+          <object id="methods">
+            <object class="Method" id="" internalid="method14" name="getClassifier" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+          </object>
         </object>
       </object>
       <object class="RealizationGR" classa="classgr28" id="" interfaceb="interfacegr1" internalid="realizationgr4">
@@ -1734,7 +1744,7 @@
         </object>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,908,641" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" selected="true">
+    <object class="SDModel" framex="0,0,908,641" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr16" uid="Desktop Application User" x="232">
         <object class="SDObject" designclass="designclass89" id="sdobject" internalid="sdobject16" name="">
           <object class="DesignClass" id="designclass" internalid="designclass89" name="NotifierVector" stereotype="">
