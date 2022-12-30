@@ -451,7 +451,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
     private void addAttribute() {
         AttributeEditor attributeEditor = new AttributeEditor(null, repository);
         
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
+        if (!attributeEditor.showDialog(this)) {
             // cancel pressed
             return;
         }
@@ -473,7 +473,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         Attribute attribute = (Attribute) attributes.elementAt(attributesList.getSelectedIndex());
         AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
 
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
+        if (!attributeEditor.showDialog(this)) {
             // cancel pressed
             return;
         }
@@ -497,7 +497,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
     private void addMethod() {
         MethodEditor methodEditor = new MethodEditor(null, repository);
 
-        if (!methodEditor.showDialog(this, "Method Editor")) {
+        if (!methodEditor.showDialog(this)) {
             // cancel pressed
             return;
         }
@@ -520,7 +520,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         Method method = (Method) methods.elementAt(methodsList.getSelectedIndex());
         MethodEditor methodEditor = new MethodEditor(method, repository);
 
-        if (!methodEditor.showDialog(this, "Method Editor")) {
+        if (!methodEditor.showDialog(this)) {
             // cancel pressed
             return;
         }

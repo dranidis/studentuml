@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <uml>
   <object class="UMLProject" id="project">
-    <object class="SDModel" framex="9,10,728,442" iconified="false" id="" internalid="sdmodel0" name="SD: sd" selected="false">
+    <object class="SDModel" framex="9,10,728,442" iconified="false" id="" internalid="sdmodel0" name="SD: sd" selected="true">
       <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="36">
         <object class="SDObject" designclass="designclass22" id="sdobject" internalid="sdobject0" name="">
           <object class="DesignClass" id="designclass" internalid="designclass22" name="A1" stereotype="">
@@ -74,8 +74,25 @@
           </object>
         </object>
       </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr0" to="sdobjectgr1" y="66">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage0" iterative="false" name="" returnType="" returns="" to="sdobject1">
+          <object class="GenericOperation" id="operation" name=""/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr0" to="sdobjectgr0" y="156">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage0" name="" to="sdobject0"/>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr1" id="" internalid="createmessagegr0" to="sdobjectgr2" y="76">
+        <object class="CreateMessage" from="sdobject1" id="message" internalid="createmessage0" to="sdobject2">
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr1" to="sdobjectgr1" y="146">
+        <object class="ReturnMessage" from="sdobject2" id="message" internalid="returnmessage1" name="" to="sdobject1"/>
+      </object>
     </object>
-    <object class="DCDModel" framex="24,40,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
+    <object class="DCDModel" framex="24,40,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="false">
       <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="48" y="27">
         <object class="DesignClass" id="designclass" internalid="designclass22" name="A1" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="A1"/>
@@ -91,8 +108,8 @@
         </object>
       </object>
       <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="138" y="180">
-        <object class="DesignClass" id="designclass" name="HH" stereotype="">
-          <object class="GenericClass" id="generic" name="HH"/>
+        <object class="DesignClass" id="designclass" internalid="designclass4" name="HH" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass7" name="HH"/>
           <object id="attributes"/>
           <object id="methods"/>
         </object>

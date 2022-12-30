@@ -97,7 +97,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
     }
 
     public Vector<Method> getMethods() {
-        return methodsPanel.getMethods();
+        return methodsPanel.getElements();
     }
 
     // initialize the text fields and other components with the
@@ -107,7 +107,7 @@ public class InterfaceEditor extends JPanel implements ActionListener {
 
         if (coreInterface != null) {
             nameField.setText(coreInterface.getName());
-            methodsPanel.setMethods(coreInterface.getMethods());
+            methodsPanel.setElements(coreInterface.getMethods());
         }
     }
 

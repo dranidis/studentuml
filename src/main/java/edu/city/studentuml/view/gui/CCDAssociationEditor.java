@@ -48,20 +48,20 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
     private JTextField roleANameField;
     private JPanel roleAMultiplicityPanel;
     private JLabel roleAMultiplicityLabel;
-    private JComboBox roleAMultiplicityComboBox;
+    private JComboBox<String> roleAMultiplicityComboBox;
     private JPanel roleBPanel;
     private JPanel roleBNamePanel;
     private JLabel roleBNameLabel;
     private JTextField roleBNameField;
     private JPanel roleBMultiplicityPanel;
     private JLabel roleBMultiplicityLabel;
-    private JComboBox roleBMultiplicityComboBox;
+    private JComboBox<String> roleBMultiplicityComboBox;
     private boolean ok;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JButton okButton;
-    public static String FROM_A_TO_B = "A to B";
-    public static String FROM_B_TO_A = "B to A";
+    public static final String FROM_A_TO_B = "A to B";
+    public static final String FROM_B_TO_A = "B to A";
     int readLabelDirection;
     private final JLabel changeReadLabel;
 
@@ -83,19 +83,15 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         } else {
             changeReadLabelButton.setText(FROM_A_TO_B);
         }
-        changeReadLabelButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                //association.getAssociation().changeLabelDirection();
-                //int readLabelDirection = association.getAssociation().getLabelDirection();
-                if (readLabelDirection == Association.FROM_A_TO_B) {
-                    changeReadLabelButton.setText(FROM_A_TO_B);
-                    readLabelDirection = Association.FROM_B_TO_A;
-                } else {
-                    changeReadLabelButton.setText(FROM_B_TO_A);
-                    readLabelDirection = Association.FROM_A_TO_B;
-                }
+        changeReadLabelButton.addActionListener(e -> {
+            if (readLabelDirection == Association.FROM_A_TO_B) {
+                changeReadLabelButton.setText(FROM_A_TO_B);
+                readLabelDirection = Association.FROM_B_TO_A;
+            } else {
+                changeReadLabelButton.setText(FROM_B_TO_A);
+                readLabelDirection = Association.FROM_A_TO_B;
             }
+
         });
         namePanel.add(nameLabel);
         namePanel.add(nameField);
@@ -117,7 +113,7 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         roleAMultiplicityPanel = new JPanel();
         roleAMultiplicityPanel.setLayout(new FlowLayout());
         roleAMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleAMultiplicityComboBox = new JComboBox(multiplicities);
+        roleAMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleAMultiplicityComboBox.setEditable(true);
         roleAMultiplicityPanel.add(roleAMultiplicityLabel);
         roleAMultiplicityPanel.add(roleAMultiplicityComboBox);
@@ -136,7 +132,7 @@ public class CCDAssociationEditor extends JPanel implements ActionListener {
         roleBMultiplicityPanel = new JPanel();
         roleBMultiplicityPanel.setLayout(new FlowLayout());
         roleBMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleBMultiplicityComboBox = new JComboBox(multiplicities);
+        roleBMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleBMultiplicityComboBox.setEditable(true);
         roleBMultiplicityPanel.add(roleBMultiplicityLabel);
         roleBMultiplicityPanel.add(roleBMultiplicityComboBox);

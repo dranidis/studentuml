@@ -185,10 +185,8 @@ public class XMLStreamer {
 
         for (int i = 0; i < parent.getChildNodes().getLength(); i++) {
             Node child = parent.getChildNodes().item(i);
-            if (child instanceof Element) {
-                if (id.equals(((Element) child).getAttribute("id"))) {
-                    return (Element) child;
-                }
+            if (child instanceof Element && id.equals(((Element) child).getAttribute("id"))) {
+                return (Element) child;
             }
         }
         return null;

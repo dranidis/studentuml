@@ -190,6 +190,12 @@ public final class ObjectFactory extends Observable {
             logger.severe("---> ObjectFactory: No Such Method Defined : " + methodName);
             return null;
         } catch (InvocationTargetException e) {
+            logger.severe("---> " + methodName);
+            logger.severe("internalid:" + stream.getAttribute("internalid") + " class: " + c.getSimpleName() + "Parent:"
+                    + parent + " stream: " + stream + " XMLStreamer: " + streamer);
+            logger.severe(" TargetExceptionStackTrace");
+            e.getTargetException().printStackTrace();
+            logger.severe("StackTrace");
             e.printStackTrace();
             return null;
         }
@@ -753,7 +759,6 @@ public final class ObjectFactory extends Observable {
 
     public IXMLCustomStreamable newgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {
         Generalization generalization = (Generalization) streamer.readObjectByID(stream, "generalization", null);
-
         ClassifierGR base = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("base"));
                 ClassifierGR superclass = (ClassifierGR) SystemWideObjectNamePool.getInstance()

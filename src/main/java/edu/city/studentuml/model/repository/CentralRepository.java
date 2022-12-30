@@ -42,6 +42,7 @@ import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UCLink;
@@ -272,11 +273,21 @@ public class CentralRepository extends Observable implements Serializable {
         return datatypes;
     }
 
-    public Vector<Object> getTypes() {
-        Vector<Object> types = new Vector<>();
+    public Vector<Type> getTypes() {
+        Vector<Type> types = new Vector<>();
         types.addAll(datatypes);
-        types.addAll(classes);
-        types.addAll(interfaces);
+
+        classes.forEach(c -> {
+            if (!c.getName().equals("")) {
+                types.add(c);
+            }
+        });
+
+        interfaces.forEach(c -> {
+            if (!c.getName().equals("")) {
+                types.add(c);
+            }
+        });
 
         return types;
     }

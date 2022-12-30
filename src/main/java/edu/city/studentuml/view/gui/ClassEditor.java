@@ -176,11 +176,11 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     }
 
     public Vector<Attribute> getAttributes() {
-        return attributesPanel.getAttributes();
+        return attributesPanel.getElements();
     }
 
     public Vector<Method> getMethods() {
-        return methodsPanel.getMethods();
+        return methodsPanel.getElements();
     }
 
     // initialize the text fields and other components with the
@@ -199,8 +199,8 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
                 stereotypeField.setText(designClass.getStereotype());
             }
 
-            attributesPanel.setAttributes(designClass.getAttributes());
-            methodsPanel.setMethods(designClass.getMethods());
+            attributesPanel.setElements(designClass.getAttributes());
+            methodsPanel.setElements(designClass.getMethods());
 
             setTempAttributes();
         }
@@ -222,9 +222,9 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         } else if (event.getSource() == cancelButton) {
             classDialog.setVisible(false);
         } else if (event.getSource() == addAttributesButton) {
-            Vector<Attribute> attributes = attributesPanel.getAttributes();
+            Vector<Attribute> attributes = attributesPanel.getElements();
             tempAttributes.forEach(attributes::add);
-            attributesPanel.updateAttributesList();
+            attributesPanel.updateElementsList();
             tempAttributes.clear();
             updateAddAttributesPanel();
         }

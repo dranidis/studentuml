@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.Attribute;
@@ -188,7 +184,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
     public void addAttribute() {
         AttributeEditor attributeEditor = new AttributeEditor(null, repository);
 
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {    // cancel pressed
+        if (!attributeEditor.showDialog(this)) {    // cancel pressed
             return;
         }
 
@@ -209,7 +205,7 @@ public class ConceptualClassEditor extends JPanel implements ActionListener {
         Attribute attribute = (Attribute) attributes.elementAt(attributesList.getSelectedIndex());
         AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
 
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {    // cancel pressed
+        if (!attributeEditor.showDialog(this)) {    // cancel pressed
             return;
         }
 
