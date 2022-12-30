@@ -11,6 +11,8 @@ import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AttributesPanel;
+import edu.city.studentuml.view.gui.components.MethodsPanel;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -19,17 +21,14 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -55,7 +54,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
     private JTextField nameField;
     private JPanel directionPanel;
     private JLabel directionLabel;
-    private JComboBox directionComboBox;
+    private JComboBox<String> directionComboBox;
 
     private JPanel rolesPanel;
     private JPanel roleAPanel;
@@ -64,7 +63,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
     private JTextField roleANameField;
     private JPanel roleAMultiplicityPanel;
     private JLabel roleAMultiplicityLabel;
-    private JComboBox roleAMultiplicityComboBox;
+    private JComboBox<String> roleAMultiplicityComboBox;
 
     private JPanel roleBPanel;
     private JPanel roleBNamePanel;
@@ -72,32 +71,16 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
     private JTextField roleBNameField;
     private JPanel roleBMultiplicityPanel;
     private JLabel roleBMultiplicityLabel;
-    private JComboBox roleBMultiplicityComboBox;
-
-    private Vector attributes;
-    private JPanel attributesPanel;
-    private JList attributesList;
-    private JButton addAttributeButton;
-    private JButton deleteAttributeButton;
-    private JButton editAttributeButton;
-    private JPanel attributesButtonsPanel;
-
-    private Vector methods;
-    private JPanel methodsPanel;
-    private JList methodsList;
-    private JButton addMethodButton;
-    private JButton deleteMethodButton;
-    private JButton editMethodButton;
-    private JPanel methodsButtonsPanel;
+    private JComboBox<String> roleBMultiplicityComboBox;
 
     private boolean ok;
     private JButton okButton;
     private JButton cancelButton;
-    private CentralRepository repository;
+    private AttributesPanel attributesPanel;
+    private MethodsPanel methodsPanel;
 
     public DesignAssociationClassEditor(AssociationClassGR associationClassGR, CentralRepository cr) {
         this.associationClassGR = associationClassGR;
-        this.repository = cr;
         setLayout(new BorderLayout());
 
         namePanel = new JPanel();
@@ -111,7 +94,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         directionPanel = new JPanel();
         directionPanel.setLayout(new FlowLayout());
         directionLabel = new JLabel("Direction of Association: ");
-        directionComboBox = new JComboBox(directions);
+        directionComboBox = new JComboBox<>(directions);
         directionPanel.add(directionLabel);
         directionPanel.add(directionComboBox);
         
@@ -135,7 +118,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         roleAMultiplicityPanel = new JPanel();
         roleAMultiplicityPanel.setLayout(new FlowLayout());
         roleAMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleAMultiplicityComboBox = new JComboBox(multiplicities);
+        roleAMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleAMultiplicityComboBox.setEditable(true);
         roleAMultiplicityPanel.add(roleAMultiplicityLabel);
         roleAMultiplicityPanel.add(roleAMultiplicityComboBox);
@@ -154,7 +137,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         roleBMultiplicityPanel = new JPanel();
         roleBMultiplicityPanel.setLayout(new FlowLayout());
         roleBMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleBMultiplicityComboBox = new JComboBox(multiplicities);
+        roleBMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleBMultiplicityComboBox.setEditable(true);
         roleBMultiplicityPanel.add(roleBMultiplicityLabel);
         roleBMultiplicityPanel.add(roleBMultiplicityComboBox);
@@ -163,48 +146,9 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         rolesPanel.add(roleAPanel);
         rolesPanel.add(roleBPanel);
 
-        TitledBorder title2 = BorderFactory.createTitledBorder("Association Class Attributes");
-        attributesPanel = new JPanel();
-        attributesPanel.setBorder(title2);
-        attributesPanel.setLayout(new BorderLayout());
-        attributesList = new JList();
-        attributesList.setFixedCellWidth(400);
-        attributesList.setVisibleRowCount(5);
-        attributesButtonsPanel = new JPanel();
-        attributesButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        addAttributeButton = new JButton("Add...");
-        addAttributeButton.addActionListener(this);
-        editAttributeButton = new JButton("Edit...");
-        editAttributeButton.addActionListener(this);
-        deleteAttributeButton = new JButton("Delete");
-        deleteAttributeButton.addActionListener(this);
-        attributesButtonsPanel.add(addAttributeButton);
-        attributesButtonsPanel.add(editAttributeButton);
-        attributesButtonsPanel.add(deleteAttributeButton);
-        attributesPanel.add(new JScrollPane(attributesList), BorderLayout.CENTER);
-        attributesPanel.add(attributesButtonsPanel, BorderLayout.SOUTH);
+        attributesPanel = new AttributesPanel("Association Class attributes", cr);
+        methodsPanel = new MethodsPanel("Association Class Methods", cr);
 
-        TitledBorder title3 = BorderFactory.createTitledBorder("Association Class Methods");
-        methodsPanel = new JPanel();
-        methodsPanel.setBorder(title3);
-        methodsPanel.setLayout(new BorderLayout());
-        methodsList = new JList();
-        methodsList.setFixedCellWidth(400);
-        methodsList.setVisibleRowCount(5);
-        methodsButtonsPanel = new JPanel();
-        methodsButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        addMethodButton = new JButton("Add...");
-        addMethodButton.addActionListener(this);
-        editMethodButton = new JButton("Edit...");
-        editMethodButton.addActionListener(this);
-        deleteMethodButton = new JButton("Delete");
-        deleteMethodButton.addActionListener(this);
-        methodsButtonsPanel.add(addMethodButton);
-        methodsButtonsPanel.add(editMethodButton);
-        methodsButtonsPanel.add(deleteMethodButton);
-        methodsPanel.add(new JScrollPane(methodsList), BorderLayout.CENTER);
-        methodsPanel.add(methodsButtonsPanel, BorderLayout.SOUTH);
-        
         centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(4, 1));
         centerPanel.add(topPanel);
@@ -302,24 +246,8 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             }
         }
 
-        // initialize the attributes and methods to an empty list
-        // in order to populate them with COPIES of the class attributes and methods
-        attributes = new Vector();
-        methods = new Vector();
-
-        // make an exact copy of the attributes for editing purposes
-        // which may be discarded if the user presses <<Cancel>>
-        attributes = cloneAttributes(a.getAttributes());
-
-        // show the attributes in the list
-        updateAttributesList();
-
-        // similarly, make an exact copy of the methods for editing purposes
-        // which may be discarded if the user presses <<Cancel>>
-        methods = cloneMethods(a.getMethods());
-
-        // show the methods in the list
-        updateMethodsList();
+        attributesPanel.setElements(a.getAttributes());
+        methodsPanel.setElements(a.getMethods());
     }
 
     public String getAssociationClassName() {
@@ -373,52 +301,12 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
         }
     }
 
-    public Vector getAttributes() {
-        return attributes;
+    public Vector<Attribute> getAttributes() {
+        return attributesPanel.getElements();
     }
 
-    public Vector getMethods() {
-        return methods;
-    }
-
-    // make an exact copy of the passed attributes list
-    public Vector cloneAttributes(Vector originalAttributes) {
-        Iterator iterator = originalAttributes.iterator();
-        Vector copyOfAttributes = new Vector();
-        Attribute originalAttribute;
-        Attribute copyOfAttribute;
-
-        while (iterator.hasNext()) {
-            originalAttribute = (Attribute) iterator.next();
-            copyOfAttribute = originalAttribute.clone();
-            copyOfAttributes.add(copyOfAttribute);
-        }
-
-        return copyOfAttributes;
-    }
-
-    // make an exact copy of the passed methods list
-    public Vector cloneMethods(Vector originalMethods) {
-        Iterator iterator = originalMethods.iterator();
-        Vector copyOfMethods = new Vector();
-        Method originalMethod;
-        Method copyOfMethod;
-
-        while (iterator.hasNext()) {
-            originalMethod = (Method) iterator.next();
-            copyOfMethod = originalMethod.clone();
-            copyOfMethods.add(copyOfMethod);
-        }
-
-        return copyOfMethods;
-    }
-
-    public void updateAttributesList() {
-        attributesList.setListData(attributes);
-    }
-
-    public void updateMethodsList() {
-        methodsList.setListData(methods);
+    public Vector<Method> getMethods() {
+        return methodsPanel.getElements();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -433,112 +321,7 @@ public class DesignAssociationClassEditor extends JPanel implements ActionListen
             ok = true;
         } else if (e.getSource() == cancelButton) {
             associationClassDialog.setVisible(false);
-        } else if (e.getSource() == addAttributeButton) {
-            addAttribute();
-        } else if (e.getSource() == editAttributeButton) {
-            editAttribute();
-        } else if (e.getSource() == deleteAttributeButton) {
-            deleteAttribute();
-        } else if (e.getSource() == addMethodButton) {
-            addMethod();
-        } else if (e.getSource() == editMethodButton) {
-            editMethod();
-        } else if (e.getSource() == deleteMethodButton) {
-            deleteMethod();
-        }
+        } 
     }
-
-    private void addAttribute() {
-        AttributeEditor attributeEditor = new AttributeEditor(null, repository);
-        
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
-
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        attributes.add(attribute);
-        updateAttributesList();
-    }
-
-    private void editAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        Attribute attribute = (Attribute) attributes.elementAt(attributesList.getSelectedIndex());
-        AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
-
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        attribute.setName(attributeEditor.getAttributeName());
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        updateAttributesList();
-    }
-
-    private void deleteAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        attributes.remove(attributesList.getSelectedIndex());
-        updateAttributesList();
-    }
-
-    private void addMethod() {
-        MethodEditor methodEditor = new MethodEditor(null, repository);
-
-        if (!methodEditor.showDialog(this, "Method Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        Method method = new Method(methodEditor.getMethodName());
-
-        method.setReturnType(methodEditor.getReturnType());
-        method.setVisibility(methodEditor.getVisibility());
-        method.setScope(methodEditor.getScope());
-        method.setParameters(methodEditor.getParameters());
-        methods.add(method);
-        updateMethodsList();
-    }
-
-    private void editMethod() {
-        if ((methods == null) || (methods.size() == 0) || (methodsList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        Method method = (Method) methods.elementAt(methodsList.getSelectedIndex());
-        MethodEditor methodEditor = new MethodEditor(method, repository);
-
-        if (!methodEditor.showDialog(this, "Method Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        method.setName(methodEditor.getMethodName());
-        method.setReturnType(methodEditor.getReturnType());
-        method.setVisibility(methodEditor.getVisibility());
-        method.setScope(methodEditor.getScope());
-        method.setParameters(methodEditor.getParameters());
-        updateMethodsList();
-    }
-
-    private void deleteMethod() {
-        if ((methods == null) || (methods.size() == 0) || (methodsList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        methods.remove(methodsList.getSelectedIndex());
-        updateMethodsList();
-    }
+    
 }

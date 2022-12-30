@@ -4,23 +4,6 @@ import java.util.Vector;
 
 public class NotifierVector<T> extends Vector<T> {
 
-    /**
-     * Creates and returns a new NotifierVector with REFERENCES (not clones) to the
-     * elements of v.
-     * 
-     * @param v
-     * @return
-     */
-    public static NotifierVector from(Vector v) {
-        NotifierVector newVector = new NotifierVector();
-
-        for (int i = 0; i < v.size(); i++) {
-            newVector.add(v.get(i));
-        }
-
-        return newVector;
-    }
-
     @Override
     public synchronized boolean add(T o) {
         synchronized (this) {

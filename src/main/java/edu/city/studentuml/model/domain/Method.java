@@ -1,12 +1,12 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
 //Author: Ramollari Ervin
-//Method.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.w3c.dom.Element;
 
-public class Method implements Serializable, IXMLCustomStreamable {
+public class Method implements Serializable, IXMLCustomStreamable, Copyable<Method> {
 
     // static integer constants defining scope
     public static final int INSTANCE = 1;
@@ -95,18 +95,6 @@ public class Method implements Serializable, IXMLCustomStreamable {
         parameters.add(p);
     }
 
-    public void removeParameter(MethodParameter p) {
-        parameters.remove(p);
-    }
-
-    public void removeParameter(int index) {
-        try {
-            parameters.remove(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return;
-        }
-    }
-
     // 'get' methods
     public GenericOperation getGenericOperation() {
         return genericOperation;
@@ -128,13 +116,20 @@ public class Method implements Serializable, IXMLCustomStreamable {
         return returnType;
     }
 
-    public Vector getParameters() {
+    public Vector<MethodParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Vector param) {
+    public void setParameters(Vector<MethodParameter> param) {
         parameters.clear();
-        parameters = (NotifierVector<MethodParameter>) NotifierVector.from(param);
+
+        parameters = new NotifierVector<>();
+        // with REFERENCES (not clones) to the
+        // elements of param. 
+        // TO CHECK Correct?
+        for (int i = 0; i < param.size(); i++) {
+            parameters.add(param.get(i));
+        }
     }
 
     // used by codegeneration; refactor
@@ -242,17 +237,13 @@ public class Method implements Serializable, IXMLCustomStreamable {
         return copyMethod;
     }
 
+    // used by code generation: TODO: Refactor
     @JsonIgnore
     public String getParametersAsString() {
-        String allParameters = "";
-        for (int i = 0; i < parameters.size(); i++) {
-            MethodParameter parameter = (MethodParameter) parameters.get(i);
-            allParameters += parameter.getName();
-            if (i + 2 <= parameters.size()) {
-                allParameters += ",";
-            }
-        }
-        return allParameters;
+        StringJoiner sj = new StringJoiner(", ");
+        parameters.forEach(par -> sj.add(par.getName()));
+
+        return sj.toString();
     }
 
     public void setPriority(int mtdPriority) {
@@ -365,6 +356,11 @@ public class Method implements Serializable, IXMLCustomStreamable {
 
     public void setIterative(boolean i) {
         iterative = i;
+    }
+
+    @Override
+    public Method copyOf(Method a) {
+        return a.clone();
     }
 
 }

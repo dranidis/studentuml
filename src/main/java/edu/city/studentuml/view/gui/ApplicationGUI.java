@@ -40,6 +40,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -112,8 +113,19 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected boolean closingOrLoading = false;
 
     private static final String SELECT_LAST = "SELECT_LAST";
+    private static final String GTKLOOKANDFEEL = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 
     protected ApplicationGUI(StudentUMLFrame frame) {
+        try {
+            UIManager.setLookAndFeel(GTKLOOKANDFEEL);
+        } catch (Exception e) {
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                logger.info("NAME: " + info.getName() + " className: " + info.getClassName());
+            }
+            logger.info("Look and feel:  " + GTKLOOKANDFEEL + " not available. Using default: "
+                    + UIManager.getLookAndFeel().getName());
+        }   
+ 
         if (Preferences.userRoot().get(SELECT_LAST, "").equals("")) {
             Preferences.userRoot().put(SELECT_LAST, "TRUE");
         }

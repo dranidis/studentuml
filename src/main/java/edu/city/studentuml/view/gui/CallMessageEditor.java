@@ -7,109 +7,62 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.border.TitledBorder;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//CallMessageEditor.java
-import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
 public class CallMessageEditor extends JPanel implements ActionListener {
     private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
-    private JButton addParameterButton;
     private JPanel bottomPanel;
     private JDialog messageDialog;
     private JButton cancelButton;
     private JPanel centerPanel;
-    private JButton deleteParameterButton;
-    private JButton editParameterButton;
     private JPanel fieldsPanel;
     private JCheckBox iterativeCheckBox;
-    private JLabel iterativeLabel;
-    private CallMessageGR messageGR;
+    private CallMessageGR callMessageGR;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
     private boolean ok;
     private JButton okButton;
-    private Vector<MethodParameter> parameters;
-    private JPanel parametersButtonsPanel;
-    private JList parametersList;
-    private JPanel parametersPanel;
+
+    private MethodParameterPanel methodParametersPanel;
+
     private JTextField returnValueField;
     private JLabel returnValueLabel;
     private JPanel returnValuePanel;
-    private JPanel roleClassifiersPanel;
-    private JLabel sourceLabel;
-    private JPanel sourcePanel;
-    private JLabel targetLabel;
-    private JPanel targetPanel;
-    private JComboBox typeComboBox;
+
+    private JComboBox<Type> typeComboBox;
     private JLabel typeLabel;
     
-    private Vector types;
-    private final CentralRepository repository;
-    private boolean createMode;
+    private Vector<Type> types;
 
-    public CallMessageEditor(CallMessageGR mGR, CentralRepository cr) {
+    public CallMessageEditor(CallMessageGR callMessageGR, CentralRepository repository) {
         
-        if (mGR instanceof CreateMessageGR) {
-            createMode = true;
-        }
-        
-        messageGR = mGR;
-        
-        repository = cr;
+        this.callMessageGR = callMessageGR;
         
         setLayout(new BorderLayout());
-        sourceLabel = new JLabel();
 
-        FlowLayout sourceLayout = new FlowLayout();
-
-        sourceLayout.setAlignment(FlowLayout.LEFT);
-        sourcePanel = new JPanel();
-        sourcePanel.setLayout(sourceLayout);
-        sourcePanel.add(sourceLabel);
-        targetLabel = new JLabel();
-
-        FlowLayout targetLayout = new FlowLayout();
-
-        targetLayout.setAlignment(FlowLayout.LEFT);
-        targetPanel = new JPanel();
-        targetPanel.setLayout(targetLayout);
-        targetPanel.add(targetLabel);
-        roleClassifiersPanel = new JPanel();
-        roleClassifiersPanel.setLayout(new GridLayout(2, 1));
-        roleClassifiersPanel.add(sourcePanel);
-        roleClassifiersPanel.add(targetPanel);
         nameLabel = new JLabel("Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
@@ -128,8 +81,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         
         types = repository.getTypes();
         typeLabel = new JLabel("Return Type: ");
-        typeComboBox = new JComboBox(types);
-        
+        typeComboBox = new JComboBox<>(types);
         
         returnValuePanel = new JPanel();
 
@@ -144,40 +96,20 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         returnValuePanel.add(typeComboBox);
         
         fieldsPanel = new JPanel();
-        fieldsPanel.setLayout(new GridLayout(3, 1));
-        fieldsPanel.add(roleClassifiersPanel);
+        fieldsPanel.setLayout(new GridLayout(2, 1));
+        fieldsPanel.add(namePanel);
+        fieldsPanel.add(returnValuePanel);
         
-        if(!createMode) {
-            fieldsPanel.add(namePanel);
-            fieldsPanel.add(returnValuePanel);
-        }
-        
-        parametersList = new JList();
-        parametersList.setFixedCellWidth(300);
-        parametersList.setVisibleRowCount(4);
-        addParameterButton = new JButton("Add...");
-        addParameterButton.addActionListener(this);
-        editParameterButton = new JButton("Edit...");
-        editParameterButton.addActionListener(this);
-        deleteParameterButton = new JButton("Delete");
-        deleteParameterButton.addActionListener(this);
-        parametersButtonsPanel = new JPanel();
-        parametersButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        parametersButtonsPanel.add(addParameterButton);
-        parametersButtonsPanel.add(editParameterButton);
-        parametersButtonsPanel.add(deleteParameterButton);
-        parametersPanel = new JPanel();
-        parametersPanel.setLayout(new BorderLayout());
+        methodParametersPanel = new MethodParameterPanel("Message Parameters", repository);
 
-        TitledBorder title = BorderFactory.createTitledBorder("Message Parameters");
-
-        parametersPanel.setBorder(title);
-        parametersPanel.add(new JScrollPane(parametersList), BorderLayout.CENTER);
-        parametersPanel.add(parametersButtonsPanel, BorderLayout.SOUTH);
         centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(2, 1));
-        centerPanel.add(fieldsPanel);
-        centerPanel.add(parametersPanel);
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        if(!(callMessageGR instanceof CreateMessageGR)) {
+            centerPanel.add(fieldsPanel);
+        }
+
+        centerPanel.add(methodParametersPanel);
         okButton = new JButton("OK");
         okButton.addActionListener(this);
         cancelButton = new JButton("Cancel");
@@ -194,7 +126,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public boolean showDialog(Component parent, String title) {
-        logger.fine("TITLE : " + title);
+        logger.fine(() -> "TITLE : " + title);
 
         ok = false;
 
@@ -220,51 +152,10 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        CallMessage message = messageGR.getCallMessage();
-        RoleClassifier source = message.getSource();
-        RoleClassifier target = message.getTarget();
-        String sourceText = "";
-
-        sourceText += "From ";
-
-        if (source instanceof SDObject) {
-            sourceText += "Object: \"";
-        } else if (source instanceof MultiObject) {
-            sourceText += "Multiobject: \"";
-        } else if (source instanceof ActorInstance) {
-            sourceText += "Actor Instance: \"";
-        } else if (source instanceof SystemInstance) {
-            sourceText += "System Instance: \"";
-        }
-
-        sourceText += source.toString();
-        sourceText += "\"";
-        sourceLabel.setText(sourceText);
-
-        String targetText = "";
-
-        targetText += "To ";
-
-        if (target instanceof SDObject) {
-            targetText += "Object: \"";
-        } else if (target instanceof MultiObject) {
-            targetText += "Multiobject: \"";
-        } else if (target instanceof ActorInstance) {
-            targetText += "Actor Instance: \"";
-        } else if (target instanceof SystemInstance) {
-            targetText += "System Instance: \"";
-        }
-
-        targetText += target.toString();
-        targetText += "\"";
-        targetLabel.setText(targetText);
+        CallMessage message = callMessageGR.getCallMessage();
 
         // initialize the name field
-        if (message == null) {
-            nameField.setText("");
-        } else {
-            nameField.setText(message.getName());
-        }
+        nameField.setText(message.getName());
 
         // initialize the iterative check box
         iterativeCheckBox.setSelected(message.isIterative());
@@ -274,46 +165,19 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         }
 
         // initialize the type combo box
-        if (message == null || message.getReturnType() == null) {
+        if (message.getReturnType() == null) {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < types.size(); i++) {
-                if ((((Type) types.get(i)).toString()).equals(message.getReturnType().getName())) {
+                if (((types.get(i)).toString()).equals(message.getReturnType().getName())) {
                     typeComboBox.setSelectedIndex(i);
                     break;
                 }
             }
         }
         
-
         // initialize the list of parameters
-        if (message != null) {
-
-            // create an exact copy of the message's parameters,
-            // so that changes are made only on the copy
-            parameters = cloneParameters(message.getParameters());
-        } else {
-            parameters = new Vector<>();
-        }
-
-        updateParametersList();
-    }
-
-    public Vector<MethodParameter> cloneParameters(Vector<MethodParameter> originalParameters) {
-        Iterator<MethodParameter> iterator = originalParameters.iterator();
-        Vector<MethodParameter> copyOfParameters = new Vector<>();
-        MethodParameter originalParameter;
-
-        while (iterator.hasNext()) {
-            originalParameter = iterator.next();
-            copyOfParameters.add(originalParameter.clone());
-        }
-
-        return copyOfParameters;
-    }
-
-    public void updateParametersList() {
-        parametersList.setListData(parameters);
+        methodParametersPanel.setElements(message.getParameters());
     }
 
     public String getCallMessageName() {
@@ -337,46 +201,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public Vector<MethodParameter> getParameters() {
-        return parameters;
-    }
-
-    public void addParameter() {
-        MethodParameterEditor parameterEditor = new MethodParameterEditor(null, repository);
-
-        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
-            return;
-        }
-
-        MethodParameter parameter = new MethodParameter(parameterEditor.getParameterName(), parameterEditor.getType());
-
-        parameters.add(parameter);
-        updateParametersList();        
-    }
-
-    public void editParameter() {
-        if ((parameters == null) || (parameters.isEmpty()) || (parametersList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        MethodParameter parameter = parameters.elementAt(parametersList.getSelectedIndex());
-        MethodParameterEditor parameterEditor = new MethodParameterEditor(parameter, repository);
-
-        if (!parameterEditor.showDialog(this, "Parameter Editor")) {    // cancel pressed
-            return;
-        }
-
-        parameter.setName(parameterEditor.getParameterName());
-        parameter.setType(parameterEditor.getType());
-        updateParametersList();
-    }
-
-    public void deleteParameter() {
-        if (parameters == null || parameters.isEmpty() || parametersList.getSelectedIndex() < 0) {
-            return;
-        }
-
-        parameters.remove(parametersList.getSelectedIndex());
-        updateParametersList();
+        return methodParametersPanel.getElements();
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -385,12 +210,6 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             ok = true;
         } else if (event.getSource() == cancelButton) {
             messageDialog.setVisible(false);
-        } else if (event.getSource() == addParameterButton) {
-            addParameter();
-        } else if (event.getSource() == editParameterButton) {
-            editParameter();
-        } else if (event.getSource() == deleteParameterButton) {
-            deleteParameter();
-        }
+        } 
     }
 }

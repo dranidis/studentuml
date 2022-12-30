@@ -1,11 +1,10 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Attribute.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
+
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.w3c.dom.Element;
 
-public class Attribute implements Serializable, IXMLCustomStreamable {
+public class Attribute implements Serializable, IXMLCustomStreamable, Copyable<Attribute> {
 
     // static integer constants defining scope
     public static final int INSTANCE = 1;
@@ -193,5 +192,10 @@ public class Attribute implements Serializable, IXMLCustomStreamable {
         }
 
         return copyAttribute;
+    }
+
+    @Override
+    public Attribute copyOf(Attribute a) {
+        return a.clone();
     }
 }

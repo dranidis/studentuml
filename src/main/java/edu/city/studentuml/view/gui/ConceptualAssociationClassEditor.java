@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AttributesPanel;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -17,17 +13,14 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -40,7 +33,6 @@ import javax.swing.border.TitledBorder;
 public class ConceptualAssociationClassEditor extends JPanel implements ActionListener {
 
     private AssociationClassGR associationClassGR;
-    private String[] directions = {"Bidirectional", "Role A to Role B", "Role B to Role A"};
     private String[] multiplicities = {"unspecified", "0", "0..1", "0..*", "1", "1..*", "*"};
 
     private JDialog associationClassDialog;
@@ -58,7 +50,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
     private JTextField roleANameField;
     private JPanel roleAMultiplicityPanel;
     private JLabel roleAMultiplicityLabel;
-    private JComboBox roleAMultiplicityComboBox;
+    private JComboBox<String> roleAMultiplicityComboBox;
 
     private JPanel roleBPanel;
     private JPanel roleBNamePanel;
@@ -66,24 +58,15 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
     private JTextField roleBNameField;
     private JPanel roleBMultiplicityPanel;
     private JLabel roleBMultiplicityLabel;
-    private JComboBox roleBMultiplicityComboBox;
-
-    private Vector attributes;
-    private JPanel attributesPanel;
-    private JList attributesList;
-    private JButton addAttributeButton;
-    private JButton deleteAttributeButton;
-    private JButton editAttributeButton;
-    private JPanel attributesButtonsPanel;
+    private JComboBox<String> roleBMultiplicityComboBox;
 
     private boolean ok;
     private JButton okButton;
     private JButton cancelButton;
-    private CentralRepository repository;
+    private AttributesPanel attributesPanel;
 
     public ConceptualAssociationClassEditor(AssociationClassGR associationClassGR, CentralRepository cr) {
         this.associationClassGR = associationClassGR;
-        this.repository = cr;
         setLayout(new BorderLayout());
 
         namePanel = new JPanel();
@@ -109,7 +92,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
         roleAMultiplicityPanel = new JPanel();
         roleAMultiplicityPanel.setLayout(new FlowLayout());
         roleAMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleAMultiplicityComboBox = new JComboBox(multiplicities);
+        roleAMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleAMultiplicityComboBox.setEditable(true);
         roleAMultiplicityPanel.add(roleAMultiplicityLabel);
         roleAMultiplicityPanel.add(roleAMultiplicityComboBox);
@@ -128,7 +111,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
         roleBMultiplicityPanel = new JPanel();
         roleBMultiplicityPanel.setLayout(new FlowLayout());
         roleBMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleBMultiplicityComboBox = new JComboBox(multiplicities);
+        roleBMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleBMultiplicityComboBox.setEditable(true);
         roleBMultiplicityPanel.add(roleBMultiplicityLabel);
         roleBMultiplicityPanel.add(roleBMultiplicityComboBox);
@@ -137,26 +120,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
         rolesPanel.add(roleAPanel);
         rolesPanel.add(roleBPanel);
 
-        TitledBorder title2 = BorderFactory.createTitledBorder("Association Class Attributes");
-        attributesPanel = new JPanel();
-        attributesPanel.setBorder(title2);
-        attributesPanel.setLayout(new BorderLayout());
-        attributesList = new JList();
-        attributesList.setFixedCellWidth(400);
-        attributesList.setVisibleRowCount(5);
-        attributesButtonsPanel = new JPanel();
-        attributesButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        addAttributeButton = new JButton("Add...");
-        addAttributeButton.addActionListener(this);
-        editAttributeButton = new JButton("Edit...");
-        editAttributeButton.addActionListener(this);
-        deleteAttributeButton = new JButton("Delete");
-        deleteAttributeButton.addActionListener(this);
-        attributesButtonsPanel.add(addAttributeButton);
-        attributesButtonsPanel.add(editAttributeButton);
-        attributesButtonsPanel.add(deleteAttributeButton);
-        attributesPanel.add(new JScrollPane(attributesList), BorderLayout.CENTER);
-        attributesPanel.add(attributesButtonsPanel, BorderLayout.SOUTH);
+        attributesPanel = new AttributesPanel("Association Class Attributes", cr);
 
         centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(3, 1));
@@ -245,16 +209,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
             }
         }
 
-        // initialize the attributes to an empty list
-        // in order to populate it with COPIES of the class attributes
-        attributes = new Vector();
-
-        // make an exact copy of the attributes for editing purposes
-        // which may be discarded if the user presses <<Cancel>>
-        attributes = cloneAttributes(a.getAttributes());
-
-        // show the attributes in the list
-        updateAttributesList();
+       attributesPanel.setElements(a.getAttributes());
     }
 
     public String getAssociationClassName() {
@@ -298,28 +253,8 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
         }
     }
 
-    public Vector getAttributes() {
-        return attributes;
-    }
-
-    // make an exact copy of the passed attributes list
-    public Vector cloneAttributes(Vector originalAttributes) {
-        Iterator iterator = originalAttributes.iterator();
-        Vector copyOfAttributes = new Vector();
-        Attribute originalAttribute;
-        Attribute copyOfAttribute;
-
-        while (iterator.hasNext()) {
-            originalAttribute = (Attribute) iterator.next();
-            copyOfAttribute = originalAttribute.clone();
-            copyOfAttributes.add(copyOfAttribute);
-        }
-
-        return copyOfAttributes;
-    }
-
-    public void updateAttributesList() {
-        attributesList.setListData(attributes);
+    public Vector<Attribute> getAttributes() {
+        return attributesPanel.getElements();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -334,58 +269,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
             ok = true;
         } else if (e.getSource() == cancelButton) {
             associationClassDialog.setVisible(false);
-        } else if (e.getSource() == addAttributeButton) {
-            addAttribute();
-        } else if (e.getSource() == editAttributeButton) {
-            editAttribute();
-        } else if (e.getSource() == deleteAttributeButton) {
-            deleteAttribute();
-        }
+        } 
     }
 
-    private void addAttribute() {
-        AttributeEditor attributeEditor = new AttributeEditor(null, repository);
-
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        Attribute attribute = new Attribute(attributeEditor.getAttributeName());
-
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        attributes.add(attribute);
-        updateAttributesList();
-    }
-
-    private void editAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        Attribute attribute = (Attribute) attributes.elementAt(attributesList.getSelectedIndex());
-        AttributeEditor attributeEditor = new AttributeEditor(attribute, repository);
-
-        if (!attributeEditor.showDialog(this, "Attribute Editor")) {
-            // cancel pressed
-            return;
-        }
-
-        attribute.setName(attributeEditor.getAttributeName());
-        attribute.setType(attributeEditor.getType());
-        attribute.setVisibility(attributeEditor.getVisibility());
-        attribute.setScope(attributeEditor.getScope());
-        updateAttributesList();
-    }
-
-    private void deleteAttribute() {
-        if ((attributes == null) || (attributes.size() == 0) || (attributesList.getSelectedIndex() < 0)) {
-            return;
-        }
-
-        attributes.remove(attributesList.getSelectedIndex());
-        updateAttributesList();
-    }
 }
