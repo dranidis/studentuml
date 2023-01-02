@@ -9,6 +9,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
@@ -86,6 +88,9 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
         });
 
         refreshUndoRedoButtons();
+        
+        this.setFloatable(false);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
     protected abstract void addDiagramButtons();

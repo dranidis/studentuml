@@ -6,7 +6,6 @@ import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.SDView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -31,8 +30,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new SDToolbar(this);
-        toolbar.setFloatable(false);
-        toolbar.setLayout(new GridLayout(0, 1));
+
         JScrollPane sp = new JScrollPane(toolbar);
         sp.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(sp, BorderLayout.WEST);

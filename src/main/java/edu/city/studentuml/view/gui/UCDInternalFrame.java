@@ -8,7 +8,6 @@ import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.view.UCDView;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -28,8 +27,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
         drawingPanel.add(view);
         getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
         toolbar = new UCDToolbar(this);
-        toolbar.setFloatable(false);
-        toolbar.setLayout(new GridLayout(0, 1));
+
         JScrollPane sp = new JScrollPane(toolbar);
         sp.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(sp, BorderLayout.WEST);
