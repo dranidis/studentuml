@@ -309,7 +309,6 @@ public class AssociationGR extends LinkGR {
         int xOffset = (int) bounds.getX();
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();
-        int textHeight = (int) bounds.getHeight();
 
         if (sameDirection) {
             if (up) {

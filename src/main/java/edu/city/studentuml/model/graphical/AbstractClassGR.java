@@ -71,7 +71,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         int nameFieldHeight = calculateNameFieldHeight(g);
         int attributeFieldHeight = calculateAttributeFieldHeight(g);
-        int methodFieldHeight = calculateMethodFieldHeight(g);
         int startingX = getX();
         int startingY = getY();
 
@@ -80,7 +79,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        Stroke originalStroke = g.getStroke();
+        Stroke originalStroke;
         g.setStroke(new BasicStroke(1.2f));
         originalStroke = g.getStroke();
         if (isSelected()) {
@@ -288,25 +287,18 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     public Classifier getClassifier() {
-        return (Classifier) abstractClass;
+        return abstractClass;
     }
 
     public AbstractClass getAbstractClass() {
         return abstractClass;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // DesignClass d = (DesignClass)streamer.readObjectByID(node, "designclass",
-        // this);
-        // setDesignClass(d);
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
-    }
-
-    // need to be redifined in subclass
-    public void streamToXML(Element node, XMLStreamer streamer) {
-        super.streamToXML(node, streamer);
     }
 
     public String toString() {

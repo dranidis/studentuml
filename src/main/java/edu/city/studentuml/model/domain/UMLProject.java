@@ -1,14 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2006</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
 import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -101,7 +92,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setSaved(true);
         setChanged();
         notifyObservers();
@@ -109,7 +100,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
 
@@ -130,7 +121,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void setSaved(boolean saved) {
-        logger.fine("Setting projectSaved: " + saved);
+        logger.fine(() -> "Setting projectSaved: " + saved);
         projectSaved = saved;
     }
 
@@ -151,7 +142,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         logger.fine("Project changed");
         setSaved(false);
 
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
 

@@ -68,7 +68,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         refreshDimensions(g);
 
         int nameFieldHeight = calculateNameFieldHeight(g);
-        int methodFieldHeight = calculateMethodFieldHeight(g);
         int startingX = getX();
         int startingY = getY();
 
@@ -78,7 +77,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         g.setPaint(fillColor);
         g.fill(shape);
 
-        Stroke originalStroke = g.getStroke();
+        Stroke originalStroke;
 
         g.setStroke(new BasicStroke(1.2f));
 

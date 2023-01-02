@@ -173,7 +173,6 @@ public class CodeGenerator {
 				FileReader fr2 = new FileReader(f);
 				BufferedReader br2 = new BufferedReader(fr2);
 				int currLine = 0;
-				int extrlines = 0;
 				List<String> lines = new ArrayList<String>();
 				while ((line = br2.readLine()) != null) {
 					for (Map.Entry<Integer, String> oldLine : oldLines.entrySet()) {
@@ -291,10 +290,9 @@ public class CodeGenerator {
 		StringBuffer sb = new StringBuffer();
 		Vector classMethods = new Vector();
 		Vector classSDMethods = new Vector();
-		String className = "";
 		boolean first;
 
-		if (obj instanceof DesignClass) {
+        if (obj instanceof DesignClass) {
 			DesignClass cls = (DesignClass) obj;
 			Vector classAttributes = cls.getAttributes();
 
@@ -311,7 +309,6 @@ public class CodeGenerator {
 			}
 
 			sb.append(LINE_SEPARATOR);
-			className = cls.getName();
 			classMethods = cls.getMethods();
 			classSDMethods = cls.getSDMethods();
 
@@ -320,7 +317,6 @@ public class CodeGenerator {
 		if (obj instanceof Interface) {
 			Interface interfs = (Interface) obj;
 			classMethods = interfs.getMethods();
-			className = interfs.getName();
 		}
 		if (!classMethods.isEmpty() || !classSDMethods.isEmpty()) {
 			sb.append(LINE_SEPARATOR);

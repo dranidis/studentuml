@@ -36,8 +36,6 @@ public class AssociationClassGR extends LinkGR {
     // the graphical classes that the association line connects in the diagram
     private ClassifierGR classifierA;
     private ClassifierGR classifierB;
-    private Font nameFont;
-    private Font roleFont;
     private Point associationCenterPoint;
     public static int DIST = 30; // minimum distance from association to association class
 
@@ -59,8 +57,6 @@ public class AssociationClassGR extends LinkGR {
         classifierB = b;
         outlineColor = Color.black;
         highlightColor = Color.blue;
-        nameFont = new Font("SansSerif", Font.PLAIN, 12);
-        roleFont = new Font("SansSerif", Font.PLAIN, 10);
     }
 
     // redifine object added

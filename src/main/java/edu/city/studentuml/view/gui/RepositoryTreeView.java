@@ -327,7 +327,6 @@ public class RepositoryTreeView extends JPanel implements Observer {
         private Icon ucdIcon;
         private Icon useCaseIcon;
         private Icon systemIcon;
-        private Icon conceptIcon;
         private Icon ccdIcon;
         private Icon ssdIcon;
         private Icon systemInstanceIcon;
@@ -363,7 +362,6 @@ public class RepositoryTreeView extends JPanel implements Observer {
             systemIcon = createImageIcon("system.gif");
             systemInstanceIcon = createImageIcon("object.gif");
             ccdIcon = createImageIcon("ccd.gif");// ccd
-            conceptIcon = createImageIcon("class.gif");// ccd
             ssdIcon = createImageIcon("ssd.gif");
             diagramIcon = createImageIcon("sd.gif");
             dcdIcon = createImageIcon("dcd.gif");

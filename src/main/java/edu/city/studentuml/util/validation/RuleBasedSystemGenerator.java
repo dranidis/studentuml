@@ -8,20 +8,7 @@ import java.lang.reflect.Method;
 
 public class RuleBasedSystemGenerator {
 
-    private static RuleBasedSystemGenerator instance = null;
-
-    public RuleBasedSystemGenerator() {
-    }
-
-//	public static RuleBasedSystemGenerator getInstance()
-//    {
-//      if (instance == null) {
-//          instance = new RuleBasedSystemGenerator();
-//      }
-//      return instance;
-//    }
-
-    /*
+    /**
      * this method tries to create facts from the fact template list (stored in the template HashMap)
      * the templateHashMap is of the following structure
      *
@@ -72,7 +59,7 @@ public class RuleBasedSystemGenerator {
         }
     }
 
-    /*
+    /**
      * this method is the core method for converting fact templates in to actual facts for any objects that
      * might exist in the repository (SystemWIdeObjectPool).
      *
@@ -183,7 +170,7 @@ public class RuleBasedSystemGenerator {
         add(functionName, factList, objects.toArray());
     }
 
-    /*
+    /**
      * objects is a list of object instances got from the rules.txt facts, for example
      * DiagramModel belongsTo(this,getGraphicalElements.this)
      *

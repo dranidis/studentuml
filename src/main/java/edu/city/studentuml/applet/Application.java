@@ -979,9 +979,6 @@ public class Application extends JApplet implements Observer, KeyListener {
         }
     }
 
-    private void jbInit() throws Exception {
-    }
-
     // This inner class listens for events from internal frames.
     // It overrides default behavior when the user closes the frame
     private class DiagramInternalFrameListener extends InternalFrameAdapter {
