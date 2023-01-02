@@ -14,6 +14,7 @@ import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
@@ -51,8 +52,8 @@ public class ADSelectionController extends SelectionController {
 
     private static final Logger logger1 = Logger.getLogger(ADSelectionController.class.getName());
     
-    public ADSelectionController(DiagramInternalFrame parent, ADModel m) {
-        super(parent, m);
+    public ADSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
     }
     
     @Override

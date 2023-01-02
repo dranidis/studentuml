@@ -5,50 +5,17 @@ import edu.city.studentuml.controller.ActivityResizeWithCoveredElementsControlle
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.DrawLineController;
 import edu.city.studentuml.controller.EdgeController;
+import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
+import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.ADModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.ADView;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import edu.city.studentuml.view.DiagramView;
 
-/**
- *
- * @author Biser
- */
 public class ADInternalFrame extends DiagramInternalFrame {
 
-    public ADInternalFrame(ADModel adModel) {
-        super(adModel.getDiagramName());
-        model = adModel;
-        view = new ADView((ADModel) model);
-        // add view to drawing panel in the center and toolbar to the west
-        JPanel drawingPanel = new JPanel();
-        drawingPanel.add(view);
-        getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
-        toolbar = new ADToolbar(this);
-
-        JScrollPane sp = new JScrollPane(toolbar);
-        sp.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(sp, BorderLayout.WEST);
-
-        // create selection, draw line, and add element controllers
-        selectionController = new ADSelectionController(this, (ADModel) model);
-        resizeController = new ActivityResizeWithCoveredElementsController(this, model, selectionController);
-        drawLineController = new DrawLineController(view, model);
-        edgeController = new EdgeController(this, (ADModel) model, selectionController);
-
-        view.addMouseListener(resizeController.getMouseListener());
-        view.addMouseMotionListener(resizeController.getMouseMotionListener());
-
-        // pass selection controller and add element controller to view
-        view.addMouseListener(selectionController.getMouseListener());
-        view.addMouseMotionListener(selectionController.getMouseMotionListener());
-        view.addMouseListener(edgeController.getMouseListener());
-        view.addMouseMotionListener(edgeController.getMouseMotionListener());
-        setAddElementController(addElementControllerFactory.newAddElementController(model, this, "InitialNodeGR"));
-
-        setSize(550, 450);
+    public ADInternalFrame(ADModel model) {
+        super(model.getDiagramName(), model);
     }
 
     @Override
@@ -65,4 +32,36 @@ public class ADInternalFrame extends DiagramInternalFrame {
         edgeController.setSelectionMode(getSelectionMode());
     }
 
+    @Override
+    protected DiagramView makeView(DiagramModel model) {
+        return new ADView(model);
+    }
+
+    @Override
+    protected AbsractToolbar makeToolbar(DiagramInternalFrame diagramInternalFrame) {
+        return new ADToolbar(this);
+    }
+
+    @Override
+    protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
+            DiagramModel model) {
+        return new ADSelectionController(this, model);
+    }
+
+    @Override
+    protected ResizeWithCoveredElementsController makeResizeWithCoveredElementsController(
+            DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController) {
+        return new ActivityResizeWithCoveredElementsController(this, model, selectionController);
+    }
+
+    @Override
+    protected EdgeController makeEdgeController(DiagramInternalFrame diagramInternalFrame, DiagramModel model,
+            SelectionController selectionController) {
+        return new EdgeController(this, model, selectionController);
+    }
+
+    @Override
+    protected String makeElementClassString() {
+        return "InitialNodeGR";
+    }
 }

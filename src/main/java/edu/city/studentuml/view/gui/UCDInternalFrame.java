@@ -2,50 +2,20 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.DrawLineController;
+import edu.city.studentuml.controller.EdgeController;
+import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
+import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.controller.UCDSelectionController;
 import edu.city.studentuml.controller.UseCaseResizeWithCoveredElementsController;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.UCDModel;
+import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.UCDView;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
-/**
- *
- * @author draganbisercic
- */
 public class UCDInternalFrame extends DiagramInternalFrame {
 
-    public UCDInternalFrame(UCDModel ucdModel) {
-        super(ucdModel.getDiagramName());
-        model = ucdModel;
-        view = new UCDView((UCDModel) model);
-
-        // add view to drawing panel in the center and toolbar to the west
-        JPanel drawingPanel = new JPanel();
-        drawingPanel.add(view);
-        getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
-        toolbar = new UCDToolbar(this);
-
-        JScrollPane sp = new JScrollPane(toolbar);
-        sp.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(sp, BorderLayout.WEST);
-
-        // create selection, draw line, and add element controllers
-        selectionController = new UCDSelectionController(this, (UCDModel) model);
-        resizeController = new UseCaseResizeWithCoveredElementsController(this, model, selectionController);
-        drawLineController = new DrawLineController(view, model);
-
-        view.addMouseListener(resizeController.getMouseListener());
-        view.addMouseMotionListener(resizeController.getMouseMotionListener());
-
-        // pass selection controller and add element controller to view
-        view.addMouseListener(selectionController.getMouseListener());
-        view.addMouseMotionListener(selectionController.getMouseMotionListener());
-        setAddElementController(addElementControllerFactory.newAddElementController(model, this, "ActorGR"));
-
-        setSize(550, 450);
+    public UCDInternalFrame(UCDModel model) {
+        super(model.getDiagramName(), model);
     }
 
     @Override
@@ -58,6 +28,39 @@ public class UCDInternalFrame extends DiagramInternalFrame {
     public void setDrawLineController(DrawLineController controller) {//TK draw line
         super.setDrawLineController(controller);
         resizeController.setSelectionMode(getSelectionMode());
+    }
+
+    @Override
+    protected DiagramView makeView(DiagramModel model) {
+        return new UCDView(model);
+    }
+
+    @Override
+    protected AbsractToolbar makeToolbar(DiagramInternalFrame diagramInternalFrame) {
+        return new UCDToolbar(this);
+    }
+
+    @Override
+    protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
+            DiagramModel model) {
+        return new UCDSelectionController(this, model);
+    }
+
+    @Override
+    protected ResizeWithCoveredElementsController makeResizeWithCoveredElementsController(
+            DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController) {
+        return new UseCaseResizeWithCoveredElementsController(this, model, selectionController);
+    }
+
+    @Override
+    protected EdgeController makeEdgeController(DiagramInternalFrame diagramInternalFrame, DiagramModel model,
+            SelectionController selectionController) {
+        return null;
+    }
+
+    @Override
+    protected String makeElementClassString() {
+        return "ActorGR";
     }
 
 }

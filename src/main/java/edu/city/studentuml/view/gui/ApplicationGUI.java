@@ -675,9 +675,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             diagramInternalFrame = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         } else if (model instanceof ADModel) {
             diagramInternalFrame = new ADInternalFrame((ADModel) model);
-        } // else if (model instanceof StateModel) {
-          // f = new StateInternalFrame((StateModel) model);
-          // }
+        } 
 
         if (diagramInternalFrame == null) {
             logger.severe("Diagram Internal frame is null. Unknown model!");
@@ -698,6 +696,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         try {
             diagramInternalFrame.setSelected(true);
+            diagramInternalFrame.setMaximum(true);
+
         } catch (PropertyVetoException vetoException) {
             vetoException.printStackTrace();
         }
@@ -727,7 +727,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Vector<JInternalFrame> ccdFrames = new Vector<>();
         Vector<JInternalFrame> dcdFrames = new Vector<>();
         Vector<JInternalFrame> adFrames = new Vector<>();
-        // Vector stateFrames = new Vector();
         JInternalFrame[] frames = desktopPane.getAllFrames();
         JInternalFrame f;
 
@@ -746,9 +745,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dcdFrames.add(f);
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
-            } // else if (f instanceof StateInternalFrame) {
-              // stateFrames.add(f);
-              // }
+            } 
         }
 
         if (type == DiagramType.UCD) {
@@ -763,11 +760,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             return dcdFrames;
         } else if (type == DiagramType.AD) {
             return adFrames;
-        } // else if () {
-          // return stateFrames;
-          // }
+        } 
 
-        return new Vector<JInternalFrame>();
+        return new Vector<>();
     }
 
     public void setRunTimeConsistencyCheck(boolean b) {

@@ -1,6 +1,6 @@
 package edu.city.studentuml.view;
 
-import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 
 /**
  *
@@ -8,7 +8,7 @@ import edu.city.studentuml.model.graphical.SSDModel;
  */
 public class SSDView extends DiagramView {
 
-    public SSDView(SSDModel m) {
+    public SSDView(DiagramModel m) {
         super(m);
     }
 }

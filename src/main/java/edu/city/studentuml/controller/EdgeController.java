@@ -4,6 +4,7 @@ import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.AbstractPointGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.PointGR;
 import edu.city.studentuml.util.undoredo.MoveEdgeEdit;
 import edu.city.studentuml.view.gui.ADInternalFrame;
@@ -35,9 +36,9 @@ public class EdgeController {
     private List<AbstractPointGR> redoPoints;
     private SelectionController selectionController; // need to disable move when resizing
 
-    public EdgeController(ADInternalFrame p, ADModel m, SelectionController s) {
+    public EdgeController(ADInternalFrame p, DiagramModel model2, SelectionController s) {
         this.parent = p;
-        this.model = m;
+        this.model = (ADModel) model2;
         this.selectionController = s;
 
         // listeners

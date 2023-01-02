@@ -15,6 +15,7 @@ import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.EditActorEdit;
 import edu.city.studentuml.util.undoredo.EditSystemEdit;
 import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
@@ -34,7 +35,7 @@ import javax.swing.undo.UndoableEdit;
  */
 public class UCDSelectionController extends SelectionController {
 
-    public UCDSelectionController(DiagramInternalFrame parent, UCDModel model) {
+    public UCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
     }
 

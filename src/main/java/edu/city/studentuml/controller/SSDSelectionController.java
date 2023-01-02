@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
@@ -20,8 +21,8 @@ import edu.city.studentuml.view.gui.SystemInstanceEditor;
  */
 public class SSDSelectionController extends AbstractSDSelectionController {
 
-    public SSDSelectionController(DiagramInternalFrame parent, SSDModel m) {
-        super(parent, m);
+    public SSDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
     }
 
     public void editElement(GraphicalElement selectedElement) {

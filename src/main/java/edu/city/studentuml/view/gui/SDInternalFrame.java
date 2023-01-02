@@ -1,44 +1,25 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.controller.DrawLineController;
+import edu.city.studentuml.controller.EdgeController;
+import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SDSelectionController;
+import edu.city.studentuml.controller.SelectionController;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.SDView;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 public class SDInternalFrame extends DiagramInternalFrame {
 
-    public SDInternalFrame(SDModel sdModel) {
-        super(sdModel.getDiagramName());
-        model = sdModel;
-        view = new SDView((SDModel) model);
-        selectionController = new SDSelectionController(this, (SDModel) model);
-        drawLineController = new DrawLineController(view, model);//TK draw line
-        view.addMouseListener(selectionController.getMouseListener());
-        view.addMouseMotionListener(selectionController.getMouseMotionListener());
-
-        JPanel drawingPanel = new JPanel();
-        
-        createHelpMenubar();
-        
-        drawingPanel.add(view);
-        getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
-        toolbar = new SDToolbar(this);
-
-        JScrollPane sp = new JScrollPane(toolbar);
-        sp.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(sp, BorderLayout.WEST);
-        setAddElementController(addElementControllerFactory.newAddElementController(model, this, "SDObjectGR"));
-        setSize(550, 450);
+    public SDInternalFrame(SDModel model) {
+        super(model.getDiagramName(), model);
     }
 
-    private void createHelpMenubar() {
+    @Override
+    protected void createHelpMenubar() {
         JMenu helpMenu = new JMenu();
         helpMenu.setText(" Help ");
         menuBar.add(helpMenu);
@@ -50,6 +31,38 @@ public class SDInternalFrame extends DiagramInternalFrame {
                 "Selection keystrokes", JOptionPane.INFORMATION_MESSAGE));
         helpMenu.add(selectMenuItem);
     }
-    
+
+    @Override
+    protected DiagramView makeView(DiagramModel model) {
+        return new SDView(model);
+    }
+
+    @Override
+    protected AbsractToolbar makeToolbar(DiagramInternalFrame diagramInternalFrame) {
+        return new SDToolbar(this);
+    }
+
+    @Override
+    protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
+            DiagramModel model) {
+        return new SDSelectionController(this, model);
+    }
+
+    @Override
+    protected ResizeWithCoveredElementsController makeResizeWithCoveredElementsController(
+            DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController) {
+        return null;
+    }
+
+    @Override
+    protected EdgeController makeEdgeController(DiagramInternalFrame diagramInternalFrame, DiagramModel model,
+            SelectionController selectionController) {
+        return null;
+    }
+
+    @Override
+    protected String makeElementClassString() {
+        return "SDObjectGR";
+    }    
     
 }

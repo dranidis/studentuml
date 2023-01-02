@@ -10,6 +10,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.view.gui.MultiObjectEditor;
@@ -34,8 +35,8 @@ public class SDSelectionController extends AbstractSDSelectionController {
 
     private static final String WARNING = "Warning";
 
-    public SDSelectionController(DiagramInternalFrame parent, SDModel m) {
-        super(parent, m);
+    public SDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
     }
 
     public void editElement(GraphicalElement selectedElement) {

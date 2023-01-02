@@ -1,6 +1,6 @@
 package edu.city.studentuml.view;
 
-import edu.city.studentuml.model.graphical.ADModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
@@ -15,7 +15,7 @@ import java.util.Iterator;
  */
 public class ADView extends DiagramView {
 
-    public ADView(ADModel model) {
+    public ADView(DiagramModel model) {
         super(model);
     }
 

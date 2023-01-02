@@ -18,6 +18,7 @@ import edu.city.studentuml.view.gui.CCDAssociationEditor;
 import edu.city.studentuml.view.gui.ConceptualAssociationClassEditor;
 import edu.city.studentuml.view.gui.ConceptualClassEditor;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
@@ -37,8 +38,8 @@ import javax.swing.undo.UndoableEdit;
  */
 public class CCDSelectionController extends SelectionController {
 
-    public CCDSelectionController(DiagramInternalFrame parent, CCDModel m) {
-        super(parent, m);
+    public CCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
         editElementMapper.put(AssociationClassGR.class, e -> editAssociationClass((AssociationClassGR) e));
         editElementMapper.put(AssociationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(ConceptualClassGR.class, e -> editClass((ConceptualClassGR) e));

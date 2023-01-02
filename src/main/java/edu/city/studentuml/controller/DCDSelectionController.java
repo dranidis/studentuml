@@ -3,6 +3,7 @@ package edu.city.studentuml.controller;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
@@ -38,8 +39,8 @@ import javax.swing.undo.UndoableEdit;
 public class DCDSelectionController extends SelectionController {
     private static final Logger logger = Logger.getLogger(DCDSelectionController.class.getName());
 
-    public DCDSelectionController(DiagramInternalFrame parent, DCDModel m) {
-        super(parent, m);
+    public DCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
     }
 
     // this method overrides the abstract method of the superclass

@@ -1,8 +1,8 @@
 package edu.city.studentuml.view;
 
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
-import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.graphical.UCLinkGR;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.awt.Color;
@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 public class UCDView extends DiagramView {
 
-    public UCDView(UCDModel m) {
+    public UCDView(DiagramModel m) {
         super(m);
     }
 

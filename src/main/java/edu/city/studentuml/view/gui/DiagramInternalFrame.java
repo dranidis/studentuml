@@ -8,19 +8,25 @@ import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
+
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
 import java.util.prefs.Preferences;
 
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.undo.UndoManager;
@@ -50,37 +56,18 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected UndoManager undoManager;
     protected transient UndoableEditSupport undoSupport;
 
-    public AddElementControllerFactory getAddElementControllerFactory() {
-        return addElementControllerFactory;
-    }
 
-    public AddElementController getAddElementController() {
-        return addElementController;
-    }
-
-    public DrawLineController getDrawLineController() {
-        return drawLineController;
-    }
-
-    public SelectionController getSelectionController() {
-        return selectionController;
-    }
-
-    public UndoManager getUndoManager() {
-        return undoManager;
-    }
-
-    public ResizeWithCoveredElementsController getResizeController() {
-        return resizeController;
-    }
-
-    public EdgeController getEdgeController() {
-        return edgeController;
-    }
-
-    protected DiagramInternalFrame(String title) {
+    /**
+     * Common constructor for all internal frames using Factory method
+     * for the instantiation of diagram specific elements and controllers.
+     * 
+     * @param title
+     * @param model
+     */
+    protected DiagramInternalFrame(String title, DiagramModel model) {
         super(title, true, false, true, true);
 
+        this.model = model;
         createMenuBar();
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
@@ -106,7 +93,67 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         });
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
+        /**
+         * Factory method
+         * subclasses will create the view and the toolbar
+         */
+        view = makeView(model);
+        toolbar = makeToolbar(this);
+
+        // add view to drawing panel in the center and toolbar to the west
+        JPanel drawingPanel = new JPanel();
+        drawingPanel.add(view);
+        getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
+
+        JScrollPane sp = new JScrollPane(toolbar);
+        sp.setPreferredSize(new Dimension(55, 400));
+        getContentPane().add(sp, BorderLayout.WEST);
+
+        // create selection, draw line, and add element controllers
+        selectionController = makeSelectionController(this, model);
+        resizeController = makeResizeWithCoveredElementsController(this, model, selectionController);
+        drawLineController = makeDrawLineController(view, model);
+        edgeController = makeEdgeController(this, model, selectionController);
+
+        // pass selection controller and add element controller to view
+        view.addMouseListener(selectionController.getMouseListener());
+        view.addMouseMotionListener(selectionController.getMouseMotionListener());
+
+        if (resizeController != null) {
+            view.addMouseListener(resizeController.getMouseListener());
+            view.addMouseMotionListener(resizeController.getMouseMotionListener());
+        }
+
+        if (edgeController != null) {
+            view.addMouseListener(edgeController.getMouseListener());
+            view.addMouseMotionListener(edgeController.getMouseMotionListener());
+        }
+
+        // not sure if this is needed
+        String elementClass = makeElementClassString();
+        setAddElementController(addElementControllerFactory.newAddElementController(model, this, elementClass));
+
+        createHelpMenubar();
+
+        setSize(650, 550);  
     }
+
+    protected void createHelpMenubar() {
+        // intentionally empty
+        // to be overriden by internal frames which provide
+        // a help menu
+    }
+
+    protected DrawLineController makeDrawLineController(DiagramView diagramView, DiagramModel model) {
+        return new DrawLineController(view, model);
+    }
+
+    protected abstract DiagramView makeView(DiagramModel model);
+    protected abstract AbsractToolbar makeToolbar(DiagramInternalFrame diagramInternalFrame);
+    protected abstract SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame, DiagramModel model);
+    protected abstract ResizeWithCoveredElementsController makeResizeWithCoveredElementsController(DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController);
+    protected abstract EdgeController makeEdgeController(DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController);
+    protected abstract String makeElementClassString();
 
     private void createMenuBar() {
         this.setJMenuBar(menuBar);
@@ -234,4 +281,33 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     public void refreshUndoRedoButtons() {
         toolbar.refreshUndoRedoButtons();
     }
+
+
+    public AddElementControllerFactory getAddElementControllerFactory() {
+        return addElementControllerFactory;
+    }
+
+    public AddElementController getAddElementController() {
+        return addElementController;
+    }
+
+    public DrawLineController getDrawLineController() {
+        return drawLineController;
+    }
+
+    public SelectionController getSelectionController() {
+        return selectionController;
+    }
+
+    public UndoManager getUndoManager() {
+        return undoManager;
+    }
+
+    public ResizeWithCoveredElementsController getResizeController() {
+        return resizeController;
+    }
+
+    public EdgeController getEdgeController() {
+        return edgeController;
+    }    
 }

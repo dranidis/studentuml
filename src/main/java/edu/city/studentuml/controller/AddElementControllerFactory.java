@@ -12,9 +12,10 @@ import edu.city.studentuml.model.graphical.UCDModel;
 import java.util.HashMap;
 import java.util.Map;
 
-//AddElementControllerFactory.java
-//Singleton class that uses Factory Method design pattern to
-//dynamically instantiate the appropriate controller for adding a particular element
+/**
+ * Singleton class that uses Factory Method design pattern to dynamically
+ * instantiate the appropriate controller for adding a particular element
+ */
 public class AddElementControllerFactory {
     /**
      * Each frame has its own controllers, one for each command represented by the string
