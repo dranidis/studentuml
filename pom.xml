@@ -9,6 +9,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+     <version>${project.version}</version>
   </properties>
 
 
@@ -55,6 +56,13 @@
       <version>2.14.1</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.json/json -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20220924</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -83,6 +91,25 @@
           </execution>
         </executions>
       </plugin>
+
+        <!-- Use the properties-maven-plugin to write specific pom properties to a file at compile time, 
+        and then read that file at run time.-->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0.0</version>
+            <executions>
+                <execution>
+                    <phase>generate-resources</phase>
+                    <goals>
+                        <goal>write-project-properties</goal>
+                    </goals>
+                    <configuration>
+                        <outputFile>${project.build.outputDirectory}/my.properties</outputFile>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>      
 
     </plugins>
   </build>

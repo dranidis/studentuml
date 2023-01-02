@@ -64,6 +64,7 @@ import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
+import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
@@ -141,6 +142,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        NewversionChecker.checkForNewVersion(frame);
 
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
