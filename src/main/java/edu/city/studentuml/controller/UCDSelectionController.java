@@ -3,7 +3,6 @@ package edu.city.studentuml.controller;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ExtensionPoint;
-import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCExtend;
@@ -190,8 +189,6 @@ public class UCDSelectionController extends SelectionController {
                 i++;
             }
         }
-
-        // parentComponent.setSelectionMode();
 
         parentComponent.getUndoSupport().postEdit(edit);
         model.removeGraphicalElement(selectedElement);

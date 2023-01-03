@@ -17,10 +17,13 @@ import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -29,9 +32,12 @@ import javax.swing.undo.CannotUndoException;
  * @author draganbisercic
  */
 public class CompositeDeleteEdit extends DeleteEditComponent {
+    private static final Logger logger = Logger.getLogger(CompositeDeleteEdit.class.getName());
 
     private List<DeleteEditComponent> deleteEditComponents = new ArrayList<>();
     private Object clone; // need to store model elements before they are cleared at deletion
+
+    private List<GraphicalElement> deletedGraphicalElements = new ArrayList<>();
 
     CompositeDeleteEdit(GraphicalElement element, DiagramModel model) {
         super(element, model);
@@ -54,13 +60,22 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
                 clone = ((SDObjectGR) element).getSDObject().clone();
             } else if (element instanceof MultiObjectGR) {
                 clone = ((MultiObjectGR) element).getMultiObject().clone();
-            }
+            } 
+        } else {
+            logger.severe(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : " + element.toString());
         }
     }
 
+    /**
+     * Check first if element was already added in the composite
+     */
     @Override
     public void add(DeleteEditComponent edit) {
-        deleteEditComponents.add(edit);
+        GraphicalElement e = edit.getElement();
+        if (!deletedGraphicalElements.contains(e)) {
+            deletedGraphicalElements.add(e);
+            deleteEditComponents.add(edit);
+        }
     }
 
     @Override

@@ -144,11 +144,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
         ((GraphicalElement) instance).myUid = uid;
 
-        logger.finer("Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
+        logger.finer(() -> "Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        logger.finer("Streaming to " + this.getClass().getName());
+        logger.finer(() -> "Streaming to " + this.getClass().getName());
         node.setAttribute("uid", this.getMyUid());
     }
 }

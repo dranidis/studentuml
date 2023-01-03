@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -141,6 +142,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.pack();
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
+
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         frame.setVisible(true);
 
         NewversionChecker.checkForNewVersion(frame);

@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Dependency;
-import edu.city.studentuml.model.domain.Generalization;
-import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.util.List;
@@ -14,8 +11,6 @@ public class DCDModel extends AbstractCDModel {
         super(title, umlp);
     }
 
-    // override the superclass method addGraphicalElement to handle different
-    // classes
     @Override
     public void addGraphicalElement(GraphicalElement element) {
         SystemWideObjectNamePool.getInstance().loading();
@@ -42,43 +37,31 @@ public class DCDModel extends AbstractCDModel {
         SystemWideObjectNamePool.getInstance().done();
     }
 
-    // add a new diagram class
-    public void addClass(ClassGR c) {
+    private void addClass(ClassGR c) {
 
-        // add the class to the project repository first and then to the diagram
         repository.addClass(c.getDesignClass());
         super.addGraphicalElement(c);
     }
 
-    // add a new diagram interface
-    public void addInterface(InterfaceGR i) {
+    private void addInterface(InterfaceGR i) {
 
-        // add the interface to the project repository first and then to the diagram
         repository.addInterface(i.getInterface());
         super.addGraphicalElement(i);
     }
 
-    // add a new diagram dependency
-    public void addDependency(DependencyGR d) {
-        Dependency dependency = d.getDependency();
+    private void addDependency(DependencyGR d) {
 
-        // try to add the dependency to the repository first, if it doesn't exist
-        repository.addDependency(dependency);
-
+        repository.addDependency(d.getDependency());
         super.addGraphicalElement(d);
     }
 
     // add a new diagram realization
-    public void addRealization(RealizationGR r) {
-        Realization realization = r.getRealization();
+    private void addRealization(RealizationGR r) {
 
-        // try to add the realization to the repository first, if it doesn't exist
-        repository.addRealization(realization);
-
+        repository.addRealization(r.getRealization());
         super.addGraphicalElement(r);
     }
 
-    // override superclass method removeGraphicalElement()
     @Override
     public void removeGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
@@ -106,7 +89,7 @@ public class DCDModel extends AbstractCDModel {
     // since more than one graphical class or interface can refer
     // to the same domain representation, just remove the graphical representation
     // from the diagram, and not the domain representation from the repository
-    public void removeClass(ClassGR c) {
+    private void removeClass(ClassGR c) {
         getClassGRDependencyGRs(c).forEach(e -> removeDependency((DependencyGR) e));
         getClassGRAssociationGRs(c).forEach(e -> removeAssociation((AssociationGR) e));
         getClassGRAssociationClassGRs(c).forEach(e -> removeAssociationClass((AssociationClassGR) e));
@@ -120,7 +103,7 @@ public class DCDModel extends AbstractCDModel {
         super.removeGraphicalElement(c);
     }
 
-    public void removeInterface(InterfaceGR i) {
+    private void removeInterface(InterfaceGR i) {
         getInterfaceGRRealizationGRs(i).forEach(e -> removeRealization((RealizationGR) e));
         getInterfaceGRAssociationGRs(i).forEach(e -> removeAssociation((AssociationGR) e));
         getInterfaceGRGeneralizationGRs(i).forEach(e -> removeGeneralization((GeneralizationGR) e));
@@ -190,12 +173,12 @@ public class DCDModel extends AbstractCDModel {
                 .collect(Collectors.toList());
     }    
 
-    public void removeDependency(DependencyGR d) {
+    private void removeDependency(DependencyGR d) {
         repository.removeDependency(d.getDependency());
         super.removeGraphicalElement(d);
     }
 
-    public void removeRealization(RealizationGR r) {
+    private void removeRealization(RealizationGR r) {
         repository.removeRealization(r.getRealization());
         super.removeGraphicalElement(r);
     }

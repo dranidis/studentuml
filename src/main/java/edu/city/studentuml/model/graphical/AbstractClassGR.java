@@ -11,8 +11,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
@@ -28,26 +26,28 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR {
 
-    protected static int minimumAttributeFieldHeight = 20;
-    protected static int minimumMethodFieldHeight = 20;
-    protected static int minimumNameFieldHeight = 20;
-    protected static int minimumWidth = 70;
-    protected static int nameFieldXOffset = 3;
-    protected static int nameFieldYOffset = 3;
-    protected static int attributeFieldXOffset = 4;
-    protected static int attributeFieldYOffset = 3;
+    protected static final int MINIMUMATTRIBUTEFIELDHEIGHT = 20;
+    protected static final int MINIMUMMETHODFIELDHEIGHT = 20;
+    protected static final int MINIMUMNAMEFIELDHEIGHT = 20;
+    protected static final int MINIMUMWIDTH = 70;
+    protected static final int NAMEFIELDXOFFSET = 3;
+    protected static final int NAMEFIELDYOFFSET = 3;
+    protected static final int ATTRIBUTEFIELDXOFFSET = 4;
+    protected static final int ATTRIBUTEFIELDYOFFSET = 3;
+
     protected Font nameFont;
     protected Font attributeFont;
+
     @JsonProperty("class")
     protected AbstractClass abstractClass;
 
-    public AbstractClassGR(AbstractClass c, Point start) {
+    protected AbstractClassGR(AbstractClass c, Point start) {
         abstractClass = c;
         startingPoint = start;
 
         // initialize the element's width and height to the minimum ones
-        width = minimumWidth;
-        height = minimumNameFieldHeight + minimumAttributeFieldHeight + minimumMethodFieldHeight;
+        width = MINIMUMWIDTH;
+        height = MINIMUMNAMEFIELDHEIGHT + MINIMUMATTRIBUTEFIELDHEIGHT + MINIMUMMETHODFIELDHEIGHT;
         outlineColor = Color.black;
         highlightColor = Color.blue;
         fillColor = null;
@@ -59,6 +59,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     // drawing
     // hooks used in subclasses to override certain methods
     // this is default drawing for conceptual class
+    @Override
     public final void draw(Graphics2D g) {
         if (fillColor == null) {
             fillColor = this.myColor();
@@ -79,9 +80,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        Stroke originalStroke;
         g.setStroke(new BasicStroke(1.2f));
-        originalStroke = g.getStroke();
+        Stroke originalStroke = g.getStroke();
         if (isSelected()) {
             g.setStroke(new BasicStroke(2));
             g.setPaint(highlightColor);
@@ -110,7 +110,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
             TextLayout layout = new TextLayout(name, nameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            int nameY = currentY + nameFieldYOffset - (int) bounds.getY();
+            int nameY = currentY + NAMEFIELDYOFFSET - (int) bounds.getY();
 
             g.setFont(nameFont);
             g.drawString(name, startingX + nameX, startingY + nameY);
@@ -121,28 +121,21 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         currentY = nameFieldHeight + 2;
 
-        int attributeX;
-        int attributeY;
-        TextLayout layout;
-        Rectangle2D bounds;
-
-        String name;
-        Iterator iterator = abstractClass.getAttributes().iterator();
-        while (iterator.hasNext()) {
-            name = ((Attribute) iterator.next()).toString();
-            layout = new TextLayout(name, attributeFont, frc);
-            bounds = layout.getBounds();
-            attributeX = attributeFieldXOffset - (int) bounds.getX();
-            attributeY = currentY + attributeFieldYOffset - (int) bounds.getY();
+        for(Attribute a: abstractClass.getAttributes()) {
+            String name = a.toString();
+            TextLayout layout = new TextLayout(name, attributeFont, frc);
+            Rectangle2D bounds = layout.getBounds();
+            int attributeX = ATTRIBUTEFIELDXOFFSET - (int) bounds.getX();
+            int attributeY = currentY + ATTRIBUTEFIELDYOFFSET - (int) bounds.getY();
             g.drawString(name, startingX + attributeX, startingY + attributeY);
-            currentY = currentY + attributeFieldYOffset + (int) bounds.getHeight();
+            currentY = currentY + ATTRIBUTEFIELDYOFFSET + (int) bounds.getHeight();
         }
-
+        
         currentY = nameFieldHeight + attributeFieldHeight + 2;
-        currentY = drawMethods(g, frc, startingX, startingY, currentY);
+        drawMethods(g, frc, startingX, startingY, currentY);
     }
 
-    // hooks for design class;
+    // hooks for design class
     protected int drawStereotype(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
         return currentY;
     }
@@ -169,15 +162,14 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
     // default implementation for calculating width; ClassGR needs to override hooks
     protected final int calculateWidth(Graphics2D g) {
-        int newWidth = minimumWidth;
+        int newWidth = MINIMUMWIDTH;
         FontRenderContext frc = g.getFontRenderContext();
-        // ConceptualClass conceptualClass = (ConceptualClass) abstractClass;
 
         // consider name text dimensions
         if (abstractClass.getName().length() != 0) {
             TextLayout layout = new TextLayout(abstractClass.getName(), nameFont, frc);
             Rectangle2D bounds = layout.getBounds();
-            int nameWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
+            int nameWidth = (int) bounds.getWidth() + (2 * NAMEFIELDXOFFSET);
 
             if (nameWidth > newWidth) {
                 newWidth = nameWidth;
@@ -188,14 +180,10 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         newWidth = calculateStereotypeWidth(g, newWidth);
 
         // consider attribute text dimensions
-        String attribute;
-        Iterator iterator = abstractClass.getAttributes().iterator();
-        while (iterator.hasNext()) {
-            attribute = ((Attribute) iterator.next()).toString();
-
-            TextLayout layout = new TextLayout(attribute, attributeFont, frc);
+        for(Attribute a: abstractClass.getAttributes()) {
+            TextLayout layout = new TextLayout(a.toString(), attributeFont, frc);
             Rectangle2D bounds = layout.getBounds();
-            int attributeWidth = (int) bounds.getWidth() + (2 * attributeFieldXOffset);
+            int attributeWidth = (int) bounds.getWidth() + (2 * ATTRIBUTEFIELDXOFFSET);
 
             if (attributeWidth > newWidth) {
                 newWidth = attributeWidth;
@@ -228,25 +216,20 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
     // default implementation for calculating name field height; ClassGR needs to
     // override hooks
-    public final int calculateNameFieldHeight(Graphics2D g) {
+    protected final int calculateNameFieldHeight(Graphics2D g) {
         int height = 0;
-        FontRenderContext frc = g.getFontRenderContext();
 
         // consider name text dimensions
         if (!abstractClass.getName().equals("")) {
-            TextLayout layout = new TextLayout(abstractClass.getName(), nameFont, frc);
+            TextLayout layout = new TextLayout(abstractClass.getName(), nameFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
 
-            height = height + (int) bounds.getHeight() + (2 * nameFieldYOffset);
+            height = height + (int) bounds.getHeight() + (2 * NAMEFIELDYOFFSET);
         }
 
         height = calculateStereotypeHeight(g, height);
 
-        if (height > minimumNameFieldHeight) {
-            return height;
-        } else {
-            return minimumNameFieldHeight;
-        }
+        return Math.max(height, MINIMUMNAMEFIELDHEIGHT);
     }
 
     // hook for ClassGR; default implementation returns the current height
@@ -258,32 +241,23 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     // same for both the conceptual and design classes
     public int calculateAttributeFieldHeight(Graphics2D g) {
         int height = 0;
-        FontRenderContext frc = g.getFontRenderContext();
-        Iterator iterator = abstractClass.getAttributes().iterator();
-        String attribute;
 
-        while (iterator.hasNext()) {
-            attribute = ((Attribute) iterator.next()).toString();
-
-            TextLayout layout = new TextLayout(attribute, attributeFont, frc);
+        for(Attribute a: abstractClass.getAttributes()) {
+            TextLayout layout = new TextLayout(a.toString(), attributeFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
 
-            height = height + (int) bounds.getHeight() + attributeFieldYOffset;
+            height += (int) bounds.getHeight() + ATTRIBUTEFIELDYOFFSET; 
         }
 
-        height = height + attributeFieldYOffset;
+        height += ATTRIBUTEFIELDYOFFSET;
 
-        if (height > minimumAttributeFieldHeight) {
-            return height;
-        } else {
-            return minimumAttributeFieldHeight;
-        }
+        return Math.max(height, MINIMUMATTRIBUTEFIELDHEIGHT);
     }
 
     // default implementation; conceptual class does not have methods; design class
     // should override
-    public int calculateMethodFieldHeight(Graphics2D g) {
-        return minimumMethodFieldHeight;
+    protected int calculateMethodFieldHeight(Graphics2D g) {
+        return MINIMUMMETHODFIELDHEIGHT;
     }
 
     public Classifier getClassifier() {

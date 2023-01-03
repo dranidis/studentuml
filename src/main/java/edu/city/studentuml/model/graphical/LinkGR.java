@@ -121,13 +121,13 @@ public abstract class LinkGR extends AbstractLinkGR {
     @Override
     public void objectRemoved(GraphicalElement obj) {
         LinkGR link = (LinkGR) obj;
-        logger.finest("objectRemoved (before): links " + links);
-        logger.finest("Link to remove: link " + link);
+        logger.finest(() -> "objectRemoved (before): links " + links);
+        logger.finest(() -> "Link to remove: link " + link);
         if (!removeLink(new Link(link.a, link.b)) && !removeLink(new Link(link.b, link.a))) {
-            logger.severe("Non existing link when objectRemoved:" + obj + " from links:" + links);
-            throw new RuntimeException();
+            logger.severe(() -> "Non existing link when objectRemoved:" + obj + " from links:" + links);
+            // throw new RuntimeException();
         }
-        logger.finest("objectRemoved (after): links " + links);
+        logger.finest(() -> "objectRemoved (after): links " + links);
         super.objectRemoved(obj);
     }
 
@@ -213,6 +213,11 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     public double getAngleRoleB() {
         return getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
+    }
+
+    @Override
+    public String toString() {
+        return a.toString() + " --> " + b.toString() + " : " + this.getClass().getSimpleName();
     }
 
 }

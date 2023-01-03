@@ -29,34 +29,15 @@ public class DeleteEditFactory {
         return ref;
     }
 
-    public DeleteEditComponent createDeleteEdit(GraphicalElement element, DiagramModel model) {
-        if (model instanceof SSDModel) {
-            if (element instanceof RoleClassifierGR) {
-                return new CompositeDeleteEdit(element, (SSDModel) model);
-            } else {
-                return new LeafDeleteEdit(element, (SSDModel) model);
-            }
-        } else if (model instanceof CCDModel) {
-            if (element instanceof ConceptualClassGR) {
-                return new CompositeDeleteEdit(element, (CCDModel) model);
-            } else {
-                return new LeafDeleteEdit(element, (CCDModel) model);
-            }
-        } else if (model instanceof SDModel) {
-            if (element instanceof  RoleClassifierGR) {
-                return new CompositeDeleteEdit(element, (SDModel) model);
-            } else {
-                return new LeafDeleteEdit(element, (SDModel) model);
-            }
-        } else if (model instanceof DCDModel) {
-            if ((element instanceof ClassGR) ||
-                    (element instanceof InterfaceGR)) {
-                return new CompositeDeleteEdit(element, (DCDModel) model);
-            } else {
-                return new LeafDeleteEdit(element, (DCDModel) model);
-            }
-        }
+    public CompositeDeleteEdit createDeleteEdit(GraphicalElement element, DiagramModel model) {
+        // if (element instanceof RoleClassifierGR || element instanceof ConceptualClassGR || element instanceof ClassGR
+        //         || element instanceof InterfaceGR) {
+        //     return new CompositeDeleteEdit(element, model);
+        // } else {
+        //     return new LeafDeleteEdit(element, model);
+        // }
+        return new CompositeDeleteEdit(element, model);
 
-        return null;
     }
+
 }

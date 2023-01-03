@@ -195,8 +195,8 @@ public final class ObjectFactory extends Observable {
                     + parent + " stream: " + stream + " XMLStreamer: " + streamer);
             logger.severe(" TargetExceptionStackTrace");
             e.getTargetException().printStackTrace();
-            logger.severe("StackTrace");
-            e.printStackTrace();
+            // logger.severe("StackTrace");
+            // e.printStackTrace();
             return null;
         }
 
@@ -751,10 +751,15 @@ public final class ObjectFactory extends Observable {
         InterfaceGR classB = (InterfaceGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("interfaceb"));
 
-        RealizationGR g = new RealizationGR(classA, classB, realization);
+        if (classA == null || classB == null) {
+            logger.severe("Realization problem: " + realization.toString());
+            return null;
+        } else {
+            RealizationGR g = new RealizationGR(classA, classB, realization);
 
-        ((DCDModel) parent).addGraphicalElement(g);
-        return g;
+            ((DCDModel) parent).addGraphicalElement(g);
+            return g;
+        }
     }
 
     public IXMLCustomStreamable newgeneralizationgr(Object parent, Element stream, XMLStreamer streamer) {

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,699,671" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="449" y="218">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="A" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="A"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="42" y="217">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="266" y="353">
+        <object class="Interface" id="interface" internalid="interface0" name="">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr1" textData="" to="interfacegr0" uid="Desktop Application User" x="413" y="356"/>
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="258" y="175">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="B" stereotype="">
+          <object class="GenericClass" id="generic" name="B"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr0" classb="classgr1" id="" internalid="dependencygr0">
+        <object class="Dependency" from="designclass0" id="dependency" internalid="dependency0" to="designclass1"/>
+      </object>
+      <object class="AssociationGR" classa="classgr1" classb="classgr0" id="" internalid="associationgr0" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association0" labelDirection="3" name="Ass" showArrow="true">
+          <object class="Role" classifier="designclass1" id="rolea" multiplicity="0..1" name="a"/>
+          <object class="Role" classifier="designclass0" id="roleb" multiplicity="1" name="b"/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr2" classb="classgr0" id="" internalid="aggregationgr0">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation0" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass2" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass0" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="AssociationClassGR" classa="classgr0" classb="classgr2" id="" internalid="associationclassgr0" uid="Desktop Application User">
+        <object class="DesignAssociationClass" direction="1" id="associationclass" internalid="designassociationclass0" name="">
+          <object class="Role" classifier="designclass0" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass2" id="roleb" multiplicity="" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="" to="associationclassgr0" uid="Desktop Application User" x="95" y="16"/>
+      <object class="RealizationGR" classa="classgr0" id="" interfaceb="interfacegr0" internalid="realizationgr0">
+        <object a="designclass0" b="interface0" class="Realization" id="realization" internalid="realization0"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr2" textData="" to="realizationgr0" uid="Desktop Application User" x="404" y="289"/>
+      <object base="classgr1" class="GeneralizationGR" id="" internalid="generalizationgr0" super="classgr0">
+        <object base="designclass1" class="Generalization" id="generalization" internalid="generalization0" super="designclass0"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr3" textData="???" to="generalizationgr0" uid="Desktop Application User" x="150" y="354"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr4" textData="" to="classgr0" uid="Desktop Application User" x="355" y="12"/>
+    </object>
+  </object>
+</uml>

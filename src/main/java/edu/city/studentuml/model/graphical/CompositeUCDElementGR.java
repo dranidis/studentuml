@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,11 +15,17 @@ import java.util.ListIterator;
  */
 public abstract class CompositeUCDElementGR extends UCDComponentGR {
 
+    private static final Logger logger = Logger.getLogger(CompositeUCDElementGR.class.getName());
+
     protected List<UCDComponentGR> ucdComponents;
 
-    public CompositeUCDElementGR(CompositeUCDElement compositeElement, int x, int y) {
+    public List<UCDComponentGR> getUcdComponents() {
+        return ucdComponents;
+    }
+
+    protected CompositeUCDElementGR(CompositeUCDElement compositeElement, int x, int y) {
         super(compositeElement, x, y);
-        ucdComponents = new ArrayList<UCDComponentGR>();
+        ucdComponents = new ArrayList<>();
     }
 
     @Override
@@ -51,15 +58,13 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
 
     @Override
     public void move(int x, int y) {
+        logger.finer(() -> "move");
         int deltaX = x - startingPoint.x;
         int deltaY = y - startingPoint.y;
         startingPoint.setLocation(x, y);
 
-        Iterator iterator = ucdComponents.iterator();
-        while (iterator.hasNext()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.next();
-            comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY);
-        }
+        ucdComponents
+                .forEach(comp -> comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY));
     }
 
     public boolean contains(UCDComponentGR otherUCDComponentGR) {

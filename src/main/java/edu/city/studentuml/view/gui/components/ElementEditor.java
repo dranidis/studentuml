@@ -9,14 +9,23 @@ import java.awt.Component;
  */
 public interface ElementEditor<T extends Copyable<T>> {
 
-    boolean showDialog(Component parent);
     /**
-     * returns the created/edited element
+     * Shows the dialog for editing the element. Returns false if the editing is cancelled.
+     * 
+     * @param parent
+     * @return
+     */
+    boolean showDialog(Component parent);
+    
+    /**
+     * returns a new element with the user entered fields fields.
      * @return
      */
     T createElement();
+    
     /**
-     * edits the element fields
+     * Sets the fields of the element that is passed to the Editor (via the
+     * constructor). The fields take the values of the data entered by the user.
      */
     void editElement();
     

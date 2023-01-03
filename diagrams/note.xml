@@ -2,28 +2,58 @@
 <uml>
   <object class="UMLProject" id="project">
     <object class="DCDModel" framex="0,0,1472,916" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true">
-      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="92" y="25">
-        <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;" to="classgr0" uid="Desktop Application User" x="16" y="143"/>
-      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="284" y="24">
-        <object class="DesignClass" id="designclass" internalid="designclass1" name="B" stereotype="">
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="307" y="11">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="B" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass1" name="B"/>
           <object id="attributes"/>
           <object id="methods"/>
         </object>
       </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr1" textData="one line" to="classgr1" uid="Desktop Application User" x="423" y="19"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr2" textData="one line&#10;second line" to="classgr1" uid="Desktop Application User" x="417" y="95"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr3" textData="one line&#10;second line&#10;third line" to="classgr1" uid="Desktop Application User" x="386" y="167"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr4" textData="1 a&#10;2&#10;3&#10;4 adsa " to="classgr1" uid="Desktop Application User" x="289" y="153"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr5" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr1" uid="Desktop Application User" x="598" y="11"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr6" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&#10;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr1" uid="Desktop Application User" x="527" y="166"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr7" textData="protected int calculateHeight(Graphics2D g) {&#10;        String noteText = getNoteText();&#10;&#10;        String[] lines = noteText.split(&quot;\\R&quot;);&#10;&#10;        int height = 0;&#10;        for(int i=0; i &lt; lines.length; i++) {&#10;            height += calculateLineHeight(g, noteText);&#10;        }&#10;        return height  + 2 * paddingVertical;&#10; }" to="classgr0" uid="Desktop Application User" x="96" y="241"/>
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="388" y="332">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="45" y="104">
+        <object class="Interface" id="interface" internalid="interface0" name="I">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="167" y="226">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="A" stereotype="">
+          <object class="GenericClass" id="generic" name="A"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="AssociationGR" classa="classgr1" classb="classgr2" id="" internalid="associationgr0" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association0" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass1" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass2" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="AssociationGR" classa="classgr0" classb="classgr1" id="" internalid="associationgr1" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association1" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass0" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass1" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr1" id="" interfaceb="interfacegr0" internalid="realizationgr0">
+        <object a="designclass1" b="interface0" class="Realization" id="realization" internalid="realization0"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr4" textData="one line" to="classgr2" uid="Desktop Application User" x="423" y="19"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr5" textData="one line&#10;second line" to="classgr2" uid="Desktop Application User" x="417" y="95"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr6" textData="one line&#10;second line&#10;third line" to="classgr2" uid="Desktop Application User" x="386" y="167"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr7" textData="1 a&#10;2&#10;3&#10;4 adsa " to="classgr2" uid="Desktop Application User" x="289" y="153"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr9" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&#10;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr2" uid="Desktop Application User" x="527" y="166"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr1" textData="" to="classgr0" uid="Desktop Application User" x="528" y="406"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr8" textData="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." to="classgr2" uid="Desktop Application User" x="598" y="11"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="" to="associationgr0" uid="Desktop Application User" x="178" y="24"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr10" textData="creates&#10;" to="realizationgr0" uid="Desktop Application User" x="155" y="131"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr2" textData="a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;a =b&#10;&#10;c =b;&#10;&#10;f = g;&#10;" to="classgr1" uid="Desktop Application User" x="16" y="212"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr3" textData="protected int calculateHeight(Graphics2D g) {&#10;        String noteText = getNoteText();&#10;&#10;        String[] lines = noteText.split(&quot;\\R&quot;);&#10;&#10;        int height = 0;&#10;        for(int i=0; i &lt; lines.length; i++) {&#10;            height += calculateLineHeight(g, noteText);&#10;        }&#10;        return height  + 2 * paddingVertical;&#10; }" to="classgr1" uid="Desktop Application User" x="122" y="392"/>
     </object>
   </object>
 </uml>

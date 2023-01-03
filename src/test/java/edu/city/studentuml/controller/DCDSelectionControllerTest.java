@@ -5,27 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Point;
-import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.domain.ConceptualAssociationClass;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.AbstractClassGR;
-import edu.city.studentuml.model.graphical.AggregationGR;
-import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.view.gui.DCDInternalFrame;
 
 public class DCDSelectionControllerTest {
@@ -33,6 +22,7 @@ public class DCDSelectionControllerTest {
     UMLProject umlProject;
     DCDModel model;
     DCDInternalFrame internalFrame;
+    Helper h;
 
     @Before
     public void setup() {
@@ -40,12 +30,27 @@ public class DCDSelectionControllerTest {
         umlProject.clear();
         model = new DCDModel("ccd", umlProject);
         internalFrame = new DCDInternalFrame(model, true);
+        h = new Helper(model);
     }
 
     @Test
     public void testCreation() {
         DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
         assertNotNull(ccdSelectionController);
+    }
+
+    @Test 
+    public void testDeleteInterfaceWithAnAssociation() {
+        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        InterfaceGR i = h.addInterface("I");
+        ClassGR a = h.addClass("A");
+
+        h.addAssociation(a, i);
+        
+        ccdSelectionController.deleteElement(i);
+
+        assertEquals(1, model.getGraphicalElements().size());
+
     }
 
     @Test
@@ -55,7 +60,7 @@ public class DCDSelectionControllerTest {
         /**
          * Adds a conceptual class A
          */
-        GraphicalElement cGr = addClass("A");
+        GraphicalElement cGr = h.addClass("A");
 
         ccdSelectionController.deleteElement(cGr);
 
@@ -72,23 +77,23 @@ public class DCDSelectionControllerTest {
     public void testDeleteElementWithRelationshipsUndo() {
         DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
 
-        ClassGR a = addClass("A");
-        ClassGR b = addClass("B");
-        ClassGR c = addClass("C");
-        ClassGR d = addClass("D");
-        ClassGR f = addClass("F");
+        ClassGR a = h.addClass("A");
+        ClassGR b = h.addClass("B");
+        ClassGR c = h.addClass("C");
+        ClassGR d = h.addClass("D");
+        ClassGR f = h.addClass("F");
 
-        addAssociation(a, b);
-        addAssociation(c, a);
-        addAggregation(a, d);
-        addAggregation(c, a);
-        addGeneralization(c, a);
-        addGeneralization(a, b);
-        addAssociationClass(a, f);
+        h.addAssociation(a, b);
+        h.addAssociation(c, a);
+        h.addAggregation(a, d);
+        h.addAggregation(c, a);
+        h.addGeneralization(c, a);
+        h.addGeneralization(a, b);
+        h.addAssociationClass(a, f);
 
         System.out.println("BEFORE");
         model.getGraphicalElements().forEach(e -> System.out.println(e));
-        assertEquals(7, countRelationshipsWithClassNamed("A"));
+        assertEquals(7, h.countRelationshipsWithClassNamed("A"));
 
         /**
          * DELETE a
@@ -97,7 +102,7 @@ public class DCDSelectionControllerTest {
 
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR
                 && ((ClassGR) ge).getAbstractClass().getName().equals("A")));
-        assertEquals(0, countRelationshipsWithClassNamed("A"));
+        assertEquals(0, h.countRelationshipsWithClassNamed("A"));
 
         System.out.println("DELETED A");
 
@@ -112,48 +117,103 @@ public class DCDSelectionControllerTest {
         model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR));
-        assertEquals(7, countRelationshipsWithClassNamed("A"));
+        assertEquals(7, h.countRelationshipsWithClassNamed("A"));
     }  
     
-    private AssociationGR addAssociation(AbstractClassGR cGr, AbstractClassGR b) {
-        AssociationGR assoc = new AssociationGR(cGr, b, new Association(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociation(assoc);        
-        return assoc;
-    }
+    @Test
+    public void testdeleteSelectedElements() {
+        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
 
-    private AggregationGR addAggregation(AbstractClassGR cGr, AbstractClassGR b) {
-        AggregationGR rel = new AggregationGR(cGr, b, new Aggregation(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociation(rel);        
-        return rel;
-    }
+        ClassGR a = h.addClass("A");
+        ClassGR b = h.addClass("B");
+
+        h.addAssociation(a, b);
+        h.addAssociation(a, b);
+
+        System.out.println("BEFORE");
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(4, model.getGraphicalElements().size());
+
+        /**
+         * DELETE all
+         */
+        ccdSelectionController.selectAll();
+        ccdSelectionController.deleteSelected();
 
 
-    private GeneralizationGR addGeneralization(AbstractClassGR cGr, AbstractClassGR b) {
-        GeneralizationGR rel = new GeneralizationGR(cGr, b, new Generalization(cGr.getClassifier(), b.getClassifier()));
-        model.addGeneralization(rel);        
-        return rel;
-    }
+        System.out.println("DELETE ALL");
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(0, model.getGraphicalElements().size());
 
-    private AssociationClassGR addAssociationClass(AbstractClassGR cGr, AbstractClassGR b) {
-        AssociationClassGR rel = new AssociationClassGR(cGr, b, new ConceptualAssociationClass(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociationClass(rel);        
-        return rel;
-    }    
+        /**
+         * UNDO
+         */
+        internalFrame.getUndoManager().undo();
+        System.out.println("UNDO");
 
-    private ClassGR addClass(String name) {
-        DesignClass c = new DesignClass(name);
-        ClassGR cGr = new ClassGR(c, new Point());
-        model.addClass(cGr); 
-        return cGr;       
-    }
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(4, model.getGraphicalElements().size());
 
-    private int countRelationshipsWithClassNamed(String name) {
-        return model.getGraphicalElements().stream()
-                .filter(ge -> (ge instanceof LinkGR 
-                && (((LinkGR) ge).getA().getClassifier().getName().equals(name)
-                || ((LinkGR) ge).getB().getClassifier().getName().equals(name)))
-                )
-                .collect(Collectors.toList()).size();
-    }
+                /**
+         * REDO
+         */
+        internalFrame.getUndoManager().redo();
+        System.out.println("REDO");
+
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(0, model.getGraphicalElements().size());
+    }  
+
+    @Test
+    public void testdeleteSelectedElementsWithNotes() {
+        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+
+        ClassGR a = h.addClass("A");
+        ClassGR b = h.addClass("B");
+
+        AssociationGR ab1 = h.addAssociation(a, b);
+        GeneralizationGR ab2 = h.addGeneralization(a, b);
+
+        h.addNote(a);
+        h.addNote(b);
+        h.addNote(ab1);
+        h.addNote(ab2);
+
+        int countAll = 8;
+
+        System.out.println("BEFORE");
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(countAll, model.getGraphicalElements().size());
+
+        /**
+         * DELETE all
+         */
+        ccdSelectionController.selectAll();
+        ccdSelectionController.deleteSelected();
+
+
+        System.out.println("DELETE ALL");
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(0, model.getGraphicalElements().size());
+
+        /**
+         * UNDO
+         */
+        internalFrame.getUndoManager().undo();
+        System.out.println("UNDO");
+
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(countAll, model.getGraphicalElements().size());
+
+                /**
+         * REDO
+         */
+        internalFrame.getUndoManager().redo();
+        System.out.println("REDO");
+
+        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        assertEquals(0, model.getGraphicalElements().size());
+    }  
+
 
 }

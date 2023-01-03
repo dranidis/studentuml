@@ -8,13 +8,12 @@ import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.controller.UCDSelectionController;
 import edu.city.studentuml.controller.UseCaseResizeWithCoveredElementsController;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.UCDView;
 
 public class UCDInternalFrame extends DiagramInternalFrame {
 
-    public UCDInternalFrame(UCDModel model) {
+    public UCDInternalFrame(DiagramModel model) {
         super(model.getDiagramName(), model);
     }
 

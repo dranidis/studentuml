@@ -19,6 +19,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
@@ -27,6 +29,8 @@ import javax.swing.undo.UndoableEdit;
  * @author draganbisercic
  */
 public abstract class ResizeWithCoveredElementsController {
+
+    private static final Logger logger = Logger.getLogger(ResizeWithCoveredElementsController.class.getName());
 
     private DiagramInternalFrame frame;
     private DiagramModel model;
@@ -133,7 +137,6 @@ public abstract class ResizeWithCoveredElementsController {
                 // adding newly covered elements after resize
                 addContainingElements();
 
-//                UndoableEdit edit = new ActivityResizeWithCoveredElementsEdit(resizableElement, undoSize, redoSize, model);
                 CompoundEdit edit = new CompoundResizeEdit();
                 UndoableEdit resizeEdit = ResizeWithCoveredElementsEditFactory.getInstance().createResizeEdit(resizableElement, undoSize, redoSize, model);
                 edit.addEdit(resizeEdit);
@@ -149,7 +152,7 @@ public abstract class ResizeWithCoveredElementsController {
                     }
                 } else {
                     // TEST
-                    System.err.println(false);
+                    logger.severe(() -> "undoContextSizes.size() != redoContextSizes.size()");
                 }
 
                 edit.end();
@@ -171,9 +174,7 @@ public abstract class ResizeWithCoveredElementsController {
         }
     }
 
-    protected void addContainingElements() {
-        // empty by default
-    }
+    protected abstract void addContainingElements();
 
     private void myMouseDragged(MouseEvent event) {
         if (!selectionMode) {
@@ -253,7 +254,7 @@ public abstract class ResizeWithCoveredElementsController {
         return selectionController;
     }
 
-    private void loadContextSizes(Resizable context, List sizes) {
+    private void loadContextSizes(Resizable context, List<Size> sizes) {
         Size size = new Size();
         size.setStartingPosition(new Point(context.getStartingPoint().x, context.getStartingPoint().y));
         size.setDimension(new Dimension(context.getWidth(), context.getHeight()));

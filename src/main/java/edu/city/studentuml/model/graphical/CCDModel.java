@@ -36,7 +36,7 @@ public class CCDModel extends AbstractCDModel {
     }
 
     // add a new diagram class
-    public void addClass(ConceptualClassGR c) {
+    protected void addClass(ConceptualClassGR c) {
 
         // add the class to the project repository first and then to the diagram
         repository.addConceptualClass(c.getConceptualClass());
@@ -66,7 +66,7 @@ public class CCDModel extends AbstractCDModel {
     // since more than one graphical class or interface can refer
     // to the same domain representation, just remove the graphical representation
     // from the diagram, and not the domain representation from the repository
-    public void removeClass(ConceptualClassGR c) {
+    protected void removeClass(ConceptualClassGR c) {
         getClassGRAssociationGRs(c).forEach(e -> removeAssociation((AssociationGR) e));
         getClassGRAssociationClassGRs(c).forEach(e -> removeAssociationClass((AssociationClassGR) e));
         getClassGRGeneralizationGRs(c).forEach(e -> removeGeneralization((GeneralizationGR) e));

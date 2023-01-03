@@ -121,4 +121,9 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     protected abstract int calculateWidth(Graphics2D g);
 
     protected abstract int calculateHeight(Graphics2D g);
+
+    @Override
+    public String toString() {
+        return ucdComponent.getName() + " : " +  ucdComponent.getClass().getSimpleName();
+    }    
 }

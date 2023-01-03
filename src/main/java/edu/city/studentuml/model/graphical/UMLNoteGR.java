@@ -19,10 +19,12 @@ import java.awt.geom.Rectangle2D;
 import java.text.AttributedString;
 import java.text.BreakIterator;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 public class UMLNoteGR extends GraphicalElement {
+    private static final Logger logger = Logger.getLogger(UMLNoteGR.class.getName());
 
     private int paddingHorizontal;
     private int paddingVertical;
@@ -34,6 +36,9 @@ public class UMLNoteGR extends GraphicalElement {
     private static final Font nameFont = new Font("SansSerif", Font.PLAIN, 10);
 
     public UMLNoteGR(String textualContent, GraphicalElement connectedTo, Point start) {
+        if (connectedTo == null) {
+            logger.severe(() -> "Note: " + textualContent + " at Point: " + start.getX() + ", " + start.getY() + " not connected to an element!");
+        }
         to = connectedTo;
         startingPoint = start;
         text = textualContent;

@@ -1,6 +1,3 @@
-
-
-
 package edu.city.studentuml.controller;
 
 import java.awt.event.ActionEvent;
@@ -28,11 +25,17 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.graphical.CompositeUCDElementGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
+import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
+import edu.city.studentuml.util.undoredo.DeleteEditFactory;
 import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
@@ -135,13 +138,7 @@ public abstract class SelectionController {
 
         selectAllActionListener = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                selectedElements.clear();
-                model.clearSelected();
-
-                for (GraphicalElement el: model.getGraphicalElements()) {
-                    selectedElements.add(el);
-                    model.selectGraphicalElement(el);
-                }
+                selectAll();
             }
         };
 
@@ -396,20 +393,97 @@ public abstract class SelectionController {
         }
     }
 
-    private void deleteSelected() {
-        // call abstract method deleteElement that is to be overridden by subclasses
-        model.clearSelected();
-        for (GraphicalElement toDelete : selectedElements) {
-            if (model.getGraphicalElements().contains(toDelete)) {
-                logger.fine(() -> ("DEL:" + toDelete.getInternalid() + " " + toDelete.toString()));
-                deleteElement(toDelete);
+    protected void deleteSelectedElements() {
+        CompositeDeleteEdit edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElements.get(0), model);
+        
+        selectedElements.forEach(e -> CompositeDeleteEditLoader.loadCompositeDeleteEdit(e, edit, model));
+        parentComponent.getUndoSupport().postEdit(edit);
+
+        for (GraphicalElement selectedElement: selectedElements) {
+            // check if element was not already deleted by a link to another element
+            if (inModel(selectedElement)) {
+                logger.fine(() -> ("DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString()));
+
+                NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+                int i = 0;
+                while (i < elements.size()) {
+                    GraphicalElement o = elements.get(i);
+                    if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
+                        model.removeGraphicalElement(o);
+                    } else {
+                        i++;
+                    }
+                }
+
+                model.removeGraphicalElement(selectedElement);
+            }
+        }
+
+    }
+
+    /**
+     * Searches for the element in the model and then recursively in the CompositeUCDElementGR elements.
+     * 
+     * @param selectedElement
+     * @return
+     */
+    private boolean inModel(GraphicalElement selectedElement) {
+        for (GraphicalElement el: model.getGraphicalElements()) {
+            if (el == selectedElement) {
+                return true;
             }
 
+            if (el instanceof CompositeUCDElementGR && selectedElement instanceof UCDComponentGR) {
+                return inComposite((CompositeUCDElementGR) el, (UCDComponentGR ) selectedElement);
+            }            
         }
+        return false;
+    }
+
+    private boolean inComposite(CompositeUCDElementGR el, UCDComponentGR selectedElement) {
+        if (selectedElement.getContext() == el) {
+            return true;
+        } else {
+            for (UCDComponentGR c : el.getUcdComponents()) {
+                if (c instanceof CompositeUCDElementGR && inComposite((CompositeUCDElementGR) c, selectedElement)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void deleteSelected() {
+        // call abstract method deleteElement that is to be overridden by subclasses
+        model.clearSelected();
+        // for (GraphicalElement toDelete : selectedElements) {
+        //     if (model.getGraphicalElements().contains(toDelete)) {
+        //         logger.fine(() -> ("DEL:" + toDelete.getInternalid() + " " + toDelete.toString()));
+        //         deleteElement(toDelete);
+        //     }
+        // 
+        // }
+
+        deleteSelectedElements();
+
         selectedElements.clear();
     }
 
     public DiagramModel getModel() {
         return model;
+    }
+
+    public void selectAll() {
+        selectedElements.clear();
+        model.clearSelected();
+
+        for (GraphicalElement el: model.getGraphicalElements()) {
+            selectedElements.add(el);
+            model.selectGraphicalElement(el);
+        }
+    }
+
+    protected void addElementToSelection(GraphicalElement e) {
+        selectedElements.add(e);
     }
 }

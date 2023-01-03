@@ -6,24 +6,19 @@ import java.awt.Point;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ClassGR.java
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.XMLStreamer;
 
 @JsonIncludeProperties({ "class", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
-    private static int nameStereotypeDistance = 4;
-    private static int methodFieldXOffset = 4;
-    private static int methodFieldYOffset = 3;
+    private static final int STEREOTYPE_DISTANCE = 4;
+    private static final int METHOD_XOFFSET = 4;
+    private static final int METHOD_YOFFSET = 3;
     private Font stereotypeFont;
     private Font methodFont;
 
@@ -35,6 +30,7 @@ public class ClassGR extends AbstractClassGR {
     }
 
     // Hollywood principle; override the hooks from the abstract base class
+    @Override
     protected int drawStereotype(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
         DesignClass designClass = (DesignClass) abstractClass;
         // draw the stereotype text first, if any
@@ -45,9 +41,9 @@ public class ClassGR extends AbstractClassGR {
 
             // x and y positions relative to the top left corner; text is centered
             int stereotypeX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            int stereotypeY = nameFieldYOffset - (int) bounds.getY();
+            int stereotypeY = NAMEFIELDYOFFSET - (int) bounds.getY();
 
-            currentY = (int) bounds.getHeight() + nameStereotypeDistance;
+            currentY = (int) bounds.getHeight() + STEREOTYPE_DISTANCE;
             g.setFont(stereotypeFont);
             g.drawString(stereotype, startingX + stereotypeX, startingY + stereotypeY);
         }
@@ -55,6 +51,7 @@ public class ClassGR extends AbstractClassGR {
         return currentY;
     }
 
+    @Override
     protected int drawMethods(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
         DesignClass designClass = (DesignClass) abstractClass;
         // draw the methods
@@ -66,21 +63,20 @@ public class ClassGR extends AbstractClassGR {
         int methodX;
         int methodY;
 
-        String name;
-        Iterator iterator = designClass.getMethods().iterator();
-        while (iterator.hasNext()) {
-            name = ((Method) iterator.next()).toString();
+        for(Method m: designClass.getMethods()) {
+            String name = m.toString();
             layout = new TextLayout(name, methodFont, frc);
             bounds = layout.getBounds();
-            methodX = methodFieldXOffset - (int) bounds.getX();
-            methodY = currentY + methodFieldYOffset - (int) bounds.getY();
+            methodX = METHOD_XOFFSET - (int) bounds.getX();
+            methodY = currentY + METHOD_YOFFSET - (int) bounds.getY();
             g.drawString(name, startingX + methodX, startingY + methodY);
-            currentY = currentY + methodFieldYOffset + (int) bounds.getHeight();
+            currentY = currentY + METHOD_YOFFSET + (int) bounds.getHeight();
         }
 
         return currentY;
     }
 
+    @Override
     protected int calculateStereotypeWidth(Graphics2D g, int currentWidth) {
         int newWidth = currentWidth;
         FontRenderContext frc = g.getFontRenderContext();
@@ -90,7 +86,7 @@ public class ClassGR extends AbstractClassGR {
         if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
             TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
-            int stereotypeWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
+            int stereotypeWidth = (int) bounds.getWidth() + (2 * NAMEFIELDXOFFSET);
 
             if (stereotypeWidth > newWidth) {
                 newWidth = stereotypeWidth;
@@ -100,20 +96,17 @@ public class ClassGR extends AbstractClassGR {
         return newWidth;
     }
 
+    @Override
     protected int calculateMethodsWidth(Graphics2D g, int currentWidth) {
         int newWidth = currentWidth;
-        FontRenderContext frc = g.getFontRenderContext();
         DesignClass designClass = (DesignClass) abstractClass;
 
         // consider method text dimensions
-        String method;
-        Iterator iterator = designClass.getMethods().iterator();
-        while (iterator.hasNext()) {
-            method = ((Method) iterator.next()).toString();
 
-            TextLayout layout = new TextLayout(method, methodFont, frc);
+        for(Method m: designClass.getMethods()) {
+            TextLayout layout = new TextLayout(m.toString(), methodFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
-            int methodWidth = (int) bounds.getWidth() + (2 * methodFieldXOffset);
+            int methodWidth = (int) bounds.getWidth() + (2 * METHOD_XOFFSET);
 
             if (methodWidth > newWidth) {
                 newWidth = methodWidth;
@@ -123,6 +116,7 @@ public class ClassGR extends AbstractClassGR {
         return newWidth;
     }
 
+    @Override
     protected int calculateStereotypeHeight(Graphics2D g, int h) {
         int hgt = h;
         FontRenderContext frc = g.getFontRenderContext();
@@ -134,36 +128,27 @@ public class ClassGR extends AbstractClassGR {
             TextLayout layout = new TextLayout(stereotype, stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
 
-            hgt = hgt + (int) bounds.getHeight() + nameStereotypeDistance;
+            hgt = hgt + (int) bounds.getHeight() + STEREOTYPE_DISTANCE;
         }
 
         return hgt;
     }
 
-    public int calculateMethodFieldHeight(Graphics2D g) {
+    @Override
+    protected int calculateMethodFieldHeight(Graphics2D g) {
         int height = 0;
-        FontRenderContext frc = g.getFontRenderContext();
         DesignClass designClass = (DesignClass) abstractClass;
 
-        Iterator iterator = designClass.getMethods().iterator();
-        String method;
-
-        while (iterator.hasNext()) {
-            method = ((Method) iterator.next()).toString();
-
-            TextLayout layout = new TextLayout(method, methodFont, frc);
+        for(Method m: designClass.getMethods()) {
+            TextLayout layout = new TextLayout(m.toString(), methodFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
 
-            height = height + (int) bounds.getHeight() + methodFieldYOffset;
+            height = height + (int) bounds.getHeight() + METHOD_YOFFSET;
         }
+        
+        height += METHOD_YOFFSET;
 
-        height = height + methodFieldYOffset;
-
-        if (height > minimumMethodFieldHeight) {
-            return height;
-        } else {
-            return minimumMethodFieldHeight;
-        }
+        return Math.max(height, MINIMUMMETHODFIELDHEIGHT);
     }
 
     public void setDesignClass(DesignClass cl) {
@@ -174,10 +159,8 @@ public class ClassGR extends AbstractClassGR {
         return (DesignClass) abstractClass;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        super.streamFromXML(node, streamer, instance);
-    }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "designclass", getDesignClass());

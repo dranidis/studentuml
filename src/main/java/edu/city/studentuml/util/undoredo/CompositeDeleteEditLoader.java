@@ -9,6 +9,9 @@ import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.UCDComponentGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
+import edu.city.studentuml.util.NotifierVector;
 
 /**
  *
@@ -28,25 +31,56 @@ public class CompositeDeleteEditLoader {
             loadInterfaceCompositeDeleteEdit((InterfaceGR) e, edit, model);
         } else if (e instanceof RoleClassifierGR) {
             loadRoleClassifierCompositeDeleteEdit((RoleClassifierGR) e, edit, model);
+        } else if (e instanceof UCDComponentGR) {
+            loadUCDComponentCompositeDeleteEdit((UCDComponentGR) e, edit, model);
+        } else {
+            edit.add(new LeafDeleteEdit(e, model));
         }
+
+        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
+        int i = 0;
+        while (i < elements.size()) {
+            GraphicalElement o = elements.get(i);
+            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(e)) {
+                edit.add(new LeafDeleteEdit(o, model));
+                model.removeGraphicalElement(o);
+            } else {
+                i++;
+            }
+        }        
+    }
+
+    private static void loadUCDComponentCompositeDeleteEdit(UCDComponentGR c, CompositeDeleteEdit edit,
+            DiagramModel model) {
+                int index = c.getNumberOfElements() - 1;
+                while (index >= 0) {
+                    UCDComponentGR n = c.getElement(index);
+                    loadUCDComponentCompositeDeleteEdit(n, edit, model);
+                    // update index
+                    index--;
+                }
+                edit.add(new LeafDeleteEdit(c, model));
+
+                c.getIncomingLinks().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+                c.getOutgoingLinks().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadCCDClassCompositeDeleteEdit(ConceptualClassGR c, CompositeDeleteEdit edit, DiagramModel model) {
         edit.add(new LeafDeleteEdit(c, model));
 
-        ((CCDModel) model).getClassGRAssociationGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((CCDModel) model).getClassGRAssociationClassGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((CCDModel) model).getClassGRGeneralizationGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        ((CCDModel) model).getClassGRAssociationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((CCDModel) model).getClassGRAssociationClassGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((CCDModel) model).getClassGRGeneralizationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadDCDClassCompositeDeleteEdit(ClassGR c, CompositeDeleteEdit edit, DiagramModel model) {
         edit.add(new LeafDeleteEdit(c, model));
 
-        ((DCDModel) model).getClassGRDependencyGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getClassGRAssociationGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getClassGRAssociationClassGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getClassGRRealizationGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getClassGRGeneralizationGRs(c).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        ((DCDModel) model).getClassGRDependencyGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getClassGRAssociationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getClassGRAssociationClassGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getClassGRRealizationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getClassGRGeneralizationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadInterfaceCompositeDeleteEdit(InterfaceGR i, CompositeDeleteEdit edit, DiagramModel model) {
@@ -55,18 +89,15 @@ public class CompositeDeleteEditLoader {
         /**
          * aggregations are associations
          */
-        ((DCDModel) model).getInterfaceGRAssociationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getInterfaceGRGeneralizationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
-        ((DCDModel) model).getInterfaceGRRealizationGRs(i).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        ((DCDModel) model).getInterfaceGRAssociationGRs(i).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getInterfaceGRGeneralizationGRs(i).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        ((DCDModel) model).getInterfaceGRRealizationGRs(i).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadRoleClassifierCompositeDeleteEdit(RoleClassifierGR rc, CompositeDeleteEdit edit,
             DiagramModel model) {
-        LeafDeleteEdit leaf;
 
-        leaf = new LeafDeleteEdit(rc, model);
-        edit.add(leaf);
-
-        ((AbstractSDModel) model).getRoleClaffierGRMessages(rc).forEach(e -> edit.add(new LeafDeleteEdit(e, model)));
+        edit.add(new LeafDeleteEdit(rc, model));
+        ((AbstractSDModel) model).getRoleClaffierGRMessages(rc).forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 }

@@ -250,26 +250,32 @@ public class DCDSelectionController extends SelectionController {
     // this method overrides the abstract method of the superclass
     // to handle deletion of the mouse-selected graphical element
     public void deleteElement(GraphicalElement selectedElement) {
-        UndoableEdit edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElement, model);
-        if (edit instanceof CompositeDeleteEdit) {
-            CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
-        }
+        // DeleteEditComponent edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElement, model);
+        // if (edit instanceof CompositeDeleteEdit) {
+        //     CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
+        // }
+
+        CompositeDeleteEdit edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElement, model);
+        CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, edit, model);
+
+        parentComponent.getUndoSupport().postEdit(edit);
 
         /**
          * uses for loop to avoid ConcurrentModificationException
          */
         NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
-        int i = 0;
-        while (i < elements.size()) {
+        int i = 0;        while (i < elements.size()) {
             GraphicalElement o = elements.get(i);
             if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                deleteElement(o);
+                model.removeGraphicalElement(o);
             } else {
                 i++;
             }
         }
-        
-        parentComponent.getUndoSupport().postEdit(edit);
+
         model.removeGraphicalElement(selectedElement);
     }
+
+
+
 }

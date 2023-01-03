@@ -5,26 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Point;
-import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.domain.ConceptualAssociationClass;
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.AggregationGR;
-import edu.city.studentuml.model.graphical.AssociationClassGR;
-import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.view.gui.CCDInternalFrame;
 
 public class CCDSelectionControllerTest {
@@ -32,6 +19,7 @@ public class CCDSelectionControllerTest {
     UMLProject umlProject;
     CCDModel model;
     CCDInternalFrame ccdInternalFrame;
+    Helper h;
 
     @Before
     public void setup() {
@@ -39,6 +27,7 @@ public class CCDSelectionControllerTest {
         umlProject.clear();
         model = new CCDModel("ccd", umlProject);
         ccdInternalFrame = new CCDInternalFrame(model);
+        h = new Helper(model);
     }
 
     @Test
@@ -54,7 +43,7 @@ public class CCDSelectionControllerTest {
         /**
          * Adds a conceptual class A
          */
-        GraphicalElement cGr = addClass("A");
+        GraphicalElement cGr = h.addConceptualClass("A");
 
         ccdSelectionController.deleteElement(cGr);
 
@@ -71,23 +60,23 @@ public class CCDSelectionControllerTest {
     public void testDeleteElementWithRelationshipsUndo() {
         CCDSelectionController ccdSelectionController = new CCDSelectionController(ccdInternalFrame, model);
 
-        ConceptualClassGR a = addClass("A");
-        ConceptualClassGR b = addClass("B");
-        ConceptualClassGR c = addClass("C");
-        ConceptualClassGR d = addClass("D");
-        ConceptualClassGR f = addClass("F");
+        ConceptualClassGR a = h.addConceptualClass("A");
+        ConceptualClassGR b = h.addConceptualClass("B");
+        ConceptualClassGR c = h.addConceptualClass("C");
+        ConceptualClassGR d = h.addConceptualClass("D");
+        ConceptualClassGR f = h.addConceptualClass("F");
 
-        addAssociation(a, b);
-        addAssociation(c, a);
-        addAggregation(a, d);
-        addAggregation(c, a);
-        addGeneralization(c, a);
-        addGeneralization(a, b);
-        addAssociationClass(a, f);
+        h.addAssociation(a, b);
+        h.addAssociation(c, a);
+        h.addAggregation(a, d);
+        h.addAggregation(c, a);
+        h.addGeneralization(c, a);
+        h.addGeneralization(a, b);
+        h.addConceptualAssociationClass(a, f);
 
         System.out.println("BEFORE");
         model.getGraphicalElements().forEach(e -> System.out.println(e));
-        assertEquals(7, countRelationshipsWithA());
+        assertEquals(7, h.countRelationshipsWithClassNamed("A"));
 
         /**
          * DELETE a
@@ -96,7 +85,7 @@ public class CCDSelectionControllerTest {
 
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR
                 && ((ConceptualClassGR) ge).getAbstractClass().getName().equals("A")));
-        assertEquals(0, countRelationshipsWithA());
+        assertEquals(0, h.countRelationshipsWithClassNamed("A"));
 
         System.out.println("DELETED A");
 
@@ -111,48 +100,8 @@ public class CCDSelectionControllerTest {
         model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR));
-        assertEquals(7, countRelationshipsWithA());
+        assertEquals(7, h.countRelationshipsWithClassNamed("A"));
     }  
     
-    private AssociationGR addAssociation(ConceptualClassGR cGr, ConceptualClassGR b) {
-        AssociationGR assoc = new AssociationGR(cGr, b, new Association(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociation(assoc);        
-        return assoc;
-    }
-
-    private AggregationGR addAggregation(ConceptualClassGR cGr, ConceptualClassGR b) {
-        AggregationGR rel = new AggregationGR(cGr, b, new Aggregation(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociation(rel);        
-        return rel;
-    }
-
-
-    private GeneralizationGR addGeneralization(ConceptualClassGR cGr, ConceptualClassGR b) {
-        GeneralizationGR rel = new GeneralizationGR(cGr, b, new Generalization(cGr.getClassifier(), b.getClassifier()));
-        model.addGeneralization(rel);        
-        return rel;
-    }
-
-    private AssociationClassGR addAssociationClass(ConceptualClassGR cGr, ConceptualClassGR b) {
-        AssociationClassGR rel = new AssociationClassGR(cGr, b, new ConceptualAssociationClass(cGr.getClassifier(), b.getClassifier()));
-        model.addAssociationClass(rel);        
-        return rel;
-    }    
-
-    private ConceptualClassGR addClass(String name) {
-        ConceptualClass c = new ConceptualClass(name);
-        ConceptualClassGR cGr = new ConceptualClassGR(c, new Point());
-        model.addClass(cGr); 
-        return cGr;       
-    }
-
-    private int countRelationshipsWithA() {
-        return model.getGraphicalElements().stream()
-                .filter(ge -> (ge instanceof LinkGR 
-                && (((LinkGR) ge).getA().getClassifier().getName().equals("A")
-                || ((LinkGR) ge).getB().getClassifier().getName().equals("A")))
-                )
-                .collect(Collectors.toList()).size();
-    }
 
 }

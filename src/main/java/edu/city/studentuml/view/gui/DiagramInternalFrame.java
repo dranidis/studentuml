@@ -174,6 +174,13 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         redoMenuItem.addActionListener(e -> redo());
         editMenu.add(redoMenuItem);
 
+        JMenuItem selectAllMenuItem = new JMenuItem();
+        selectAllMenuItem.setText("Select all");
+        keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
+        selectAllMenuItem.setAccelerator(keyStrokeToNew);
+        selectAllMenuItem.addActionListener(e -> selectionController.selectAll());
+        editMenu.add(selectAllMenuItem);
+
         JMenuItem rename = new JMenuItem("Rename diagram");
         rename.addActionListener(e -> renameDiagram());
         editMenu.add(rename);

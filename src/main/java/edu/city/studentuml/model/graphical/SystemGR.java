@@ -15,7 +15,6 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import org.w3c.dom.Element;
@@ -55,7 +54,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         down = new DownResizeHandle(this);
         left = new LeftResizeHandle(this);
         right = new RightResizeHandle(this);
-        resizeHandles = new ArrayList<ResizeHandle>();
+        resizeHandles = new ArrayList<>();
         resizeHandles.add(up);
         resizeHandles.add(down);
         resizeHandles.add(left);
@@ -74,8 +73,8 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         int startingY = getY();
 
         // paint the system
-        g.setPaint(fillColor);
-        g.fillRect(startingX, startingY, width, height);
+        // g.setPaint(fillColor);
+        // g.fillRect(startingX, startingY, width, height);
 
         g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
@@ -92,11 +91,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         // draw resize handles if selected
         if (isSelected()) {
-            Iterator it = resizeHandles.iterator();
-            while (it.hasNext()) {
-                ResizeHandle handle = (ResizeHandle) it.next();
-                handle.draw(g);
-            }
+            resizeHandles.forEach(handle -> handle.draw(g));
         }
 
         g.setStroke(originalStroke);
@@ -128,9 +123,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
             Rectangle2D bounds = layout.getBounds();
             systemNameWidth = (int) bounds.getWidth() + (2 * systemNameXOffset);
 
-            if (systemNameWidth > newWidth) {
-                newWidth = systemNameWidth;
-            }
+            newWidth = Math.max(newWidth, systemNameWidth);
         } else {
             systemNameWidth = 0;
         }
@@ -155,24 +148,20 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     }
     
     public boolean isResizeHandleSelected(int x, int y) {
-        Iterator it = resizeHandles.iterator();
-        while (it.hasNext()) {
-            ResizeHandle handle = (ResizeHandle) it.next();
+        for (ResizeHandle handle: resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return true;
-            }
+            }            
         }
         return false;
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        Iterator it = resizeHandles.iterator();
-        while (it.hasNext()) {
-            ResizeHandle handle = (ResizeHandle) it.next();
+        for (ResizeHandle handle: resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return handle;
-            }
-        }
+            }            
+        }        
         return null;
     }
 
@@ -323,7 +312,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "system", (System) getUCDComponent());
+        streamer.streamObject(node, "system", getUCDComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
         node.setAttribute("width", Integer.toString(width));
@@ -334,6 +323,6 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
     @Override
     public Classifier getClassifier() {
-        return (Classifier) ucdComponent;
+        return ucdComponent;
     }
 }
