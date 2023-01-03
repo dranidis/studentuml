@@ -8,7 +8,7 @@ import javax.swing.undo.CompoundEdit;
  */
 public abstract class MyCompoundEdit extends CompoundEdit {
 
-    public MyCompoundEdit() {
+    protected MyCompoundEdit() {
         super();
     }
 

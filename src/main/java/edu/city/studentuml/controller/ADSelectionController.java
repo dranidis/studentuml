@@ -9,7 +9,6 @@ import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.State;
-import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
@@ -20,9 +19,7 @@ import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
-import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
@@ -30,7 +27,6 @@ import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
-import edu.city.studentuml.util.undoredo.RemoveEditFactory;
 import edu.city.studentuml.view.gui.ActionNodeEditor;
 import edu.city.studentuml.view.gui.ActivityNodeEditor;
 import edu.city.studentuml.view.gui.ControlFlowEditor;
@@ -313,28 +309,5 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
-    @Override
-    public void deleteElement(GraphicalElement selectedElement) {
-        UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
 
-        /**
-         * uses for loop to avoid ConcurrentModificationException
-         */
-        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
-        int i = 0;
-        while (i < elements.size()) {
-            GraphicalElement o = elements.get(i);
-            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                deleteElement(o);
-            } else {
-                i++;
-            }
-        }
-        
-        // parentComponent.setSelectionMode();
-        
-        parentComponent.getUndoSupport().postEdit(edit);
-        model.removeGraphicalElement(selectedElement);
-    }
 }

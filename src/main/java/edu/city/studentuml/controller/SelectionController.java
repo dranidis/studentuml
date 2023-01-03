@@ -359,10 +359,6 @@ public abstract class SelectionController {
     // a selected graphical element
     public abstract void editElement(GraphicalElement selectedElement);
 
-    // abstract method that is overridden by subclasses handling deletion of
-    // a selected graphical element
-    public abstract void deleteElement(GraphicalElement selectedElement);
-
     // method that shows a popup menu when the right mouse button has been clicked
     public void managePopup(MouseEvent event) {
         if (event.isPopupTrigger()) {
