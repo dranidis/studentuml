@@ -49,7 +49,7 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     @Override
-    public Iterator createIterator() {
+    public Iterator<NodeComponentGR> createIterator() {
         return new CompositeNodeGRIterator(components.iterator());
     }
 

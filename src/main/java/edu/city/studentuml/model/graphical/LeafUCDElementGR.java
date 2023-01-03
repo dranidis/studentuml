@@ -11,7 +11,7 @@ import edu.city.studentuml.model.domain.LeafUCDElement;
  */
 public abstract class LeafUCDElementGR extends UCDComponentGR {
 
-    public LeafUCDElementGR(LeafUCDElement leafElement, int x, int y) {
+    protected LeafUCDElementGR(LeafUCDElement leafElement, int x, int y) {
         super(leafElement, x, y);
     }
 

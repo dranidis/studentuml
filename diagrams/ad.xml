@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="ADModel" framex="0,0,1475,899" iconified="false" id="" internalid="admodel0" name="AD: ad" selected="true">
+      <object class="ActivityNodeGR" height="225" id="" internalid="activitynodegr0" uid="Desktop Application User" width="430" x="324" y="185">
+        <object class="ActivityNode" id="activitynode" internalid="activitynode0" name=""/>
+        <object id="nodes">
+          <object class="ActionNodeGR" id="" internalid="actionnodegr0" uid="Desktop Application User" x="339" y="281">
+            <object class="ActionNode" id="actionnode" name=""/>
+          </object>
+          <object class="InitialNodeGR" id="" internalid="initialnodegr0" uid="Desktop Application User" x="362" y="228">
+            <object class="InitialNode" id="initialnode" name="Initial Node"/>
+          </object>
+          <object class="ActivityNodeGR" height="124" id="" internalid="activitynodegr1" uid="Desktop Application User" width="164" x="504" y="238">
+            <object class="ActivityNode" id="activitynode" internalid="activitynode1" name=""/>
+            <object id="nodes">
+              <object class="InitialNodeGR" id="" internalid="initialnodegr2" uid="Desktop Application User" x="540" y="264">
+                <object class="InitialNode" id="initialnode" internalid="initialnode1" name="Initial Node"/>
+              </object>
+              <object class="ActionNodeGR" id="" internalid="actionnodegr2" uid="Desktop Application User" x="589" y="297">
+                <object class="ActionNode" id="actionnode" internalid="actionnode1" name=""/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="InitialNodeGR" id="" internalid="initialnodegr1" uid="Desktop Application User" x="68" y="43">
+        <object class="InitialNode" id="initialnode" internalid="initialnode0" name="Initial Node"/>
+      </object>
+      <object class="ActionNodeGR" id="" internalid="actionnodegr1" uid="Desktop Application User" x="129" y="413">
+        <object class="ActionNode" id="actionnode" internalid="actionnode0" name=""/>
+      </object>
+      <object class="ControlFlowGR" id="" internalid="controlflowgr0" source="initialnodegr1" target="activitynodegr0" uid="Desktop Application User">
+        <object id="points">
+          <object class="EndPointGR" id="" x="92" y="67"/>
+          <object class="EndPointGR" id="" x="324" y="185"/>
+        </object>
+        <object class="ControlFlow" guard="" id="controlflow" internalid="controlflow0" source="initialnode0" target="activitynode0"/>
+      </object>
+      <object class="ControlFlowGR" id="" internalid="controlflowgr1" source="initialnodegr0" target="actionnodegr0" uid="Desktop Application User">
+        <object id="points">
+          <object class="EndPointGR" id="" x="378" y="252"/>
+          <object class="EndPointGR" id="" x="378" y="281"/>
+        </object>
+        <object class="ControlFlow" guard="" id="controlflow" internalid="controlflow1" source="" target=""/>
+      </object>
+      <object class="ControlFlowGR" id="" internalid="controlflowgr2" source="activitynodegr0" target="actionnodegr1" uid="Desktop Application User">
+        <object id="points">
+          <object class="EndPointGR" id="" x="324" y="410"/>
+          <object class="EndPointGR" id="" x="199" y="413"/>
+        </object>
+        <object class="ControlFlow" guard="" id="controlflow" internalid="controlflow2" source="activitynode0" target="actionnode0"/>
+      </object>
+      <object class="ControlFlowGR" id="" internalid="controlflowgr3" source="actionnodegr0" target="activitynodegr1" uid="Desktop Application User">
+        <object id="points">
+          <object class="EndPointGR" id="" x="409" y="296"/>
+          <object class="EndPointGR" id="" x="504" y="296"/>
+        </object>
+        <object class="ControlFlow" guard="" id="controlflow" internalid="controlflow3" source="" target="activitynode1"/>
+      </object>
+      <object class="ControlFlowGR" id="" internalid="controlflowgr4" source="initialnodegr2" target="actionnodegr2" uid="Desktop Application User">
+        <object id="points">
+          <object class="EndPointGR" id="" x="564" y="288"/>
+          <object class="EndPointGR" id="" x="589" y="297"/>
+        </object>
+        <object class="ControlFlow" guard="" id="controlflow" internalid="controlflow4" source="initialnode1" target="actionnode1"/>
+      </object>
+    </object>
+  </object>
+</uml>

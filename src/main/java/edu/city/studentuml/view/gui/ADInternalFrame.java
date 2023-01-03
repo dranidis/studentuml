@@ -7,14 +7,13 @@ import edu.city.studentuml.controller.DrawLineController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
-import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.ADView;
 import edu.city.studentuml.view.DiagramView;
 
 public class ADInternalFrame extends DiagramInternalFrame {
 
-    public ADInternalFrame(ADModel model) {
+    public ADInternalFrame(DiagramModel model) {
         super(model.getDiagramName(), model);
     }
 

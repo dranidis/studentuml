@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
  */
 public class ActivityNode extends CompositeNode implements IXMLCustomStreamable {
 
-    private ActivityNode(String name) {
+    public ActivityNode(String name) {
         super(name);
     }
 

@@ -25,9 +25,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.graphical.CompositeNodeGR;
 import edu.city.studentuml.model.graphical.CompositeUCDElementGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Constants;
@@ -422,30 +424,37 @@ public abstract class SelectionController {
     }
 
     /**
-     * Searches for the element in the model and then recursively in the CompositeUCDElementGR elements.
+     * Searches for the element in the model and then recursively in the
+     * CompositeUCDElementGR and CompositeNodeGR elements. Contained elements in
+     * System or ActivityNodes are not members of the model. Only the container is
+     * member of the model.
      * 
      * @param selectedElement
      * @return
      */
     private boolean inModel(GraphicalElement selectedElement) {
-        for (GraphicalElement el: model.getGraphicalElements()) {
+        for (GraphicalElement el : model.getGraphicalElements()) {
             if (el == selectedElement) {
                 return true;
             }
 
             if (el instanceof CompositeUCDElementGR && selectedElement instanceof UCDComponentGR) {
-                return inComposite((CompositeUCDElementGR) el, (UCDComponentGR ) selectedElement);
-            }            
+                return inCompositeUCD((CompositeUCDElementGR) el, (UCDComponentGR) selectedElement);
+            }
+
+            if (el instanceof CompositeNodeGR && selectedElement instanceof NodeComponentGR) {
+                return inCompositeNode((CompositeNodeGR) el, (NodeComponentGR) selectedElement);
+            }
         }
         return false;
     }
 
-    private boolean inComposite(CompositeUCDElementGR el, UCDComponentGR selectedElement) {
+    private boolean inCompositeUCD(CompositeUCDElementGR el, UCDComponentGR selectedElement) {
         if (selectedElement.getContext() == el) {
             return true;
         } else {
             for (UCDComponentGR c : el.getComponents()) {
-                if (c instanceof CompositeUCDElementGR && inComposite((CompositeUCDElementGR) c, selectedElement)) {
+                if (c instanceof CompositeUCDElementGR && inCompositeUCD((CompositeUCDElementGR) c, selectedElement)) {
                     return true;
                 }
             }
@@ -453,16 +462,21 @@ public abstract class SelectionController {
         return false;
     }
 
+    private boolean inCompositeNode(CompositeNodeGR el, NodeComponentGR selectedElement) {
+        if (selectedElement.getContext() == el) {
+            return true;
+        } else {
+            for (NodeComponentGR c : el.getComponents()) {
+                if (c instanceof CompositeNodeGR && inCompositeNode((CompositeNodeGR) c, selectedElement)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }    
+
     public void deleteSelected() {
-        // call abstract method deleteElement that is to be overridden by subclasses
         model.clearSelected();
-        // for (GraphicalElement toDelete : selectedElements) {
-        //     if (model.getGraphicalElements().contains(toDelete)) {
-        //         logger.fine(() -> ("DEL:" + toDelete.getInternalid() + " " + toDelete.toString()));
-        //         deleteElement(toDelete);
-        //     }
-        // 
-        // }
 
         deleteSelectedElements();
 

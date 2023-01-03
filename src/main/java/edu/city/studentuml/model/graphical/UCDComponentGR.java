@@ -87,7 +87,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return outgoingRelations.iterator();
     }
 
-    /*
+    /**
      * Returns the number of ucd components contained
      */
     public abstract int getNumberOfElements();

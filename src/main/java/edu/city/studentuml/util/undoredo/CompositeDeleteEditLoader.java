@@ -8,15 +8,13 @@ import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.NotifierVector;
 
-/**
- *
- * @author draganbisercic
- */
+
 public class CompositeDeleteEditLoader {
     private CompositeDeleteEditLoader() {
         throw new IllegalStateException("Utility class");
@@ -33,6 +31,8 @@ public class CompositeDeleteEditLoader {
             loadRoleClassifierCompositeDeleteEdit((RoleClassifierGR) e, edit, model);
         } else if (e instanceof UCDComponentGR) {
             loadUCDComponentCompositeDeleteEdit((UCDComponentGR) e, edit, model);
+        }  else if (e instanceof NodeComponentGR) {
+            loadNodeComponentCompositeDeleteEdit((NodeComponentGR) e, edit, model);
         } else {
             edit.add(new LeafDeleteEdit(e, model));
         }
@@ -56,6 +56,21 @@ public class CompositeDeleteEditLoader {
                 while (index >= 0) {
                     UCDComponentGR n = c.getElement(index);
                     loadUCDComponentCompositeDeleteEdit(n, edit, model);
+                    // update index
+                    index--;
+                }
+                edit.add(new LeafDeleteEdit(c, model));
+
+                c.getIncomingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+                c.getOutgoingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+    }
+
+    private static void loadNodeComponentCompositeDeleteEdit(NodeComponentGR c, CompositeDeleteEdit edit,
+            DiagramModel model) {
+                int index = c.getNumberOfNodeComponents() - 1;
+                while (index >= 0) {
+                    NodeComponentGR n = c.getNodeComponent(index);
+                    loadNodeComponentCompositeDeleteEdit(n, edit, model);
                     // update index
                     index--;
                 }

@@ -52,7 +52,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     @Override
-    public Iterator createIterator() {
+    public Iterator<UCDComponentGR> createIterator() {
         return new CompositeUCDGRIterator(components.iterator());
     }
 
@@ -102,9 +102,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
-        ListIterator iterator = components.listIterator(components.size());
+        ListIterator<UCDComponentGR> iterator = components.listIterator(components.size());
         while (iterator.hasPrevious()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.previous();
+            UCDComponentGR comp = iterator.previous();
             if (comp.contains(point)) {
                 return comp.getContainingGraphicalElement(point);
             }
@@ -114,9 +114,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public UCDComponentGR findContext(UCDComponentGR comp) {
-        Iterator iterator = components.iterator();
+        Iterator<UCDComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            UCDComponentGR myComp = (UCDComponentGR) iterator.next();
+            UCDComponentGR myComp = iterator.next();
             if (myComp.contains(comp)) {
                 return myComp.findContext(comp);
             }
@@ -126,9 +126,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public void clearSelected() {
-        Iterator iterator = components.iterator();
+        Iterator<UCDComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.next();
+            UCDComponentGR comp = iterator.next();
             comp.clearSelected();
         }
 

@@ -3,6 +3,7 @@ package edu.city.studentuml.controller;
 import java.awt.Point;
 import java.util.stream.Collectors;
 
+import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
@@ -11,11 +12,12 @@ import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Generalization;
+import edu.city.studentuml.model.domain.InitialNode;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCAssociation;
 import edu.city.studentuml.model.domain.UseCase;
-import edu.city.studentuml.model.graphical.AbstractCDModel;
+import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -25,6 +27,7 @@ import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.InitialNodeGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.SystemGR;
@@ -129,6 +132,19 @@ class Helper {
         SystemGR s = new SystemGR(new System(name), 0, 0);
         model.addGraphicalElement(s);
         return s;
+    }
+
+    public ActivityNodeGR addActivityNode(String name) {
+        ActivityNodeGR a = new ActivityNodeGR(new ActivityNode(name), 0, 0);
+        model.addGraphicalElement(a);
+        return a;
+    }
+
+    public InitialNodeGR addInitialNodeInActivityNode(ActivityNodeGR an) {
+        InitialNodeGR i = new InitialNodeGR(new InitialNode(), 0, 0);
+        an.add(i);
+        i.setContext(an); 
+        return i;       
     }
 
    
