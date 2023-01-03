@@ -99,8 +99,8 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw system name
-        if (!ucdComponent.toString().equals("")) {
-            String systemName = ucdComponent.toString();
+        if (!component.toString().equals("")) {
+            String systemName = component.toString();
             TextLayout layout = new TextLayout(systemName, systemNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
 
@@ -118,8 +118,8 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         FontRenderContext frc = g.getFontRenderContext();
 
         // consider action name text dimensions
-        if (ucdComponent.toString().length() != 0) {
-            TextLayout layout = new TextLayout(ucdComponent.toString(), systemNameFont, frc);
+        if (component.toString().length() != 0) {
+            TextLayout layout = new TextLayout(component.toString(), systemNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             systemNameWidth = (int) bounds.getWidth() + (2 * systemNameXOffset);
 
@@ -306,23 +306,23 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector(ucdComponents), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector(components), this);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "system", getUCDComponent());
+        streamer.streamObject(node, "system", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
         node.setAttribute("width", Integer.toString(width));
         node.setAttribute("height", Integer.toString(height));
 
-        streamer.streamObjects(streamer.addChild(node, "ucdcomponents"), ucdComponents.iterator());
+        streamer.streamObjects(streamer.addChild(node, "ucdcomponents"), components.iterator());
     }
 
     @Override
     public Classifier getClassifier() {
-        return ucdComponent;
+        return component;
     }
 }

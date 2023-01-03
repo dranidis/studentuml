@@ -16,11 +16,11 @@ public abstract class NodeComponent {
     protected List<Edge> incomingEdges;
     protected List<Edge> outgoingEdges;
 
-    public NodeComponent(String name) {
+    protected NodeComponent(String name) {
         this.name = name;
         context = DEFAULT_CONTEXT;
-        incomingEdges = new ArrayList<Edge>();
-        outgoingEdges = new ArrayList<Edge>();
+        incomingEdges = new ArrayList<>();
+        outgoingEdges = new ArrayList<>();
     }
 
     public void add(NodeComponent node) {
@@ -103,15 +103,4 @@ public abstract class NodeComponent {
         throw new UnsupportedOperationException("The clone() is not supported!");
     }
 
-    /*
-     * This method is used in the persistency module
-     */
-    public String getContextHash() {
-        if (context == DEFAULT_CONTEXT) {
-            return "HashNULL";
-        } else {
-            String s = "Hash" + context.hashCode();
-            return s;
-        }
-    }
 }

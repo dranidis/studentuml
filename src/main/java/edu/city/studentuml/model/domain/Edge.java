@@ -11,7 +11,7 @@ public abstract class Edge {
     protected NodeComponent source;
     protected NodeComponent target;
 
-    public Edge(NodeComponent source, NodeComponent target) {
+    protected Edge(NodeComponent source, NodeComponent target) {
         this.source = source;
         this.target = target;
         guard = "";

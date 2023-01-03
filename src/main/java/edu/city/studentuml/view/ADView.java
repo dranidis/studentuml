@@ -35,7 +35,7 @@ public class ADView extends DiagramView {
             } else if (element instanceof NodeComponentGR) {
                 NodeComponentGR node = (NodeComponentGR) element;
                 node.draw(g);
-                Iterator<EdgeGR> incomingEdges = node.getIncomingEdges();
+                Iterator<EdgeGR> incomingEdges = node.getIncomingRelations();
                 while (incomingEdges.hasNext()) {
                     EdgeGR edge = incomingEdges.next();
                     edge.draw(g);
@@ -46,7 +46,7 @@ public class ADView extends DiagramView {
                     NodeComponentGR subnode = subnodes.next();
                     subnode.draw(g);
 
-                    incomingEdges = subnode.getIncomingEdges();
+                    incomingEdges = subnode.getIncomingRelations();
                     while (incomingEdges.hasNext()) {
                         EdgeGR edge = incomingEdges.next();
                         edge.draw(g);

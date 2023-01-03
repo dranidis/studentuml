@@ -201,7 +201,7 @@ public class ADSelectionController extends SelectionController {
     
     private void editActionNode(ActionNodeGR actionNodeGR) {
         ActionNodeEditor actionNodeEditor = new ActionNodeEditor(actionNodeGR);
-        ActionNode actionNode = (ActionNode) actionNodeGR.getNodeComponent();
+        ActionNode actionNode = (ActionNode) actionNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!actionNodeEditor.showDialog(parentComponent, "Action Node Editor")) {
@@ -226,7 +226,7 @@ public class ADSelectionController extends SelectionController {
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
         ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(objectNodeGR, repository);
-        ObjectNode objectNode = (ObjectNode) objectNodeGR.getNodeComponent();
+        ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
 
         // show the object node editor dialog and check whether the user has pressed cancel
         if (!objectNodeEditor.showDialog(parentComponent, "Object Node Editor")) {
@@ -267,7 +267,7 @@ public class ADSelectionController extends SelectionController {
     
     private void editActivityNode(ActivityNodeGR activityNodeGR) {
         ActivityNodeEditor activityNodeEditor = new ActivityNodeEditor(activityNodeGR);
-        ActivityNode activityNode = (ActivityNode) activityNodeGR.getNodeComponent();
+        ActivityNode activityNode = (ActivityNode) activityNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!activityNodeEditor.showDialog(parentComponent, "Activity Node Editor")) {
@@ -292,7 +292,7 @@ public class ADSelectionController extends SelectionController {
 
     private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
         DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);
-        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getNodeComponent();
+        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!decisionNodeEditor.showDialog(parentComponent, "Decision Node Editor")) {

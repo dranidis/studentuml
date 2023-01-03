@@ -36,13 +36,13 @@ public class NodeRemoveEdit extends MyCompoundEdit {
         }
 
         // load all the edges to and from the node
-        Iterator incomingEdges = nodeComponentGR.getIncomingEdges();
+        Iterator incomingEdges = nodeComponentGR.getIncomingRelations();
         while (incomingEdges.hasNext()) {
             EdgeGR edge = (EdgeGR) incomingEdges.next();
             addEdit(new EdgeRemoveEdit(edge, model));
         }
 
-        Iterator outgoingEdges = nodeComponentGR.getOutgoingEdges();
+        Iterator outgoingEdges = nodeComponentGR.getOutgoingRelations();
         while (outgoingEdges.hasNext()) {
             EdgeGR edge = (EdgeGR) outgoingEdges.next();
             addEdit(new EdgeRemoveEdit(edge, model));
@@ -84,7 +84,7 @@ class NodeEdit extends AbstractUndoableEdit {
 
     @Override
     public String getPresentationName() {
-        return ": delete " + node.getNodeComponent().getName();
+        return ": delete " + node.getComponent().getName();
     }
 }
 

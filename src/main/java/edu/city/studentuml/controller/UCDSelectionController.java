@@ -53,10 +53,10 @@ public class UCDSelectionController extends SelectionController {
 
     private void editActor(UCActorGR uCActorGR) {
         CentralRepository repository = model.getCentralRepository();
-        Actor originalActor = (Actor) uCActorGR.getUCDComponent();
+        Actor originalActor = (Actor) uCActorGR.getComponent();
 
         String actorName = JOptionPane.showInputDialog("Enter the Actor's Name",
-                uCActorGR.getUCDComponent().getName());
+                uCActorGR.getComponent().getName());
 
         if (actorName == null) {    // user canceled
             return;
@@ -84,7 +84,7 @@ public class UCDSelectionController extends SelectionController {
 
     private void editUseCase(UseCaseGR useCaseGR) {
         CentralRepository repository = model.getCentralRepository();
-        UseCase originalUseCase = (UseCase) useCaseGR.getUCDComponent();
+        UseCase originalUseCase = (UseCase) useCaseGR.getComponent();
 
         String useCaseName = JOptionPane.showInputDialog("Enter the Use Case's Name",
                 originalUseCase.getName());
@@ -116,10 +116,10 @@ public class UCDSelectionController extends SelectionController {
 
     private void editSystem(SystemGR systemGR) {
         CentralRepository repository = model.getCentralRepository();
-        System originalSystem = (System) systemGR.getUCDComponent();
+        System originalSystem = (System) systemGR.getComponent();
 
         String systemName = JOptionPane.showInputDialog("Enter the System's Name",
-                systemGR.getUCDComponent().getName());
+                systemGR.getComponent().getName());
 
         if (systemName == null) {    // user canceled
             return;

@@ -444,7 +444,7 @@ public abstract class SelectionController {
         if (selectedElement.getContext() == el) {
             return true;
         } else {
-            for (UCDComponentGR c : el.getUcdComponents()) {
+            for (UCDComponentGR c : el.getComponents()) {
                 if (c instanceof CompositeUCDElementGR && inComposite((CompositeUCDElementGR) c, selectedElement)) {
                     return true;
                 }

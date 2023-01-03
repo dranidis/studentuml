@@ -36,13 +36,13 @@ public class UCDElementRemoveEdit extends MyCompoundEdit {
         }
 
         // load all the links to and from the element
-        Iterator incomingLinks = ucdComponentGR.getIncomingLinks();
+        Iterator incomingLinks = ucdComponentGR.getIncomingRelations();
         while (incomingLinks.hasNext()) {
             UCLinkGR link = (UCLinkGR) incomingLinks.next();
             addEdit(new UCLinkRemoveEdit(link, model));
         }
 
-        Iterator outgoingLinks = ucdComponentGR.getOutgoingLinks();
+        Iterator outgoingLinks = ucdComponentGR.getOutgoingRelations();
         while (outgoingLinks.hasNext()) {
             UCLinkGR link = (UCLinkGR) outgoingLinks.next();
             addEdit(new UCLinkRemoveEdit(link, model));
@@ -84,6 +84,6 @@ class ElementEdit extends AbstractUndoableEdit {
 
     @Override
     public String getPresentationName() {
-        return ": delete " + element.getUCDComponent().getName();
+        return ": delete " + element.getComponent().getName();
     }
 }

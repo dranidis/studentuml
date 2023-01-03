@@ -25,9 +25,9 @@ public class UseCaseResizeWithCoveredElementsController extends ResizeWithCovere
 
     @Override
     protected void addContainingElements() {
-        Resizable element = getResizableElement();
-        if (element instanceof SystemGR) {
-            SystemGR system = (SystemGR) element;
+        Resizable resizableElement = getResizableElement();
+        if (resizableElement instanceof SystemGR) {
+            SystemGR system = (SystemGR) resizableElement;
             UCDComponentGR context = system.getContext();
 
             // set undo containing elements

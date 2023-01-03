@@ -1,10 +1,7 @@
 package edu.city.studentuml.controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -20,18 +17,18 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
  */
 public class ActivityResizeWithCoveredElementsController extends ResizeWithCoveredElementsController {
 
-    private List<NodeComponentGR> coveredNodes;
+    private List<NodeComponentGR> coveredElements;
 
     public ActivityResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
         super(f, m, s);
-        coveredNodes = new ArrayList<>();
+        coveredElements = new ArrayList<>();
     }
 
     @Override
     protected void addContainingElements() {
-        Resizable element = getResizableElement();
-        if (element instanceof ActivityNodeGR) {
-            ActivityNodeGR node = (ActivityNodeGR) element;
+        Resizable resizableElement = getResizableElement();
+        if (resizableElement instanceof ActivityNodeGR) {
+            ActivityNodeGR node = (ActivityNodeGR) resizableElement;
             NodeComponentGR context = node.getContext();
 
             // set undo containing elements
@@ -44,16 +41,8 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
             // get the newly covered elements
             addContainingElements(node, context);
 
-            if (!coveredNodes.isEmpty()) {
-                // prompt the user to add the covered nodes
-                int answer = prompt(
-                        "Would you like to add covered nodes to the activity node?",
-                        "Activity Nodes");
-
-                if (answer == 0) {
-                    // answer is yes: add elements to the resizable node
-                    addElementsTo(node);
-                }
+            if (!coveredElements.isEmpty()) {
+                addElementsTo(node);
             }
 
             // set redo containing elements
@@ -64,56 +53,41 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
             getRedoSize().setContainingElements(redoContainingElements);
         }
 
-        coveredNodes.clear();
+        coveredElements.clear();
     }
 
     private void addContainingElements(NodeComponentGR node, NodeComponentGR context) {
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
-           Iterator<GraphicalElement> it = getModel().getGraphicalElements().iterator();
-            while (it.hasNext()) {
-                GraphicalElement e = it.next();
-                if (e instanceof NodeComponentGR) {
-                    NodeComponentGR temp = (NodeComponentGR) e;
-                    if (temp != node && node.contains(temp)) {
-                        coveredNodes.add(temp);
-                    }
+
+            for (GraphicalElement e : getModel().getGraphicalElements()) {
+                if (e instanceof NodeComponentGR && e != node && node.contains((NodeComponentGR) e)) {
+                    coveredElements.add((NodeComponentGR) e);
                 }
-            }
+            }            
         } else {
             for (int i = 0; i < context.getNumberOfNodeComponents(); i++) {
                 NodeComponentGR temp = context.getNodeComponent(i);
                 if (temp != node && node.contains(temp)) {
-                    coveredNodes.add(temp);
+                    coveredElements.add(temp);
                 }
             }
             addContainingElements(node, context.getContext());
         }
     }
 
-    private int prompt(String promptString, String title) {
-        Object[] options = {"Yes, please", "No, thanks"};
-        return JOptionPane.showOptionDialog(getFrame(),
-                promptString, title,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-    }
-
-    private void addElementsTo(NodeComponentGR node) {
-         Iterator<NodeComponentGR> it = coveredNodes.iterator();
-        while (it.hasNext()) {
-            NodeComponentGR coveredNode = it.next();
-            NodeComponentGR coveredNodeContext = coveredNode.getContext();
+     private void addElementsTo(NodeComponentGR component) {
+        for (NodeComponentGR coveredElement: coveredElements) {
+            NodeComponentGR coveredNodeContext = coveredElement.getContext();
 
             if (coveredNodeContext == NodeComponentGR.DEFAULT_CONTEXT) {
-                getModel().getGraphicalElements().remove(coveredNode);
+                getModel().getGraphicalElements().remove(coveredElement);
             } else {
-                coveredNodeContext.remove(coveredNode);
+                coveredNodeContext.remove(coveredElement);
             }
 
-            node.add(coveredNode);
-            coveredNode.setContext(node);
-            SystemWideObjectNamePool.getInstance().objectAdded(coveredNode);
+            component.add(coveredElement);
+            coveredElement.setContext(component);
+            SystemWideObjectNamePool.getInstance().objectAdded(coveredElement);
         }
     }
 }

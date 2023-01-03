@@ -16,11 +16,11 @@ public abstract class UCDComponent implements Classifier {
     protected List<UCLink> incomingLinks;
     protected List<UCLink> outgoingLinks;
 
-    public UCDComponent(String name) {
+    protected UCDComponent(String name) {
         this.name = name;
         context = DEFAULT_CONTEXT;
-        incomingLinks = new ArrayList<UCLink>();
-        outgoingLinks = new ArrayList<UCLink>();
+        incomingLinks = new ArrayList<>();
+        outgoingLinks = new ArrayList<>();
     }
 
     public void add(UCDComponent comp) {
@@ -61,7 +61,7 @@ public abstract class UCDComponent implements Classifier {
         return incomingLinks.size();
     }
 
-    public Iterator getIncomingLinks() {
+    public Iterator<UCLink> getIncomingLinks() {
         return incomingLinks.iterator();
     }
 
@@ -77,7 +77,7 @@ public abstract class UCDComponent implements Classifier {
         return outgoingLinks.size();
     }
 
-    public Iterator getOutgoingLinks() {
+    public Iterator<UCLink> getOutgoingLinks() {
         return outgoingLinks.iterator();
     }
 

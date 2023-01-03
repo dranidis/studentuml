@@ -77,7 +77,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         if (getNumberOfExtensionPoints() == 0) {
             // draw use case name
             g.setPaint(outlineColor);
-            String useCaseName = getUCDComponent().getName();
+            String useCaseName = getComponent().getName();
             if (useCaseName == null || useCaseName.length() == 0) {
                 useCaseName = " ";
             }
@@ -96,7 +96,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private int getNumberOfExtensionPoints() {
         int counter = 0;
-        Iterator<UCLinkGR> i = getIncomingLinks();
+        Iterator<UCLinkGR> i = getIncomingRelations();
         while (i.hasNext()) {
             UCLinkGR link = i.next();
             if (link instanceof UCExtendGR) {
@@ -114,7 +114,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         g.drawLine(getX(), getY() + height / 2, getX() + width, getY() + height / 2);
 
         // draw use case name
-        String useCaseName = getUCDComponent().getName();
+        String useCaseName = getComponent().getName();
         if (useCaseName == null || useCaseName.length() == 0) {
             useCaseName = " ";
         }
@@ -144,7 +144,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         // get the largest width of all extension points
         int largest = 0;
 
-        Iterator<UCLinkGR> i = getIncomingLinks();
+        Iterator<UCLinkGR> i = getIncomingRelations();
         while (i.hasNext()) {
             UCLinkGR link = i.next();
             if (link instanceof UCExtendGR) {
@@ -165,7 +165,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         // draw extension points
         g.setFont(extensionPointFont);
-        i = getIncomingLinks();
+        i = getIncomingRelations();
         while (i.hasNext()) {
             UCLinkGR link = i.next();
             if (link instanceof UCExtendGR) {
@@ -191,7 +191,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     public int calculateWidth(Graphics2D g) {
         if (getNumberOfExtensionPoints() == 0) {
-            String useCaseName = getUCDComponent().getName();
+            String useCaseName = getComponent().getName();
             if (useCaseName == null || useCaseName.length() == 0) {
                 useCaseName = " ";
             }
@@ -214,7 +214,7 @@ public class UseCaseGR extends LeafUCDElementGR {
     private int calculateComplexWidth(Graphics2D g) {
         // check the width of use case name first
         double multiplier = 2;
-        String useCaseName = getUCDComponent().getName();
+        String useCaseName = getComponent().getName();
         if (useCaseName == null || useCaseName.length() == 0) {
             useCaseName = " ";
         }
@@ -234,7 +234,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         }
 
         // check every extension string
-        Iterator<UCLinkGR> i = getIncomingLinks();
+        Iterator<UCLinkGR> i = getIncomingRelations();
         while (i.hasNext()) {
             UCLinkGR link = i.next();
             if (link instanceof UCExtendGR) {
@@ -261,7 +261,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     public int calculateHeight(Graphics2D g) {
         if (getNumberOfExtensionPoints() == 0) {
-            String useCaseName = getUCDComponent().getName();
+            String useCaseName = getComponent().getName();
             if (useCaseName == null || useCaseName.length() == 0) {
                 useCaseName = " ";
             }
@@ -288,7 +288,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         newHeight += ((int) bounds.getHeight()) + VGAP_BETWEEN_EXTENSION_POINTS;
 
-        Iterator<UCLinkGR> i = getIncomingLinks();
+        Iterator<UCLinkGR> i = getIncomingRelations();
         while (i.hasNext()) {
             UCLinkGR link = i.next();
             if (link instanceof UCExtendGR) {
@@ -332,7 +332,7 @@ public class UseCaseGR extends LeafUCDElementGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "useCase", (UseCase) getUCDComponent());
+        streamer.streamObject(node, "useCase", (UseCase) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

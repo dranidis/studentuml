@@ -49,14 +49,14 @@ public class UCDModel extends DiagramModel {
             // does not have a default context activity
             context.add(ucdComponentGR);
             ucdComponentGR.setContext(context);
-            repository.addUCDComponent(ucdComponentGR.getUCDComponent());
+            repository.addUCDComponent(ucdComponentGR.getComponent());
             SystemWideObjectNamePool.getInstance().objectAdded(ucdComponentGR);
             modelChanged();
             return;
         }
 
         ucdComponentGR.setContext(UCDComponentGR.DEFAULT_CONTEXT);
-        repository.addUCDComponent(ucdComponentGR.getUCDComponent());
+        repository.addUCDComponent(ucdComponentGR.getComponent());
         super.insertGraphicalElementAt(ucdComponentGR, getFirstLinkIndex());
     }
 
@@ -96,25 +96,25 @@ public class UCDModel extends DiagramModel {
         }
 
         // remove all the links to the element
-        Iterator<UCLinkGR> incomingLinks = ucdComponentGR.getIncomingLinks();
+        Iterator<UCLinkGR> incomingLinks = ucdComponentGR.getIncomingRelations();
         while (incomingLinks.hasNext()) {
             UCLinkGR link = incomingLinks.next();
             removeLink(link);
             // need to update iterator
-            incomingLinks = ucdComponentGR.getIncomingLinks();
+            incomingLinks = ucdComponentGR.getIncomingRelations();
         }
 
-        Iterator<UCLinkGR> outgoingLinks = ucdComponentGR.getOutgoingLinks();
+        Iterator<UCLinkGR> outgoingLinks = ucdComponentGR.getOutgoingRelations();
         while (outgoingLinks.hasNext()) {
             UCLinkGR link = outgoingLinks.next();
             removeLink(link);
             // need to update iterator
-            outgoingLinks = ucdComponentGR.getOutgoingLinks();
+            outgoingLinks = ucdComponentGR.getOutgoingRelations();
         }
 
         // and lastly remove the element
         UCDComponentGR context = ucdComponentGR.getContext();
-        repository.removeUCDComponent(ucdComponentGR.getUCDComponent());
+        repository.removeUCDComponent(ucdComponentGR.getComponent());
         if (context == UCDComponentGR.DEFAULT_CONTEXT) {
             super.removeGraphicalElement(ucdComponentGR);
         } else {

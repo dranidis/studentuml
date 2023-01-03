@@ -1276,8 +1276,8 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean addUCLink(UCLink link) {
-        if ((getUCLink(link.getClassifierFrom(), link.getClassifierTo()) == null)
-                && getUCLink(link.getClassifierTo(), link.getClassifierFrom()) == null) {
+        if ((getUCLink(link.getSource(), link.getTarget()) == null)
+                && getUCLink(link.getTarget(), link.getSource()) == null) {
             ucLinks.add(link);
             repositoryChanged();
 
@@ -1290,7 +1290,7 @@ public class CentralRepository extends Observable implements Serializable {
     public UCLink getUCLink(Classifier classifierFrom, Classifier classifierTo) {
 
         Optional<UCLink> found = ucLinks.stream()
-                .filter(link -> link.getClassifierFrom() == classifierFrom && link.getClassifierTo() == classifierTo).findAny();
+                .filter(link -> link.getSource() == classifierFrom && link.getTarget() == classifierTo).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {

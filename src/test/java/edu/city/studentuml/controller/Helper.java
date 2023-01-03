@@ -53,7 +53,7 @@ class Helper {
     }
 
     UCAssociationGR addUcAssociation(UCActorGR a, UseCaseGR u) {
-        UCAssociationGR as = new UCAssociationGR(a, u, new UCAssociation((Actor) a.getUCDComponent(), (UseCase) u.getUCDComponent()));
+        UCAssociationGR as = new UCAssociationGR(a, u, new UCAssociation((Actor) a.getComponent(), (UseCase) u.getComponent()));
         model.addGraphicalElement(as);
         return as;
     }

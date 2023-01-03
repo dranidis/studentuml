@@ -17,7 +17,7 @@ public class ADToolbar extends AbsractToolbar {
         addToolBarButton("merge.gif", "MergeNodeGR", "Merge Node", this);
         addToolBarButton("fork.gif", "ForkNodeGR", "Fork Node", this);
         addToolBarButton("join.gif", "JoinNodeGR", "Join Node", this);
-        addToolBarButton("swimlanes.gif", "SwimlanesGR", "Swimlanes", this);
+        // addToolBarButton("swimlanes.gif", "SwimlanesGR", "Swimlanes", this)
         addToolBarButton("activityDiagram.gif", "ActivityNodeGR", "Activity Node", this);
     }
 }

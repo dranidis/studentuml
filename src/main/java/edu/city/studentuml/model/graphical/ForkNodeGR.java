@@ -66,8 +66,8 @@ public class ForkNodeGR extends ControlNodeGR {
         g.setPaint(outlineColor);
 
         // draw fork node string
-        if (!nodeComponent.toString().equals("")) {
-            String decisionName = nodeComponent.toString();
+        if (!component.toString().equals("")) {
+            String decisionName = component.toString();
             int nameX = width + nameXOffset;
             int nameY = height; //+ (int) bounds.getY() / 2;
 
@@ -105,7 +105,7 @@ public class ForkNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "forknode", (ForkNode) getNodeComponent());
+        streamer.streamObject(node, "forknode", (ForkNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

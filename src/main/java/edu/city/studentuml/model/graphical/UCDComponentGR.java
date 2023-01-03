@@ -15,18 +15,18 @@ import java.util.List;
  */
 public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR {
 
-    protected UCDComponent ucdComponent;
+    protected UCDComponent component;
     public static final UCDComponentGR DEFAULT_CONTEXT = null;
     protected UCDComponentGR context;
-    protected List<UCLinkGR> incomingLinks;
-    protected List<UCLinkGR> outgoingLinks;
+    protected List<UCLinkGR> incomingRelations;
+    protected List<UCLinkGR> outgoingRelations;
 
     protected UCDComponentGR(UCDComponent ucdComponent, int x, int y) {
-        this.ucdComponent = ucdComponent;
+        this.component = ucdComponent;
         startingPoint = new Point(x, y);
         context = DEFAULT_CONTEXT;
-        incomingLinks = new ArrayList<>();
-        outgoingLinks = new ArrayList<>();
+        incomingRelations = new ArrayList<>();
+        outgoingRelations = new ArrayList<>();
     }
 
     // composite pattern
@@ -45,46 +45,46 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     public void setContext(UCDComponentGR context) {
         this.context = context;
         if (context != UCDComponentGR.DEFAULT_CONTEXT) {
-            ucdComponent.setContext(context.getUCDComponent());
+            component.setContext(context.getComponent());
         } else {
-            ucdComponent.setContext(UCDComponent.DEFAULT_CONTEXT);
+            component.setContext(UCDComponent.DEFAULT_CONTEXT);
         }
     }
 
     public void addIncomingLink(UCLinkGR link) {
-        incomingLinks.add(link);
-        ucdComponent.addIncomingLink(link.getLink());
+        incomingRelations.add(link);
+        component.addIncomingLink(link.getLink());
     }
 
     public void removeIncomingLink(UCLinkGR link) {
-        incomingLinks.remove(link);
-        ucdComponent.removeIncomingLink(link.getLink());
+        incomingRelations.remove(link);
+        component.removeIncomingLink(link.getLink());
     }
 
     public int getNumberOfIncomingLinks() {
-        return incomingLinks.size();
+        return incomingRelations.size();
     }
 
-    public Iterator<UCLinkGR> getIncomingLinks() {
-        return incomingLinks.iterator();
+    public Iterator<UCLinkGR> getIncomingRelations() {
+        return incomingRelations.iterator();
     }
 
     public void addOutgoingLink(UCLinkGR link) {
-        outgoingLinks.add(link);
-        ucdComponent.addOutgoingLink(link.getLink());
+        outgoingRelations.add(link);
+        component.addOutgoingLink(link.getLink());
     }
 
     public void removeOutgoingLink(UCLinkGR link) {
-        outgoingLinks.remove(link);
-        ucdComponent.removeOutgoingLink(link.getLink());
+        outgoingRelations.remove(link);
+        component.removeOutgoingLink(link.getLink());
     }
 
     public int getNumberOfOutgoingLinks() {
-        return outgoingLinks.size();
+        return outgoingRelations.size();
     }
 
-    public Iterator<UCLinkGR> getOutgoingLinks() {
-        return outgoingLinks.iterator();
+    public Iterator<UCLinkGR> getOutgoingRelations() {
+        return outgoingRelations.iterator();
     }
 
     /*
@@ -96,8 +96,8 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract Iterator<UCDComponentGR> createIterator();
 
-    public UCDComponent getUCDComponent() {
-        return ucdComponent;
+    public UCDComponent getComponent() {
+        return component;
     }
 
     public abstract boolean contains(UCDComponentGR otherUCDComponent);
@@ -110,7 +110,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     @Override
     public Classifier getClassifier() {
-        return ucdComponent;
+        return component;
     }
     
     public void refreshDimensions(Graphics2D g) {
@@ -124,6 +124,6 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     @Override
     public String toString() {
-        return ucdComponent.getName() + " : " +  ucdComponent.getClass().getSimpleName();
+        return component.getName() + " : " +  component.getClass().getSimpleName();
     }    
 }

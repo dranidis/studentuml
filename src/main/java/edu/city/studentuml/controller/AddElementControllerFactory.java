@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
@@ -11,12 +10,16 @@ import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Singleton class that uses Factory Method design pattern to dynamically
  * instantiate the appropriate controller for adding a particular element
  */
 public class AddElementControllerFactory {
+
+    private static final Logger logger = Logger.getLogger(AddElementControllerFactory.class.getName());
+
     /**
      * Each frame has its own controllers, one for each command represented by the string
      * Controllers are dynamically created upon clicking on the toolbars and then stored
@@ -47,7 +50,10 @@ public class AddElementControllerFactory {
         }
         Map<String, AddElementController> frameControllers = controllers.get(frame);
         if (frameControllers.get(elementClass) == null) {
-            frameControllers.put(elementClass, makeController(model, frame, elementClass));
+            AddElementController controller = makeController(model, frame, elementClass);
+            if (controller != null) {
+                frameControllers.put(elementClass, controller);
+            }
         }
         return frameControllers.get(elementClass);
     }
@@ -168,6 +174,7 @@ public class AddElementControllerFactory {
                 return new AddUMLNoteController((ADModel) model, frame);
             }
         }
-        throw new RuntimeException("AddElementController not found");
+        logger.severe(() -> "AddElementController not found for string " + elementClass);
+        return null;
     }
 }

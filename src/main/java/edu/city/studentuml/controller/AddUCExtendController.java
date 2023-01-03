@@ -44,7 +44,7 @@ public class AddUCExtendController extends AddUCLinkController {
             return;
         }
 
-        UCExtend useCaseExtend = new UCExtend((UseCase) useCaseSource.getUCDComponent(), (UseCase) useCaseTarget.getUCDComponent());
+        UCExtend useCaseExtend = new UCExtend((UseCase) useCaseSource.getComponent(), (UseCase) useCaseTarget.getComponent());
         UCExtendGR extendGR = new UCExtendGR(useCaseSource, useCaseTarget, useCaseExtend);
         extendGR.addExtensionPoint(new ExtensionPoint("New Extension Point"));
 

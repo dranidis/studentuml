@@ -43,7 +43,7 @@ public class AddUCIncludeController extends AddUCLinkController {
             return;
         }
 
-        UCInclude useCaseInclude = new UCInclude((UseCase) useCaseSource.getUCDComponent(), (UseCase) useCaseTarget.getUCDComponent());
+        UCInclude useCaseInclude = new UCInclude((UseCase) useCaseSource.getComponent(), (UseCase) useCaseTarget.getComponent());
         UCIncludeGR includeGR = new UCIncludeGR(useCaseSource, useCaseTarget, useCaseInclude);
 
         UndoableEdit edit = new AddEdit(includeGR, diagramModel);

@@ -85,7 +85,7 @@ public class ActivityNodeEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        ActivityNode node = (ActivityNode) activityNodeGR.getNodeComponent();
+        ActivityNode node = (ActivityNode) activityNodeGR.getComponent();
 
         activityNameField.setText(node.getName());
     }

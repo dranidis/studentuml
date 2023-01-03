@@ -17,43 +17,43 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
 
     private static final Logger logger = Logger.getLogger(CompositeUCDElementGR.class.getName());
 
-    protected List<UCDComponentGR> ucdComponents;
-
-    public List<UCDComponentGR> getUcdComponents() {
-        return ucdComponents;
-    }
+    protected List<UCDComponentGR> components;
 
     protected CompositeUCDElementGR(CompositeUCDElement compositeElement, int x, int y) {
         super(compositeElement, x, y);
-        ucdComponents = new ArrayList<>();
+        components = new ArrayList<>();
+    }
+
+    public List<UCDComponentGR> getComponents() {
+        return components;
     }
 
     @Override
     public void add(UCDComponentGR componentGR) {
-        ucdComponents.add(componentGR);
-        ucdComponent.add(componentGR.getUCDComponent());
+        components.add(componentGR);
+        component.add(componentGR.getComponent());
     }
 
     @Override
     public void remove(UCDComponentGR componentGR) {
-        ucdComponents.remove(componentGR);
-        ucdComponent.remove(componentGR.getUCDComponent());
+        components.remove(componentGR);
+        component.remove(componentGR.getComponent());
     }
 
     /*
      * Returns the number of ucd components contained
      */
     public int getNumberOfElements() {
-        return ucdComponents.size();
+        return components.size();
     }
 
     public UCDComponentGR getElement(int index) {
-        return ucdComponents.get(index);
+        return components.get(index);
     }
 
     @Override
     public Iterator createIterator() {
-        return new CompositeUCDGRIterator(ucdComponents.iterator());
+        return new CompositeUCDGRIterator(components.iterator());
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
         int deltaY = y - startingPoint.y;
         startingPoint.setLocation(x, y);
 
-        ucdComponents
+        components
                 .forEach(comp -> comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY));
     }
 
@@ -102,7 +102,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
-        ListIterator iterator = ucdComponents.listIterator(ucdComponents.size());
+        ListIterator iterator = components.listIterator(components.size());
         while (iterator.hasPrevious()) {
             UCDComponentGR comp = (UCDComponentGR) iterator.previous();
             if (comp.contains(point)) {
@@ -114,7 +114,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public UCDComponentGR findContext(UCDComponentGR comp) {
-        Iterator iterator = ucdComponents.iterator();
+        Iterator iterator = components.iterator();
         while (iterator.hasNext()) {
             UCDComponentGR myComp = (UCDComponentGR) iterator.next();
             if (myComp.contains(comp)) {
@@ -126,7 +126,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public void clearSelected() {
-        Iterator iterator = ucdComponents.iterator();
+        Iterator iterator = components.iterator();
         while (iterator.hasNext()) {
             UCDComponentGR comp = (UCDComponentGR) iterator.next();
             comp.clearSelected();

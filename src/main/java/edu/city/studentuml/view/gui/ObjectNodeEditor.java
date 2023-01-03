@@ -194,7 +194,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     // initialize the text fields and other components with the
     // data of the object node to be edited
     public void initialize() {
-        ObjectNode objectNode = (ObjectNode) objectNodeGR.getNodeComponent();
+        ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
 
         // initialize the states to an empty list
         // in order to populate them with COPIES of the object states

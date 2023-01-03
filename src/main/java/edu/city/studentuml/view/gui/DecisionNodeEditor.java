@@ -85,7 +85,7 @@ public class DecisionNodeEditor extends JPanel implements ActionListener{
     }
 
     public void initialize() {
-        DecisionNode node = (DecisionNode) decisionNodeGR.getNodeComponent();
+        DecisionNode node = (DecisionNode) decisionNodeGR.getComponent();
 
         decisionNameField.setText(node.getName());
     }

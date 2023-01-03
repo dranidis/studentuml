@@ -75,7 +75,7 @@ public class LeafDeleteEdit extends DeleteEditComponent {
                 ((SystemGR) g).add(element);
                 added = true;
             } else {
-                for (UCDComponentGR c: ((SystemGR) g).getUcdComponents()) {
+                for (UCDComponentGR c: ((SystemGR) g).getComponents()) {
                     added = elementInSystem(added, c, element);
                     if (added) {
                         break;

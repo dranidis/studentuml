@@ -50,14 +50,14 @@ public class ADModel extends DiagramModel {
             // does not have a default context activity
             context.add(nodeComponentGR);
             nodeComponentGR.setContext(context);
-            repository.addNodeComponent(nodeComponentGR.getNodeComponent());
+            repository.addNodeComponent(nodeComponentGR.getComponent());
             SystemWideObjectNamePool.getInstance().objectAdded(nodeComponentGR);
             modelChanged();
             return;
         }
 
         nodeComponentGR.setContext(NodeComponentGR.DEFAULT_CONTEXT);
-        repository.addNodeComponent(nodeComponentGR.getNodeComponent());
+        repository.addNodeComponent(nodeComponentGR.getComponent());
         super.insertGraphicalElementAt(nodeComponentGR, getFirstEdgeIndex());
     }
 
@@ -97,25 +97,25 @@ public class ADModel extends DiagramModel {
         }
 
         // remove all the edges to the node
-        Iterator incomingEdges = nodeComponentGR.getIncomingEdges();
+        Iterator incomingEdges = nodeComponentGR.getIncomingRelations();
         while (incomingEdges.hasNext()) {
             EdgeGR edge = (EdgeGR) incomingEdges.next();
             removeEdge(edge);
             // need to update iterator
-            incomingEdges = nodeComponentGR.getIncomingEdges();
+            incomingEdges = nodeComponentGR.getIncomingRelations();
         }
 
-        Iterator outgoingEdges = nodeComponentGR.getOutgoingEdges();
+        Iterator outgoingEdges = nodeComponentGR.getOutgoingRelations();
         while (outgoingEdges.hasNext()) {
             EdgeGR edge = (EdgeGR) outgoingEdges.next();
             removeEdge(edge);
             // need to update iterator
-            outgoingEdges = nodeComponentGR.getOutgoingEdges();
+            outgoingEdges = nodeComponentGR.getOutgoingRelations();
         }
 
         // and lastly remove the node
         NodeComponentGR context = nodeComponentGR.getContext();
-        repository.removeNodeComponent(nodeComponentGR.getNodeComponent());
+        repository.removeNodeComponent(nodeComponentGR.getComponent());
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
             super.removeGraphicalElement(nodeComponentGR);
         } else {

@@ -154,7 +154,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 while (i.hasNext()) {
                     GraphicalElement e = i.next();
                     if (e instanceof UCDComponentGR) {
-                        ucdComponent = ((UCDComponentGR) e).getUCDComponent();
+                        ucdComponent = ((UCDComponentGR) e).getComponent();
                         addUCDComponent(dnode, ucdComponent);
                     }
                 }
@@ -203,7 +203,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 while (i.hasNext()) {
                     GraphicalElement e = i.next();
                     if (e instanceof NodeComponentGR) {
-                        nodeComponent = ((NodeComponentGR) e).getNodeComponent();
+                        nodeComponent = ((NodeComponentGR) e).getComponent();
                         addNodeComponent(dnode, nodeComponent);
                     }
                 }

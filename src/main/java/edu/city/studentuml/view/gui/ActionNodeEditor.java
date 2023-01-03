@@ -85,7 +85,7 @@ public class ActionNodeEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        ActionNode node = (ActionNode) actionNodeGR.getNodeComponent();
+        ActionNode node = (ActionNode) actionNodeGR.getComponent();
 
         actionNameField.setText(node.getName());
     }

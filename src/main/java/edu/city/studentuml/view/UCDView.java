@@ -31,7 +31,7 @@ public class UCDView extends DiagramView {
             } else if (element instanceof UCDComponentGR) {
                 UCDComponentGR comp = (UCDComponentGR) element;
                 comp.draw(g);
-                Iterator<UCLinkGR> incomingLinks = comp.getIncomingLinks();
+                Iterator<UCLinkGR> incomingLinks = comp.getIncomingRelations();
                 while (incomingLinks.hasNext()) {
                     UCLinkGR link = incomingLinks.next();
                     link.draw(g);
@@ -42,7 +42,7 @@ public class UCDView extends DiagramView {
                     UCDComponentGR el = elements.next();
                     el.draw(g);
 
-                    incomingLinks = el.getIncomingLinks();
+                    incomingLinks = el.getIncomingRelations();
                     while (incomingLinks.hasNext()) {
                         UCLinkGR link = incomingLinks.next();
                         link.draw(g);

@@ -42,8 +42,8 @@ public abstract class AddUCLinkController extends AddElementController {
             UCDComponentGR target = (UCDComponentGR) element;
 
             // check that there is no other links between these two classifiers
-            UCLink testOne = diagramModel.getCentralRepository().getUCLink(source.getUCDComponent(), target.getUCDComponent());
-            UCLink testTwo = diagramModel.getCentralRepository().getUCLink(target.getUCDComponent(), source.getUCDComponent());
+            UCLink testOne = diagramModel.getCentralRepository().getUCLink(source.getComponent(), target.getComponent());
+            UCLink testTwo = diagramModel.getCentralRepository().getUCLink(target.getComponent(), source.getComponent());
             if (testOne == null && testTwo == null) {
                 addLink(source, target);
             } else {

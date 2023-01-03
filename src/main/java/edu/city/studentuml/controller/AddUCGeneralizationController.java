@@ -32,7 +32,7 @@ public class AddUCGeneralizationController extends AddUCLinkController {
             if (trg instanceof UseCaseGR) {
                 target = trg;
 
-                UCGeneralization generalization = new UCGeneralization((UseCase) source.getUCDComponent(), (UseCase) target.getUCDComponent());
+                UCGeneralization generalization = new UCGeneralization((UseCase) source.getComponent(), (UseCase) target.getComponent());
                 UCGeneralizationGR generalizationGR = new UCGeneralizationGR((UseCaseGR) source, (UseCaseGR) target, generalization);
 
                 UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);
@@ -54,7 +54,7 @@ public class AddUCGeneralizationController extends AddUCLinkController {
             if (trg instanceof UCActorGR) {
                 target = trg;
 
-                UCGeneralization generalization = new UCGeneralization((Actor) source.getUCDComponent(), (Actor) target.getUCDComponent());
+                UCGeneralization generalization = new UCGeneralization((Actor) source.getComponent(), (Actor) target.getComponent());
                 UCGeneralizationGR generalizationGR = new UCGeneralizationGR((UCActorGR) source, (UCActorGR) target, generalization);
 
                 UndoableEdit edit = new AddEdit(generalizationGR, diagramModel);

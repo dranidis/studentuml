@@ -56,7 +56,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "flowfinalnode", (FlowFinalNode) getNodeComponent());
+        streamer.streamObject(node, "flowfinalnode", (FlowFinalNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -82,7 +82,7 @@ public class ObjectNodeGR extends LeafNodeGR {
         g.setStroke(originalStroke);
         g.setPaint(outlineColor);
 
-        ObjectNode node = (ObjectNode) nodeComponent;
+        ObjectNode node = (ObjectNode) component;
         if (!node.hasStates()) {
             // draw object name and type in the center
             drawString(g, node.toString());
@@ -142,8 +142,8 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
 
         // consider object name and type text dimensions
-        if (nodeComponent.toString().length() != 0) {
-            TextLayout layout = new TextLayout(nodeComponent.toString(), objectNameFont, frc);
+        if (component.toString().length() != 0) {
+            TextLayout layout = new TextLayout(component.toString(), objectNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int objectNameWidth = (int) bounds.getWidth() + (2 * objectNameXOffset);
 
@@ -157,7 +157,7 @@ public class ObjectNodeGR extends LeafNodeGR {
         }
 
         // consider object states text dimensions
-        String states = ((ObjectNode) nodeComponent).getStatesAsString();
+        String states = ((ObjectNode) component).getStatesAsString();
         if (states.length() != 0) {
             TextLayout layout = new TextLayout(states, objectStatesFont, frc);
             Rectangle2D bounds = layout.getBounds();
@@ -197,7 +197,7 @@ public class ObjectNodeGR extends LeafNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "objectnode", (ObjectNode) getNodeComponent());
+        streamer.streamObject(node, "objectnode", (ObjectNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

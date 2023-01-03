@@ -61,8 +61,8 @@ public class CompositeDeleteEditLoader {
                 }
                 edit.add(new LeafDeleteEdit(c, model));
 
-                c.getIncomingLinks().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
-                c.getOutgoingLinks().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+                c.getIncomingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+                c.getOutgoingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadCCDClassCompositeDeleteEdit(ConceptualClassGR c, CompositeDeleteEdit edit, DiagramModel model) {

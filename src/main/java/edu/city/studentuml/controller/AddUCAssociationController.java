@@ -45,7 +45,7 @@ public class AddUCAssociationController extends AddUCLinkController {
             return;
         }
 
-        UCAssociation association = new UCAssociation((Actor) actor.getUCDComponent(), (UseCase) useCase.getUCDComponent());
+        UCAssociation association = new UCAssociation((Actor) actor.getComponent(), (UseCase) useCase.getComponent());
         UCAssociationGR associationGR = new UCAssociationGR(actor, useCase, association);
 
         UndoableEdit edit = new AddEdit(associationGR, diagramModel);
