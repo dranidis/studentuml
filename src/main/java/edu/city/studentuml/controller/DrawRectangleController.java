@@ -20,7 +20,7 @@ public class DrawRectangleController {
     private MouseMotionListener mouseMotionListener;
     private int startX;
     private int startY;
-    private boolean drawLine = false;
+    private boolean drawRectangle = false;
 
     public DrawRectangleController(DiagramView view, DiagramModel model) {
         diagramView = view;
@@ -30,8 +30,6 @@ public class DrawRectangleController {
             @Override
             public void mousePressed(MouseEvent e) {
 
-                // return without doing anything if the controller is in selection mode
-                // or if any mouse button except the left button has been pressed
                 if (!selectionMode) {
                     return;
                 }
@@ -53,7 +51,7 @@ public class DrawRectangleController {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (selectionMode || e.isMetaDown() || e.isAltDown()) {
+                if (!selectionMode) {
                     return;
                 }
 
@@ -75,23 +73,28 @@ public class DrawRectangleController {
     }
 
     public void dragged(int x, int y) {
-
-        if (drawLine) {
-            diagramView.getDragLine().setLine(startX, startY, x, y);
+        if (drawRectangle) {
+            diagramView.getDragRectangle().setRect(startX, startY, x - startX, y - startY);
             diagramView.repaint();
         }
     }
 
     public void pressed(int x, int y) {
+        if (diagramModel.getContainingGraphicalElement(x, y) != null) {
+            return;
+        }
+
         logger.finer(() -> "Pressed ");
         startX = x;
         startY = y;
-        drawLine = true;
+        drawRectangle = true;
     }
 
     public void released(int x, int y) {
-        diagramView.getDragLine().setLine(0, 0, 0, 0);
+        logger.finer(() -> "Released ");
+        diagramView.getDragRectangle().setRect(0, 0, 0, 0);
         diagramView.repaint();
-        drawLine = false;
+        drawRectangle = false;
+
     }
 }

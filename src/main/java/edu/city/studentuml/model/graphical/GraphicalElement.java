@@ -135,6 +135,14 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
     public abstract boolean contains(Point2D p);
 
+    public boolean containedInArea(int x, int y, int toX, int toY) {
+        int ex = getX();
+        int ey = getY();
+
+        return ex > x && ey > y &&
+                ex + getWidth() < toX && ey + getHeight() < toY;
+    }
+
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         String uid = node.getAttribute("uid");
 

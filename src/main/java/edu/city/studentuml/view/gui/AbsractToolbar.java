@@ -133,20 +133,7 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
         String command = event.getActionCommand();
 
         if (command.equals("Selection")) {
-            parentFrame.getSelectionController().setSelectionMode(getSelectionMode());
-            parentFrame.getAddElementController().setSelectionMode(getSelectionMode());
-            parentFrame.getDrawLineController().setSelectionMode(getSelectionMode());//TK draw line
-
-            parentFrame.setDrawRectangleController(parentFrame.getDrawRectangleController());
-
-            ResizeWithCoveredElementsController resizeController = parentFrame.getResizeController();
-            if (resizeController != null) {
-                resizeController.setSelectionMode(getSelectionMode());
-            }
-            EdgeController edgeController = parentFrame.getEdgeController();
-            if (edgeController != null) {
-                edgeController.setSelectionMode(getSelectionMode());
-            }
+            actionPerfomedOnSelection();
         } else {    // the rest of the buttons are for adding UML elements
 
             // Factory Method hides instantiation details and the variety of subclasses
@@ -156,6 +143,23 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
             if (!command.equals("UMLNoteGR")) {
                 parentFrame.getModel().clearSelected();
             }
+        }
+    }
+
+    public void actionPerfomedOnSelection() {
+        parentFrame.getSelectionController().setSelectionMode(getSelectionMode());
+        parentFrame.getAddElementController().setSelectionMode(getSelectionMode());
+        parentFrame.getDrawLineController().setSelectionMode(getSelectionMode());//TK draw line
+
+        parentFrame.setDrawRectangleController(parentFrame.getDrawRectangleController());
+
+        ResizeWithCoveredElementsController resizeController = parentFrame.getResizeController();
+        if (resizeController != null) {
+            resizeController.setSelectionMode(getSelectionMode());
+        }
+        EdgeController edgeController = parentFrame.getEdgeController();
+        if (edgeController != null) {
+            edgeController.setSelectionMode(getSelectionMode());
         }
     }
 

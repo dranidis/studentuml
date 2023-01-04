@@ -1,8 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//SDMessageGR.java
+
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 import java.awt.BasicStroke;
@@ -19,9 +17,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- * @author  Kristi
- */
+
 public abstract class SDMessageGR extends GraphicalElement {
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
@@ -173,6 +169,13 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             return bounds.contains(point);
         }
+    }
+
+    @Override
+    public boolean containedInArea(int x, int y, int toX, int toY) {
+        int ey = getY();
+
+        return ey > y && ey < toY;
     }
 
     @Override

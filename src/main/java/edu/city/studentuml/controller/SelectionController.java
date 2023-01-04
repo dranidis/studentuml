@@ -228,6 +228,7 @@ public abstract class SelectionController {
 
         model.clearSelected();
         for (GraphicalElement el : selectedElements) {
+            logger.finer(() -> "Element " + el + " " + el.getX() + ", " + el.getY() + " - " + el.getWidth() + ", " + el.getHeight());
             model.selectGraphicalElement(el);
         }
 
@@ -257,6 +258,16 @@ public abstract class SelectionController {
                 logger.fine(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
+            }
+        } else if (selectionMode && lastPressed == null) {
+            logger.finer(() -> "Select all elements in rectangle:" + lastX + ", " + lastY + " - " + event.getX() + ", " + event.getY());
+            List<GraphicalElement> contained = model.getContainedGraphicalElements(lastX, lastY, event.getX(), event.getY());
+            contained.forEach(e -> logger.finer("" + e));
+            contained.forEach(e -> addElementToSelection(e));
+
+            model.clearSelected();
+            for (GraphicalElement el : selectedElements) {
+                model.selectGraphicalElement(el);
             }
         }
     }

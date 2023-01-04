@@ -137,6 +137,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         createHelpMenubar();
 
         setSize(650, 550);  
+
+        toolbar.actionPerfomedOnSelection();
     }
 
     protected void createHelpMenubar() {
