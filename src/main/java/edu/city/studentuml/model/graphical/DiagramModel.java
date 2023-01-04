@@ -1,6 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,6 +235,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return contained;
     }
 
+    public List<GraphicalElement> getContainedGraphicalElements(Rectangle2D r) {
+        return getContainedGraphicalElements((int) r.getMinX(), (int) r.getMinY(), (int) r.getMaxX(), (int) r.getMaxY());
+    }
+
     // clears the drawing area of a diagram by setting all graphical elements to
     // empty
     public void clear() {
@@ -298,4 +303,5 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public UMLProject getUmlProject() {
         return umlProject;
     }
+
 }

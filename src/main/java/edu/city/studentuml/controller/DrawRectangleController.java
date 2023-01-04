@@ -1,6 +1,7 @@
 package edu.city.studentuml.controller;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.PositiveRectangle;
 import edu.city.studentuml.view.DiagramView;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -74,7 +75,8 @@ public class DrawRectangleController {
 
     public void dragged(int x, int y) {
         if (drawRectangle) {
-            diagramView.getDragRectangle().setRect(startX, startY, x - startX, y - startY);
+            PositiveRectangle r = new PositiveRectangle(startX, startY, x, y);
+            diagramView.setDragRectangle(r.getRectangle2D());
             diagramView.repaint();
         }
     }
