@@ -275,7 +275,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
     }
 
+    @Override
     public String toString() {
-        return abstractClass.getName();
+        return abstractClass.getName() + " " + super.toString();
     }
 }

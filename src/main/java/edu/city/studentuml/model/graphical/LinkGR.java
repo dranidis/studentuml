@@ -102,7 +102,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         } else {
             links.put(linkAB, links.get(linkAB) + 1);
         }
-        logger.finest("links " + links);
+        logger.finest(() -> "links " + links);
         super.objectAdded(obj);
     }
 
@@ -125,7 +125,6 @@ public abstract class LinkGR extends AbstractLinkGR {
         logger.finest(() -> "Link to remove: link " + link);
         if (!removeLink(new Link(link.a, link.b)) && !removeLink(new Link(link.b, link.a))) {
             logger.severe(() -> "Non existing link when objectRemoved:" + obj + " from links:" + links);
-            // throw new RuntimeException();
         }
         logger.finest(() -> "objectRemoved (after): links " + links);
         super.objectRemoved(obj);
@@ -136,8 +135,12 @@ public abstract class LinkGR extends AbstractLinkGR {
     public Rectangle2D getBounds() {
         Point2D pa = getEndPointRoleA();
         Point2D pb = getEndPointRoleB();
+        double minX = Math.min(pa.getX(), pb.getX());
+        double minY = Math.min(pa.getY(), pb.getY());
+        double maxX = Math.max(pa.getX(), pb.getX());
+        double maxY = Math.max(pa.getY(), pb.getY());
 
-        return new Rectangle2D.Double(pa.getX(), pa.getY(), pb.getX() - pa.getX(), pb.getY() - pa.getY());
+        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 
     private double getAngle() {
@@ -157,7 +160,7 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     public Point2D getEndPointRoleA() {
         if (isReflective()) {
-            return new Point2D.Double(getTopLeftXA() + getWidthA() - 2 * getReflectiveStep(), // minus 2 offset
+            return new Point2D.Double(getTopLeftXA() + getWidthA() - 2.0 * getReflectiveStep(), // minus 2 offset
                     getTopLeftYA());
         }
         double xA = getCentreRoleA().getX();
@@ -170,7 +173,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         Rotate rotate = new Rotate(angle, xA, yA);
         double minDim = getMinDim(getWidthA(), getHeightA());
         double offx = (getWidthA() - minDim) / 2;
-        Point2D.Double point = rotate.transform(getTopLeftXA() + offx + dv, getTopLeftYA() + getHeightA() / 2);
+        Point2D.Double point = rotate.transform(getTopLeftXA() + offx + dv, getTopLeftYA() + getHeightA() / 2.0);
         double orX = point.getX() - getTopLeftXA();
         double orY = point.getY() - getTopLeftYA();
 
@@ -180,7 +183,7 @@ public abstract class LinkGR extends AbstractLinkGR {
     // returns the endpoint corresponding to role B
     public Point2D getEndPointRoleB() {
         if (isReflective()) {
-            return new Point2D.Double(getTopLeftXA() + getWidthA(), getTopLeftYA() + 2 * getReflectiveStep());
+            return new Point2D.Double((double) getTopLeftXA() + getWidthA(), getTopLeftYA() + 2.0 * getReflectiveStep());
         }
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
@@ -193,7 +196,7 @@ public abstract class LinkGR extends AbstractLinkGR {
         double minDim = getMinDim(getWidthB(), getHeightB());
         double offx = (getWidthB() - minDim) / 2;
 
-        Point2D.Double point = rotate.transform(getTopLeftXB() + offx + dv, getTopLeftYB() + getHeightB() / 2);
+        Point2D.Double point = rotate.transform(getTopLeftXB() + offx + dv, getTopLeftYB() + getHeightB() / 2.0);
 
         double orX = point.getX() - getTopLeftXB();
         double orY = point.getY() - getTopLeftYB();
@@ -217,7 +220,7 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     @Override
     public String toString() {
-        return a.toString() + " --> " + b.toString() + " : " + this.getClass().getSimpleName();
+        return a.toString() + " --> " + b.toString() + " : " + super.toString();
     }
 
 }

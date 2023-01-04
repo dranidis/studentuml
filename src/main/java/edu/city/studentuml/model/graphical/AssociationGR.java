@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AssociationGR.java
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -84,6 +81,7 @@ public class AssociationGR extends LinkGR {
         return classB.getHeight();
     }
 
+    @Override
     public void draw(Graphics2D g) {
         classA.refreshDimensions(g);
         classB.refreshDimensions(g);
@@ -92,8 +90,6 @@ public class AssociationGR extends LinkGR {
             super.draw(g);
         }
 
-        // if (outlineColor == null)
-        // outlineColor = this.myColor();
         int xA = getXA();
         int yA = getYA();
         int xB = getXB();
@@ -155,7 +151,7 @@ public class AssociationGR extends LinkGR {
         } else // handle rendering of reflective associations in an ad-hoc way
         {
             GeneralPath reflective = new GeneralPath();
-            int step = getReflectiveStep();
+            float step = getReflectiveStep();
             reflective.moveTo(xA, yA);
             reflective.lineTo(xA, yA - REFLECTIVE_UP * step); // up 2
             reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yA - REFLECTIVE_UP * step); // right 4
@@ -170,15 +166,14 @@ public class AssociationGR extends LinkGR {
 
             // draw the association name string
             g.setFont(nameFont);
-            // g.drawString(association.getName(), getXA(), getTopLeftYA() - REFLECTIVE_UP *
-            // getReflectiveStep() - 2);
+
             double angle = 0;
             if (association.getLabelDirection() == Association.FROM_A_TO_B) {
                 angle = Math.toRadians(0);
             } else {
                 angle = Math.toRadians(180);
             }
-            drawAssociationName(xA + REFLECTIVE_RIGHT * step / 2, yA - REFLECTIVE_UP * step, angle,
+            drawAssociationName((int) (xA + REFLECTIVE_RIGHT * step / 2), (int) (yA - REFLECTIVE_UP * step), angle,
                     association.getName(), association.getShowArrow(), g);
 
             // draw role names and multiplicities
@@ -263,9 +258,9 @@ public class AssociationGR extends LinkGR {
 
             GeneralPath triangle = new GeneralPath();
 
-            triangle.moveTo(offset + 5, 5);
-            triangle.lineTo(offset + 5, 15);
-            triangle.lineTo(offset + 15, 10);
+            triangle.moveTo(offset + 5.0, 5.0);
+            triangle.lineTo(offset + 5.0, 15.0);
+            triangle.lineTo(offset + 15.0, 10.0);
             triangle.closePath();
             g.fill(triangle);
             g.rotate(-angle);
@@ -276,9 +271,9 @@ public class AssociationGR extends LinkGR {
 
             GeneralPath triangle = new GeneralPath();
 
-            triangle.moveTo(offset + 5, -5);
-            triangle.lineTo(offset + 5, -15);
-            triangle.lineTo(offset + 15, -10);
+            triangle.moveTo(offset + 5.0, -5.0);
+            triangle.lineTo(offset + 5.0, -15.0);
+            triangle.lineTo(offset + 15.0, -10.0);
             triangle.closePath();
             g.fill(triangle);
             g.rotate(-angle);
@@ -355,8 +350,9 @@ public class AssociationGR extends LinkGR {
         streamer.streamObject(node, "association", association);
     }
 
+    @Override
     public String toString() {
-        return "" + classA + " ---association---> " + classB;
+        return "" + classA + " ---association---> " + classB + " " + super.toString();
     }
 
 }
