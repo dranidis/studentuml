@@ -4,6 +4,8 @@ import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,6 +15,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JPanel;
@@ -21,6 +24,7 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     protected DiagramModel model;
     protected transient Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
+    protected transient Rectangle2D dragRectangle = new Rectangle2D.Double(0, 0, 0, 0);
 
     protected DiagramView(DiagramModel m) {
         model = m;
@@ -40,6 +44,14 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public void setDragLine(Line2D dragLine) {
         this.dragLine = dragLine;
+    }
+
+    public Rectangle2D getDragRectangle() {
+        return dragRectangle;
+    }
+
+    public void setDragRectangle(Rectangle2D dragRectangle) {
+        this.dragRectangle = dragRectangle;
     }
 
     @Override
@@ -115,15 +127,16 @@ public abstract class DiagramView extends JPanel implements Observer {
     public void drawDiagram(Graphics2D g) {
         SystemWideObjectNamePool.drawLock.lock();
         
+        // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
                 .filter(LinkGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
+        // .. and then everything else
         model.getGraphicalElements().stream()
                 .filter(ge -> ! (ge instanceof LinkGR))
                 .forEach(ge -> ge.draw(g));
 
-        g.setPaint(Color.GRAY);
 
         // find the maxX and maxY of all the elements of the diagram
         // and resize the panel accordingly
@@ -132,9 +145,20 @@ public abstract class DiagramView extends JPanel implements Observer {
         int maxY = (int) Math.max( maxPoint.getY(), this.getSize().getHeight());
         this.setSize(maxX, maxY);
         
-        g.draw(dragLine);
+        // ... finally draw the dragline and rectangle
+        drawLineAndRectangle(g);
 
         SystemWideObjectNamePool.drawLock.unlock();
+    }
+
+    protected void drawLineAndRectangle(Graphics2D g) {
+        g.setPaint(Color.GRAY);
+        g.draw(dragLine);
+
+        float dashes[] = { 2 };
+
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.draw(dragRectangle);
     }
 
     public void setModel(DiagramModel m) {

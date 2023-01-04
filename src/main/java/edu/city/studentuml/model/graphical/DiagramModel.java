@@ -1,7 +1,10 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -187,14 +190,19 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         diagramName = name;
     }
 
-    // retrieves the graphical element in the diagram that contains a given 2D point
-    // Usually triggered by a select, drag-and-drop, and addition event.
+    /**
+     * Retrieves the graphical element in the diagram that contains a given 2D point
+     * Usually triggered by a select, drag-and-drop, and addition event.
+     * 
+     * Get the first element that contains the point, starting from the end of the
+     * list, i.e. from the most recently drawn grapical element, so that the
+     * uppermost is returned in case elements are overlayed one on top of the other.
+     * 
+     * @param point
+     * @return
+     */
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
 
-        // get the first element that contains the point, starting from the end of the
-        // list,
-        // i.e. from the most recently drawn grapical element, so that the uppermost is
-        // returned in case elements are overlayed one on top of the other
         ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
 
         while (listIterator.hasPrevious()) {
@@ -211,6 +219,24 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     public GraphicalElement getContainingGraphicalElement(int x, int y) {
         return this.getContainingGraphicalElement(new Point2D.Double(x, y));
+    }
+
+    public List<GraphicalElement> getContainedGraphicalElements(int x, int y, int toX, int toY) {
+        List<GraphicalElement> contained = new ArrayList<>();
+        ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
+
+        while (listIterator.hasPrevious()) {
+            GraphicalElement element = listIterator.previous();
+            if (element.containedInArea(x, y, toX, toY) ) {
+                contained.add(element);
+            }
+        }
+
+        return contained;
+    }
+
+    public List<GraphicalElement> getContainedGraphicalElements(Rectangle2D r) {
+        return getContainedGraphicalElements((int) r.getMinX(), (int) r.getMinY(), (int) r.getMaxX(), (int) r.getMaxY());
     }
 
     // clears the drawing area of a diagram by setting all graphical elements to
@@ -277,4 +303,5 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public UMLProject getUmlProject() {
         return umlProject;
     }
+
 }

@@ -5,7 +5,6 @@ import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 
@@ -57,8 +56,8 @@ public class ADView extends DiagramView {
             }
         }
 
-        g.setPaint(Color.GRAY);
-        g.draw(dragLine);
+        // ... finally draw the dragline and rectangle
+        drawLineAndRectangle(g);
 
         SystemWideObjectNamePool.drawLock.unlock();
     }

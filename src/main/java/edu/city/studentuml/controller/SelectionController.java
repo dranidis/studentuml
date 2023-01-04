@@ -34,6 +34,7 @@ import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.PositiveRectangle;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
@@ -109,24 +110,32 @@ public abstract class SelectionController {
         mouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
-                myMousePressed(event);
+                if (selectionMode) {
+                    myMousePressed(event);
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent event) {
-                myMouseReleased(event);
+                if (selectionMode) {
+                    myMouseReleased(event);
+                }
             }
 
             @Override
             public void mouseClicked(MouseEvent event) {
-                myMouseClicked(event);
+                if (selectionMode) {
+                    myMouseClicked(event);
+                }
             }
         };
 
         mouseMotionListener = new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent event) {
-                myMouseDragged(event);
+                if (selectionMode) {
+                    myMouseDragged(event);
+                }
             }
         };
 
@@ -184,22 +193,20 @@ public abstract class SelectionController {
     }
 
     protected void myMousePressed(MouseEvent event) {
-        if (selectionMode) {
-            lastX = event.getX();
-            lastY = event.getY();
+        lastX = event.getX();
+        lastY = event.getY();
 
-            Point2D origin = new Point2D.Double(event.getX(), event.getY());
+        Point2D origin = new Point2D.Double(event.getX(), event.getY());
 
-            // find the source graphical element
-            GraphicalElement element = model.getContainingGraphicalElement(origin);
+        // find the source graphical element
+        GraphicalElement element = model.getContainingGraphicalElement(origin);
 
-            if (element != null) {
-                mousePressedOnElement(event, element);
-            } else {
-                selectedElements.clear();
-                model.clearSelected();
-                lastPressed = null;
-            }
+        if (element != null) {
+            mousePressedOnElement(event, element);
+        } else {
+            selectedElements.clear();
+            model.clearSelected();
+            lastPressed = null;
         }
     }
 
@@ -228,6 +235,7 @@ public abstract class SelectionController {
 
         model.clearSelected();
         for (GraphicalElement el : selectedElements) {
+            logger.finer(() -> "Element " + el + " " + el.getX() + ", " + el.getY() + " - " + el.getWidth() + ", " + el.getHeight());
             model.selectGraphicalElement(el);
         }
 
@@ -243,7 +251,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
-        if (selectionMode && lastPressed != null) {
+        if (lastPressed != null) {
 
             // check if the event is a popup trigger event
             managePopup(event);
@@ -258,6 +266,18 @@ public abstract class SelectionController {
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }
+        } else {
+            PositiveRectangle pr = new PositiveRectangle(lastX, lastY, event.getX(), event.getY());
+
+            logger.finer(() -> "Select all elements in rectangle:" + pr);
+            List<GraphicalElement> contained = model.getContainedGraphicalElements(pr.getRectangle2D());
+            contained.forEach(e -> logger.finer("" + e));
+            contained.forEach(this::addElementToSelection);
+
+            model.clearSelected();
+            for (GraphicalElement el : selectedElements) {
+                model.selectGraphicalElement(el);
+            }
         }
     }
 
@@ -267,7 +287,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        if (selectionMode && event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
+        if (event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
             Point2D origin = new Point2D.Double(event.getX(), event.getY());
             lastX = event.getX();
@@ -292,7 +312,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
-        if (selectionMode && lastPressed != null) {
+        if (lastPressed != null) {
             moveElement(event.getX(), event.getY());
         }
     }

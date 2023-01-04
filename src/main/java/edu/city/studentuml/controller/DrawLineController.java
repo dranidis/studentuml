@@ -2,7 +2,6 @@ package edu.city.studentuml.controller;
 
 //TK draw line
 //Author: Takasmanov
-//DrawLineController.java
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.view.DiagramView;
@@ -100,10 +99,9 @@ public class DrawLineController {
 
         ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = listIterator.previous();
+            GraphicalElement element = listIterator.previous();
 
             if ((element instanceof AbstractClassGR
                     || element instanceof RoleClassifierGR
@@ -112,7 +110,7 @@ public class DrawLineController {
                     || element instanceof NodeComponentGR
                     || element instanceof InterfaceGR)
                     && element.contains(origin)) {
-                        logger.finer("Pressed" + element.getClass().getSimpleName());
+                        logger.finer(() -> "Pressed " + element + " : " + element.getClass().getSimpleName());
                 startX = x;
                 startY = y;
                 drawLine = true;
