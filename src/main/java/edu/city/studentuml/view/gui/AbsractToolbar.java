@@ -136,7 +136,9 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
             parentFrame.getSelectionController().setSelectionMode(getSelectionMode());
             parentFrame.getAddElementController().setSelectionMode(getSelectionMode());
             parentFrame.getDrawLineController().setSelectionMode(getSelectionMode());//TK draw line
-            parentFrame.getDrawRectangleController().setSelectionMode(getSelectionMode());
+
+            parentFrame.setDrawRectangleController(parentFrame.getDrawRectangleController());
+
             ResizeWithCoveredElementsController resizeController = parentFrame.getResizeController();
             if (resizeController != null) {
                 resizeController.setSelectionMode(getSelectionMode());
@@ -151,7 +153,6 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
             // of AddElementController that may exist
             parentFrame.setAddElementController(parentFrame.getAddElementControllerFactory().newAddElementController(parentFrame.getModel(), parentFrame, command));
             parentFrame.setDrawLineController(parentFrame.getDrawLineController());//TK draw line
-            parentFrame.setDrawRectangleController(parentFrame.getDrawRectangleController());
             if (!command.equals("UMLNoteGR")) {
                 parentFrame.getModel().clearSelected();
             }

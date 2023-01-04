@@ -276,6 +276,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         drawRectangleController = controller;
         view.addMouseListener(drawRectangleController.getMouseListener());
         view.addMouseMotionListener(drawRectangleController.getMouseMotionListener());
+        selectionController.setSelectionMode(getSelectionMode());
+        addElementController.setSelectionMode(getSelectionMode());
         drawRectangleController.setSelectionMode(getSelectionMode());
     }
 
