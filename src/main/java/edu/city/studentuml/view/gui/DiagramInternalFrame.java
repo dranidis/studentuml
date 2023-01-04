@@ -3,6 +3,7 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.AddElementControllerFactory;
 import edu.city.studentuml.controller.DrawLineController;
+import edu.city.studentuml.controller.DrawRectangleController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
@@ -35,6 +36,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected transient AddElementControllerFactory addElementControllerFactory;
     protected transient AddElementController addElementController;
     protected transient DrawLineController drawLineController; //TK draw line
+    protected transient DrawRectangleController drawRectangleController; 
     protected transient SelectionController selectionController;
 
     // only in AD and UCD
@@ -111,6 +113,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         selectionController = makeSelectionController(this, model);
         resizeController = makeResizeWithCoveredElementsController(this, model, selectionController);
         drawLineController = makeDrawLineController(view, model);
+        drawRectangleController = makeDrawRectangleController(view, model);
         edgeController = makeEdgeController(this, model, selectionController);
 
         // pass selection controller and add element controller to view
@@ -140,6 +143,10 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         // intentionally empty
         // to be overriden by internal frames which provide
         // a help menu
+    }
+
+    private DrawRectangleController makeDrawRectangleController(DiagramView diagramView, DiagramModel model) {
+        return new DrawRectangleController(view, model);
     }
 
     protected DrawLineController makeDrawLineController(DiagramView diagramView, DiagramModel model) {
@@ -260,6 +267,18 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         drawLineController.setSelectionMode(getSelectionMode());
     }
 
+    public void setDrawRectangleController(DrawRectangleController controller) {
+        if (drawRectangleController != null) {
+            view.removeMouseListener(drawRectangleController.getMouseListener());
+            view.removeMouseMotionListener(drawRectangleController.getMouseMotionListener());
+        }
+
+        drawRectangleController = controller;
+        view.addMouseListener(drawRectangleController.getMouseListener());
+        view.addMouseMotionListener(drawRectangleController.getMouseMotionListener());
+        drawRectangleController.setSelectionMode(getSelectionMode());
+    }
+
     public DiagramView getView() {
         return view;
     }
@@ -298,6 +317,10 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     public DrawLineController getDrawLineController() {
         return drawLineController;
+    }
+
+    public DrawRectangleController getDrawRectangleController() {
+        return drawRectangleController;
     }
 
     public SelectionController getSelectionController() {
