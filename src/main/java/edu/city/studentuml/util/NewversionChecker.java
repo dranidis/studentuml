@@ -16,8 +16,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
 import org.json.JSONObject;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
@@ -27,19 +25,29 @@ public class NewversionChecker {
 
     private static final String DOWNLOAD_URL = "https://bitbucket.org/studentuml/studentuml-public/downloads/";
     private static final String JSON_URL = "https://api.bitbucket.org/2.0/repositories/studentuml/studentuml-public/downloads";
+    private static final String CURRENT_VERSION = getCurrentVersion();
 
     private NewversionChecker() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static boolean newVersion() {
-        String currentVersion = getCurrentVersion();
-        logger.info(() -> "CURRENT VERSION: " + currentVersion);
+    public static void checkForNewVersion(StudentUMLFrame frame) {
+        if (thereIsANewVersion() && !currentVersionIsSnapShot()) {
+            showNewVersionDialog(frame);
+        }
+    }
+
+    public static boolean thereIsANewVersion() {
+        logger.info(() -> "CURRENT VERSION: " + CURRENT_VERSION);
 
         String newVersion = getNewestVersion();
         logger.info(() -> "LATEST VERSION: " + newVersion);
 
-        return !newVersion.equals("") && !newVersion.equals(currentVersion);
+        return !newVersion.equals("") && !newVersion.equals(CURRENT_VERSION);
+    }
+
+    private static boolean currentVersionIsSnapShot() {
+        return CURRENT_VERSION.contains("SNAPSHOT");
     }
 
     /**
@@ -116,13 +124,7 @@ public class NewversionChecker {
         return content.toString();
     }
 
-    public static void checkForNewVersion(StudentUMLFrame frame) {
-        if (newVersion()) {
-            showInfoDialog(frame);
-        }
-    }
-
-    private static void showInfoDialog(StudentUMLFrame frame) {
+    private static void showNewVersionDialog(StudentUMLFrame frame) {
         // for copying style
         JLabel label = new JLabel();
         Font font = label.getFont();
