@@ -114,17 +114,9 @@ public class SystemWideObjectNamePool extends Observable {
         if (loading > 0) {
             return false;
         }
-
-        // String XMLData = UMLProject.getInstance().streamToXMLString();
-        // if (XMLData.equals(LastUndo)) return false;//FIXME:
-
         loading();
-        // if (LastUndo != null) {
-        // undoBuffer.push(LastUndo);
-        // redoBuffer.clear();
-        // }
+
         done();
-        // LastUndo = XMLData;
         return true;
     }
 

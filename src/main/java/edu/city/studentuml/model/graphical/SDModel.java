@@ -72,10 +72,43 @@ public class SDModel extends AbstractSDModel {
         messages.remove(destroyMessage);
     }
 
-    // checks whether the create and destroy messages are in consistent positions
-    // and if not, rearranges them to be in consistent positions
+/**
+ * <p>
+ * Validates and rearranges the positions of CreateMessageGR and
+ * DestroyMessageGR messages in the messages list:
+ * </p>
+ * <ul>
+ * <li>
+ * For each CreateMessageGR message, the validateCreateMessagePosition
+ * method is called to check if there are any other CreateMessageGR messages
+ * with the same target and remove them if necessary.
+ * It also checks for other messages with the same target or source as the
+ * CreateMessageGR message and moves them down
+ * if their y position is lower. This may result in the CreateMessageGR message
+ * being moved down in the list
+ * as well.
+ * </li>
+ * <li>
+ * For each DestroyMessageGR message, the validateDestroyMessagePosition
+ * method is called to check if there are any other
+ * DestroyMessageGR messages with the same target and remove them if necessary.
+ * It also checks for other messages with
+ * the same target or source as the DestroyMessageGR message and moves them up
+ * if their y position is higher.
+ * This may result in the DestroyMessageGR message being moved up in the list as
+ * well.
+ * </li>
+ * </ul>
+ * <p>
+ * 
+ * @throws IllegalArgumentException if the position of a CreateMessageGR or
+ *                                  DestroyMessageGR message is invalid
+ *                                  </p>
+ * 
+ */
+
     @Override
-    public void validateMessages() { //FIXME: OVA SO MESIGIVE DA SE PROVERI AKO IMA VREME
+    public void validateMessages() { 
         // keeps track of messages that have been checked already
         Vector<SDMessageGR> checked = new Vector<>();
         Iterator<SDMessageGR> iterator = messages.iterator();
@@ -103,7 +136,7 @@ public class SDModel extends AbstractSDModel {
 
     // checks whether a particular create message is in consistent position
     // If not, modifications are made to bring consistency
-    public void validateCreateMessagePosition(CreateMessageGR createMessage) {
+    private void validateCreateMessagePosition(CreateMessageGR createMessage) {
         SDMessageGR message;
 
         for (int i = 0; i < messages.size(); i++) {
@@ -130,7 +163,7 @@ public class SDModel extends AbstractSDModel {
 
     // checks whether a particular destroy message is in consistent position
     // If not modificatiosn are made to bring consistency
-    public void validateDestroyMessagePosition(DestroyMessageGR destroyMessage) {
+    private void validateDestroyMessagePosition(DestroyMessageGR destroyMessage) {
         SDMessageGR message;
 
         for (int i = 0; i < messages.size(); i++) {
