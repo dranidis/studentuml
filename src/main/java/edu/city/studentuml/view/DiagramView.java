@@ -63,6 +63,10 @@ public abstract class DiagramView extends JPanel implements Observer {
         repaint();
     }
 
+    private int scaleTo(double number) {
+        return (int) (number * getScale());
+    }
+
     public Line2D getDragLine() {
         return dragLine;
     }
@@ -153,7 +157,17 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public void drawDiagram(Graphics2D g) {
         SystemWideObjectNamePool.drawLock.lock();
-        
+
+        // find the maxX and maxY of all the elements of the diagram
+        // and resize the panel accordingly
+        Point2D.Double maxPoint = getMaxPositionOfElements();
+        int maxX = (int) Math.max( scaleTo(maxPoint.getX()), this.getSize().getWidth());
+        int maxY = (int) Math.max( scaleTo(maxPoint.getY()), this.getSize().getHeight());
+
+        logger.fine("Scale: " + scale + " View size: "+ maxX + ", " + maxY);   
+
+        this.setSize(maxX, maxY);     
+
         // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
                 .filter(LinkGR.class::isInstance)
@@ -165,12 +179,7 @@ public abstract class DiagramView extends JPanel implements Observer {
                 .forEach(ge -> ge.draw(g));
 
 
-        // find the maxX and maxY of all the elements of the diagram
-        // and resize the panel accordingly
-        Point2D.Double maxPoint = getMaxPositionOfElements();
-        int maxX = (int) Math.max( maxPoint.getX(), this.getSize().getWidth());
-        int maxY = (int) Math.max( maxPoint.getY(), this.getSize().getHeight());
-        this.setSize(maxX, maxY);
+
         
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
