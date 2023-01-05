@@ -18,13 +18,19 @@ import java.awt.image.BufferedImage;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
 public abstract class DiagramView extends JPanel implements Observer {
 
+    private static final Logger logger = Logger.getLogger(DiagramView.class.getName());
+
     protected DiagramModel model;
     protected transient Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
     protected transient Rectangle2D dragRectangle = new Rectangle2D.Double(0, 0, 0, 0);
+
+    private double scale = 1.0;
 
     protected DiagramView(DiagramModel m) {
         model = m;
@@ -37,7 +43,26 @@ public abstract class DiagramView extends JPanel implements Observer {
         setSize(500, 400);
         setDoubleBuffered(true);
     }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+        repaint();
+    }
+
+    public void zoomIn() {
+        scale *= 1.1;
+        repaint();
+    }
     
+    public void zoomOut() {
+        scale *= 0.9;
+        repaint();
+    }
+
     public Line2D getDragLine() {
         return dragLine;
     }
@@ -62,6 +87,8 @@ public abstract class DiagramView extends JPanel implements Observer {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        g2d.scale(scale, scale);
 
         drawDiagram(g2d);
     }
@@ -195,6 +222,7 @@ public abstract class DiagramView extends JPanel implements Observer {
             maxX = Math.max(maxX, bounds.getMaxX());            
             maxY = Math.max(maxY, bounds.getMaxY());            
         } 
+        logger.finer("MAX: " + maxX + ", " + maxY);
         return new Point2D.Double(maxX + 20, maxY + 20);
     }
          

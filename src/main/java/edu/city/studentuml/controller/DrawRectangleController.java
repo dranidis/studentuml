@@ -35,7 +35,7 @@ public class DrawRectangleController {
                     return;
                 }
 
-                pressed(e.getX(), e.getY());
+                pressed(scale(e.getX()), scale(e.getY()));
             }
 
             @Override
@@ -44,7 +44,7 @@ public class DrawRectangleController {
                     return;
                 }
 
-                released(e.getX(), e.getY());
+                released(scale(e.getX()), scale(e.getY()));
             }
         };
 
@@ -56,9 +56,13 @@ public class DrawRectangleController {
                     return;
                 }
 
-                dragged(e.getX(), e.getY());
+                dragged(scale(e.getX()), scale(e.getY()));
             }
         };
+    }
+
+    private int scale(int number) {
+        return (int) (number / diagramView.getScale());
     }
 
     public MouseListener getMouseListener() {

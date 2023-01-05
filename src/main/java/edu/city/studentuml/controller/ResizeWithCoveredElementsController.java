@@ -32,7 +32,7 @@ public abstract class ResizeWithCoveredElementsController {
 
     private static final Logger logger = Logger.getLogger(ResizeWithCoveredElementsController.class.getName());
 
-    private DiagramInternalFrame frame;
+    private DiagramInternalFrame diagramInternalFrame;
     private DiagramModel model;
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
@@ -47,7 +47,7 @@ public abstract class ResizeWithCoveredElementsController {
     private SelectionController selectionController; // need to disable move when resizing
 
     protected ResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
-        this.frame = f;
+        this.diagramInternalFrame = f;
         this.model = m;
         this.selectionController = s;
 
@@ -79,7 +79,8 @@ public abstract class ResizeWithCoveredElementsController {
             return;
         }
 
-        Point p = event.getPoint();
+        Point p = scalePoint(event.getPoint());
+
         GraphicalElement e = model.getContainingGraphicalElement(p);
 
         if (e == null) {
@@ -156,7 +157,7 @@ public abstract class ResizeWithCoveredElementsController {
                 }
 
                 edit.end();
-                frame.getUndoSupport().postEdit(edit);
+                diagramInternalFrame.getUndoSupport().postEdit(edit);
             }
 
             handle = null;
@@ -186,12 +187,25 @@ public abstract class ResizeWithCoveredElementsController {
         }
 
         // resize the resizable element by moving the handle
-        handle.move(event.getX(), event.getY());
+        handle.move(scale(event.getX()), scale(event.getY()));
+        
         lastSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
         lastSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));
 
         // MODEL CHANGED
         model.modelChanged();
+    }
+
+
+
+    private Point scalePoint(Point point) {
+        int newx = scale(point.getX());
+        int newy = scale(point.getY());
+        return new Point(newx, newy);
+    }
+
+    private int scale(double number) {
+        return (int) (number / diagramInternalFrame.getView().getScale());
     }
 
     public DiagramModel getModel() {
@@ -218,12 +232,12 @@ public abstract class ResizeWithCoveredElementsController {
         this.mouseMotionListener = mouseMotionListener;
     }
 
-    public DiagramInternalFrame getFrame() {
-        return frame;
+    public DiagramInternalFrame getDiagramInternalFrame() {
+        return diagramInternalFrame;
     }
 
-    public void setFrame(DiagramInternalFrame frame) {
-        this.frame = frame;
+    public void setDiagramInternalFrame(DiagramInternalFrame frame) {
+        this.diagramInternalFrame = frame;
     }
 
     public boolean isSelectionMode() {

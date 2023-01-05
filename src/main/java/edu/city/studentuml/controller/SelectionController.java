@@ -192,11 +192,19 @@ public abstract class SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    protected void myMousePressed(MouseEvent event) {
-        lastX = event.getX();
-        lastY = event.getY();
+    private int scale(int number) {
+        return (int) (number / parentComponent.getView().getScale());
+    }
 
-        Point2D origin = new Point2D.Double(event.getX(), event.getY());
+    private int scale(double number) {
+        return (int) (number / parentComponent.getView().getScale());
+    }
+
+    protected void myMousePressed(MouseEvent event) {
+        lastX = scale(event.getX());
+        lastY = scale(event.getY());
+
+        Point2D origin = new Point2D.Double(lastX, lastY);
 
         // find the source graphical element
         GraphicalElement element = model.getContainingGraphicalElement(origin);
@@ -267,7 +275,7 @@ public abstract class SelectionController {
                 parentComponent.getUndoSupport().postEdit(edit);
             }
         } else {
-            PositiveRectangle pr = new PositiveRectangle(lastX, lastY, event.getX(), event.getY());
+            PositiveRectangle pr = new PositiveRectangle(lastX, lastY, scale(event.getX()), scale(event.getY()));
 
             logger.finer(() -> "Select all elements in rectangle:" + pr);
             List<GraphicalElement> contained = model.getContainedGraphicalElements(pr.getRectangle2D());
@@ -289,9 +297,9 @@ public abstract class SelectionController {
     protected void myMouseClicked(MouseEvent event) {
         if (event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
                 && selectedElements.size() == 1) {
-            Point2D origin = new Point2D.Double(event.getX(), event.getY());
-            lastX = event.getX();
-            lastY = event.getY();
+            Point2D origin = new Point2D.Double(scale(event.getX()), scale(event.getY()));
+            lastX = scale(event.getX());
+            lastY = scale(event.getY());
             // find the source graphical element
             GraphicalElement element = model.getContainingGraphicalElement(origin);
 
@@ -313,7 +321,7 @@ public abstract class SelectionController {
 
     protected void myMouseDragged(MouseEvent event) {
         if (lastPressed != null) {
-            moveElement(event.getX(), event.getY());
+            moveElement(scale(event.getX()), scale(event.getY()));
         }
     }
 
@@ -390,7 +398,7 @@ public abstract class SelectionController {
                 editMenuItem.setVisible(true);
             }
 
-            popupMenuOne.show(event.getComponent(), event.getX(), event.getY());
+            popupMenuOne.show(event.getComponent(), scale(event.getX()), scale(event.getY()));
         }
     }
 

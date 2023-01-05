@@ -30,7 +30,7 @@ public abstract class AddElementController {
                     return;
                 }
 
-                pressed(e.getX(), e.getY());
+                pressed(scale(e.getX()), scale(e.getY()));
             }
 
             @Override
@@ -39,7 +39,7 @@ public abstract class AddElementController {
                     return;
                 }
 
-                released(e.getX(), e.getY());
+                released(scale(e.getX()), scale(e.getY()));
             }
         };
         mouseMotionListener = new MouseMotionAdapter() {
@@ -50,9 +50,13 @@ public abstract class AddElementController {
                     return;
                 }
 
-                dragged(e.getX(), e.getY());
+                dragged(scale(e.getX()), scale(e.getY()));
             }
         };
+    }
+
+    private int scale(int number) {
+        return (int) (number / parentFrame.getView().getScale());
     }
 
     public MouseListener getMouseListener() {

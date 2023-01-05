@@ -78,7 +78,7 @@ public class ADSelectionControllerTest {
     @Test
     public void testDeleteActivityNodeWithAnInitialNodeInside() {
         ActivityNodeGR an = h.addActivityNode("an");
-        InitialNodeGR i = h.addInitialNodeInActivityNode(an);
+        h.addInitialNodeInActivityNode(an);
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());

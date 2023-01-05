@@ -171,22 +171,19 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
         JMenuItem undoMenuItem = new JMenuItem();
         undoMenuItem.setText("Undo");
-        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK);
-        undoMenuItem.setAccelerator(keyStrokeToNew);
+        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK));
         undoMenuItem.addActionListener(e -> undo());
         editMenu.add(undoMenuItem);
 
         JMenuItem redoMenuItem = new JMenuItem();
         redoMenuItem.setText("Redo");
-        keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK);
-        redoMenuItem.setAccelerator(keyStrokeToNew);
+        redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK));
         redoMenuItem.addActionListener(e -> redo());
         editMenu.add(redoMenuItem);
 
         JMenuItem selectAllMenuItem = new JMenuItem();
         selectAllMenuItem.setText("Select all");
-        keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
-        selectAllMenuItem.setAccelerator(keyStrokeToNew);
+        selectAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
         selectAllMenuItem.addActionListener(e -> selectionController.selectAll());
         editMenu.add(selectAllMenuItem);
 
@@ -197,6 +194,21 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         JMenuItem delete = new JMenuItem("Delete diagram");
         delete.addActionListener(e -> deleteDiagram());
         editMenu.add(delete);
+
+        JMenuItem zoomIn = new JMenuItem("Zoom in");
+        zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK));
+        zoomIn.addActionListener(e -> view.zoomIn());
+        editMenu.add(zoomIn);
+
+        JMenuItem zoomOut = new JMenuItem("Zoom out");
+        zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK));
+        zoomOut.addActionListener(e -> view.zoomOut());
+        editMenu.add(zoomOut);
+
+        JMenuItem resetScale = new JMenuItem("Reset zoom to 100%");
+        resetScale.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK));
+        resetScale.addActionListener(e -> view.setScale(1.0));
+        editMenu.add(resetScale);        
     }
 
     private void redo() {
