@@ -29,6 +29,8 @@ import javax.swing.undo.UndoableEdit;
  */
 public class UCDSelectionController extends SelectionController {
 
+    private static final String CANNOT_EDIT = "Cannot Edit";
+
     public UCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
     }
@@ -64,7 +66,7 @@ public class UCDSelectionController extends SelectionController {
                 && !newActor.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing actor with the given name already!\n",
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+                    CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]
             UndoableEdit edit = new EditActorEdit(originalActor, newActor, model);
@@ -96,7 +98,7 @@ public class UCDSelectionController extends SelectionController {
                 && !newUseCase.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing use case with the same name already!\n",
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+                    CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]
             UndoableEdit edit = new EditUseCaseEdit(originalUseCase, newUseCase, model);
@@ -127,7 +129,7 @@ public class UCDSelectionController extends SelectionController {
                 && !newSystem.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing system with the given name already!\n",
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+                    CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]
             UndoableEdit edit = new EditSystemEdit(originalSystem, newSystem, model);
@@ -149,9 +151,9 @@ public class UCDSelectionController extends SelectionController {
 
         UCExtend newUCExtend = new UCExtend((UseCase) originalUCExtend.getSource(),
                 (UseCase) originalUCExtend.getTarget());
-        Iterator i = ucExtendEditor.getExtensionPoints();
+        Iterator<ExtensionPoint> i = ucExtendEditor.getExtensionPoints();
         while (i.hasNext()) {
-            newUCExtend.addExtensionPoint(((ExtensionPoint) i.next()).clone());
+            newUCExtend.addExtensionPoint((i.next()).clone());
         }
 
         // Undo/Redo [edit]

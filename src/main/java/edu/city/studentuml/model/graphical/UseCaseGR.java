@@ -332,7 +332,7 @@ public class UseCaseGR extends LeafUCDElementGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "useCase", (UseCase) getComponent());
+        streamer.streamObject(node, "useCase", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

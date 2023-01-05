@@ -9,10 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 //the inherited startingPoint refers ot the x coordinate of the center
 //and to the y coordinate of the top most point
 public abstract class RoleClassifierGR extends GraphicalElement {
+
+    private static final Logger logger = Logger.getLogger(RoleClassifierGR.class.getName());
 
     public static final int MINIMUM_LIFELINE_LENGTH = 60;
     // the default vertical distance from the top
@@ -75,8 +78,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
             out.push(target);
             return "";
         } else {
-//            System.out.println(this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus");
-//            showStacks();
+            logger.finer(this::stacksToString);
             return this.getRoleClassifier().getName() + " Cannot call method. It does not have the focus";
         }
     }
@@ -86,8 +88,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
             in.push(source);
             return "";
         } else {
-//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus");
-//            showStacks();
+            logger.finer(this::stacksToString);
             return this.getRoleClassifier().getName() + " Cannot accept incoming method. It HAS the focus";
         }
     }
@@ -99,23 +100,18 @@ public abstract class RoleClassifierGR extends GraphicalElement {
                 in.pop();
                 return "";
             } else {
-//                System.out.println(this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
-//                        origFrom.getRoleClassifier().getName() + " was the original caller.");
-//                showStacks();
+                logger.finer(this::stacksToString);
                 return this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
                         origFrom.getRoleClassifier().getName() + " was the original caller.";
             }
         } else {
-//            System.out.println(this.getRoleClassifier().getName() + " Cannot return. It does not have the focus");
-//            showStacks();
             return this.getRoleClassifier().getName() + " Cannot return. It does not have the focus";
         }
     }
 
     String validateInReturn(RoleClassifierGR source) {
         if(out.isEmpty()) {
-//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages");
-//            showStacks();
+            logger.finer(this::stacksToString);
             return this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages";
         }
         if( in.size() == out.size() ) {
@@ -124,29 +120,28 @@ public abstract class RoleClassifierGR extends GraphicalElement {
                 out.pop();
                 return "";
             } else {
-//                System.out.println(this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
-//                        " Expecting from " + origTo.getRoleClassifier().getName());
-//                showStacks();
+                logger.finer(this::stacksToString);
                 return this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
                         " Expecting from " + origTo.getRoleClassifier().getName();
             }
         } else {
-//            System.out.println(this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus");
-//            showStacks();
+            logger.finer(this::stacksToString);
             return this.getRoleClassifier().getName() + " Cannot accept return messages. It HAS the focus";
         }
     }
 
-    private void showStacks() {
-        System.out.print("[");
+    private String stacksToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Stack: [");
         for(RoleClassifierGR m: in) {
-            System.out.print(m.getRoleClassifier().getName());
+            sb.append(m.getRoleClassifier().getName());
         }
-        System.out.print("] - [");
+        sb.append("] - [");
         for(RoleClassifierGR m: out) {
-            System.out.print(m.getRoleClassifier().getName());
+            sb.append(m.getRoleClassifier().getName());
         }
-        System.out.println("]");
+        sb.append("]\n");
+        return sb.toString();
     }
 
     void clearInOutStacks() {
@@ -163,8 +158,6 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     void setActiveIn() {
         in.push(new SDObjectGR(new SDObject("void", new DesignClass("Void")), 0));
     }
-    
-
 
     void addActivationHeight(int y) {
         messageYs.add(y);
@@ -183,4 +176,21 @@ public abstract class RoleClassifierGR extends GraphicalElement {
         }
         return 0;
     }
+
+    /**
+     * Used in Comparator for sorting by their X coord
+     * 
+     * @param roleClassifierGR
+     * @return
+     */
+    public int compareX(RoleClassifierGR roleClassifierGR) {
+        if (this.getX() > roleClassifierGR.getX()) {
+            return 1;
+        } else if (this.getX() < roleClassifierGR.getX()) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
 }

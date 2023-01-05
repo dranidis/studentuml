@@ -198,4 +198,21 @@ public abstract class SDMessageGR extends GraphicalElement {
     void setErrorMsg(String validatedStr) {
         errorMessage = validatedStr;
     }
+
+    /**
+     * Used in Comparator for sorting messages by their Y coord
+     * 
+     * @param message
+     * @return
+     */
+    public int compareY(SDMessageGR message) {
+        if (this.getY() > message.getY()) {
+            return 1;
+        } else if (this.getY() < message.getY()) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
 }

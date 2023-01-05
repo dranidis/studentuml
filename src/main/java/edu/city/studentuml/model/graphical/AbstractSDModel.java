@@ -5,7 +5,6 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -13,6 +12,7 @@ import edu.city.studentuml.util.undoredo.MoveEdit;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +28,7 @@ import javax.swing.undo.UndoableEdit;
  * @author dimitris
  */
 public abstract class AbstractSDModel extends DiagramModel {
+
     private static final Logger logger = Logger.getLogger(AbstractSDModel.class.getName());
 
     // minimum distance that can be kept between messages
@@ -91,7 +92,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
-        messagesChanged();
+        sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
         if (automove) {
             if (m instanceof CallMessageGR) {
                 int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
@@ -123,14 +124,14 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
-    public final void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
+    private final void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
     }
 
-    public final void moveMessage(SDMessageGR m, int x, int y) {
+    private final void moveMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
-        messagesChanged();
+        sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
     }
 
     // apart from just moving the dragged and dropped element
@@ -144,17 +145,17 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
-    public final void settleRoleClassifier(RoleClassifierGR rc, int x, int y) {
+    private final void settleRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
         restoreRoleClassifiersDistances();
     }
 
-    public final void settleMessage(SDMessageGR m, int x, int y) {
+    private final void settleMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
-        messagesChanged();
+        sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
     }
 
     // subclasses that need to validate create and destroy messages need to override this method
@@ -163,82 +164,39 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // called whenever role classifeirs change, by resorting the list
     // and updating the lifeline lengths
-    public final void roleClassifiersChanged() {
-        sortRoleClassifiers();
+    private final void roleClassifiersChanged() {
+        Collections.sort(roleClassifiers, (c1, c2) -> c1.compareX(c2));
         updateLifelineLengths();
     }
 
     // called whenever messages change, by resorting the list and putting ranks,
     // and updating the lifeline lengths
-    public final void messagesChanged() {
-        sortMessages();
+    private final void sortUpdateRankAndLifeLengthsAndValidateInOutMessages() {
+        sortMessagesAndUpdateRanks();
         updateLifelineLengths();
         
         validateInOut();
     }
 
-    // sort the role classifiers list according to their x position
-    protected void sortRoleClassifiers() {
-        // use two-pass bubblesort
-        RoleClassifierGR object1;
-        RoleClassifierGR object2;
-
-        for (int pass = 1; pass < roleClassifiers.size(); pass++) {
-            for (int element = 0; element < roleClassifiers.size() - 1; element++) {
-                object1 = (RoleClassifierGR) roleClassifiers.elementAt(element);
-                object2 = (RoleClassifierGR) roleClassifiers.elementAt(element + 1);
-
-                if (object1.getX() > object2.getX()) {
-                    swap(roleClassifiers, element, element + 1);
-                }
-            }
-        }
-    }
-
     // sort the messages list according to their y position
-    protected void sortMessages() {
-        // use two-pass bubblesort
-        SDMessageGR message1;
-        SDMessageGR message2;
-
-        for (int pass = 1; pass < messages.size(); pass++) {
-            for (int element = 0; element < (messages.size() - 1); element++) {
-                message1 = messages.elementAt(element);
-                message2 = messages.elementAt(element + 1);
-
-                if (message1.getY() > message2.getY()) {
-                    swap(messages, element, element + 1);
-                }
-            }
-        }
-
-        SDMessage m;
+    private void sortMessagesAndUpdateRanks() {
+        Collections.sort(messages, (m1, m2) -> m1.compareY(m2));
 
         // reset the messages numbering according to their rank
         for (int i = 0; i < messages.size(); i++) {
-            message1 = messages.elementAt(i);
-            m = message1.getMessage();
-            m.setRank(i + 1);
+            messages.elementAt(i).getMessage().setRank(i + 1);
         }
-    }
-
-    // utility method needed by bubble sorting
-    private void swap(Vector elements, int index1, int index2) {
-        Object tempObject = elements.elementAt(index1);
-
-        elements.setElementAt(elements.elementAt(index2), index1);
-        elements.setElementAt(tempObject, index2);
     }
 
     // keeps the same ordering of role classifiers, but may change their x positions
     // in order to keep the minimum distance between them
-    protected void restoreRoleClassifiersDistances() {
+    private void restoreRoleClassifiersDistances() {
         RoleClassifierGR object1;
         RoleClassifierGR object2;
 
         for (int i = 0; i < roleClassifiers.size() - 1; i++) {
-            object1 = (RoleClassifierGR) roleClassifiers.elementAt(i);
-            object2 = (RoleClassifierGR) roleClassifiers.elementAt(i + 1);
+            object1 = roleClassifiers.elementAt(i);
+            object2 = roleClassifiers.elementAt(i + 1);
 
             if (object2.getX() - object1.getX() < MINIMUM_RC_DISTANCE) {
                 object2.move(object1.getX() + MINIMUM_RC_DISTANCE, 0);
@@ -248,7 +206,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // keeps the same ordering of messages, but may change their y positions
     // in order to keep the minimum distances between them
-    protected void restoreMessagesDistances() {
+    private void restoreMessagesDistances() {
         SDMessageGR message1;
         SDMessageGR message2;
 
@@ -261,7 +219,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 movedElements.add(message2);
                 Point2D.Double undoCoordinates = new Point2D.Double(0, 0);
                 Point2D.Double redoCoordinates = new Point2D.Double(0, 0);
-                redoCoordinates.setLocation(0, message1.getY() + MINIMUM_MESSAGE_DISTANCE); 
+                redoCoordinates.setLocation(0, message1.getY() + (double) MINIMUM_MESSAGE_DISTANCE); 
                 
                 message2.move(0, message1.getY() + MINIMUM_MESSAGE_DISTANCE);
                 
@@ -314,7 +272,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // this changes the lifeline lengths of all the role classifiers,
     // except those that have been destroyed (i.e. have a determined lifeline length
-    public final void setEndingY(int y) {
+    private final void setEndingY(int y) {
         Vector<RoleClassifierGR> objects = getRoleClassifiers();
         Iterator<RoleClassifierGR> iterator = objects.iterator();
 
@@ -346,7 +304,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 .collect(Collectors.toList());
     }
 
-    public final void removeRoleClassifier(RoleClassifierGR rc) {
+    private final void removeRoleClassifier(RoleClassifierGR rc) {
         // Remove messages associated with the RoleClassifier
         getRoleClaffierGRMessages(rc).forEach(this::removeMessage);
 
@@ -359,7 +317,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // removes role classifiers from the repository
-    protected final void removeFromRepository(RoleClassifierGR rc) {
+    private final void removeFromRepository(RoleClassifierGR rc) {
         if (rc.getRoleClassifier() instanceof ActorInstance) {
             if (!umlProject.isActorReferenced(rc, ((ActorInstance) rc.getRoleClassifier()).getActor())) {
                 repository.removeActor(((ActorInstance) rc.getRoleClassifier()).getActor());
@@ -376,7 +334,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // method template
-    public final void removeMessage(SDMessageGR e) {
+    private final void removeMessage(SDMessageGR e) {
         if (e instanceof CallMessageGR) {
             removeCallMessage((CallMessageGR) e);
         } else if (e instanceof ReturnMessageGR) {
@@ -384,7 +342,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
         removeOtherMessages(e); //hook for subclasses
 
-        messagesChanged();
+        sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
         super.removeGraphicalElement(e);
     }
 
@@ -404,14 +362,11 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     private void validateInOut() {
-        
-        for(RoleClassifierGR sdObject: roleClassifiers) {
-            sdObject.clearInOutStacks();
-        }
+
+        roleClassifiers.forEach(RoleClassifierGR::clearInOutStacks);
         
         if(!messages.isEmpty()) {
-            RoleClassifierGR obj = messages.get(0).source;
-            obj.setActiveIn();
+            messages.get(0).source.setActiveIn();
         }
         
         for(SDMessageGR message:messages) {

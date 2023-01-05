@@ -77,7 +77,7 @@ public class UCExtend extends UCLink {
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         super.streamFromXML(node, streamer, instance);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "extensionpoints"), new Vector(extensionPoints), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "extensionpoints"), new Vector<>(extensionPoints), this);
     }
 
     @Override

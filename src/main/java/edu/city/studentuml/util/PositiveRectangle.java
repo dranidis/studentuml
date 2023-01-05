@@ -40,5 +40,10 @@ public class PositiveRectangle {
     public Rectangle2D getRectangle2D() {
         return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
+
+    @Override
+    public String toString() {
+        return "[" + minX + ", " + minY + " -> " + maxX + ", " + maxY + "]";
+    }
     
 }
