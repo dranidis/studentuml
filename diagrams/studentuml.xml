@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <uml>
   <object class="UMLProject" id="project">
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel0" name="DCD: studentuml" selected="true">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel0" name="DCD: studentuml" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="314" y="85">
         <object class="DesignClass" id="designclass" internalid="designclass0" name="ApplicationGUI" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="ApplicationGUI"/>
@@ -93,7 +93,7 @@
         </object>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1404,885" iconified="false" id="" internalid="sdmodel0" name="SD: addSDObject" selected="false">
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel0" name="SD: addSDObject" scale="0.8" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="29">
         <object class="SDObject" designclass="designclass8" id="sdobject" internalid="sdobject0" name="">
           <object class="DesignClass" id="designclass" internalid="designclass8" name="AddSDObjectController" stereotype="">
@@ -402,7 +402,7 @@
         <object class="ReturnMessage" from="sdobject4" id="message" internalid="returnmessage21" name="" to="sdobject4"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel1" name="DCD: observers" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel1" name="DCD: observers" scale="1.3" selected="true">
       <object class="ClassGR" id="" internalid="classgr9" uid="Desktop Application User" x="315" y="51">
         <object class="DesignClass" id="designclass" internalid="designclass3" name="UMLProject" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass3" name="UMLProject"/>
@@ -487,7 +487,7 @@
         <object class="Dependency" from="designclass0" id="dependency" internalid="dependency12" to="designclass5"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel2" name="DCD: Classifier" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel2" name="DCD: Classifier" scale="0.8" selected="false">
       <object class="InterfaceGR" id="" internalid="interfacegr0" uid="Desktop Application User" x="416" y="28">
         <object class="Interface" id="interface" internalid="interface0" name="Classifier">
           <object id="methods">
@@ -853,7 +853,7 @@
         <object base="designclass114" class="Generalization" id="generalization" internalid="generalization70" super="designclass109"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel3" name="DCD: DiagramModel" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel3" name="DCD: DiagramModel" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr38" uid="Desktop Application User" x="269" y="48">
         <object class="DesignClass" id="designclass" internalid="designclass6" name="DiagramModel" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass6" name="DiagramModel"/>
@@ -956,7 +956,7 @@
       </object>
       <object class="UMLNoteGR" id="" internalid="umlnotegr0" textData="TODO: create this class&#10;" to="classgr98" uid="Desktop Application User" x="744" y="225"/>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel4" name="DCD: GraphicalElement" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel4" name="DCD: GraphicalElement" scale="0.9" selected="false">
       <object class="ClassGR" id="" internalid="classgr47" uid="Desktop Application User" x="471" y="19">
         <object class="DesignClass" id="designclass" internalid="designclass26" name="GraphicalElement" stereotype="abstract">
           <object class="GenericClass" id="generic" name="GraphicalElement"/>
@@ -1359,7 +1359,7 @@
         <object base="designclass34" class="Generalization" id="generalization" internalid="generalization54" super="designclass26"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel5" name="DCD: DiagramView" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel5" name="DCD: DiagramView" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr74" uid="Desktop Application User" x="306" y="266">
         <object class="DesignClass" id="designclass" internalid="designclass14" name="DiagramView" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass19" name="DiagramView"/>
@@ -1470,7 +1470,7 @@
         <object base="designclass74" class="Generalization" id="generalization" internalid="generalization48" super="designclass73"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel6" name="DCD: AddElementController" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel6" name="DCD: AddElementController" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr84" uid="Desktop Application User" x="136" y="104">
         <object class="DesignClass" id="designclass" internalid="designclass75" name="AddElementController" stereotype="&lt;&lt;abstract&gt;&gt;">
           <object class="GenericClass" id="generic" internalid="genericclass74" name="AddElementController"/>
@@ -1525,7 +1525,7 @@
         <object base="designclass77" class="Generalization" id="generalization" internalid="generalization50" super="designclass75"/>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1404,885" iconified="false" id="" internalid="sdmodel2" name="SD: deleteElement" selected="false">
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel2" name="SD: deleteElement" scale="0.9" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr9" uid="Desktop Application User" x="96">
         <object class="SDObject" designclass="designclass79" id="sdobject" internalid="sdobject9" name="">
           <object class="DesignClass" id="designclass" internalid="designclass79" name="DCDSelectionController" stereotype="">
@@ -1804,7 +1804,7 @@
         <object class="ReturnMessage" from="NULL" id="message" internalid="returnmessage54" name="" to="sdobject9"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel7" name="DCD: Undo" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel7" name="DCD: Undo" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr92" uid="Desktop Application User" x="127" y="51">
         <object class="DesignClass" id="designclass" internalid="designclass85" name="AbstractUndoableEdit" stereotype="javax.swing.undo">
           <object class="GenericClass" id="generic" internalid="genericclass78" name="AbstractUndoableEdit"/>
@@ -1875,7 +1875,7 @@
         <object base="designclass84" class="Generalization" id="generalization" internalid="generalization57" super="designclass86"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel8" name="DCD: AbstractClass" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel8" name="DCD: AbstractClass" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr99" uid="Desktop Application User" x="232" y="145">
         <object class="DesignClass" id="designclass" internalid="designclass17" name="AbstractClass" stereotype="abstract">
           <object class="GenericClass" id="generic" name="AbstractClass"/>
@@ -1952,7 +1952,7 @@
         </object>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1404,885" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" selected="false">
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" scale="1.0" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr16" uid="Desktop Application User" x="232">
         <object class="SDObject" designclass="designclass89" id="sdobject" internalid="sdobject16" name="">
           <object class="DesignClass" id="designclass" internalid="designclass89" name="NotifierVector" stereotype="">
@@ -2049,7 +2049,7 @@
         <object class="ReturnMessage" from="sdobject17" id="message" internalid="returnmessage38" name="" to="sdobject17"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel9" name="DCD: ListPanel" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel9" name="DCD: ListPanel" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr14" uid="Desktop Application User" x="255" y="46">
         <object class="DesignClass" id="designclass" internalid="designclass7" name="ListPanel" stereotype="abstract">
           <object class="GenericClass" id="generic" internalid="genericclass17" name="ListPanel"/>
@@ -2217,7 +2217,7 @@
         <object a="designclass94" b="interface2" class="Realization" id="realization" internalid="realization13"/>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1404,885" iconified="false" id="" internalid="sdmodel1" name="SD: removeGraphicalElement" selected="false">
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel1" name="SD: removeGraphicalElement" scale="1.0" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr7" uid="Desktop Application User" x="28">
         <object class="SDObject" designclass="designclass117" id="sdobject" internalid="sdobject7" name="">
           <object class="DesignClass" id="designclass" internalid="designclass117" name="" stereotype="">
@@ -2380,7 +2380,7 @@
       <object class="UMLNoteGR" id="" internalid="umlnotegr5" textData="if last reference&#10;" to="callmessagegr38" uid="Desktop Application User" x="692" y="203"/>
       <object class="UMLNoteGR" id="" internalid="umlnotegr6" textData="If the element is a ClassGR" to="callmessagegr36" uid="Desktop Application User" x="370" y="23"/>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel10" name="DCD: DomainElement" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel10" name="DCD: DomainElement" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr110" uid="Desktop Application User" x="202" y="95">
         <object class="DesignClass" id="designclass" internalid="designclass17" name="AbstractClass" stereotype="abstract">
           <object class="GenericClass" id="generic" internalid="genericclass13" name="AbstractClass"/>
@@ -2411,7 +2411,7 @@
         <object base="designclass12" class="Generalization" id="generalization" internalid="generalization61" super="designclass17"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel11" name="DCD: DiagramInternalFrame" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel11" name="DCD: DiagramInternalFrame" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr113" uid="Desktop Application User" x="337" y="49">
         <object class="DesignClass" id="designclass" internalid="designclass73" name="DiagramInternalFrame" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass72" name="DiagramInternalFrame"/>
@@ -2539,7 +2539,7 @@
         </object>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel12" name="DCD: RESIZE" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel12" name="DCD: RESIZE" scale="0.9" selected="false">
       <object class="ClassGR" id="" internalid="classgr123" uid="Desktop Application User" x="587" y="52">
         <object class="DesignClass" id="designclass" internalid="designclass97" name="ResizeWithCoveredElementsController" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass100" name="ResizeWithCoveredElementsController"/>
@@ -2739,7 +2739,7 @@
         </object>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1404,885" iconified="false" id="" internalid="dcdmodel14" name="DCD: dcd" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel14" name="DCD: dcd" scale="1.0" selected="false">
       <object class="ClassGR" id="" internalid="classgr149" uid="Desktop Application User" x="59" y="183">
         <object class="DesignClass" id="designclass" internalid="designclass73" name="DiagramInternalFrame" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass72" name="DiagramInternalFrame"/>
@@ -2759,7 +2759,7 @@
       </object>
       <object class="UMLNoteGR" id="" internalid="umlnotegr14" textData=" setSize(650, 550);&#10;" to="classgr149" uid="Desktop Application User" x="300" y="99"/>
     </object>
-    <object class="SDModel" framex="0,0,1404,885" iconified="false" id="" internalid="sdmodel4" name="SD: sd" selected="false">
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel4" name="SD: sd" scale="1.0" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr25" uid="Desktop Application User" x="19">
         <object class="SDObject" designclass="designclass119" id="sdobject" internalid="sdobject24" name="">
           <object class="DesignClass" id="designclass" internalid="designclass119" name="" stereotype="">

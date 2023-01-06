@@ -507,7 +507,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
         if (object instanceof FrameProperties) {
             FrameProperties fp = (FrameProperties) object;
-            addInternalFrame(fp.model, fp.R);
+            addInternalFrame(fp.model, fp.rectangle);
 
             if (fp.selected) {
                 selectedFrame = fp.model.getFrame();
@@ -516,6 +516,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 // TODO: refactor
                 fp.model.getFrame().setSelected(fp.selected);
                 fp.model.getFrame().setIcon(fp.iconified);
+                fp.model.getFrame().getView().setScale(fp.scale);
             } catch (PropertyVetoException e) {
                 e.printStackTrace();
             }

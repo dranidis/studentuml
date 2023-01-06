@@ -9,15 +9,17 @@ import java.awt.Rectangle;
 */
 public class FrameProperties {
 
-    public final Rectangle R;
+    public final Rectangle rectangle;
     public final boolean selected;
     public final boolean iconified;
-    public DiagramModel model;
+    public final DiagramModel model;
+    public final double scale;
 
-    public FrameProperties(DiagramModel model, Rectangle R, boolean selected, boolean iconified) {
+    public FrameProperties(DiagramModel model, Rectangle rectangle, boolean selected, boolean iconified, double scale) {
         this.model = model;
-        this.R = R;
+        this.rectangle = rectangle;
         this.selected = selected;
         this.iconified = iconified;
+        this.scale = scale;
     }
 }

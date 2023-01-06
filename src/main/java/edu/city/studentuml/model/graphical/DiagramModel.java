@@ -301,6 +301,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             node.setAttribute("framex", values);
             node.setAttribute("selected", Boolean.toString(frame.isSelected()));
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
+            node.setAttribute("scale", Double.toString(frame.getView().getScale()));
         }
         streamer.streamObjects(node, graphicalElements.iterator());
     }

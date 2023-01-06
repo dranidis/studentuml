@@ -1216,8 +1216,15 @@ public final class ObjectFactory extends Observable {
         Rectangle rectangle = readRect(stream.getAttribute("framex"));
         boolean selected = Boolean.parseBoolean(stream.getAttribute("selected"));
         boolean iconified = Boolean.parseBoolean(stream.getAttribute("iconified"));
+        double scale;
+        try {
+            scale = Double.parseDouble(stream.getAttribute("scale"));
+        } catch (Exception e) {
+            logger.severe("scale attribute not existing or cannot be converted to double. Setting scale to 1.0.");
+            scale = 1.0;
+        }
 
-        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified);
+        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale);
         logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(frameProperties);
