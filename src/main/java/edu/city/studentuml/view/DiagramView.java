@@ -3,6 +3,7 @@ package edu.city.studentuml.view;
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.ScaleRound;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 import java.awt.BasicStroke;
@@ -40,7 +41,6 @@ public abstract class DiagramView extends JPanel implements Observer {
         }
 
         setBackground(Color.white);
-        // setPreferredSize(0, 0);
         setDoubleBuffered(true);
    }
 
@@ -49,7 +49,7 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     public void setScale(double scale) {
-        this.scale = scale;
+        this.scale = ScaleRound.roundTo05(scale);
         changeSizeToFitAllElements();
         repaint();
     }
@@ -237,7 +237,6 @@ public abstract class DiagramView extends JPanel implements Observer {
             maxX = Math.max(maxX, bounds.getMaxX());            
             maxY = Math.max(maxY, bounds.getMaxY());            
         } 
-        logger.finer("MAX: " + maxX + ", " + maxY);
         return new Point2D.Double(maxX + 20, maxY + 20);
     }
          
