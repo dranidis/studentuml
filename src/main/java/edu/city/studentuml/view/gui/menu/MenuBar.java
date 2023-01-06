@@ -2,6 +2,7 @@ package edu.city.studentuml.view.gui.menu;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -18,6 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import edu.city.studentuml.model.graphical.DiagramType;
+import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 /**
@@ -30,6 +32,8 @@ public class MenuBar {
 
     ApplicationGUI app;
     JMenuBar jMenuBar;
+
+    private JMenu recentFilesMenu;
 
     public MenuBar(ApplicationGUI app) {
         jMenuBar = new JMenuBar();
@@ -60,6 +64,12 @@ public class MenuBar {
         openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener(e -> app.openProject());
         fileMenu.add(openProjectMenuItem);
+
+        recentFilesMenu = new JMenu();
+        recentFilesMenu.setText("Open Recent");
+        fileMenu.add(recentFilesMenu);
+
+        loadRecentFilesInMenu();
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
         saveProjectMenuItem.setText("Save");
@@ -102,13 +112,26 @@ public class MenuBar {
         }
     }
 
-    private void createPreferencesSubmenu(JMenu editMenu) {
+    public void loadRecentFilesInMenu() {
+        recentFilesMenu.removeAll();
+        
+        List<String> recentFiles = RecentFiles.getInstance().getRecentFiles();
+        for (String fileName : recentFiles) {
+
+            JMenuItem recentFile = new JMenuItem();
+            recentFile.setText(fileName);
+            recentFile.addActionListener(e -> app.openProjectFile(fileName));
+            recentFilesMenu.add(recentFile);
+        }
+    }
+
+    private void createPreferencesSubmenu(JMenu fileMenu) {
         final String TRUE = "TRUE";
         final String FALSE = "FALSE";
 
         JMenu preferencesMenu = new JMenu();
         preferencesMenu.setText("Preferences");
-        editMenu.add(preferencesMenu);
+        fileMenu.add(preferencesMenu);
 
         JCheckBoxMenuItem selectLastCheckBoxMenuItem = new JCheckBoxMenuItem();
         selectLastCheckBoxMenuItem.setText("Keep last selection in diagram toolbars");

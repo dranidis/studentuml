@@ -14,11 +14,12 @@ import javax.swing.JOptionPane;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 
 public class ApplicationFrame extends ApplicationGUI {
-    
+
     /**
      *
      */
@@ -29,19 +30,18 @@ public class ApplicationFrame extends ApplicationGUI {
 
     public static final String APPLICATION_NAME = "StudentUML";
     private JFileChooser xmlFileChooser;
-    private static final Preferences pref= Preferences.userRoot();
+    private static final Preferences pref = Preferences.userRoot();
     String path = pref.get(DEFAULT_PATH, "");
-    
+
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
-
 
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
         xmlFileChooser = new JFileChooser();
         xmlFileChooser.setFileFilter(new XMLFileFilter());
         xmlFileChooser.setCurrentDirectory(new File(path));
-        
+
         umlProject.setUser(Constants.DESKTOP_USER);
     }
 
@@ -50,9 +50,10 @@ public class ApplicationFrame extends ApplicationGUI {
         super.update(observable, object);
         updateFrameTitle();
     }
-    
+
     private void updateFrameTitle() {
-        if (closingOrLoading) return;
+        if (closingOrLoading)
+            return;
 
         logger.finer("Updating title: saved: " + umlProject.isSaved());
 
@@ -68,15 +69,13 @@ public class ApplicationFrame extends ApplicationGUI {
         if (!closeProject()) {
             return;
         }
-        
+
         umlProject.createNewProject();
         updateFrameTitle();
     }
 
     @Override
     public void openProject() {
-        boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
-        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         int response = xmlFileChooser.showOpenDialog(this);
         if (response != JFileChooser.APPROVE_OPTION) {
@@ -87,27 +86,38 @@ public class ApplicationFrame extends ApplicationGUI {
             return;
         }
 
+        String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
+
+        openProjectFile(file);
+    }
+
+    public void openProjectFile(String fileName) {
+        boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         checkTreeManager.getSelectionModel().clearSelection();
         messageTree.setModel(null);//
         factsTree.setModel(null);//
         repairButton.setEnabled(false);
-        
-        String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
+
+        logger.fine(fileName);
+
+        addToRecentFiles(fileName);
 
         closingOrLoading = true;
 
-        umlProject.loadFromXML(file);
+        umlProject.loadFromXML(fileName);
 
         repositoryTreeView.expandDiagrams();
         repositoryTreeView.update(null, null);
-        
-        umlProject.setFilepath(file);
+
+        umlProject.setFilepath(fileName);
 
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
-        
+
         try {
             if (selectedFrame != null)
                 selectedFrame.setSelected(true);
@@ -118,6 +128,11 @@ public class ApplicationFrame extends ApplicationGUI {
         closingOrLoading = false;
         updateFrameTitle();
         logger.fine("Opened project");
+    }
+
+    private void addToRecentFiles(String fileName) {
+        RecentFiles.getInstance().addRecentFile(fileName);
+        menuBar.loadRecentFilesInMenu();
     }
 
     @Override
@@ -145,8 +160,8 @@ public class ApplicationFrame extends ApplicationGUI {
             return;
         }
         if (xmlFileChooser.getSelectedFile().exists()) {
-            int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?", "Confirm",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?",
+                    "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (existsResponse == JOptionPane.NO_OPTION || existsResponse == JOptionPane.CLOSED_OPTION) {
                 return;
             }
@@ -158,12 +173,14 @@ public class ApplicationFrame extends ApplicationGUI {
         }
 
         umlProject.setFilepath(filePath);
-        
+
         logger.log(Level.INFO, "Saving file as: {0}", filePath);
 
         umlProject.streamToXML();
         updateFrameTitle();
-        
+
+        addToRecentFiles(filePath);
+
         pref.put(DEFAULT_PATH, filePath);
     }
 

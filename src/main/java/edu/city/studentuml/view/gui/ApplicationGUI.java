@@ -115,6 +115,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     protected boolean closingOrLoading = false;
 
+    protected MenuBar menuBar;
+
     private static final String SELECT_LAST = "SELECT_LAST";
     private static final String GTKLOOKANDFEEL = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
     private static final String LOOK_AND_FEEL = "LOOK_AND_FEEL";
@@ -234,7 +236,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void createMenuBar() {
         if (!isApplet) {
-            frame.setJMenuBar(new MenuBar(this).getjMenuBar());
+            menuBar = new MenuBar(this);
+            frame.setJMenuBar(menuBar.getjMenuBar());
         } else {
             applet.setJMenuBar(new MenuBar(this).getjMenuBar());
         }
@@ -523,6 +526,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public abstract void newProject();
 
     public abstract void openProject();
+
+    public abstract void openProjectFile(String fileName);
+
 
     public abstract void saveProject();
 

@@ -521,4 +521,10 @@ public class ApplicationApplet extends ApplicationGUI {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    @Override
+    public void openProjectFile(String fileName) {
+        // TODO Auto-generated method stub
+        
+    }
 }
