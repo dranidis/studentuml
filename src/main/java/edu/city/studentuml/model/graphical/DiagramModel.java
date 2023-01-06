@@ -87,7 +87,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         e.objectAdded(e);
         graphicalElements.add(e);
 
-        frame.getView().changeSizeToFitAllElements();
+        changeViewSize();
         
         modelChanged();
     }
@@ -97,7 +97,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         e.objectAdded(e);
         graphicalElements.insertElementAt(e, index);
 
-        frame.getView().changeSizeToFitAllElements();
+        changeViewSize();
 
         modelChanged();
     }
@@ -116,7 +116,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         e.objectRemoved(e);
         graphicalElements.remove(e);
 
-        frame.getView().changeSizeToFitAllElements();
+        changeViewSize();
 
         modelChanged();
     }
@@ -137,7 +137,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public void moveGraphicalElement(GraphicalElement e, int x, int y) {
         e.move(x, y);
 
-        frame.getView().changeSizeToFitAllElements();
+        changeViewSize();
 
         modelChanged();
     }
@@ -164,7 +164,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         int i = graphicalElements.indexOf(el);
 
         if (i != -1) {
-            GraphicalElement e = (GraphicalElement) graphicalElements.get(i);
+            GraphicalElement e = graphicalElements.get(i);
             selected.add(e);
             e.setSelected(true);
             modelChanged();
@@ -315,6 +315,13 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     public UMLProject getUmlProject() {
         return umlProject;
+    }
+
+    private void changeViewSize() {
+        // frame might be null in tests with only models
+        if (frame != null) {
+            frame.getView().changeSizeToFitAllElements();
+        }
     }
 
 }
