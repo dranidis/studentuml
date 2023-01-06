@@ -8,6 +8,7 @@ import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.view.DiagramView;
 
 import java.awt.BorderLayout;
@@ -17,8 +18,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -312,8 +311,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     public void setSelectionMode() {
-        String selectLast = Preferences.userRoot().get("SELECT_LAST", "FALSE");
-        if (selectLast.equals("FALSE")) {
+
+        if (!Settings.keepLastSelection()) {
             toolbar.setSelectionMode();
         }
     }

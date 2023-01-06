@@ -1,6 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -8,8 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.prefs.Preferences;
-
 import org.w3c.dom.Element;
 
 public class ReturnMessageGR extends SDMessageGR {
@@ -19,7 +18,7 @@ public class ReturnMessageGR extends SDMessageGR {
     }
 
     public Stroke getStroke() {
-        float dashes[] = { 8 }; // the pattern of dashes for drawing the return line
+        float[] dashes = { 8 }; // the pattern of dashes for drawing the return line
 
         return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
@@ -34,10 +33,10 @@ public class ReturnMessageGR extends SDMessageGR {
         }
     }
 
+    @Override
     public void draw(Graphics2D g) {
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
 
-        if (showReturnPref) {
+        if (Settings.showReturnArrows()) {
             super.draw(g);
             return;
         }
@@ -58,10 +57,10 @@ public class ReturnMessageGR extends SDMessageGR {
         g.setStroke(originalStroke);
     }
 
+    @Override
     public boolean contains(Point2D point) {
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
 
-        if (showReturnPref) {
+        if (Settings.showReturnArrows()) {
             return super.contains(point);
         }
 
@@ -83,9 +82,12 @@ public class ReturnMessageGR extends SDMessageGR {
         return (ReturnMessage) getMessage();
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));

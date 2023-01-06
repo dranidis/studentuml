@@ -402,7 +402,7 @@
         <object class="ReturnMessage" from="sdobject4" id="message" internalid="returnmessage21" name="" to="sdobject4"/>
       </object>
     </object>
-    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel1" name="DCD: observers" scale="1.3" selected="true">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel1" name="DCD: observers" scale="1.3" selected="false">
       <object class="ClassGR" id="" internalid="classgr9" uid="Desktop Application User" x="315" y="51">
         <object class="DesignClass" id="designclass" internalid="designclass3" name="UMLProject" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass3" name="UMLProject"/>
@@ -1952,7 +1952,7 @@
         </object>
       </object>
     </object>
-    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" scale="1.0" selected="false">
+    <object class="SDModel" framex="0,0,805,614" iconified="false" id="" internalid="sdmodel3" name="SD: NotifierVector" scale="1.0" selected="true">
       <object class="SDObjectGR" id="" internalid="sdobjectgr16" uid="Desktop Application User" x="232">
         <object class="SDObject" designclass="designclass89" id="sdobject" internalid="sdobject16" name="">
           <object class="DesignClass" id="designclass" internalid="designclass89" name="NotifierVector" stereotype="">
@@ -2759,7 +2759,7 @@
       </object>
       <object class="UMLNoteGR" id="" internalid="umlnotegr14" textData=" setSize(650, 550);&#10;" to="classgr149" uid="Desktop Application User" x="300" y="99"/>
     </object>
-    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel4" name="SD: sd" scale="1.0" selected="false">
+    <object class="SDModel" framex="613,201,821,663" iconified="false" id="" internalid="sdmodel4" name="SD: sd" scale="1.0" selected="false">
       <object class="SDObjectGR" id="" internalid="sdobjectgr25" uid="Desktop Application User" x="19">
         <object class="SDObject" designclass="designclass119" id="sdobject" internalid="sdobject24" name="">
           <object class="DesignClass" id="designclass" internalid="designclass119" name="" stereotype="">
@@ -2808,7 +2808,7 @@
         <object class="CallMessage" from="sdobject25" id="message" internalid="callmessage50" iterative="false" name="addInternalFrame" returnType="void" returns="" to="sdobject25">
           <object class="GenericOperation" id="operation" name="addInternalFrame"/>
           <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter17" name="model" type=""/>
+            <object class="MethodParameter" id="" internalid="methodparameter17" name="model" type="DiagramModel"/>
             <object class="MethodParameter" id="" internalid="methodparameter31" name="rectangle" type=""/>
           </object>
         </object>

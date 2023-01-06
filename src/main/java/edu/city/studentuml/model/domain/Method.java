@@ -1,8 +1,8 @@
 package edu.city.studentuml.model.domain;
 
-//Author: Ramollari Ervin
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.components.Copyable;
@@ -12,13 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.Vector;
-import java.util.prefs.Preferences;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.w3c.dom.Element;
 
+/**
+ * @author Ervin Ramollari
+ * @author Dimitris Dranidis
+ */
 public class Method implements Serializable, IXMLCustomStreamable, Copyable<Method> {
 
     // static integer constants defining scope
@@ -146,10 +148,8 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
     }
 
     public String toString() {
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE");
-
         return getVisibilityString() + getNameString() + getParametersString()
-                + (showTypesSDPref ? getReturnTypeString() : "");
+                + (Settings.showTypes() ? getReturnTypeString() : "");
     }
 
     @JsonIgnore

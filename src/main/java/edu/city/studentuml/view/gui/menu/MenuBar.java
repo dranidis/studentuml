@@ -5,8 +5,6 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JInternalFrame;
@@ -20,6 +18,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.util.RecentFiles;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 /**
@@ -126,9 +125,6 @@ public class MenuBar {
     }
 
     private void createPreferencesSubmenu(JMenu fileMenu) {
-        final String TRUE = "TRUE";
-        final String FALSE = "FALSE";
-
         JMenu preferencesMenu = new JMenu();
         preferencesMenu.setText("Preferences");
         fileMenu.add(preferencesMenu);
@@ -139,13 +135,10 @@ public class MenuBar {
                 .setToolTipText("<html>An element can be selected and then drawn on the canvas several times without"
                         + " the need to select it again. <br>"
                         + "If this is disabled the selection is always reset to the selection arrow.</html>");
-        selectLastCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = selectLastCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
-            Preferences.userRoot().put("SELECT_LAST", boolString);
-        });
+        selectLastCheckBoxMenuItem
+                .addActionListener(e -> Settings.setKeepLastSelection(selectLastCheckBoxMenuItem.isSelected()));
 
-        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals(TRUE);
-        selectLastCheckBoxMenuItem.setSelected(selectLastPref);
+        selectLastCheckBoxMenuItem.setSelected(Settings.keepLastSelection());
         preferencesMenu.add(selectLastCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();
@@ -154,13 +147,12 @@ public class MenuBar {
         showTypesInSDCheckBoxMenuItem.setText("Show types in methods");
         showTypesInSDCheckBoxMenuItem.setToolTipText("Show types in methods in class diagrams and in sequence diagrams");
         showTypesInSDCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = showTypesInSDCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
-            Preferences.userRoot().put("SHOW_TYPES_SD", boolString);
+            Settings.setShowTypes(showTypesInSDCheckBoxMenuItem.isSelected());
             repaintSDandSSDDiagrams();
+
         });
         
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals(TRUE);
-        showTypesInSDCheckBoxMenuItem.setSelected(showTypesSDPref);
+        showTypesInSDCheckBoxMenuItem.setSelected(Settings.showTypes());
         preferencesMenu.add(showTypesInSDCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();
@@ -169,13 +161,11 @@ public class MenuBar {
         showReturnsSDCheckBoxMenuItem.setText("Show return arrows in Sequence Diagrams");
         showReturnsSDCheckBoxMenuItem.setToolTipText("");
         showReturnsSDCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = showReturnsSDCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
-            Preferences.userRoot().put("SHOW_RETURN_SD", boolString);
+            Settings.setShowReturnArrows(showReturnsSDCheckBoxMenuItem.isSelected());
             repaintSDandSSDDiagrams();
         });
         
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals(TRUE);
-        showReturnsSDCheckBoxMenuItem.setSelected(showReturnPref);
+        showReturnsSDCheckBoxMenuItem.setSelected(Settings.showReturnArrows());
         preferencesMenu.add(showReturnsSDCheckBoxMenuItem);
         
         preferencesMenu.addSeparator();

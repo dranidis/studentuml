@@ -21,8 +21,6 @@ import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -68,6 +66,7 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.gui.menu.MenuBar;
@@ -117,19 +116,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     protected MenuBar menuBar;
 
-    private static final String SELECT_LAST = "SELECT_LAST";
-    private static final String GTKLOOKANDFEEL = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-    private static final String LOOK_AND_FEEL = "LOOK_AND_FEEL";
+
 
     protected ApplicationGUI(StudentUMLFrame frame) {
         
         loadLookAndFeel();
 
-        if (Preferences.userRoot().get(SELECT_LAST, "").equals("")) {
-            Preferences.userRoot().put(SELECT_LAST, "TRUE");
-        }
-        String selectLast = Preferences.userRoot().get(SELECT_LAST, "");
-        logger.fine(() -> ("SELECT_LAST:" + selectLast));
         isApplet = false;
         this.frame = frame;
         instance = this;
@@ -155,7 +147,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             logger.fine("Available look and feel: " + info.getName() + " className: " + info.getClassName());
         }
 
-        String preferredLF = Preferences.userRoot().get(LOOK_AND_FEEL, GTKLOOKANDFEEL);
+        String preferredLF = Settings.getLookAndFeel();
         logger.fine(() -> "Preferred look and feel: " + preferredLF);
 
         try {
@@ -1150,7 +1142,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public void changeLookAndFeel(String className) {
         try {
             UIManager.setLookAndFeel(className);
-            Preferences.userRoot().put(LOOK_AND_FEEL, className);
+            Settings.setLookAndFeel(className);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | UnsupportedLookAndFeelException e) {
             e.printStackTrace();

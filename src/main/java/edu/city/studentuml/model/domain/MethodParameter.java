@@ -1,12 +1,11 @@
 package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
-import java.util.prefs.Preferences;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.components.Copyable;
@@ -75,9 +74,8 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable, Copy
 
     public String toStringShowTypes() {
         String parameterString = getName();
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE");
 
-        if (type != null && showTypesSDPref) {
+        if (type != null && Settings.showTypes()) {
             parameterString += ": " + getTypeName();
         }
 

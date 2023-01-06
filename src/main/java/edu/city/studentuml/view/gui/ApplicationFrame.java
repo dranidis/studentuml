@@ -5,8 +5,6 @@ import java.io.File;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -15,6 +13,7 @@ import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.RecentFiles;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 
@@ -24,14 +23,12 @@ public class ApplicationFrame extends ApplicationGUI {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String DEFAULT_PATH = "DEFAULT_PATH";
 
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static final String APPLICATION_NAME = "StudentUML";
     private JFileChooser xmlFileChooser;
-    private static final Preferences pref = Preferences.userRoot();
-    String path = pref.get(DEFAULT_PATH, "");
+    String path = Settings.getDefaultPath();
 
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
@@ -146,7 +143,7 @@ public class ApplicationFrame extends ApplicationGUI {
             umlProject.streamToXML();
             updateFrameTitle();
 
-            pref.put(DEFAULT_PATH, umlProjectFilePath);
+            Settings.setDefaultPath(umlProjectFilePath);
         }
     }
 
@@ -181,7 +178,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
         addToRecentFiles(filePath);
 
-        pref.put(DEFAULT_PATH, filePath);
+        Settings.setDefaultPath(filePath);
     }
 
     @Override
