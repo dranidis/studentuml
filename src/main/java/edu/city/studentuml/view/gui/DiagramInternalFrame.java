@@ -11,12 +11,12 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
@@ -24,7 +24,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
@@ -32,6 +31,8 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEditSupport;
 
 public abstract class DiagramInternalFrame extends JInternalFrame {
+
+    private static final Logger logger = Logger.getLogger(DiagramInternalFrame.class.getName());
 
     protected transient AddElementControllerFactory addElementControllerFactory;
     protected transient AddElementController addElementController;
@@ -51,6 +52,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     protected AbsractToolbar toolbar;
     protected JMenuBar menuBar = new JMenuBar();
+    private JScrollPane drawingAreaScrollPane;
 
     // Undo/Redo
     protected UndoManager undoManager;
@@ -68,6 +70,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         super(title, true, false, true, true);
 
         this.model = model;
+        model.setFrame(this);
+
         createMenuBar();
         addElementControllerFactory = AddElementControllerFactory.getInstance();
 
@@ -79,35 +83,31 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
             refreshUndoRedoButtons();
         });
 
+        /**
+         * Factory method subclasses will create the view and the toolbar
+         */
+        view = makeView(model);
+        toolbar = makeToolbar(this);
+        
+        drawingAreaScrollPane = new JScrollPane(view);
+
+        getContentPane().add(drawingAreaScrollPane, BorderLayout.CENTER);
+        JScrollPane toolbarScrollPane = new JScrollPane(toolbar);
+        toolbarScrollPane.setPreferredSize(new Dimension(55, 400));
+        getContentPane().add(toolbarScrollPane, BorderLayout.WEST);
+
         addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                Container contentPane = getContentPane();
-                int newWidth = ((contentPane.getWidth() > view.getWidth()) ? contentPane.getWidth() : view.getWidth());
-                int newHeight = ((contentPane.getHeight() > view.getHeight()) ? contentPane.getHeight()
-                        : view.getHeight());
-
-                view.setSize(new Dimension(newWidth, newHeight));
+                view.changeSizeToFitAllElements();
             }
         });
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-        /**
-         * Factory method
-         * subclasses will create the view and the toolbar
-         */
-        view = makeView(model);
-        toolbar = makeToolbar(this);
-
         // add view to drawing panel in the center and toolbar to the west
-        JPanel drawingPanel = new JPanel();
-        drawingPanel.add(view);
-        getContentPane().add(new JScrollPane(drawingPanel), BorderLayout.CENTER);
 
-        JScrollPane sp = new JScrollPane(toolbar);
-        sp.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(sp, BorderLayout.WEST);
+
 
         // create selection, draw line, and add element controllers
         selectionController = makeSelectionController(this, model);
@@ -136,9 +136,13 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
         createHelpMenubar();
 
-        setSize(650, 550);  
+        setSize(new Dimension(650, 550));
 
+        /** this simulates clicking on the select button when the frame is started  */
         toolbar.actionPerfomedOnSelection();
+
+        setOpaque(true);
+        setVisible(true);
     }
 
     protected void createHelpMenubar() {
@@ -196,12 +200,12 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         editMenu.add(delete);
 
         JMenuItem zoomIn = new JMenuItem("Zoom in");
-        zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK));
+        zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK));
         zoomIn.addActionListener(e -> view.zoomIn());
         editMenu.add(zoomIn);
 
         JMenuItem zoomOut = new JMenuItem("Zoom out");
-        zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK));
+        zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK));
         zoomOut.addActionListener(e -> view.zoomOut());
         editMenu.add(zoomOut);
 
@@ -353,5 +357,16 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     public EdgeController getEdgeController() {
         return edgeController;
-    }    
+    }
+    
+    /**
+     * Used by changeSizeToFitAllElements to get the size of the drawing area in order to set the size of the view.
+     */
+    public int getDrawingAreaWidth() {
+        return drawingAreaScrollPane.getWidth() - 20;
+    }
+
+    public int getDrawingAreaHeight() {
+        return drawingAreaScrollPane.getHeight() - 20;
+    }
 }

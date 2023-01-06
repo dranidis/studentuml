@@ -65,8 +65,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         selected = new Vector<>();
     }
 
-    public void setFrame(DiagramInternalFrame frm) {
-        frame = frm;
+    public void setFrame(DiagramInternalFrame diagramInternalFrame) {
+        frame = diagramInternalFrame;
     }
 
     public DiagramInternalFrame getFrame() {
@@ -86,6 +86,9 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         logger.fine(() -> "Adding Element e: " + e.toString() + " " + e.getClass().getSimpleName());
         e.objectAdded(e);
         graphicalElements.add(e);
+
+        frame.getView().changeSizeToFitAllElements();
+        
         modelChanged();
     }
 
@@ -93,6 +96,9 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         logger.fine(() -> "Inserting Element e: " + e.toString() + " " + e.getClass().getSimpleName() + " at index: " + index);
         e.objectAdded(e);
         graphicalElements.insertElementAt(e, index);
+
+        frame.getView().changeSizeToFitAllElements();
+
         modelChanged();
     }
 
@@ -109,6 +115,9 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public void removeGraphicalElement(GraphicalElement e) {
         e.objectRemoved(e);
         graphicalElements.remove(e);
+
+        frame.getView().changeSizeToFitAllElements();
+
         modelChanged();
     }
 
@@ -127,6 +136,9 @@ public abstract class DiagramModel extends Observable implements Serializable, I
      */
     public void moveGraphicalElement(GraphicalElement e, int x, int y) {
         e.move(x, y);
+
+        frame.getView().changeSizeToFitAllElements();
+
         modelChanged();
     }
 

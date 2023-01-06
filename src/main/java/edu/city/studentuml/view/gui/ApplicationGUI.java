@@ -635,20 +635,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /*
-     * opens appropriate frames based on a vector of diagram model objects
-     */
-    // private void openFrames(Vector diagramModels) {
-    // DiagramModel model;
-    // Iterator iterator = diagramModels.iterator();
-    //
-    // while (iterator.hasNext()) {
-    // model = (DiagramModel) iterator.next();
-    // model.addObserver(this);
-    // addInternalFrame(model);
-    // }
-    // }
-
-    /*
      * closes all existing internal frames (diagrams) in the application
      */
     private void closeFrames() {
@@ -671,7 +657,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         DiagramInternalFrame diagramInternalFrame = null;
 
         if (model instanceof UCDModel) {
-            diagramInternalFrame = new UCDInternalFrame((UCDModel) model);
+            diagramInternalFrame = new UCDInternalFrame(model);
         } else if (model instanceof SSDModel) {
             diagramInternalFrame = new SSDInternalFrame((SSDModel) model);
         } else if (model instanceof CCDModel) {
@@ -681,10 +667,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (model instanceof DCDModel) {
             diagramInternalFrame = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         } else if (model instanceof ADModel) {
-            diagramInternalFrame = new ADInternalFrame((ADModel) model);
-        } 
-
-        if (diagramInternalFrame == null) {
+            diagramInternalFrame = new ADInternalFrame(model);
+        } else {
             logger.severe("Diagram Internal frame is null. Unknown model!");
             return;
         }
@@ -694,12 +678,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             diagramInternalFrame.getView().setSize((int) rectangle.getWidth(), (int) rectangle.getHeight());
         }
 
-        model.setFrame(diagramInternalFrame);
         diagramInternalFrame.addInternalFrameListener(new DiagramInternalFrameListener());
         desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
-        diagramInternalFrame.setOpaque(true);
-        diagramInternalFrame.setVisible(true);
 
         try {
             diagramInternalFrame.setSelected(true);
@@ -1118,10 +1099,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                     // 0 for yes and 1 for no
                     int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
                             JOptionPane.YES_NO_OPTION);
-                    boolean update = checkBox.isSelected();
                     if (codeGenerationConfirm == 0) {
                         CodePreparation codePreparation = new CodePreparation();
-                        int genFilesCount = codePreparation.generateCode(update);
+                        int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
                         if (genFilesCount > 0) {
                             JOptionPane.showMessageDialog(frame,
                                     "Success!! \n" + "You have generated " + genFilesCount + " files in\n"

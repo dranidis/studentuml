@@ -40,9 +40,9 @@ public abstract class DiagramView extends JPanel implements Observer {
         }
 
         setBackground(Color.white);
-        setSize(500, 400);
+        // setPreferredSize(0, 0);
         setDoubleBuffered(true);
-    }
+   }
 
     public double getScale() {
         return scale;
@@ -50,17 +50,16 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public void setScale(double scale) {
         this.scale = scale;
+        changeSizeToFitAllElements();
         repaint();
     }
 
     public void zoomIn() {
-        scale *= 1.1;
-        repaint();
+        setScale(scale * 1.1);
     }
     
     public void zoomOut() {
-        scale *= 0.9;
-        repaint();
+        setScale(scale * 0.9);
     }
 
     private int scaleTo(double number) {
@@ -158,16 +157,6 @@ public abstract class DiagramView extends JPanel implements Observer {
     public void drawDiagram(Graphics2D g) {
         SystemWideObjectNamePool.drawLock.lock();
 
-        // find the maxX and maxY of all the elements of the diagram
-        // and resize the panel accordingly
-        Point2D.Double maxPoint = getMaxPositionOfElements();
-        int maxX = (int) Math.max( scaleTo(maxPoint.getX()), this.getSize().getWidth());
-        int maxY = (int) Math.max( scaleTo(maxPoint.getY()), this.getSize().getHeight());
-
-        logger.fine("Scale: " + scale + " View size: "+ maxX + ", " + maxY);   
-
-        this.setSize(maxX, maxY);     
-
         // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
                 .filter(LinkGR.class::isInstance)
@@ -187,11 +176,28 @@ public abstract class DiagramView extends JPanel implements Observer {
         SystemWideObjectNamePool.drawLock.unlock();
     }
 
+    /**
+     * Resizes the panel to fit the maximum dimensions of all the elements in the
+     * diagram.
+     */
+    public void changeSizeToFitAllElements() {
+        // find the maxX and maxY of all the elements of the diagram
+        // and resize the panel accordingly
+        Point2D.Double maxPoint = getMaxPositionOfElements();
+        int maxX = Math.max( scaleTo(maxPoint.getX()), model.getFrame().getDrawingAreaWidth());
+        int maxY = Math.max( scaleTo(maxPoint.getY()), model.getFrame().getDrawingAreaHeight());
+
+        logger.fine(() -> "Scale: " + scale + " View size: "+ maxX + ", " + maxY);   
+
+        this.setSize(new Dimension(maxX, maxY));     
+        revalidate();
+    }
+
     protected void drawLineAndRectangle(Graphics2D g) {
         g.setPaint(Color.GRAY);
         g.draw(dragLine);
 
-        float dashes[] = { 2 };
+        float[] dashes = { 2 };
 
         g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
         g.draw(dragRectangle);
@@ -223,7 +229,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         repaint();
     }
 
-    private Point2D.Double getMaxPositionOfElements() {
+    public Point2D.Double getMaxPositionOfElements() {
         double maxX = 0;
         double maxY = 0;
         for(GraphicalElement ge: model.getGraphicalElements()) {
