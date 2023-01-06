@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -39,7 +38,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.CompoundBorder;
@@ -116,18 +117,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private static final String SELECT_LAST = "SELECT_LAST";
     private static final String GTKLOOKANDFEEL = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+    private static final String LOOK_AND_FEEL = "LOOK_AND_FEEL";
 
     protected ApplicationGUI(StudentUMLFrame frame) {
-        try {
-            UIManager.setLookAndFeel(GTKLOOKANDFEEL);
-        } catch (Exception e) {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                logger.info("NAME: " + info.getName() + " className: " + info.getClassName());
-            }
-            logger.info("Look and feel:  " + GTKLOOKANDFEEL + " not available. Using default: "
-                    + UIManager.getLookAndFeel().getName());
-        }   
- 
+        
+        loadLookAndFeel();
+
         if (Preferences.userRoot().get(SELECT_LAST, "").equals("")) {
             Preferences.userRoot().put(SELECT_LAST, "TRUE");
         }
@@ -151,6 +146,23 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
+    }
+
+    private void loadLookAndFeel() {
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            logger.fine("Available look and feel: " + info.getName() + " className: " + info.getClassName());
+        }
+
+        String preferredLF = Preferences.userRoot().get(LOOK_AND_FEEL, GTKLOOKANDFEEL);
+        logger.fine(() -> "Preferred look and feel: " + preferredLF);
+
+        try {
+            UIManager.setLookAndFeel(preferredLF);
+        } catch (Exception e) {
+            logger.severe("Look and feel:  " + preferredLF + " not available. Using default.");
+        }   
+
+        logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
     protected ApplicationGUI(StudentUMLApplet applet) {
@@ -222,9 +234,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void createMenuBar() {
         if (!isApplet) {
-            frame.setJMenuBar(new MenuBar(this).getMenuBar());
+            frame.setJMenuBar(new MenuBar(this).getjMenuBar());
         } else {
-            applet.setJMenuBar(new MenuBar(this).getMenuBar());
+            applet.setJMenuBar(new MenuBar(this).getjMenuBar());
         }
     }
 
@@ -283,12 +295,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         messageTree = new JTree();
         messageTree.setModel(null);
 
-        checkTreeManager = new CheckTreeManager(messageTree, false, new TreePathSelectable() {
-
-            public boolean isSelectable(TreePath path) {
-                return path.getPathCount() == 3;
-            }
-        });
+        checkTreeManager = new CheckTreeManager(messageTree, false, path -> path.getPathCount() == 3);
 
         scrollPane_f = new JScrollPane();
         scrollPane_f.setViewportView(factsTree);
@@ -302,41 +309,37 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         popupRepair = new JMenuItem();
         popupRepair.setText("Repair");
-        popupRepair.addActionListener(new ActionListener() {
+        popupRepair.addActionListener(e -> {
+            String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
+            // SystemWideObjectNamePool.getInstance().loading();
+            SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
+            // SystemWideObjectNamePool.getInstance().done();
+            //// SystemWideObjectNamePool.getInstance().reloadRules();
+            SystemWideObjectNamePool.getInstance().reload();
+            SystemWideObjectNamePool.getInstance().setSelectedRule(null);
 
-            public void actionPerformed(ActionEvent e) {
-                String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-                // SystemWideObjectNamePool.getInstance().loading();
-                SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-                // SystemWideObjectNamePool.getInstance().done();
-                //// SystemWideObjectNamePool.getInstance().reloadRules();
-                SystemWideObjectNamePool.getInstance().reload();
-                SystemWideObjectNamePool.getInstance().setSelectedRule(null);
-            }
         });
 
         popupHelp = new JMenuItem();
         popupHelp.setText("Get Help");
-        popupHelp.addActionListener(new ActionListener() {
+        popupHelp.addActionListener(e -> {
+            String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
 
-            public void actionPerformed(ActionEvent e) {
-                String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
+            Rule rule = SystemWideObjectNamePool.getInstance().getRule(rulename);
+            String helpString = (rule == null) ? null : rule.gethelpurl();
 
-                Rule rule = SystemWideObjectNamePool.getInstance().getRule(rulename);
-                String helpString = (rule == null) ? null : rule.gethelpurl();
-
-                try {
-                    URL url = new URL(helpString);
-                    if (isApplet) {
-                        applet.getAppletContext().showDocument(url, "_blank");
-                    } else {
-                        // do something about this
-                    }
-                } catch (MalformedURLException mue) {
-                    JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
-                            JOptionPane.ERROR_MESSAGE);
+            try {
+                URL url = new URL(helpString);
+                if (isApplet) {
+                    applet.getAppletContext().showDocument(url, "_blank");
+                } else {
+                    // do something about this
                 }
+            } catch (MalformedURLException mue) {
+                JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
+                        JOptionPane.ERROR_MESSAGE);
             }
+            
         });
 
         addPopup(messageTree, popupMenu);
@@ -391,25 +394,23 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
         addBorderListener(repairButton);
-        repairButton.addActionListener(new ActionListener() {
+        repairButton.addActionListener(e -> {
+            TreePath[] checkedPaths = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-            public void actionPerformed(ActionEvent e) {
-                TreePath[] checkedPaths = checkTreeManager.getSelectionModel().getSelectionPaths();
-
-                // String rulename =
-                // messageTree.getSelectionPath().getLastPathComponent().toString();
-                if (checkedPaths != null) {
-                    for (int i = 0; i < checkedPaths.length; i++) {
-                        SystemWideObjectNamePool.getInstance()
-                                .setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
-                        SystemWideObjectNamePool.getInstance().reload();
-                    }
+            // String rulename =
+            // messageTree.getSelectionPath().getLastPathComponent().toString();
+            if (checkedPaths != null) {
+                for (int i = 0; i < checkedPaths.length; i++) {
+                    SystemWideObjectNamePool.getInstance()
+                            .setSelectedRule(checkedPaths[i].getLastPathComponent().toString());
+                    SystemWideObjectNamePool.getInstance().reload();
                 }
-
-                SystemWideObjectNamePool.getInstance().setSelectedRule(null);
-                checkTreeManager.getSelectionModel().clearSelection();
-                repairButton.setEnabled(false);
             }
+
+            SystemWideObjectNamePool.getInstance().setSelectedRule(null);
+            checkTreeManager.getSelectionModel().clearSelection();
+            repairButton.setEnabled(false);
+
         });
 
         repairPanel.add(repairButton);
@@ -441,31 +442,27 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (checkTreeManager.getSelectionModel().getSelectionPaths() != null) {
-                    button.setEnabled(true);
-                } else {
-                    button.setEnabled(false);
-                }
+                button.setEnabled(checkTreeManager.getSelectionModel().getSelectionPaths() != null);
             }
         });
     }
 
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-        System.out.println(e);
+        logger.finest(() -> "" + e);
         if (c != KeyEvent.CHAR_UNDEFINED) {
-            System.out.println(c);
+            logger.finest(() ->"" + c);
             repaint();
             e.consume();
         }
     }
 
     public void keyPressed(KeyEvent e) {
-        System.out.println(e);
+        logger.finest(() -> "" + e);
     }
 
     public void keyReleased(KeyEvent e) {
-        System.out.println(e);
+        logger.finest(() -> "" + e);
     }
 
     public void update(Observable observable, Object object) {
@@ -1142,6 +1139,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         }
 
+    }
+
+    public void changeLookAndFeel(String className) {
+        try {
+            UIManager.setLookAndFeel(className);
+            Preferences.userRoot().put(LOOK_AND_FEEL, className);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
 }

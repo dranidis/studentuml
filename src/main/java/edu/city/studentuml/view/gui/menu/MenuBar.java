@@ -1,5 +1,6 @@
 package edu.city.studentuml.view.gui.menu;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -13,6 +14,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.view.gui.ApplicationGUI;
@@ -26,49 +29,47 @@ public class MenuBar {
     private static final Logger logger = Logger.getLogger(MenuBar.class.getName());
 
     ApplicationGUI app;
-    JMenuBar menuBar;
+    JMenuBar jMenuBar;
 
     public MenuBar(ApplicationGUI app) {
-        menuBar = new JMenuBar();
+        jMenuBar = new JMenuBar();
 
         this.app = app;
         createFileMenu();
         createCreateMenu();
     }
 
-    public JMenuBar getMenuBar() {
-        return menuBar;
+    public JMenuBar getjMenuBar() {
+        return jMenuBar;
     }
 
     public void createFileMenu() {
         JMenu fileMenu = new JMenu();
         fileMenu.setText(" File ");
-        menuBar.add(fileMenu);
+        jMenuBar.add(fileMenu);
 
         JMenuItem newProjectMenuItem = new JMenuItem();
         newProjectMenuItem.setText("New Project");
-        KeyStroke keyStrokeToNew = KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
-        newProjectMenuItem.setAccelerator(keyStrokeToNew);
+        newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
 
         newProjectMenuItem.addActionListener(e -> app.newProject());
         fileMenu.add(newProjectMenuItem);
 
         JMenuItem openProjectMenuItem = new JMenuItem();
         openProjectMenuItem.setText("Open Project");
-        KeyStroke keyStrokeToOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
-        openProjectMenuItem.setAccelerator(keyStrokeToOpen);
+        openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         openProjectMenuItem.addActionListener(e -> app.openProject());
         fileMenu.add(openProjectMenuItem);
 
         JMenuItem saveProjectMenuItem = new JMenuItem();
         saveProjectMenuItem.setText("Save");
-        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
-        saveProjectMenuItem.setAccelerator(keyStrokeToSave);
+        saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         saveProjectMenuItem.addActionListener(e -> app.saveProject());
         fileMenu.add(saveProjectMenuItem);
 
         JMenuItem saveProjectAsMenuItem = new JMenuItem();
         saveProjectAsMenuItem.setText("Save As...");
+        saveProjectAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         saveProjectAsMenuItem.addActionListener(e -> app.saveProjectAs());
         fileMenu.add(saveProjectAsMenuItem);
 
@@ -85,6 +86,7 @@ public class MenuBar {
 
         JMenuItem exitMenuItem = new JMenuItem();
         exitMenuItem.setText("Exit");
+        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
         exitMenuItem.addActionListener(e -> {
             if (app.closeProject()) {
                 System.exit(0);
@@ -101,6 +103,9 @@ public class MenuBar {
     }
 
     private void createPreferencesSubmenu(JMenu editMenu) {
+        final String TRUE = "TRUE";
+        final String FALSE = "FALSE";
+
         JMenu preferencesMenu = new JMenu();
         preferencesMenu.setText("Preferences");
         editMenu.add(preferencesMenu);
@@ -112,11 +117,11 @@ public class MenuBar {
                         + " the need to select it again. <br>"
                         + "If this is disabled the selection is always reset to the selection arrow.</html>");
         selectLastCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = selectLastCheckBoxMenuItem.isSelected() ? "TRUE" : "FALSE";
-                Preferences.userRoot().put("SELECT_LAST", boolString);
+            String boolString = selectLastCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
+            Preferences.userRoot().put("SELECT_LAST", boolString);
         });
 
-        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals("TRUE");
+        boolean selectLastPref = Preferences.userRoot().get("SELECT_LAST", "").equals(TRUE);
         selectLastCheckBoxMenuItem.setSelected(selectLastPref);
         preferencesMenu.add(selectLastCheckBoxMenuItem);
 
@@ -126,12 +131,12 @@ public class MenuBar {
         showTypesInSDCheckBoxMenuItem.setText("Show types in methods");
         showTypesInSDCheckBoxMenuItem.setToolTipText("Show types in methods in class diagrams and in sequence diagrams");
         showTypesInSDCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = showTypesInSDCheckBoxMenuItem.isSelected() ? "TRUE" : "FALSE";
+            String boolString = showTypesInSDCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
             Preferences.userRoot().put("SHOW_TYPES_SD", boolString);
             repaintSDandSSDDiagrams();
         });
         
-        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals("TRUE");
+        boolean showTypesSDPref = Preferences.userRoot().get("SHOW_TYPES_SD", "").equals(TRUE);
         showTypesInSDCheckBoxMenuItem.setSelected(showTypesSDPref);
         preferencesMenu.add(showTypesInSDCheckBoxMenuItem);
 
@@ -141,12 +146,12 @@ public class MenuBar {
         showReturnsSDCheckBoxMenuItem.setText("Show return arrows in Sequence Diagrams");
         showReturnsSDCheckBoxMenuItem.setToolTipText("");
         showReturnsSDCheckBoxMenuItem.addActionListener(e -> {
-            String boolString = showReturnsSDCheckBoxMenuItem.isSelected() ? "TRUE" : "FALSE";
+            String boolString = showReturnsSDCheckBoxMenuItem.isSelected() ? TRUE : FALSE;
             Preferences.userRoot().put("SHOW_RETURN_SD", boolString);
             repaintSDandSSDDiagrams();
         });
         
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE");
+        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals(TRUE);
         showReturnsSDCheckBoxMenuItem.setSelected(showReturnPref);
         preferencesMenu.add(showReturnsSDCheckBoxMenuItem);
         
@@ -181,7 +186,6 @@ public class MenuBar {
         JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
         simpleModeRadioButtonMenuItem.setToolTipText("<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
         simpleModeRadioButtonMenuItem.addActionListener(e -> app.simpleMode());
-
         preferencesMenu.add(simpleModeRadioButtonMenuItem);
 
         JRadioButtonMenuItem advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
@@ -192,27 +196,42 @@ public class MenuBar {
         ButtonGroup bgroup = new ButtonGroup();
         bgroup.add(simpleModeRadioButtonMenuItem);
         bgroup.add(advancedModeRadioButtonMenuItem);
+
+        preferencesMenu.addSeparator();
+
+        ButtonGroup lfgroup = new ButtonGroup();
+
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem(info.getName(), UIManager.getLookAndFeel().getClass().getName().equals(info.getClassName()));
+            gtkLFRadioButtonMenuItem.setToolTipText("");
+            gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel(info.getClassName()));
+            preferencesMenu.add(gtkLFRadioButtonMenuItem);        
+            lfgroup.add(gtkLFRadioButtonMenuItem);
+        }       
+
     }    
 
     private void repaintSDandSSDDiagrams() {
+        final String REPAINT = "REPAINT : ";
+
         Vector<JInternalFrame> sdFrames = app.getInternalFramesOfType(DiagramType.SD);
         for (JInternalFrame sdFrame : sdFrames) {
-            logger.finer("REPAINT : ");
+            logger.finer(REPAINT);
             sdFrame.repaint();
         }
         sdFrames = app.getInternalFramesOfType(DiagramType.SSD);
         for (JInternalFrame sdFrame : sdFrames) {
-            logger.finer("REPAINT : ");
+            logger.finer(REPAINT);
             sdFrame.repaint();
         }        
         Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramType.DCD);
         for (JInternalFrame sdFrame : cdFrames) {
-            logger.finer("REPAINT : ");
+            logger.finer(REPAINT);
             sdFrame.repaint();
         }    
         cdFrames = app.getInternalFramesOfType(DiagramType.CCD);
         for (JInternalFrame sdFrame : cdFrames) {
-            logger.finer("REPAINT : ");
+            logger.finer(REPAINT);
             sdFrame.repaint();
         }
     }    
@@ -220,7 +239,7 @@ public class MenuBar {
     private void createCreateMenu() {
         JMenu createMenu = new JMenu();
         createMenu.setText(" Create ");
-        menuBar.add(createMenu);
+        jMenuBar.add(createMenu);
 
         JMenuItem newUseCaseMenuItem = new JMenuItem();
         newUseCaseMenuItem.setText("New Use Case Diagram");

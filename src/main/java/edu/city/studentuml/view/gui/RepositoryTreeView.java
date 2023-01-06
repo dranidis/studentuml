@@ -39,6 +39,8 @@ import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
+
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.beans.PropertyVetoException;
@@ -87,11 +89,14 @@ public class RepositoryTreeView extends JPanel implements Observer {
         treeRenderer = new UMLTreeRenderer(rootIcon);
         tree.setCellRenderer(treeRenderer);
         tree.setRowHeight(20);
+        tree.setBackground(Color.WHITE);
+
         add(tree);
         datamodelnode = addObject("Data Model");
         diagrammodelnode = addObject("Diagram Model");
         tree.addTreeSelectionListener(new RepositoryTreeSelectionListener());
         umlProject.addObserver(this);
+
     }
 
     public void update(Observable o, Object arg) {
