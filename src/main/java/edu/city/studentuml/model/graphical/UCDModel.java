@@ -119,6 +119,9 @@ public class UCDModel extends DiagramModel {
             super.removeGraphicalElement(ucdComponentGR);
         } else {
             context.remove(ucdComponentGR);
+
+            changeViewSize();
+
             modelChanged();
         }
     }
@@ -228,6 +231,9 @@ public class UCDModel extends DiagramModel {
                 }
             }
         }
+
+        changeViewSize();
+
         modelChanged();
     }
 

@@ -317,7 +317,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return umlProject;
     }
 
-    private void changeViewSize() {
+    protected void changeViewSize() {
         // frame might be null in tests with only models
         if (frame != null) {
             frame.getView().changeSizeToFitAllElements();
