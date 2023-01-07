@@ -30,8 +30,9 @@ public abstract class EdgeGR extends GraphicalElement {
     protected List<AbstractPointGR> points;
     private Font font;
 
-    /*
-     * This constructor is used in persistency module only (ObjectFactory)
+    /**
+     * This constructor is used in persistency module only (ObjectFactory).
+     * It does not populate the points list which remains empty until endpoints are read and set
      */
     protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
         this.source = source;
@@ -108,7 +109,17 @@ public abstract class EdgeGR extends GraphicalElement {
         return getStartPoint().getMyPoint();
     }
 
+    /**
+     * Normally returns the first EndPoint in the points list. If the points list is
+     * empty it returns the source point. This is necessary when element is created
+     * by reading XML in which case the points list is initially empty
+     * 
+     */
     public AbstractPointGR getStartPoint() {
+
+        if (points.isEmpty()) {
+            return new EndPointGR(source.getX(), source.getY());
+        }
         return points.get(0);
     }
 
