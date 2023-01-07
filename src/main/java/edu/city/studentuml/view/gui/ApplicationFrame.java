@@ -52,7 +52,7 @@ public class ApplicationFrame extends ApplicationGUI {
         if (closingOrLoading)
             return;
 
-        logger.finer("Updating title: saved: " + umlProject.isSaved());
+        logger.finest("Updating title: saved: " + umlProject.isSaved());
 
         String title = APPLICATION_NAME + " - " + umlProject.getName();
         if (!umlProject.isSaved()) {

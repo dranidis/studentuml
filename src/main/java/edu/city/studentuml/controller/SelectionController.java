@@ -269,8 +269,8 @@ public abstract class SelectionController {
             setRedoCoordinates();
 
             if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {
-                logger.fine(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
-                logger.fine(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
+                logger.finest(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
+                logger.finest(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }

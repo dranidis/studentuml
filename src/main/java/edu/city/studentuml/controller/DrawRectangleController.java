@@ -90,14 +90,12 @@ public class DrawRectangleController {
             return;
         }
 
-        logger.finer(() -> "Pressed ");
         startX = x;
         startY = y;
         drawRectangle = true;
     }
 
     public void released(int x, int y) {
-        logger.finer(() -> "Released ");
         diagramView.getDragRectangle().setRect(0, 0, 0, 0);
         diagramView.repaint();
         drawRectangle = false;

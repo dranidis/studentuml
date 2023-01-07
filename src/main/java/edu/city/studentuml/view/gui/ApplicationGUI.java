@@ -466,7 +466,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             objString = object.getClass().getSimpleName();
         }
         final String objStringFinal = objString;
-        logger.fine(() -> ("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal));
+        logger.finest(() -> ("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal));
 
         if (object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();

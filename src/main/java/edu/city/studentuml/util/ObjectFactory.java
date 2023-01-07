@@ -195,8 +195,6 @@ public final class ObjectFactory extends Observable {
                     + parent + " stream: " + stream + " XMLStreamer: " + streamer);
             logger.severe(" TargetExceptionStackTrace");
             e.getTargetException().printStackTrace();
-            // logger.severe("StackTrace");
-            // e.printStackTrace();
             return null;
         }
 
@@ -1138,7 +1136,6 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newactivitynode(Object parent, Element stream, XMLStreamer streamer) {
-        // ActivityNode n = new ActivityNode(stream.getAttribute("name"));
         ActivityNode n = new ActivityNode();
         n.setName(stream.getAttribute("name"));
         return n;
