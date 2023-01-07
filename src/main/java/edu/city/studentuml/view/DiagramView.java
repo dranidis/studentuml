@@ -33,6 +33,15 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     private double scale = 1.0;
 
+    /**
+     * Necessary for remembering the necessary max width and height of the view area in
+     * order not to unnecessarily update the size of the panel. Unfortunately
+     * getSize() of the panel does not serve because the size changes outside of the
+     * program and the values almost never match.
+     */
+    private int maxWidth;
+    private int maxHeight;
+
     protected DiagramView(DiagramModel m) {
         model = m;
 
@@ -181,16 +190,19 @@ public abstract class DiagramView extends JPanel implements Observer {
      * diagram.
      */
     public void changeSizeToFitAllElements() {
-        // find the maxX and maxY of all the elements of the diagram
-        // and resize the panel accordingly
+
         Point2D.Double maxPoint = getMaxPositionOfElements();
         int maxX = Math.max( scaleTo(maxPoint.getX()), model.getFrame().getDrawingAreaWidth());
         int maxY = Math.max( scaleTo(maxPoint.getY()), model.getFrame().getDrawingAreaHeight());
 
-        logger.fine(() -> "Scale: " + scale + " View size: "+ maxX + ", " + maxY);   
-
-        this.setSize(new Dimension(maxX, maxY));     
-        revalidate();
+        if (maxX != this.maxWidth || maxY != this.maxHeight) {
+            maxWidth = maxX;
+            maxHeight = maxY;
+            logger.fine(() -> "Scale: " + scale + " New View size: "+ maxWidth + ", " + maxHeight);   
+           
+            this.setSize(new Dimension(maxWidth, maxHeight));     
+            revalidate();
+        }
     }
 
     protected void drawLineAndRectangle(Graphics2D g) {
