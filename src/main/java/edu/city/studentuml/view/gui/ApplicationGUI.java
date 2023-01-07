@@ -107,13 +107,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JButton repairButton;
     protected int openFrameCounter = 0;
     private static ApplicationGUI instance; // need in ObjectFactory [backward compatiblity]
-    protected DiagramInternalFrame selectedFrame;
 
     protected boolean closingOrLoading = false;
 
     protected MenuBar menuBar;
-
-
 
     protected ApplicationGUI(StudentUMLFrame frame) {
         
@@ -497,11 +494,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (object instanceof FrameProperties) {
             FrameProperties frameProperties = (FrameProperties) object;
             addInternalFrame(frameProperties.model, frameProperties);
-            
-            if (frameProperties.selected) {
-                selectedFrame = frameProperties.model.getFrame();
-            }
-            
         }
     }
 

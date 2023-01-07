@@ -8,6 +8,7 @@ import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.ApplicationGUI;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
@@ -23,11 +24,15 @@ import edu.city.studentuml.model.graphical.SystemInstanceGR;
 
 import java.io.Serializable;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
@@ -67,7 +72,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     private void projectInit() {
         repository = new CentralRepository();
-        diagramModels = new NotifierVector();
+        diagramModels = new NotifierVector<>();
         // applet
         title = "";
         comment = "";
@@ -236,7 +241,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        streamer.streamObjects(node, diagramModels.iterator());
+        streamer.streamObjects(node, getDiagramsByZOrderOfFrames().iterator());
     }
 
     public boolean isClassReferenced(GraphicalElement el, AbstractClass abstractClass) {
@@ -448,4 +453,24 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setSaved(true);
         setName("New Project");
     }
+
+    public Vector<DiagramModel> getDiagramsByZOrderOfFrames() {
+        Vector<DiagramModel> orderedDiagrams = new Vector<>();
+
+        if (diagramModels.isEmpty()) {
+            return orderedDiagrams;
+        }
+
+        JDesktopPane desktopPane = (JDesktopPane) diagramModels.get(0).getFrame().getParent();
+        JInternalFrame[] allFrames = desktopPane.getAllFrames();
+    
+        // sort the frames by their z-order (back to front)
+        Arrays.sort(allFrames, (f1, f2) -> desktopPane.getComponentZOrder(f1) - desktopPane.getComponentZOrder(f2));
+    
+        for (JInternalFrame internalFrame: allFrames) {
+            orderedDiagrams.add(((DiagramInternalFrame) internalFrame).getModel());
+        }
+        return orderedDiagrams;
+    }
+    
 }

@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -115,12 +114,7 @@ public class ApplicationFrame extends ApplicationGUI {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
 
-        try {
-            if (selectedFrame != null)
-                selectedFrame.setSelected(true);
-        } catch (PropertyVetoException ex) {
-            Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         umlProject.setSaved(true);
         closingOrLoading = false;
         updateFrameTitle();
@@ -183,10 +177,10 @@ public class ApplicationFrame extends ApplicationGUI {
 
     @Override
     public void exportImage() {
-        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        JInternalFrame paneSelectedFrame = desktopPane.getSelectedFrame();
 
-        if (selectedFrame != null) {
-            DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
+        if (paneSelectedFrame != null) {
+            DiagramView view = ((DiagramInternalFrame) paneSelectedFrame).getView();
             ImageExporter.exportToImage(view, this);
         }
     }
