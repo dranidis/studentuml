@@ -8,6 +8,7 @@ import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.view.DiagramView;
 
@@ -17,6 +18,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
 import java.util.logging.Logger;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -368,4 +370,26 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     public int getDrawingAreaHeight() {
         return drawingAreaScrollPane.getHeight() - 20;
     }
+
+    public void initialize(FrameProperties frameProperties) {
+        try {
+            if (frameProperties == null) {
+                setSelected(true);
+                setMaximum(true);
+            } else {
+                setBounds(frameProperties.rectangle);
+                getView().setSize((int) frameProperties.rectangle.getWidth(),
+                        (int) frameProperties.rectangle.getHeight());
+
+                setSelected(frameProperties.selected);
+                setMaximum(frameProperties.maximized);
+                setIcon(frameProperties.iconified);
+                getView().setScale(frameProperties.scale);
+            }
+
+        } catch (PropertyVetoException vetoException) {
+            vetoException.printStackTrace();
+        }
+    }
+    
 }

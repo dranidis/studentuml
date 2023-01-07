@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,7 +23,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -132,7 +129,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
 
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
         frame.setVisible(true);
 
@@ -498,20 +495,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             umlProject.projectChanged();
         }
         if (object instanceof FrameProperties) {
-            FrameProperties fp = (FrameProperties) object;
-            addInternalFrame(fp.model, fp.rectangle);
-
-            if (fp.selected) {
-                selectedFrame = fp.model.getFrame();
+            FrameProperties frameProperties = (FrameProperties) object;
+            addInternalFrame(frameProperties.model, frameProperties);
+            
+            if (frameProperties.selected) {
+                selectedFrame = frameProperties.model.getFrame();
             }
-            try {
-                // TODO: refactor
-                fp.model.getFrame().setSelected(fp.selected);
-                fp.model.getFrame().setIcon(fp.iconified);
-                fp.model.getFrame().getView().setScale(fp.scale);
-            } catch (PropertyVetoException e) {
-                e.printStackTrace();
-            }
+            
         }
     }
 
@@ -649,7 +639,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * utilized by other methods trying to embed a diagram model in the appropriate
      * internal frame
      */
-    public void addInternalFrame(DiagramModel model, Rectangle rectangle) {
+    public void addInternalFrame(DiagramModel model, FrameProperties frameProperties) {
         DiagramInternalFrame diagramInternalFrame = null;
 
         if (model instanceof UCDModel) {
@@ -669,23 +659,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             return;
         }
 
-        if (rectangle != null) {
-            diagramInternalFrame.setBounds(rectangle);
-            diagramInternalFrame.getView().setSize((int) rectangle.getWidth(), (int) rectangle.getHeight());
-        }
-
         diagramInternalFrame.addInternalFrameListener(new DiagramInternalFrameListener());
         desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
 
-        try {
-            diagramInternalFrame.setSelected(true);
-            diagramInternalFrame.setMaximum(true);
-
-        } catch (PropertyVetoException vetoException) {
-            vetoException.printStackTrace();
-        }
-
+        diagramInternalFrame.initialize(frameProperties);
+        
         repositoryTreeView.expandDiagrams();
     }
 

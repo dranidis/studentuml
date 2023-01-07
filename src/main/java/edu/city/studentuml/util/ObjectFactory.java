@@ -1214,6 +1214,7 @@ public final class ObjectFactory extends Observable {
         boolean selected = Boolean.parseBoolean(stream.getAttribute("selected"));
         boolean iconified = Boolean.parseBoolean(stream.getAttribute("iconified"));
         double scale;
+        boolean isMaximum;
         try {
             scale = Double.parseDouble(stream.getAttribute("scale"));
         } catch (Exception e) {
@@ -1221,7 +1222,14 @@ public final class ObjectFactory extends Observable {
             scale = 1.0;
         }
 
-        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale);
+        try {
+            isMaximum = Boolean.parseBoolean(stream.getAttribute("maximized"));
+        } catch (Exception e) {
+            logger.severe("maximized attribute not existing or cannot be converted to double. Setting to false");
+            isMaximum = false;
+        }
+
+        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum);
         logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(frameProperties);
