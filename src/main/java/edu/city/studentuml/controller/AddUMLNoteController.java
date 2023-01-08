@@ -1,10 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;

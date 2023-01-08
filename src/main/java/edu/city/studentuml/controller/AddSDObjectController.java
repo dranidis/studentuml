@@ -9,7 +9,6 @@ import edu.city.studentuml.view.gui.SDInternalFrame;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import javax.swing.undo.UndoableEdit;
 
-//~--- JDK imports ------------------------------------------------------------
 public class AddSDObjectController extends AddElementController {
 
     public AddSDObjectController(SDModel model, DiagramInternalFrame frame) {

@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DestroyMessageGR.java
 import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -12,6 +9,10 @@ import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class DestroyMessageGR extends SDMessageGR {
 
     public DestroyMessageGR(RoleClassifierGR from, RoleClassifierGR to, DestroyMessage message, int y) {

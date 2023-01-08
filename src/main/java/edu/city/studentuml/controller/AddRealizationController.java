@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddRealizationController.java
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -16,6 +13,11 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.undo.UndoableEdit;
+
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 
 public class AddRealizationController extends AddElementController {
 

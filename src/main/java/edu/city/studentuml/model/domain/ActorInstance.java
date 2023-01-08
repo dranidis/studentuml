@@ -1,12 +1,13 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ActorInstance.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class ActorInstance extends RoleClassifier implements IXMLCustomStreamable {
 
     public ActorInstance(String name, Actor actor) {

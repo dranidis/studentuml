@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddCallMessageController.java
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
@@ -21,6 +18,9 @@ import java.util.Optional;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class AddCallMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;

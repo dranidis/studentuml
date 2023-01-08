@@ -6,11 +6,13 @@ import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class CallMessageGR extends SDMessageGR {
 
     public CallMessageGR(RoleClassifierGR from, RoleClassifierGR to, CallMessage message, int y) {

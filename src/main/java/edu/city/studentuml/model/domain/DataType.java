@@ -1,10 +1,12 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//DataType.java
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ * @author Dimitris Dranidis
+ */
 public class DataType implements Serializable, Type {
 
     // definition of some standard data types

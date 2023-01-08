@@ -1,8 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//MultiObjectEditor.java
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.Type;
@@ -33,6 +30,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class MultiObjectEditor extends JPanel implements ActionListener, ItemListener {
 
     private JDialog multiObjectDialog;

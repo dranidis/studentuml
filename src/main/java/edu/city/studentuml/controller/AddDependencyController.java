@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddDependencyController.java
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -16,6 +13,10 @@ import java.util.ListIterator;
 import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class AddDependencyController extends AddElementController {
 
     private ClassGR classA = null;

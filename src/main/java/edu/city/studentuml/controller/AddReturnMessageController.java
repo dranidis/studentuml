@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddReturnMessageController.java
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -16,6 +13,10 @@ import java.util.ListIterator;
 import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class AddReturnMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;

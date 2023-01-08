@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//RealizationGR.java
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+/**
+ * @author Ervin Ramollari
+ */
 @JsonIncludeProperties({ "internalid", "from", "to", "realization" })
 public class RealizationGR extends LinkGR {
 

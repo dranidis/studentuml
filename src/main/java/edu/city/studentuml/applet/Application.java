@@ -53,18 +53,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.city.studentuml.model.domain.UMLProject;
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//Application.java
-//Class Application contains the init() method where applet execution starts.
-//It stands at the top of the system and implements the GUI of the application.
-//This class is the root of all the UML PROJECT data, including the central repository
-//of UML elements, as well as the UML diagrams, each of which exists
-//within a diagram internal frame. Only ONE project can be open at one time.
-//Finally, class Application manages various utilities, such as opening/saving a project,
-//exporting a diagram to a graphics file, forward engineering code, checking diagram's
-//consistencies, etc, mainly by making use of other classes.
-//Alexander taking over
+
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -86,6 +75,18 @@ import edu.city.studentuml.view.gui.RepositoryTreeView;
 import edu.city.studentuml.view.gui.SDInternalFrame;
 import edu.city.studentuml.view.gui.SSDInternalFrame;
 
+/**
+ * Class Application contains the init() method where applet execution starts.
+ * It stands at the top of the system and implements the GUI of the application.
+ * This class is the root of all the UML PROJECT data, including the central
+ * repository of UML elements, as well as the UML diagrams, each of which exists
+ * within a diagram internal frame. Only ONE project can be open at one time.
+ * Finally, class Application manages various utilities, such as opening/saving
+ * a project, exporting a diagram to a graphics file, forward engineering code,
+ * checking diagram's consistencies, etc, mainly by making use of other classes.
+ * 
+ * @author Ervin Ramollari
+ */
 public class Application extends JApplet implements Observer, KeyListener {
 
     /**

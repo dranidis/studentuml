@@ -1,9 +1,5 @@
 package edu.city.studentuml.util.undoredo;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Spyros Maniopoulos
-//EditCreateMessageEdit.java
-
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -11,6 +7,10 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+/**
+ * 
+ * @author Spyros Maniopoulos
+ */
 public class EditCreateMessageEdit extends AbstractUndoableEdit {
 	
 	private CreateMessage originalCreateMessage;

@@ -14,12 +14,13 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ActorInstanceGR.java
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.util.XMLStreamer;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class ActorInstanceGR extends RoleClassifierGR {
 
     private static int actorTextDistance = 6;

@@ -6,12 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Association.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
-
+/**
+ * @author Ramollari Ervin
+ */
 @JsonIncludeProperties({ "name", "direction", "showArrow", "labelDirection", "reflective", "bidirectional", "roleA",
         "roleB" })
 public class Association implements Serializable, IXMLCustomStreamable {

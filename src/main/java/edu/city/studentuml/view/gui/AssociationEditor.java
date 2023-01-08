@@ -1,8 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AssociationEditor.java
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -27,6 +24,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class AssociationEditor extends JPanel implements ActionListener {
 
     private String[] directions = {"Bidirectional", "Role A to Role B", "Role B to Role A"};

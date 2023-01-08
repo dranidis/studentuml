@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DependencyGR.java
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
+/**
+ * @author Ervin Ramollari
+ */
 @JsonIncludeProperties({ "internalid", "from", "to", "dependency" })
 public class DependencyGR extends LinkGR {
 

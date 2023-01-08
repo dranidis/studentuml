@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddAggregationController.java
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.graphical.CCDModel;
@@ -14,7 +11,8 @@ import edu.city.studentuml.model.graphical.LinkGR;
 
 /**
  * 
- * @author dimitris
+ * @author Ervin Ramollari
+ * @author Dimitris Dranidis
  */
 public class AddAggregationController extends AddAssociationController {
     public AddAggregationController(DCDModel model, DiagramInternalFrame frame) {

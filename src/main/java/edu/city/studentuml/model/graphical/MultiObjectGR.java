@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//MultiObjectGR.java
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -18,6 +15,10 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class MultiObjectGR extends AbstractSDObjectGR {
 
     private static int minimumNameBoxWidth = 50;

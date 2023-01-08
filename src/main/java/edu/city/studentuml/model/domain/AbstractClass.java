@@ -5,14 +5,15 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
-/**
- *
- * @author draganbisercic
- */
+
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
+/**
+ *
+ * @author draganbisercic
+ */
 public abstract class AbstractClass implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
     protected GenericClass genericClass;

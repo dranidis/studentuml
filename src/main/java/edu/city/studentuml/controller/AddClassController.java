@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.util.undoredo.AddEdit;

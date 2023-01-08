@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.graphical.SDModel;
