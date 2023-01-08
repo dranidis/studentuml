@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//Author: Ervin Ramollari
-
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
@@ -9,10 +7,12 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * Represents the model of a UML sequence diagram. It has to override
- * many of the methods in its superclass DiagramModel, because of many
- * consistency rules that have to apply in sequence diagrams. Many validations
- * have to be conducted when elements are added, moved, or deleted.
+ * Represents the model of a UML sequence diagram. It has to override many of
+ * the methods in its superclass DiagramModel, because of many consistency rules
+ * that have to apply in sequence diagrams. Many validations have to be
+ * conducted when elements are added, moved, or deleted.
+ * 
+ * @author Ervin Ramollari
  */
 public class SDModel extends AbstractSDModel {
 
@@ -36,7 +36,6 @@ public class SDModel extends AbstractSDModel {
             if (!umlProject.isClassReferenced(rc, ((SDObject) rc.getRoleClassifier()).getDesignClass())) {
                 ((SDObject) rc.getRoleClassifier()).getDesignClass().clear();
                 repository.removeClass(((SDObject) rc.getRoleClassifier()).getDesignClass());
-
             }
             repository.removeObject(((SDObject) rc.getRoleClassifier()));
         }
@@ -45,7 +44,6 @@ public class SDModel extends AbstractSDModel {
             if (!umlProject.isClassReferenced(rc, ((MultiObject) rc.getRoleClassifier()).getDesignClass())) {
                 ((MultiObject) rc.getRoleClassifier()).getDesignClass().clear();
                 repository.removeClass(((MultiObject) rc.getRoleClassifier()).getDesignClass());
-
             }
             repository.removeMultiObject((MultiObject) rc.getRoleClassifier());
         }
@@ -72,43 +70,30 @@ public class SDModel extends AbstractSDModel {
         messages.remove(destroyMessage);
     }
 
-/**
- * <p>
- * Validates and rearranges the positions of CreateMessageGR and
- * DestroyMessageGR messages in the messages list:
- * </p>
- * <ul>
- * <li>
- * For each CreateMessageGR message, the validateCreateMessagePosition
- * method is called to check if there are any other CreateMessageGR messages
- * with the same target and remove them if necessary.
- * It also checks for other messages with the same target or source as the
- * CreateMessageGR message and moves them down
- * if their y position is lower. This may result in the CreateMessageGR message
- * being moved down in the list
- * as well.
- * </li>
- * <li>
- * For each DestroyMessageGR message, the validateDestroyMessagePosition
- * method is called to check if there are any other
- * DestroyMessageGR messages with the same target and remove them if necessary.
- * It also checks for other messages with
- * the same target or source as the DestroyMessageGR message and moves them up
- * if their y position is higher.
- * This may result in the DestroyMessageGR message being moved up in the list as
- * well.
- * </li>
- * </ul>
- * <p>
- * 
- * @throws IllegalArgumentException if the position of a CreateMessageGR or
- *                                  DestroyMessageGR message is invalid
- *                                  </p>
- * 
- */
-
+    /**
+     * Validates and rearranges the positions of CreateMessageGR and
+     * DestroyMessageGR messages in the messages list:
+     * <ul>
+     * <li>For each CreateMessageGR message, the validateCreateMessagePosition
+     * method is called to check if there are any other CreateMessageGR messages
+     * with the same target and remove them if necessary. It also checks for other
+     * messages with the same target or source as the CreateMessageGR message and
+     * moves them down if their y position is lower. This may result in the
+     * CreateMessageGR message being moved down in the list as well.
+     * <li>For each DestroyMessageGR message, the validateDestroyMessagePosition
+     * method is called to check if there are any other DestroyMessageGR messages
+     * with the same target and remove them if necessary. It also checks for other
+     * messages with the same target or source as the DestroyMessageGR message and
+     * moves them up if their y position is higher. This may result in the
+     * DestroyMessageGR message being moved up in the list as well.
+     * </ul>
+     * <p>
+     *
+     * @throws IllegalArgumentException if the position of a CreateMessageGR or
+     *                                  DestroyMessageGR message is invalid
+     */
     @Override
-    public void validateMessages() { 
+    public void validateMessages() {
         // keeps track of messages that have been checked already
         Vector<SDMessageGR> checked = new Vector<>();
         Iterator<SDMessageGR> iterator = messages.iterator();
@@ -146,7 +131,7 @@ public class SDModel extends AbstractSDModel {
                     && (message != createMessage)) {
 
                 // delete the existing create message
-                
+
                 messages.remove(message);
                 super.removeGraphicalElement(message);
                 createMessage.refreshTargetPosition();
@@ -157,7 +142,6 @@ public class SDModel extends AbstractSDModel {
                 // move the message down
                 message.move(0, (createMessage.getY() + i + 1));
             }
-
         }
     }
 
@@ -184,7 +168,6 @@ public class SDModel extends AbstractSDModel {
                 // move the message up
                 message.move(0, (destroyMessage.getY() - (messages.size() - i)));
             }
-
         }
     }
 }

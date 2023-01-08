@@ -1,7 +1,5 @@
 package edu.city.studentuml.applet;
 
-// Author: Ervin Ramollari
-// LoginPanel.java
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -18,7 +16,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-// JPanel with components for inputting drawing view size
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class LoginPanel extends JPanel implements ActionListener {
 
     private JLabel usernameLabel;

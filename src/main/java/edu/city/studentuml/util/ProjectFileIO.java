@@ -1,7 +1,5 @@
 package edu.city.studentuml.util;
 
-// Author: Ervin Ramolari
-// ProjectFileIO.java
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -14,6 +12,9 @@ import java.io.ObjectOutputStream;
 import java.util.Iterator;
 import java.util.Vector;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class ProjectFileIO {
 
     public static void writeProjectSerialized(CentralRepository cr, Vector diagramModels, String fileName) {

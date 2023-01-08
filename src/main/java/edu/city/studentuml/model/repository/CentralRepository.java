@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.repository;
 
-//Author: Ervin Ramollari
-
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
@@ -64,6 +62,8 @@ import java.util.logging.Logger;
  * as is the case with GraphicalElements in UML diagrams. Whatever UML element
  * is added in a diagram, its corresponding domain concept is added to this
  * repository. There exists only one Central Repository for each project.
+ * 
+ * @author Ervin Ramollari
  */
 public class CentralRepository extends Observable implements Serializable {
     private static final Logger logger = Logger.getLogger(CentralRepository.class.getName());
@@ -251,7 +251,6 @@ public class CentralRepository extends Observable implements Serializable {
         logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
-
     }
 
     private void initialiseDataTypes() {
@@ -435,11 +434,10 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     /**
-     * Retrieves a design class by its name. If no match is found, the
-     * method returns null. This method is useful when adding a graphical class in a
-     * design class diagram in order to determine if there is a class with the same
-     * name.
-     * 
+     * Retrieves a design class by its name. If no match is found, the method
+     * returns null. This method is useful when adding a graphical class in a design
+     * class diagram in order to determine if there is a class with the same name.
+     *
      * @param name
      * @return
      */
@@ -496,7 +494,6 @@ public class CentralRepository extends Observable implements Serializable {
     public Vector<Interface> getInterfaces() {
         return interfaces;
     }
-
 
     /**
      * Retrieves an interface by its name If no match is found, the method returns
@@ -699,7 +696,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     // returns the dependency that exists between two classes, if any
     public Dependency getDependency(DesignClass from, DesignClass to) {
-        
+
         Optional<Dependency> found = dependencies.stream()
                 .filter(dependency -> dependency.getFrom() == from && dependency.getTo() == to).findAny();
         if (found.isPresent()) {
@@ -744,7 +741,7 @@ public class CentralRepository extends Observable implements Serializable {
             return found.get();
         } else {
             return null;
-        }        
+        }
     }
 
     public Vector<SystemInstance> getSystemInstances() {
@@ -788,13 +785,13 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public System getSystem(String name) {
-    
+
         Optional<System> found = systems.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }        
+        }
     }
 
     public Vector<System> getSystems() {
@@ -862,13 +859,13 @@ public class CentralRepository extends Observable implements Serializable {
     // in a sequence diagram in order to determine if there is an
     // object with the same name.
     public SDObject getObject(String name) {
-    
+
         Optional<SDObject> found = sdObjects.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }              
+        }
     }
 
     // methods for manipulating the list of project multi-objects
@@ -919,13 +916,13 @@ public class CentralRepository extends Observable implements Serializable {
     // this method retrieves a multi-object by its name
     // If no match is found, the method returns null
     public MultiObject getMultiObject(String name) {
-    
+
         Optional<MultiObject> found = multiObjects.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }   
+        }
     }
 
     // methods for manipulating the list of project actors
@@ -974,13 +971,13 @@ public class CentralRepository extends Observable implements Serializable {
     // this method retrieves an actor by its name
     // If no match is found, the method returns null
     public Actor getActor(String name) {
-    
+
         Optional<Actor> found = actors.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }   
+        }
     }
 
     // methods for manipulating the list of actor instances
@@ -1031,13 +1028,13 @@ public class CentralRepository extends Observable implements Serializable {
     // this method retrieves an actor instance by its name
     // If no match is found, the method returns null
     public ActorInstance getActorInstance(String name) {
-    
+
         Optional<ActorInstance> found = actorInstances.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }           
+        }
     }
 
     // methods for manipulating the list of project sequence diagram messages
@@ -1096,13 +1093,13 @@ public class CentralRepository extends Observable implements Serializable {
     // in the repository in order to determine if there
     // already exists a generic class with the same name
     public GenericClass getGenericClass(String name) {
-    
+
         Optional<GenericClass> found = genericClasses.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }           
+        }
     }
 
     // methods for manipulating the list of generic operations
@@ -1242,13 +1239,13 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public UseCase getUseCase(String name) {
-    
+
         Optional<UseCase> found = useCases.stream().filter(x -> x.getName().equals(name)).findAny();
         if (found.isPresent()) {
             return found.get();
         } else {
             return null;
-        }         
+        }
     }
 
     public boolean editUseCase(UseCase original, UseCase other) {
@@ -1438,7 +1435,7 @@ public class CentralRepository extends Observable implements Serializable {
             return found.get();
         } else {
             return null;
-        }        
+        }
     }
 
     private boolean addControlNode(ControlNode controlNode) {

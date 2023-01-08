@@ -1,6 +1,5 @@
 package edu.city.studentuml.applet;
 
-// Author: Igor Janevski, Ervin Ramollari;
 import edu.city.studentuml.model.domain.UMLProject;
 import java.io.*;
 import java.util.HashMap;
@@ -14,6 +13,10 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * @author Igor Janevski
+ * @author Ervin Ramollari
+ */
 public class ServerInterface {
 
     private String toolkey = "studentuml-toolkey-t63r5nlh";

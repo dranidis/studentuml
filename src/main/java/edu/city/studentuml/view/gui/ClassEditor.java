@@ -1,16 +1,15 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
 import edu.city.studentuml.view.gui.components.AutocompleteJComboBox;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 import edu.city.studentuml.view.gui.components.StringSearchable;
-import edu.city.studentuml.model.graphical.ClassGR;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -35,6 +33,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private static final Logger logger = Logger.getLogger(ClassEditor.class.getName());
 
@@ -44,13 +45,13 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private JButton cancelButton;
     private JPanel centerPanel;
     private JDialog classDialog;
-    private ClassGR classGR;    // the design class that the dialog edits
+    private ClassGR classGR; // the design class that the dialog edits
     private JPanel fieldsPanel;
     private MethodsPanel methodsPanel;
     private AutocompleteJComboBox nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
-    private boolean ok;         // stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
     private JButton okButton;
     private JTextField stereotypeField;
     private JLabel stereotypeLabel;
@@ -70,9 +71,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         setLayout(new BorderLayout());
         nameLabel = new JLabel("Class Name: ");
 
-        /**
-         * read existing classes to populate the nameField
-         */
+        /* read existing classes to populate the nameField */
         Vector<DesignClass> types = repository.getClasses();
         List<String> existingDesignClasses = new ArrayList<>();
         types.stream().filter(dc -> !dc.getName().equals("")).forEach(dc -> existingDesignClasses.add(dc.getName()));
@@ -102,7 +101,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         addAttributesPanel.add(addAttributesLabel);
         addAttributesPanel.add(addAttributesButton);
         cardPanel.add("empty", emptyPanel);
-        
+
         cardPanel.add("nonempty", addAttributesPanel);
 
         fieldsPanel = new JPanel();
@@ -110,7 +109,6 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         fieldsPanel.add(namePanel);
         fieldsPanel.add(stereotypePanel);
         fieldsPanel.add(cardPanel);
-
 
         okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -206,7 +204,6 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == okButton || event.getSource() == stereotypeField) {
@@ -269,8 +266,7 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         if (tempAttributes.isEmpty()) {
             cl.show(cardPanel, "empty");
         } else {
-            addAttributesLabel.setText("Add attributes from the conceptual class "
-                + getClassName() + " -->");
+            addAttributesLabel.setText("Add attributes from the conceptual class " + getClassName() + " -->");
             cl.show(cardPanel, "nonempty");
         }
     }

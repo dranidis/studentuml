@@ -1,11 +1,10 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
-import edu.city.studentuml.model.graphical.InterfaceGR;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -13,7 +12,6 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -23,6 +21,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class InterfaceEditor extends JPanel implements ActionListener {
 
     private JPanel bottomPanel;
@@ -124,6 +125,6 @@ public class InterfaceEditor extends JPanel implements ActionListener {
             ok = true;
         } else if (event.getSource() == cancelButton) {
             interfaceDialog.setVisible(false);
-        } 
+        }
     }
 }

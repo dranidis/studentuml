@@ -1,12 +1,9 @@
 package edu.city.studentuml.applet;
 
-// Author: Ervin Ramollari
-// SolutionInputPanel.java
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Vector;
-
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -15,7 +12,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-// JPanel with components for inputting drawing view size
+/**
+ * JPanel with components for inputting drawing view size
+ * 
+ * @author Ervin Ramollari
+ */
 public class SolutionInputPanel extends JPanel {
 
     private JLabel titleLabel;
@@ -49,8 +50,7 @@ public class SolutionInputPanel extends JPanel {
         commentArea.setEditable(true);
         commentArea.setLineWrap(true);
         commentArea.setWrapStyleWord(true);
-        JScrollPane commentScroll = new JScrollPane(
-                commentArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane commentScroll = new JScrollPane(commentArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         nodeTypeLabel = new JLabel("Node type: ");
@@ -130,9 +130,9 @@ public class SolutionInputPanel extends JPanel {
         /* StringTokenizer tokenizer =
         new StringTokenizer(statusBox.getSelectedItem().toString(),
         statusDelimiter);
-
+        
         String idString = tokenizer.nextToken().trim();
-
+        
         return Integer.valueOf(idString); */
 
         return nodeTypeBox.getSelectedItem().toString();

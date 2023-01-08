@@ -1,26 +1,28 @@
 package edu.city.studentuml.controller;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.ConstantsGR;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
-import edu.city.studentuml.view.gui.SDInternalFrame;
+import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.util.undoredo.AddEdit;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.SDInternalFrame;
 import java.awt.geom.Point2D;
 import java.util.ListIterator;
 import java.util.Vector;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class AddCreateMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;
@@ -85,9 +87,10 @@ public class AddCreateMessageController extends AddElementController {
         CreateMessageGR messageGR = new CreateMessageGR(source, target, message, y);
 
         ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
-               
+
         int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
-        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + barHeight + target.getHeight());
+        ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage,
+                y + barHeight + target.getHeight());
 
         CompoundEdit compoundEdit = new CompoundEdit();
         UndoableEdit edit = new AddEdit(messageGR, returnMessageGR, diagramModel);

@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-//TK draw line
-//Author: Takasmanov
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.AbstractClassGR;
 import edu.city.studentuml.view.DiagramView;
@@ -21,6 +19,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
+/**
+ * @author Takasmanov
+ */
 public class DrawLineController { 
 
     private static final Logger logger = Logger.getLogger(DrawLineController.class.getName());
