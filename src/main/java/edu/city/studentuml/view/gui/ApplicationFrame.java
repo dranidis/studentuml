@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
@@ -31,6 +33,8 @@ public class ApplicationFrame extends ApplicationGUI {
 
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
+
+        logger.fine(() -> "Path: " + path);
 
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
@@ -114,11 +118,13 @@ public class ApplicationFrame extends ApplicationGUI {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
 
-
         umlProject.setSaved(true);
         closingOrLoading = false;
         updateFrameTitle();
         logger.fine("Opened project");
+
+        Settings.setDefaultPath(fileName);
+
     }
 
     private void addToRecentFiles(String fileName) {

@@ -1,11 +1,14 @@
 package edu.city.studentuml.util;
 
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
  * @author Dimitris Dranidis
  */
 public class Settings {
+
+    private static final Logger logger = Logger.getLogger(Settings.class.getName());
 
     private static final String DEFAULT_PATH = "DEFAULT_PATH";
     private static final String SELECT_LAST = "SELECT_LAST";
@@ -41,6 +44,7 @@ public class Settings {
     }
 
     public static void setDefaultPath(String path) {
+        logger.fine(() -> "Set path to: " + path);
         Preferences.userRoot().put(DEFAULT_PATH, path);
     }
 

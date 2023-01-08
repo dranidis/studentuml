@@ -1,20 +1,20 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.util.undoredo.AddEdit;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.ReturnMessageGR;
-import edu.city.studentuml.model.graphical.RoleClassifierGR;
-import edu.city.studentuml.model.graphical.SSDModel;
 import java.awt.geom.Point2D;
 import java.util.ListIterator;
 import java.util.Vector;
+
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.util.undoredo.AddEdit;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+
 /**
- * 
  * @author Ervin Ramollari
  */
 public class AddReturnMessageController extends AddElementController {
@@ -22,11 +22,7 @@ public class AddReturnMessageController extends AddElementController {
     private RoleClassifierGR source = null;
     private Vector<GraphicalElement> elements;
 
-    public AddReturnMessageController(SDModel model, DiagramInternalFrame frame) {
-        super(model, frame);
-    }
-
-    public AddReturnMessageController(SSDModel model, DiagramInternalFrame frame) {
+    public AddReturnMessageController(DiagramModel model, DiagramInternalFrame frame) {
         super(model, frame);
     }
 
