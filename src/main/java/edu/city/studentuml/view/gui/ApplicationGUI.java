@@ -2,8 +2,10 @@ package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -45,6 +47,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.codegeneration.CodePreparation;
@@ -113,7 +118,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected MenuBar menuBar;
 
     protected ApplicationGUI(StudentUMLFrame frame) {
-        
+
         loadLookAndFeel();
 
         isApplet = false;
@@ -148,7 +153,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             UIManager.setLookAndFeel(preferredLF);
         } catch (Exception e) {
             logger.severe("Look and feel:  " + preferredLF + " not available. Using default.");
-        }   
+        }
 
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
@@ -328,7 +333,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
                         JOptionPane.ERROR_MESSAGE);
             }
-            
+
         });
 
         addPopup(messageTree, popupMenu);
@@ -440,7 +445,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         char c = e.getKeyChar();
         logger.finest(() -> "" + e);
         if (c != KeyEvent.CHAR_UNDEFINED) {
-            logger.finest(() ->"" + c);
+            logger.finest(() -> "" + c);
             repaint();
             e.consume();
         }
@@ -502,7 +507,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public abstract void openProject();
 
     public abstract void openProjectFile(String fileName);
-
 
     public abstract void saveProject();
 
@@ -643,7 +647,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else if (model instanceof SDModel) {
             diagramInternalFrame = new SDInternalFrame((SDModel) model);
         } else if (model instanceof DCDModel) {
-            diagramInternalFrame = new DCDInternalFrame((DCDModel) model, /* advancedModeRadioButtonMenuItem.isSelected() */ true);
+            diagramInternalFrame = new DCDInternalFrame((DCDModel) model,
+                    /* advancedModeRadioButtonMenuItem.isSelected() */ true);
         } else if (model instanceof ADModel) {
             diagramInternalFrame = new ADInternalFrame(model);
         } else {
@@ -652,11 +657,47 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         diagramInternalFrame.addInternalFrameListener(new DiagramInternalFrameListener());
+
+        final DiagramInternalFrame internal = diagramInternalFrame;
+
+        diagramInternalFrame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                Dimension desktopSize = desktopPane.getSize();
+                int minX = (int) (0 - internal.getSize().getWidth() + 30);
+                int minY = 0 ;
+                int maxX = desktopSize.width - 30;
+                int maxY = desktopSize.height - 30;
+                Rectangle bounds = internal.getBounds();
+                if (bounds.x < minX) {
+                    bounds.x = minX;
+                    internal.setBounds(bounds);
+                    desktopPane.repaint();
+                }
+                if (bounds.y < minY) {
+                    bounds.y = minY;
+                    internal.setBounds(bounds);
+                    desktopPane.repaint();
+                }
+                if (bounds.x > maxX) {
+                    bounds.x = maxX;
+                    internal.setBounds(bounds);
+                    desktopPane.repaint();
+                }
+                if (bounds.y > maxY) {
+                    bounds.y = maxY;
+                    internal.setBounds(bounds);
+                    desktopPane.repaint();
+                }
+
+            }
+        });
+
         desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
 
         diagramInternalFrame.initialize(frameProperties);
-        
+
         repositoryTreeView.expandDiagrams();
     }
 
@@ -700,7 +741,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 dcdFrames.add(f);
             } else if (f instanceof ADInternalFrame) {
                 adFrames.add(f);
-            } 
+            }
         }
 
         if (type == DiagramType.UCD) {
@@ -715,7 +756,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             return dcdFrames;
         } else if (type == DiagramType.AD) {
             return adFrames;
-        } 
+        }
 
         return new Vector<>();
     }
@@ -1016,12 +1057,18 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 addSeparator();
             }
 
-            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram", e -> createNewInternalFrame(DiagramType.UCD));
-            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram", e -> createNewInternalFrame(DiagramType.SSD));
-            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram", e -> createNewInternalFrame(DiagramType.CCD));
-            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram", e -> createNewInternalFrame(DiagramType.SD));
-            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram", e -> createNewInternalFrame(DiagramType.DCD));
-            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram", e -> createNewInternalFrame(DiagramType.AD));
+            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram",
+                    e -> createNewInternalFrame(DiagramType.UCD));
+            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram",
+                    e -> createNewInternalFrame(DiagramType.SSD));
+            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram",
+                    e -> createNewInternalFrame(DiagramType.CCD));
+            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram",
+                    e -> createNewInternalFrame(DiagramType.SD));
+            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram",
+                    e -> createNewInternalFrame(DiagramType.DCD));
+            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram",
+                    e -> createNewInternalFrame(DiagramType.AD));
 
             add(adButton);
             add(useCaseButton);
@@ -1029,7 +1076,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             add(ssdButton);
             add(sdButton);
             add(dcdButton);
-
 
             // Icon validateSD_DCDIcon = new
             // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
@@ -1041,8 +1087,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
 
             /**
-             * TODO: REMOVE TILL it is clear what it does!
-            // add(reloadRulesButton);
+             * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
              */
 
             addSeparator();
@@ -1058,33 +1103,32 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             addBorderListener(forwardEngineerButton);
 
             forwardEngineerButton.addActionListener(e -> {
-                    JCheckBox checkBox = new JCheckBox("Update Current Files", false);
-                    String message = "Do you Want to Generate Code? \n"
-                            + "Make Sure You Have Created and Saved the Approrpiate\n"
-                            + "Design (first) and Sequence Diagrams!";
-                    Object[] params = { message, checkBox };
-                    // 0 for yes and 1 for no
-                    int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
-                            JOptionPane.YES_NO_OPTION);
-                    if (codeGenerationConfirm == 0) {
-                        CodePreparation codePreparation = new CodePreparation();
-                        int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
-                        if (genFilesCount > 0) {
-                            JOptionPane.showMessageDialog(frame,
-                                    "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
-                                            + umlProject.getFilepath().replace(".xml", File.separator),
-                                    "Code Generator", JOptionPane.INFORMATION_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                        }
+                JCheckBox checkBox = new JCheckBox("Update Current Files", false);
+                String message = "Do you Want to Generate Code? \n"
+                        + "Make Sure You Have Created and Saved the Approrpiate\n"
+                        + "Design (first) and Sequence Diagrams!";
+                Object[] params = { message, checkBox };
+                // 0 for yes and 1 for no
+                int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
+                        JOptionPane.YES_NO_OPTION);
+                if (codeGenerationConfirm == 0) {
+                    CodePreparation codePreparation = new CodePreparation();
+                    int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
+                    if (genFilesCount > 0) {
+                        JOptionPane.showMessageDialog(frame,
+                                "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
+                                        + umlProject.getFilepath().replace(".xml", File.separator),
+                                "Code Generator", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
+                                JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
-            );
+            });
 
             /**
-             * TODO: REMOVE THE BUTTON TILL code generation is completed!
-            // add(forwardEngineerButton);
+             * TODO: REMOVE THE BUTTON TILL code generation is completed! //
+             * add(forwardEngineerButton);
              */
 
             addSeparator();
@@ -1101,8 +1145,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             helpButton.addActionListener(e -> help());
 
             /**
-             * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED
-            // add(helpButton);
+             * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED // add(helpButton);
              */
 
             setBorder(new EtchedBorder(EtchedBorder.LOWERED));
