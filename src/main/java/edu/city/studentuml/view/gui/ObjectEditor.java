@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.Type;
@@ -30,6 +29,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class ObjectEditor extends JPanel implements ActionListener, ItemListener {
 
     private static final String UNNAMED = "(unnamed)";

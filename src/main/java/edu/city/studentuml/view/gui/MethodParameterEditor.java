@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
@@ -26,6 +25,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class MethodParameterEditor extends JPanel implements ActionListener, ElementEditor<MethodParameter> {
 
     private static final String TITLE = "Parameter Editor";

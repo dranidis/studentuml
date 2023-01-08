@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Ervin Ramollari
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -19,6 +18,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class UMLNoteEditor extends JPanel implements ActionListener {
 
     private UMLNoteGR note;
