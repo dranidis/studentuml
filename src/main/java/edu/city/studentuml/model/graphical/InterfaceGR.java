@@ -18,14 +18,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//InterfaceGR.java
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.XMLStreamer;
 
+/**
+ * @author Ervin Ramollari
+ */
 @JsonIncludeProperties({ "interface", "internalid", "startingPoint" })
 public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
@@ -45,7 +45,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         coreInterface = i;
         startingPoint = start;
 
-        // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumNameFieldHeight + minimumMethodFieldHeight;
 
@@ -56,6 +55,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
+    @Override
     public void draw(Graphics2D g) {
         if (fillColor == null) {
             fillColor = GraphicalElement.lighter(this.myColor());

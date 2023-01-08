@@ -177,20 +177,4 @@ public abstract class RoleClassifierGR extends GraphicalElement {
         return 0;
     }
 
-    /**
-     * Used in Comparator for sorting by their X coord
-     * 
-     * @param roleClassifierGR
-     * @return
-     */
-    public int compareX(RoleClassifierGR roleClassifierGR) {
-        if (this.getX() > roleClassifierGR.getX()) {
-            return 1;
-        } else if (this.getX() < roleClassifierGR.getX()) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
-
 }

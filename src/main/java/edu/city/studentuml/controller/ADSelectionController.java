@@ -245,9 +245,9 @@ public class ADSelectionController extends SelectionController {
             newObjectNode.setType(objectNodeEditor.getType());
 
             // add the states to the new object node
-            Iterator stateIterator = objectNodeEditor.getStates().iterator();
+            Iterator<State> stateIterator = objectNodeEditor.getStates().iterator();
             while (stateIterator.hasNext()) {
-                newObjectNode.addState((State) stateIterator.next());
+                newObjectNode.addState(stateIterator.next());
             }
 
             // Undo/Redo [edit]

@@ -22,6 +22,8 @@ import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -42,6 +44,10 @@ import javax.swing.border.TitledBorder;
  */
 public class ObjectNodeEditor extends JPanel implements ActionListener, ItemListener {
 
+    private static final Logger logger = Logger.getLogger(ObjectNodeEditor.class.getName());
+
+    private static final String UNNAMED = "(unnamed)";
+
     private ObjectNodeGR objectNodeGR;
     private JDialog objectNodeDialog;
     private JPanel centerPanel;
@@ -56,20 +62,20 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     private JButton editObjectTypeButton;
     private JButton deleteObjectTypeButton;
     private JLabel objectTypeLabel;
-    private JComboBox objectTypeComboBox;
+    private JComboBox<String> objectTypeComboBox;
     private JPanel statesPanel;
-    private JList statesList;
+    private JList<State> statesList;
     private JPanel statesButtonsPanel;
     private JButton addStateButton;
     private JButton editStateButton;
     private JButton deleteStateButton;
-    private Vector states;
+    private Vector<State> states;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JButton okButton;
     private boolean ok;         // stores whether the user has pressed ok
     private CentralRepository repository;
-    private Vector types;
+    private Vector<Type> types;
     private Type type;
 
     public ObjectNodeEditor(ObjectNodeGR objectNodeGR, CentralRepository cr) {
@@ -88,7 +94,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         objectTypePanel = new JPanel(new FlowLayout());
         objectTypeLabel = new JLabel("Type: ");
-        objectTypeComboBox = new JComboBox();
+        objectTypeComboBox = new JComboBox<>();
         objectTypeComboBox.setMaximumRowCount(5);
         objectTypeComboBox.addItemListener(this);
         objectTypePanel.add(objectTypeLabel);
@@ -116,7 +122,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         TitledBorder title = BorderFactory.createTitledBorder("Object States");
         statesPanel = new JPanel(new BorderLayout());
         statesPanel.setBorder(title);
-        statesList = new JList();
+        statesList = new JList<>();
         statesList.setFixedCellWidth(400);
         statesList.setVisibleRowCount(5);
         addStateButton = new JButton("Add...");
@@ -179,12 +185,12 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         return objectNameField.getText();
     }
 
-    public Vector getStates() {
+    public Vector<State> getStates() {
         return states;
     }
 
     public Type getType() {
-        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (objectTypeComboBox.getSelectedItem().equals(UNNAMED)) {
             return null;
         } else {
             return type;
@@ -198,29 +204,27 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         // initialize the states to an empty list
         // in order to populate them with COPIES of the object states
-        states = new Vector();
+        states = new Vector<>();
 
         if (objectNode != null) {
             objectNameField.setText(objectNode.getName());
 
             type = objectNode.getType();
             // initialize the types combo box
-            if (!isInList(type, types)) {
+            if (!types.contains(type)) {
                 types.add(type);
             }
-            Type t;
-            Iterator iterator = types.iterator();
-            while (iterator.hasNext()) {
-                t = (Type) iterator.next();
+
+            for (Type t : types) {
                 if ((t != null) && !t.getName().equals("")) {
                     objectTypeComboBox.addItem(t.getName());
                 }
             }
-            objectTypeComboBox.addItem("(unnamed)");
+            objectTypeComboBox.addItem(UNNAMED);
             if (type != null) {
                 objectTypeComboBox.setSelectedItem(type.getName());
             } else {
-                objectTypeComboBox.setSelectedItem("(unnamed)");
+                objectTypeComboBox.setSelectedItem(UNNAMED);
             }
             updateAddTypePanel();
 
@@ -231,21 +235,6 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             // show the states in the list
             updateStatesList();
         }
-    }
-
-    private boolean isInList(Type type, Vector list) {
-        Iterator iterator = list.iterator();
-        Type t;
-
-        while (iterator.hasNext()) {
-            t = (Type) iterator.next();
-
-            if (t == type) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public String addNewType() {
@@ -273,14 +262,14 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     // make an exact copy of the states
-    public Vector cloneStates(Iterator iterator) {
-        Vector copyOfStates = new Vector();
+    public Vector<State> cloneStates(Iterator<State> iterator) {
+        Vector<State> copyOfStates = new Vector<>();
         State originalState;
         State copyOfState;
 
         while (iterator.hasNext()) {
-            originalState = (State) iterator.next();
-            copyOfState = new State(new String(originalState.getName()));
+            originalState = iterator.next();
+            copyOfState = new State(originalState.getName());
             copyOfStates.add(copyOfState);
         }
 
@@ -304,12 +293,12 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public void editState() {
-        if ((states == null) || (states.size() == 0)
-                || (statesList.getSelectedIndex() < 0)) {
+        if (states == null || states.isEmpty()
+                || statesList.getSelectedIndex() < 0) {
             return;
         }
 
-        State state = (State) states.elementAt(statesList.getSelectedIndex());
+        State state = states.elementAt(statesList.getSelectedIndex());
         StateEditor stateEditor = new StateEditor(state);
 
         if (!stateEditor.showDialog(this, "State Editor")) {
@@ -321,8 +310,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public void deleteState() {
-        if ((states == null) || (states.size() == 0)
-                || (statesList.getSelectedIndex() < 0)) {
+        if (states == null || states.isEmpty()
+                || statesList.getSelectedIndex() < 0) {
             return;
         }
 
@@ -331,11 +320,11 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     private void setSelectedType() {
-        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (objectTypeComboBox.getSelectedItem().equals(UNNAMED)) {
             type = null;
         } else {
-            System.out.println("size: " + types.size() + " index:" + objectTypeComboBox.getSelectedIndex());
-            type = (Type) types.get(objectTypeComboBox.getSelectedIndex());
+            logger.fine(() -> "size: " + types.size() + " index:" + objectTypeComboBox.getSelectedIndex());
+            type = types.get(objectTypeComboBox.getSelectedIndex());
         }
     }
 
@@ -367,13 +356,13 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             }
         } else if (event.getSource() == deleteObjectTypeButton) {
             deleteType();
-            updateComboBox("(unnamed)");
+            updateComboBox(UNNAMED);
             updateAddTypePanel();
         }
     }
 
     private String editType() {
-        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (objectTypeComboBox.getSelectedItem().equals(UNNAMED)) {
             return "fail";
         }
 
@@ -407,7 +396,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     private void deleteType() {
-        if (objectTypeComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (objectTypeComboBox.getSelectedItem().equals(UNNAMED)) {
             return;
         }
         int n = JOptionPane.showConfirmDialog(
@@ -431,21 +420,18 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     // updates the combo box according to the list of classes
     private void updateComboBox(String index) {
         objectTypeComboBox.removeAllItems();
-        Type t;
-        Iterator iterator = types.iterator();
-        while (iterator.hasNext()) {
-            t = (Type) iterator.next();
-            if ((t != null) && !t.getName().equals("")) {
+        for(Type t :  types) {
+            if (t != null && !t.getName().equals("")) {
                 objectTypeComboBox.addItem(t.getName());
             }
         }
-        objectTypeComboBox.addItem("(unnamed)");
+        objectTypeComboBox.addItem(UNNAMED);
         objectTypeComboBox.setSelectedItem(index);
     }
 
     private void updateAddTypePanel() {
         String s = getSelectedItem();
-        if (s.equals("(unnamed)") || Arrays.asList(DataType.getDataTypeNames()).contains(s)) {
+        if (s.equals(UNNAMED) || Arrays.asList(DataType.getDataTypeNames()).contains(s)) {
             editObjectTypeButton.setEnabled(false);
             deleteObjectTypeButton.setEnabled(false);
         } else {

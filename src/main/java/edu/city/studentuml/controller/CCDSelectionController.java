@@ -6,7 +6,6 @@ package edu.city.studentuml.controller;
 
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
-import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.repository.CentralRepository;

@@ -15,7 +15,6 @@ import edu.city.studentuml.util.Vector2D;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -59,7 +58,7 @@ public class AssociationClassGR extends LinkGR {
         highlightColor = Color.blue;
     }
 
-    // redifine object added
+    @Override
     public void objectAdded(GraphicalElement obj) {
         if ((!this.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
             this.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());

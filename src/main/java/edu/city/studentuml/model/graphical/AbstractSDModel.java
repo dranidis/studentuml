@@ -165,7 +165,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     // called whenever role classifeirs change, by resorting the list
     // and updating the lifeline lengths
     private final void roleClassifiersChanged() {
-        Collections.sort(roleClassifiers, (c1, c2) -> c1.compareX(c2));
+        Collections.sort(roleClassifiers, (c1, c2) -> c1.getX() - c2.getX());
         updateLifelineLengths();
     }
 
@@ -180,7 +180,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // sort the messages list according to their y position
     private void sortMessagesAndUpdateRanks() {
-        Collections.sort(messages, (m1, m2) -> m1.compareY(m2));
+        Collections.sort(messages, (m1, m2) -> m1.getY() - m2.getY());
 
         // reset the messages numbering according to their rank
         for (int i = 0; i < messages.size(); i++) {
