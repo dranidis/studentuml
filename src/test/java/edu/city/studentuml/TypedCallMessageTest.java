@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Before;
@@ -93,7 +94,11 @@ public class TypedCallMessageTest {
         umlProject.clear();
         umlProject.getCentralRepository().clear();
 
-        umlProject.loadFromXML(fullpath);
+        try {
+            umlProject.loadFromXML(fullpath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         boolean found = false;
         Vector<SDMessage> sds = umlProject.getCentralRepository().getSDMessages();

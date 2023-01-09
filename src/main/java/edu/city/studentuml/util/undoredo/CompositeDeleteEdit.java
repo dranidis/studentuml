@@ -1,24 +1,5 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.ClassGR;
-import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.InterfaceGR;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
-import edu.city.studentuml.model.graphical.RoleClassifierGR;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.SystemGR;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +7,25 @@ import java.util.logging.Logger;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+import edu.city.studentuml.model.domain.ActorInstance;
+import edu.city.studentuml.model.domain.ConceptualClass;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Interface;
+import edu.city.studentuml.model.domain.MultiObject;
+import edu.city.studentuml.model.domain.SDObject;
+import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.model.graphical.SystemInstanceGR;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
  *

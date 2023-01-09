@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,7 +107,16 @@ public class ApplicationFrame extends ApplicationGUI {
 
         closingOrLoading = true;
 
-        umlProject.loadFromXML(fileName);
+        try {
+            umlProject.loadFromXML(fileName);
+        } catch (IOException e) {
+            logger.finer(e::getMessage);
+            JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be found.", "IO Error",
+                    JOptionPane.ERROR_MESSAGE);
+            RecentFiles.getInstance().removeRecentFile(fileName);
+            menuBar.loadRecentFilesInMenu();
+            return;
+        }
 
         repositoryTreeView.expandDiagrams();
         repositoryTreeView.update(null, null);

@@ -7,14 +7,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -22,18 +27,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.logging.Logger;
-import javax.xml.transform.OutputKeys;
 
 public class XMLStreamer {
 
@@ -102,11 +102,10 @@ public class XMLStreamer {
             xmlString = writer.toString();
         } catch (TransformerException | IOException e) {
             JOptionPane.showMessageDialog(null, e.toString());
-        } 
+        }
 
         return xmlString;
     }
-
 
     // TO DO: possibly remove
     public void saveToURL(String urlString) {
@@ -201,8 +200,8 @@ public class XMLStreamer {
     public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) {
         Element child = getNodeById(node, id);
         if (child != null) {
-            IXMLCustomStreamable object = ObjectFactory.getInstance()
-                    .newInstance((child).getAttribute(CLASS), parent, child, this);
+            IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance((child).getAttribute(CLASS), parent,
+                    child, this);
             if (object != null) {
                 object.streamFromXML(child, this, object);
                 return object;
@@ -249,19 +248,21 @@ public class XMLStreamer {
 
         } catch (TransformerException e) {
             e.printStackTrace();
-        } 
+        }
         return "";
     }
 
     // for application
-    public void loadFile(String filename) {
+    public void loadFile(String filename) throws IOException {
         try {
-            DocumentBuilder builder = getDocumentBuilder();
-            doc = builder.parse(new File(filename));
+            DocumentBuilder builder;
+            builder = getDocumentBuilder();
+            File file = new File(filename);
 
-        } catch (SAXException | IOException | ParserConfigurationException e) {
+            doc = builder.parse(file);
+        } catch (SAXException | ParserConfigurationException e) {
             e.printStackTrace();
-        }
+        } 
     }
 
     public void saveToFile(String xml) {
@@ -276,10 +277,9 @@ public class XMLStreamer {
 
         } catch (TransformerException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
-    
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -287,7 +287,8 @@ public class XMLStreamer {
         return factory.newDocumentBuilder();
     }
 
-    private Transformer getTransformer() throws TransformerFactoryConfigurationError, TransformerConfigurationException {
+    private Transformer getTransformer()
+            throws TransformerFactoryConfigurationError, TransformerConfigurationException {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         tFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         tFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");

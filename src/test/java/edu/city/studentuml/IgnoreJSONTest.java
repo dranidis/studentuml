@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -373,7 +374,11 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
-        umlProject.loadFromXML(filename);
+        try {
+            umlProject.loadFromXML(filename);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
         String jsonString = "";
         try {
