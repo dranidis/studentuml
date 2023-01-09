@@ -663,11 +663,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         diagramInternalFrame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentMoved(ComponentEvent e) {
+                final int SLACK = 100;
                 Dimension desktopSize = desktopPane.getSize();
-                int minX = (int) (0 - internal.getSize().getWidth() + 30);
+                int minX = (int) (0 - internal.getSize().getWidth() + SLACK);
                 int minY = 0 ;
-                int maxX = desktopSize.width - 30;
-                int maxY = desktopSize.height - 30;
+                int maxX = desktopSize.width - SLACK;
+                int maxY = desktopSize.height - SLACK;
                 Rectangle bounds = internal.getBounds();
                 if (bounds.x < minX) {
                     bounds.x = minX;
