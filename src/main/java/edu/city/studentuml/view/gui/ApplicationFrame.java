@@ -29,7 +29,6 @@ public class ApplicationFrame extends ApplicationGUI {
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static final String APPLICATION_NAME = "StudentUML";
-    private JFileChooser xmlFileChooser;
     String path = Settings.getDefaultPath();
 
     public ApplicationFrame(StudentUMLFrame frame) {
@@ -39,11 +38,16 @@ public class ApplicationFrame extends ApplicationGUI {
 
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
-        xmlFileChooser = new JFileChooser();
-        xmlFileChooser.setFileFilter(new XMLFileFilter());
-        xmlFileChooser.setCurrentDirectory(new File(path));
+        createXMLFileChooser();
 
         umlProject.setUser(Constants.DESKTOP_USER);
+    }
+
+    private JFileChooser createXMLFileChooser() {
+        JFileChooser xmlFileChooser = new JFileChooser();
+        xmlFileChooser.setFileFilter(new XMLFileFilter());
+        xmlFileChooser.setCurrentDirectory(new File(path));
+        return xmlFileChooser;
     }
 
     @Override
@@ -78,6 +82,7 @@ public class ApplicationFrame extends ApplicationGUI {
     @Override
     public void openProject() {
 
+        JFileChooser xmlFileChooser = createXMLFileChooser();
         int response = xmlFileChooser.showOpenDialog(this);
         if (response != JFileChooser.APPROVE_OPTION) {
             return;
@@ -160,6 +165,8 @@ public class ApplicationFrame extends ApplicationGUI {
     @Override
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
+        JFileChooser xmlFileChooser = createXMLFileChooser();
+
         xmlFileChooser.setSelectedFile(new File(umlProject.getFilename()));
         xmlFileChooser.setDialogTitle("Save as");
         int response = xmlFileChooser.showSaveDialog(this);
@@ -181,7 +188,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
         umlProject.setFilepath(filePath);
 
-        logger.log(Level.INFO, "Saving file as: {0}", filePath);
+        logger.log(Level.FINE, "Saving file as: {0}", filePath);
 
         umlProject.streamToXML();
         updateFrameTitle();
