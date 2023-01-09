@@ -1,46 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.model.domain.ActionNode;
-import edu.city.studentuml.model.domain.ActivityFinalNode;
-import edu.city.studentuml.model.domain.ActivityNode;
-import edu.city.studentuml.model.domain.Actor;
-import edu.city.studentuml.model.graphical.CCDModel;
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.model.domain.ControlNode;
-import edu.city.studentuml.model.domain.DecisionNode;
-import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.FlowFinalNode;
-import edu.city.studentuml.model.domain.ForkNode;
-import edu.city.studentuml.model.domain.InitialNode;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.JoinNode;
-import edu.city.studentuml.model.domain.LeafNode;
-import edu.city.studentuml.model.domain.LeafUCDElement;
-import edu.city.studentuml.model.domain.MergeNode;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.domain.NodeComponent;
-import edu.city.studentuml.model.domain.ObjectNode;
-import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.model.domain.System;
-import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.model.domain.UCDComponent;
-import edu.city.studentuml.model.graphical.UCDModel;
-import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.domain.UseCase;
-import edu.city.studentuml.model.graphical.ADModel;
-import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.NodeComponentGR;
-import edu.city.studentuml.model.graphical.RoleClassifierGR;
-import edu.city.studentuml.model.graphical.UCDComponentGR;
-
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.beans.PropertyVetoException;
@@ -57,6 +16,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -65,6 +25,46 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import edu.city.studentuml.model.domain.ActionNode;
+import edu.city.studentuml.model.domain.ActivityFinalNode;
+import edu.city.studentuml.model.domain.ActivityNode;
+import edu.city.studentuml.model.domain.Actor;
+import edu.city.studentuml.model.domain.ConceptualClass;
+import edu.city.studentuml.model.domain.ControlNode;
+import edu.city.studentuml.model.domain.DecisionNode;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.FlowFinalNode;
+import edu.city.studentuml.model.domain.ForkNode;
+import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.model.domain.Interface;
+import edu.city.studentuml.model.domain.JoinNode;
+import edu.city.studentuml.model.domain.LeafNode;
+import edu.city.studentuml.model.domain.LeafUCDElement;
+import edu.city.studentuml.model.domain.MergeNode;
+import edu.city.studentuml.model.domain.MultiObject;
+import edu.city.studentuml.model.domain.NodeComponent;
+import edu.city.studentuml.model.domain.ObjectNode;
+import edu.city.studentuml.model.domain.RoleClassifier;
+import edu.city.studentuml.model.domain.SDObject;
+import edu.city.studentuml.model.domain.System;
+import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.UCDComponent;
+import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.model.domain.UseCase;
+import edu.city.studentuml.model.graphical.ADModel;
+import edu.city.studentuml.model.graphical.CCDModel;
+import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.NodeComponentGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.UCDComponentGR;
+import edu.city.studentuml.model.graphical.UCDModel;
+import edu.city.studentuml.util.Constants;
 
 public class RepositoryTreeView extends JPanel implements Observer {
 
@@ -89,7 +89,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         treeRenderer = new UMLTreeRenderer(rootIcon);
         tree.setCellRenderer(treeRenderer);
         tree.setRowHeight(20);
-        tree.setBackground(Color.WHITE);
+        tree.setBackground(UIManager.getColor("Panel.background"));
 
         add(tree);
         datamodelnode = addObject("Data Model");
@@ -122,7 +122,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
         classes = umlProject.getCentralRepository().getClasses();
         classes.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
-        
+
         Iterator<DesignClass> designClassIterator = classes.iterator();
         while (designClassIterator.hasNext()) {
             DesignClass dc = designClassIterator.next();
@@ -136,7 +136,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             DefaultMutableTreeNode raelizationsNode = addObject(designClassNode, "realizes");
             umlProject.getCentralRepository().getRealizations().stream()
                     .filter(g -> g.getTheClass().getName().equals(dc.getName()))
-                    .collect(Collectors.toList()).forEach(cg -> addObject(raelizationsNode, cg.getTheInterface()));       
+                    .collect(Collectors.toList()).forEach(cg -> addObject(raelizationsNode, cg.getTheInterface()));
         }
 
         interfaces = umlProject.getCentralRepository().getInterfaces();

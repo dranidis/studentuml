@@ -29,12 +29,11 @@ public class ApplicationFrame extends ApplicationGUI {
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static final String APPLICATION_NAME = "StudentUML";
-    String path = Settings.getDefaultPath();
 
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
 
-        logger.fine(() -> "Path: " + path);
+        logger.fine(() -> "Path: " + Settings.getDefaultPath());
 
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
@@ -44,9 +43,11 @@ public class ApplicationFrame extends ApplicationGUI {
     }
 
     private JFileChooser createXMLFileChooser() {
+        String pathToOpen = Settings.getDefaultPath();
+
         JFileChooser xmlFileChooser = new JFileChooser();
         xmlFileChooser.setFileFilter(new XMLFileFilter());
-        xmlFileChooser.setCurrentDirectory(new File(path));
+        xmlFileChooser.setCurrentDirectory(new File(pathToOpen));
         return xmlFileChooser;
     }
 

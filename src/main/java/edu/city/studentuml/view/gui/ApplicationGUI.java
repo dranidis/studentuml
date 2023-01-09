@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -21,6 +23,7 @@ import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -37,9 +40,9 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -47,9 +50,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.codegeneration.CodePreparation;
@@ -547,32 +547,32 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String dialogText;
         String initialName;
         switch (type) {
-        case DiagramType.UCD:
-            dialogText = "Use Case Diagram Name: ";
-            initialName = "ucd";
-            break;
-        case DiagramType.SSD:
-            dialogText = "System Sequence Diagram Name:";
-            initialName = "ssd";
-            break;
-        case DiagramType.SD:
-            dialogText = "Sequence Diagram Name: ";
-            initialName = "sd";
-            break;
-        case DiagramType.CCD:
-            dialogText = "Conceptual Class Diagram Name: ";
-            initialName = "ccd";
-            break;
-        case DiagramType.DCD:
-            dialogText = "Design Class Diagram Name: ";
-            initialName = "dcd";
-            break;
-        case DiagramType.AD:
-            dialogText = "Activity Diagram Name: ";
-            initialName = "ad";
-            break;
-        default:
-            throw new RuntimeException("Unknown diagram (int) type: " + type);
+            case DiagramType.UCD:
+                dialogText = "Use Case Diagram Name: ";
+                initialName = "ucd";
+                break;
+            case DiagramType.SSD:
+                dialogText = "System Sequence Diagram Name:";
+                initialName = "ssd";
+                break;
+            case DiagramType.SD:
+                dialogText = "Sequence Diagram Name: ";
+                initialName = "sd";
+                break;
+            case DiagramType.CCD:
+                dialogText = "Conceptual Class Diagram Name: ";
+                initialName = "ccd";
+                break;
+            case DiagramType.DCD:
+                dialogText = "Design Class Diagram Name: ";
+                initialName = "dcd";
+                break;
+            case DiagramType.AD:
+                dialogText = "Activity Diagram Name: ";
+                initialName = "ad";
+                break;
+            default:
+                throw new RuntimeException("Unknown diagram (int) type: " + type);
         }
         // modelName
         return JOptionPane.showInputDialog(dialogText, initialName);
@@ -666,7 +666,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 final int SLACK = 100;
                 Dimension desktopSize = desktopPane.getSize();
                 int minX = (int) (0 - internal.getSize().getWidth() + SLACK);
-                int minY = 0 ;
+                int minY = 0;
                 int maxX = desktopSize.width - SLACK;
                 int maxY = desktopSize.height - SLACK;
                 Rectangle bounds = internal.getBounds();
@@ -1083,7 +1083,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
             // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
             // validateSD_DCDButton.addActionListener(this);
-            addSeparator();
+            // addSeparator();
 
             reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
 
@@ -1091,7 +1091,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
              * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
              */
 
-            addSeparator();
+            // addSeparator();
 
             ImageIcon forwardEngineerIcon = new ImageIcon(
                     this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
@@ -1132,7 +1132,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
              * add(forwardEngineerButton);
              */
 
-            addSeparator();
+            // addSeparator();
 
             ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
@@ -1164,6 +1164,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         SwingUtilities.updateComponentTreeUI(frame);
+
+        toolbar.repaint();
+        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+            frame.repaint();
+        }
+        treePane.repaint();
     }
 
 }
