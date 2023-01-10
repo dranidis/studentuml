@@ -1,8 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AssociationEditor.java
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -27,6 +24,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class AssociationEditor extends JPanel implements ActionListener {
 
     private String[] directions = {"Bidirectional", "Role A to Role B", "Role B to Role A"};
@@ -199,7 +200,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         associationDialog.pack();
         associationDialog.setResizable(false);
         associationDialog.setLocationRelativeTo(owner);
-        associationDialog.show();
+        associationDialog.setVisible(true);
 
         return ok;
     }
@@ -244,7 +245,8 @@ public class AssociationEditor extends JPanel implements ActionListener {
             roleBMultiplicityComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < multiplicities.length; i++) {
-                if (roleB.getMultiplicity().equals(multiplicities[i])) {
+                if (roleB.getMultiplicity
+                ().equals(multiplicities[i])) {
                     roleBMultiplicityComboBox.setSelectedIndex(i);
 
                     break;
@@ -257,7 +259,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getAssociationName() {
-        if (nameField.getText() == "") {
+        if (nameField.getText().equals("")) {
             return null;
         } else {
             return nameField.getText();
@@ -283,7 +285,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getRoleAName() {
-        if (roleANameField.getText() == "") {
+        if (roleANameField.getText().equals("")) {
             return null;
         } else {
             return roleANameField.getText();
@@ -299,7 +301,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     }
 
     public String getRoleBName() {
-        if (roleBNameField.getText() == "") {
+        if (roleBNameField.getText().equals("")) {
             return null;
         } else {
             return roleBNameField.getText();

@@ -1,12 +1,13 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ActorInstance.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class ActorInstance extends RoleClassifier implements IXMLCustomStreamable {
 
     public ActorInstance(String name, Actor actor) {
@@ -22,14 +23,13 @@ public class ActorInstance extends RoleClassifier implements IXMLCustomStreamabl
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         streamer.streamObject(node, "actor", getActor());
-        //node.setAttribute("actor", SystemWideObjectNamePool.getInstance().getNameForObject(getActor()));
+        // node.setAttribute("actor",
+        // SystemWideObjectNamePool.getInstance().getNameForObject(getActor()));
     }
 
     public ActorInstance clone() {

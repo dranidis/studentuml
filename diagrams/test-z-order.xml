@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="UCDModel" framex="311,226,650,550" iconified="false" id="" internalid="ucdmodel0" maximized="false" name="UCD: ucd" scale="1.0" selected="true"/>
+    <object class="SSDModel" framex="218,158,650,550" iconified="false" id="" internalid="ssdmodel0" maximized="false" name="SSD: ssd" scale="1.0" selected="false"/>
+    <object class="SDModel" framex="135,107,650,550" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd" scale="1.0" selected="false"/>
+    <object class="DCDModel" framex="62,50,650,550" iconified="false" id="" internalid="dcdmodel0" maximized="false" name="DCD: dcd" scale="1.0" selected="false"/>
+  </object>
+</uml>

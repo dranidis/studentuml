@@ -19,7 +19,7 @@ public class UCExtend extends UCLink {
     public UCExtend(UseCase extending, UseCase extended) {
         super(extending, extended);
         this.name = STEREOTYPE;
-        extensionPoints = new ArrayList<ExtensionPoint>();
+        extensionPoints = new ArrayList<>();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class UCExtend extends UCLink {
     }
 
     @Override
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         return extensionPoints.iterator();
     }
 
@@ -66,9 +66,9 @@ public class UCExtend extends UCLink {
     public UCExtend clone() {
         UCExtend copy = new UCExtend((UseCase) this.getSource(), (UseCase) this.getTarget());
 
-        Iterator i = getExtensionPoints();
+        Iterator<ExtensionPoint> i = getExtensionPoints();
         while (i.hasNext()) {
-            copy.addExtensionPoint(((ExtensionPoint) i.next()).clone());
+            copy.addExtensionPoint((i.next()).clone());
         }
 
         return copy;
@@ -77,7 +77,7 @@ public class UCExtend extends UCLink {
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         super.streamFromXML(node, streamer, instance);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "extensionpoints"), new Vector(extensionPoints), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "extensionpoints"), new Vector<>(extensionPoints), this);
     }
 
     @Override

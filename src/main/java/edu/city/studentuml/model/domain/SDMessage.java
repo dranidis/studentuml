@@ -1,10 +1,11 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//SDMessage.java
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public abstract class SDMessage implements Serializable {
 
     protected int rank;    // the rank is not initialized in the constructor, but

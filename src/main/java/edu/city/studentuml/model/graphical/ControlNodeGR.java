@@ -8,7 +8,7 @@ import edu.city.studentuml.model.domain.ControlNode;
  */
 public abstract class ControlNodeGR extends LeafNodeGR {
 
-    public ControlNodeGR(ControlNode controlNode, int x, int y) {
+    protected ControlNodeGR(ControlNode controlNode, int x, int y) {
         super(controlNode, x, y);
     }
 }

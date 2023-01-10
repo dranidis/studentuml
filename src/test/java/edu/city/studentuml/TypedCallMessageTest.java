@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Before;
@@ -16,6 +17,7 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.SDMessage;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -41,7 +43,14 @@ public class TypedCallMessageTest {
 
         umlProject = UMLProject.getInstance();
         umlProject.clear();
-
+        File file = new File(filepath);
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Directory cannot be Created!");
+            }
+        }
         umlProject.setFilepath(fullpath);
         umlProject.setFilename("test.xml");
     }
@@ -85,10 +94,14 @@ public class TypedCallMessageTest {
         umlProject.clear();
         umlProject.getCentralRepository().clear();
 
-        umlProject.loadFromXML(fullpath);
+        try {
+            umlProject.loadFromXML(fullpath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         boolean found = false;
-        Vector sds = umlProject.getCentralRepository().getSDMessages();
+        Vector<SDMessage> sds = umlProject.getCentralRepository().getSDMessages();
         for (Object o : sds) {
             if (o instanceof CallMessage) {
                 CallMessage m = (CallMessage) o;

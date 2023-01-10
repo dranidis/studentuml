@@ -1,14 +1,15 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//GenericClass.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class GenericClass implements Serializable, IXMLCustomStreamable {
 
     private String name;
@@ -22,12 +23,12 @@ public class GenericClass implements Serializable, IXMLCustomStreamable {
     }
 
     public String getName() {
-        //SystemWideObjectNamePool.getNameForObject(this);
+        // SystemWideObjectNamePool.getNameForObject(this);
         return name;
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
+        // empty
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

@@ -2,7 +2,6 @@ package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.UCDComponent;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -14,28 +13,21 @@ import java.util.List;
  *
  * @author draganbisercic
  */
-public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
+public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR {
 
-//    Classifier classifier;
-
-    protected UCDComponent ucdComponent;
+    protected UCDComponent component;
     public static final UCDComponentGR DEFAULT_CONTEXT = null;
     protected UCDComponentGR context;
-    protected List<UCLinkGR> incomingLinks;
-    protected List<UCLinkGR> outgoingLinks;
+    protected List<UCLinkGR> incomingRelations;
+    protected List<UCLinkGR> outgoingRelations;
 
-    public UCDComponentGR(UCDComponent ucdComponent, int x, int y) {
-        this.ucdComponent = ucdComponent;
+    protected UCDComponentGR(UCDComponent ucdComponent, int x, int y) {
+        this.component = ucdComponent;
         startingPoint = new Point(x, y);
         context = DEFAULT_CONTEXT;
-        incomingLinks = new ArrayList<UCLinkGR>();
-        outgoingLinks = new ArrayList<UCLinkGR>();
+        incomingRelations = new ArrayList<>();
+        outgoingRelations = new ArrayList<>();
     }
-
-//    protected UCDComponentGR(Classifier classifier, int x, int y) {
-//        setClassifier(classifier);
-//        startingPoint = new Point(x, y);
-//    }
 
     // composite pattern
     public void add(UCDComponentGR component) {
@@ -53,59 +45,59 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     public void setContext(UCDComponentGR context) {
         this.context = context;
         if (context != UCDComponentGR.DEFAULT_CONTEXT) {
-            ucdComponent.setContext(context.getUCDComponent());
+            component.setContext(context.getComponent());
         } else {
-            ucdComponent.setContext(UCDComponent.DEFAULT_CONTEXT);
+            component.setContext(UCDComponent.DEFAULT_CONTEXT);
         }
     }
 
     public void addIncomingLink(UCLinkGR link) {
-        incomingLinks.add(link);
-        ucdComponent.addIncomingLink(link.getLink());
+        incomingRelations.add(link);
+        component.addIncomingLink(link.getLink());
     }
 
     public void removeIncomingLink(UCLinkGR link) {
-        incomingLinks.remove(link);
-        ucdComponent.removeIncomingLink(link.getLink());
+        incomingRelations.remove(link);
+        component.removeIncomingLink(link.getLink());
     }
 
     public int getNumberOfIncomingLinks() {
-        return incomingLinks.size();
+        return incomingRelations.size();
     }
 
-    public Iterator getIncomingLinks() {
-        return incomingLinks.iterator();
+    public Iterator<UCLinkGR> getIncomingRelations() {
+        return incomingRelations.iterator();
     }
 
     public void addOutgoingLink(UCLinkGR link) {
-        outgoingLinks.add(link);
-        ucdComponent.addOutgoingLink(link.getLink());
+        outgoingRelations.add(link);
+        component.addOutgoingLink(link.getLink());
     }
 
     public void removeOutgoingLink(UCLinkGR link) {
-        outgoingLinks.remove(link);
-        ucdComponent.removeOutgoingLink(link.getLink());
+        outgoingRelations.remove(link);
+        component.removeOutgoingLink(link.getLink());
     }
 
     public int getNumberOfOutgoingLinks() {
-        return outgoingLinks.size();
+        return outgoingRelations.size();
     }
 
-    public Iterator getOutgoingLinks() {
-        return outgoingLinks.iterator();
+    public Iterator<UCLinkGR> getOutgoingRelations() {
+        return outgoingRelations.iterator();
     }
 
-    /*
+    /**
      * Returns the number of ucd components contained
      */
     public abstract int getNumberOfElements();
 
     public abstract UCDComponentGR getElement(int index);
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<UCDComponentGR> createIterator();
 
-    public UCDComponent getUCDComponent() {
-        return ucdComponent;
+    public UCDComponent getComponent() {
+        return component;
     }
 
     public abstract boolean contains(UCDComponentGR otherUCDComponent);
@@ -116,16 +108,9 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract void clearSelected();
 
-//    public void setClassifier(Classifier classifier) {
-//        this.classifier = classifier;
-//    }
-
-//    public Classifier getClassifier() {
-//        throw new UnsupportedOperationException();
-//    }
     @Override
     public Classifier getClassifier() {
-        return (Classifier) ucdComponent;
+        return component;
     }
     
     public void refreshDimensions(Graphics2D g) {
@@ -136,4 +121,9 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     protected abstract int calculateWidth(Graphics2D g);
 
     protected abstract int calculateHeight(Graphics2D g);
+
+    @Override
+    public String toString() {
+        return component.getName() + " : " +  component.getClass().getSimpleName();
+    }    
 }

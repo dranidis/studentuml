@@ -4,6 +4,7 @@ import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.AbstractPointGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.PointGR;
 import edu.city.studentuml.util.undoredo.MoveEdgeEdit;
 import edu.city.studentuml.view.gui.ADInternalFrame;
@@ -24,7 +25,7 @@ import javax.swing.undo.UndoableEdit;
  */
 public class EdgeController {
 
-    private ADInternalFrame parent;
+    private ADInternalFrame diagramInternalFrame;
     private ADModel model;
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
@@ -35,9 +36,9 @@ public class EdgeController {
     private List<AbstractPointGR> redoPoints;
     private SelectionController selectionController; // need to disable move when resizing
 
-    public EdgeController(ADInternalFrame p, ADModel m, SelectionController s) {
-        this.parent = p;
-        this.model = m;
+    public EdgeController(ADInternalFrame p, DiagramModel model2, SelectionController s) {
+        this.diagramInternalFrame = p;
+        this.model = (ADModel) model2;
         this.selectionController = s;
 
         // listeners
@@ -49,7 +50,8 @@ public class EdgeController {
                     return;
                 }
 
-                Point p = event.getPoint();
+                Point p = scalePoint(event.getPoint());
+
                 GraphicalElement e = model.getContainingGraphicalElement(p);
 
                 if ((e != null) && (e instanceof EdgeGR)) {
@@ -125,7 +127,7 @@ public class EdgeController {
                     // make editable only if undo and redo points are not the same
                     if (moveHappened()) {
                         UndoableEdit edit = new MoveEdgeEdit(edgeGR, undoPoints, redoPoints, model);
-                        parent.getUndoSupport().postEdit(edit);
+                        diagramInternalFrame.getUndoSupport().postEdit(edit);
                     }
 
                     // clear all
@@ -150,10 +152,22 @@ public class EdgeController {
                     return;
                 }
 
-                myPoint.move(event.getPoint().x, event.getPoint().y);
+                Point p = scalePoint(event.getPoint());
+
+                myPoint.move(p.x, p.y);
                 model.modelChanged();
             }
         };
+    }
+
+    private Point scalePoint(Point point) {
+        int newx = scale(point.getX());
+        int newy = scale(point.getY());
+        return new Point(newx, newy);
+    }
+
+    private int scale(double number) {
+        return (int) (number / diagramInternalFrame.getView().getScale());
     }
 
     private boolean isPointSelected(Point p) {
@@ -220,12 +234,12 @@ public class EdgeController {
         this.mouseMotionListener = mouseMotionListener;
     }
 
-    public ADInternalFrame getParent() {
-        return parent;
+    public ADInternalFrame getDiagramInternalFrame() {
+        return diagramInternalFrame;
     }
 
-    public void setParent(ADInternalFrame parent) {
-        this.parent = parent;
+    public void setDiagramInternalFrame(ADInternalFrame parent) {
+        this.diagramInternalFrame = parent;
     }
 
     public boolean isSelectionMode() {

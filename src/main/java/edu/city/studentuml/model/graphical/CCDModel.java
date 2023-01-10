@@ -1,21 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.domain.ConceptualAssociationClass;
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-import javax.swing.JOptionPane;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author draganbisercic
  */
-public class CCDModel extends DiagramModel {
+public class CCDModel extends AbstractCDModel {
 
     public CCDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -40,50 +36,11 @@ public class CCDModel extends DiagramModel {
     }
 
     // add a new diagram class
-    public void addClass(ConceptualClassGR c) {
+    protected void addClass(ConceptualClassGR c) {
 
         // add the class to the project repository first and then to the diagram
         repository.addConceptualClass(c.getConceptualClass());
         super.addGraphicalElement(c);
-    }
-
-    // add a new diagram association
-    public void addAssociation(AssociationGR a) {
-
-        // add the association to the project repository first and then to the diagram
-        repository.addAssociation(a.getAssociation());
-        super.addGraphicalElement(a);
-    }
-
-    public void addAssociationClass(AssociationClassGR a) {
-        // in ccd model only conceptual assoc classes allowed; no design assoc classes
-        repository.addAssociationClass((ConceptualAssociationClass) a.getAssociationClass());
-        super.addGraphicalElement(a);
-    }
-
-    public void addAggregation(AggregationGR a) {
-        if (!repository.addAggregation(a.getAggregation())) {
-            return;
-        }
-
-        super.addGraphicalElement(a);
-    }
-
-    private void addGeneralization(GeneralizationGR g) {
-        Generalization generalization = g.getGeneralization();
-        ConceptualClass superClass = (ConceptualClass) generalization.getSuperClass();
-        ConceptualClass baseClass = (ConceptualClass) generalization.getBaseClass();
-
-        // try to add the generalization to the repository first, if it doesn't exist
-        if (!repository.addGeneralization(generalization)) {
-            JOptionPane.showMessageDialog(null,
-                    "Class \"" + baseClass.getName() + "\" already inherits from class \""
-                    + superClass.getName() + "\".", "Error", JOptionPane.ERROR_MESSAGE);
-
-            return;
-        }
-
-        super.addGraphicalElement(g);
     }
 
     // override superclass method removeGraphicalElement()
@@ -109,102 +66,10 @@ public class CCDModel extends DiagramModel {
     // since more than one graphical class or interface can refer
     // to the same domain representation, just remove the graphical representation
     // from the diagram, and not the domain representation from the repository
-    public void removeClass(ConceptualClassGR c) {
-        Vector associations, aggregations, generalizations, associationClasses;
-        Association association;
-        Aggregation agregation;
-        ConceptualAssociationClass associationClass;
-        Generalization generalization;
-        GraphicalElement grElement;
-        Iterator iterator, iterGE;
-
-        associations = repository.getAssociations();
-        iterator = associations.iterator();
-        while (iterator.hasNext()) {
-            association = (Association) iterator.next();
-
-            if ((association.getClassA() == c.getConceptualClass()) || (association.getClassB() == c.getConceptualClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AssociationGR) {
-                        if (((AssociationGR) grElement).getAssociation() == association) {
-                            removeAssociation((AssociationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = associations.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        aggregations = repository.getAggregations();
-        iterator = aggregations.iterator();
-        while (iterator.hasNext()) {
-            agregation = (Aggregation) iterator.next();
-
-            if ((agregation.getPart() == c.getConceptualClass()) || (agregation.getWhole() == c.getConceptualClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AggregationGR) {
-                        if (((AggregationGR) grElement).getAggregation() == agregation) {
-                            removeAggregation((AggregationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = aggregations.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        associationClasses = repository.getConceptualAssociationClasses();
-        iterator = associationClasses.iterator();
-        while (iterator.hasNext()) {
-            associationClass = (ConceptualAssociationClass) iterator.next();
-
-            if ((associationClass.getClassA() == c.getConceptualClass()) || (associationClass.getClassB() == c.getConceptualClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof AssociationClassGR) {
-                        if (((AssociationClassGR) grElement).getAssociationClass() == associationClass) {
-                            removeAssociationClass((AssociationClassGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = associationClasses.iterator();
-                        }
-                    }
-                }
-            }
-        }
-
-        generalizations = repository.getGeneralizations();
-        iterator = generalizations.iterator();
-        while (iterator.hasNext()) {
-            generalization = (Generalization) iterator.next();
-
-            if ((generalization.getSuperClass() == c.getConceptualClass()) || (generalization.getBaseClass() == c.getConceptualClass())) {
-                iterGE = graphicalElements.iterator();
-
-                while (iterGE.hasNext()) {
-                    grElement = (GraphicalElement) iterGE.next();
-
-                    if (grElement instanceof GeneralizationGR) {
-                        if (((GeneralizationGR) grElement).getGeneralization() == generalization) {
-                            removeGeneralization((GeneralizationGR) grElement);
-                            iterGE = graphicalElements.iterator();
-                            iterator = generalizations.iterator();
-                        }
-                    }
-                }
-            }
-        }
+    protected void removeClass(ConceptualClassGR c) {
+        getClassGRAssociationGRs(c).forEach(e -> removeAssociation((AssociationGR) e));
+        getClassGRAssociationClassGRs(c).forEach(e -> removeAssociationClass((AssociationClassGR) e));
+        getClassGRGeneralizationGRs(c).forEach(e -> removeGeneralization((GeneralizationGR) e));
 
         // if class not referenced, remove it from the repository
         if (!umlProject.isClassReferenced(c, c.getConceptualClass())) {
@@ -216,51 +81,39 @@ public class CCDModel extends DiagramModel {
         super.removeGraphicalElement(c);
     }
 
-    // since graphical associations, dependencies, and other links
-    // have a one-to one association with their domain representations,
-    // remove them both from the central repository and from the diagram
-    public void removeAssociation(AssociationGR a) {
-        repository.removeAssociation(a.getAssociation());
-        super.removeGraphicalElement(a);
+    public List<GraphicalElement> getClassGRAssociationGRs(ConceptualClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof AssociationGR
+                        && (((AssociationGR) grElement).getAssociation().getClassB() == c.getAbstractClass()
+                                || ((AssociationGR) grElement).getAssociation().getClassA() == c.getAbstractClass())))
+                .collect(Collectors.toList());
     }
 
-    public void removeAssociationClass(AssociationClassGR a) {
-//        a.clear();  //removes association object from links instances in AssociationClassGR
-        repository.removeAssociationClass((ConceptualAssociationClass) a.getAssociationClass());
-        super.removeGraphicalElement(a);
-    }
+    public List<GraphicalElement> getClassGRAssociationClassGRs(ConceptualClassGR c) {
+        return graphicalElements.stream()
+                .filter(grElement -> (grElement instanceof AssociationClassGR
+                        && (((AssociationClassGR) grElement).getAssociationClass().getClassB() == c.getAbstractClass()
+                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getAbstractClass())))
+                .collect(Collectors.toList());
+    } 
 
-    private void removeAggregation(AggregationGR aggregationGR) {
-        repository.removeAggregation(aggregationGR.getAggregation());
-        super.removeGraphicalElement(aggregationGR);
-    }
-
-    private void removeGeneralization(GeneralizationGR g) {
-        repository.removeGeneralization(g.getGeneralization());
-        super.removeGraphicalElement(g);
-    }
-
-    public void clear() {
-
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
-        }
-
-        super.clear();
-    }
+    public List<GraphicalElement> getClassGRGeneralizationGRs(ConceptualClassGR c) {
+        return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
+                && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getAbstractClass())
+                        || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getAbstractClass()))
+                .collect(Collectors.toList());
+    }    
 
     public Vector<ConceptualClassGR> getConceptualClasses() {
-        Vector<ConceptualClassGR> v = new Vector<ConceptualClassGR>();
-        Iterator i = getGraphicalElements().iterator();
+        Vector<ConceptualClassGR> v = new Vector<>();
+        Iterator<GraphicalElement> i = getGraphicalElements().iterator();
         while (i.hasNext()) {
-            GraphicalElement e = (GraphicalElement) i.next();
+            GraphicalElement e = i.next();
             if (e instanceof ConceptualClassGR) {
                 v.add((ConceptualClassGR) e);
             }
         }
-        if (v.isEmpty()) {
-            return null;
-        }
+
         return v;
     }
 }

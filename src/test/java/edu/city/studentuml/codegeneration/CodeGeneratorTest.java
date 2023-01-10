@@ -17,7 +17,6 @@ import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.codegeneration.CodeGenerator;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -35,7 +34,7 @@ public class CodeGeneratorTest {
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
-        
+
         umlProject = UMLProject.getInstance();
         umlProject.clear();
         File file = new File(filepath);
@@ -503,6 +502,6 @@ public class CodeGeneratorTest {
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
-        assertTrue(path == null);
+        assertNull(path);
     }
 }

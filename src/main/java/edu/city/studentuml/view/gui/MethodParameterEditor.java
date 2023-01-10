@@ -1,12 +1,11 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//MethodParameterEditor.java
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.ElementEditor;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -14,7 +13,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -27,10 +25,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-public class MethodParameterEditor extends JPanel implements ActionListener {
+/**
+ * @author Ervin Ramollari
+ */
+public class MethodParameterEditor extends JPanel implements ActionListener, ElementEditor<MethodParameter> {
 
-    private Vector comboBoxStringList;
-    private Vector comboBoxTypeList;
+    private static final String TITLE = "Parameter Editor";
+    private Vector<String> comboBoxStringList;
+    private Vector<Type> comboBoxTypeList;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JPanel centerPanel;
@@ -41,7 +43,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
     private JButton okButton;
     private MethodParameter parameter;
     private JDialog parameterDialog;
-    private JComboBox typeComboBox;
+    private JComboBox<String> typeComboBox;
     private JLabel typeLabel;
     private JPanel typePanel;
     CentralRepository repository;
@@ -57,25 +59,22 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         typeLabel = new JLabel("Data Type: ");
 
         // AD-HOC replacement of the VOID data type with null
-        comboBoxTypeList = new Vector(repository.getTypes());
+        comboBoxTypeList = new Vector<>(repository.getTypes());
         comboBoxTypeList.remove(DataType.VOID);
         comboBoxTypeList.add(0, null);
 
         // INITIALIZE THE STRING LIST ACCORDING TO THE ABOVE COMBOBOX TYPE LIST
-        comboBoxStringList = new Vector();
-        Iterator iterator = comboBoxTypeList.iterator();
+        comboBoxStringList = new Vector<>();
 
-        while (iterator.hasNext()) {
-            Object next = iterator.next();
-
+        comboBoxTypeList.forEach(next -> {
             if (next == null) {
                 comboBoxStringList.add("unspecified");
             } else {
-                comboBoxStringList.add(((Type) next).getName());
+                comboBoxStringList.add(next.getName());
             }
-        }
+        });
 
-        typeComboBox = new JComboBox(comboBoxStringList);
+        typeComboBox = new JComboBox<>(comboBoxStringList);
 
         namePanel = new JPanel();
         namePanel.setLayout(new FlowLayout());
@@ -102,7 +101,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         initialize();
     }
 
-    public boolean showDialog(Component parent, String title) {
+    public boolean showDialog(Component parent) {
         ok = false;
 
         // find the owner frame
@@ -116,12 +115,12 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
 
         parameterDialog = new JDialog(owner, true);
         parameterDialog.getContentPane().add(this);
-        parameterDialog.setTitle(title);
+        parameterDialog.setTitle(TITLE);
         parameterDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         parameterDialog.pack();
         parameterDialog.setResizable(false);
         parameterDialog.setLocationRelativeTo(owner);
-        parameterDialog.show();
+        parameterDialog.setVisible(true);
 
         return ok;
     }
@@ -139,7 +138,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < comboBoxStringList.size(); i++) {
-                if (((String) comboBoxStringList.get(i)).equals(parameter.getType().getName())) {
+                if (comboBoxStringList.get(i).equals(parameter.getType().getName())) {
                     typeComboBox.setSelectedIndex(i);
 
                     break;
@@ -154,7 +153,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
 
     public Type getType() {
         try {
-            return (Type) comboBoxTypeList.get(typeComboBox.getSelectedIndex());
+            return comboBoxTypeList.get(typeComboBox.getSelectedIndex());
         } catch (IndexOutOfBoundsException ioobe) {
             return null;
         }
@@ -173,5 +172,16 @@ public class MethodParameterEditor extends JPanel implements ActionListener {
         } else if (event.getSource() == cancelButton) {
             parameterDialog.setVisible(false);
         }
+    }
+
+    @Override
+    public MethodParameter createElement() {
+        return new MethodParameter(getParameterName(), getType());
+    }
+
+    @Override
+    public void editElement() {
+        parameter.setName(getParameterName());
+        parameter.setType(getType());
     }
 }

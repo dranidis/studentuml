@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,52 +15,56 @@ import java.util.ListIterator;
  */
 public abstract class CompositeUCDElementGR extends UCDComponentGR {
 
-    protected List<UCDComponentGR> ucdComponents;
+    private static final Logger logger = Logger.getLogger(CompositeUCDElementGR.class.getName());
 
-    public CompositeUCDElementGR(CompositeUCDElement compositeElement, int x, int y) {
+    protected List<UCDComponentGR> components;
+
+    protected CompositeUCDElementGR(CompositeUCDElement compositeElement, int x, int y) {
         super(compositeElement, x, y);
-        ucdComponents = new ArrayList<UCDComponentGR>();
+        components = new ArrayList<>();
+    }
+
+    public List<UCDComponentGR> getComponents() {
+        return components;
     }
 
     @Override
     public void add(UCDComponentGR componentGR) {
-        ucdComponents.add(componentGR);
-        ucdComponent.add(componentGR.getUCDComponent());
+        components.add(componentGR);
+        component.add(componentGR.getComponent());
     }
 
     @Override
     public void remove(UCDComponentGR componentGR) {
-        ucdComponents.remove(componentGR);
-        ucdComponent.remove(componentGR.getUCDComponent());
+        components.remove(componentGR);
+        component.remove(componentGR.getComponent());
     }
 
     /*
      * Returns the number of ucd components contained
      */
     public int getNumberOfElements() {
-        return ucdComponents.size();
+        return components.size();
     }
 
     public UCDComponentGR getElement(int index) {
-        return ucdComponents.get(index);
+        return components.get(index);
     }
 
     @Override
-    public Iterator createIterator() {
-        return new CompositeUCDGRIterator(ucdComponents.iterator());
+    public Iterator<UCDComponentGR> createIterator() {
+        return new CompositeUCDGRIterator(components.iterator());
     }
 
     @Override
     public void move(int x, int y) {
+        logger.finer(() -> "move");
         int deltaX = x - startingPoint.x;
         int deltaY = y - startingPoint.y;
         startingPoint.setLocation(x, y);
 
-        Iterator iterator = ucdComponents.iterator();
-        while (iterator.hasNext()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.next();
-            comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY);
-        }
+        components
+                .forEach(comp -> comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY));
     }
 
     public boolean contains(UCDComponentGR otherUCDComponentGR) {
@@ -97,9 +102,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
-        ListIterator iterator = ucdComponents.listIterator(ucdComponents.size());
+        ListIterator<UCDComponentGR> iterator = components.listIterator(components.size());
         while (iterator.hasPrevious()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.previous();
+            UCDComponentGR comp = iterator.previous();
             if (comp.contains(point)) {
                 return comp.getContainingGraphicalElement(point);
             }
@@ -109,9 +114,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public UCDComponentGR findContext(UCDComponentGR comp) {
-        Iterator iterator = ucdComponents.iterator();
+        Iterator<UCDComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            UCDComponentGR myComp = (UCDComponentGR) iterator.next();
+            UCDComponentGR myComp = iterator.next();
             if (myComp.contains(comp)) {
                 return myComp.findContext(comp);
             }
@@ -121,9 +126,9 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public void clearSelected() {
-        Iterator iterator = ucdComponents.iterator();
+        Iterator<UCDComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            UCDComponentGR comp = (UCDComponentGR) iterator.next();
+            UCDComponentGR comp = iterator.next();
             comp.clearSelected();
         }
 

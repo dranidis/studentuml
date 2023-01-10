@@ -1,7 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//Author: Dragan Bisercic
-//ActorInstanceEditor.java
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -29,6 +27,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Dragan Bisercic
+ */
 public class ActorInstanceEditor extends JPanel implements ActionListener, ItemListener {
 
     private JPanel actorPanel;
@@ -132,7 +133,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         actorInstanceDialog.pack();
         actorInstanceDialog.setResizable(false);
         actorInstanceDialog.setLocationRelativeTo(owner);
-        actorInstanceDialog.show();
+        actorInstanceDialog.setVisible(true);
 
         return ok;
     }

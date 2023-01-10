@@ -1,12 +1,12 @@
 package edu.city.studentuml.view;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DiagramView.java
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.ScaleRound;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,14 +16,31 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
 public abstract class DiagramView extends JPanel implements Observer {
 
+    private static final Logger logger = Logger.getLogger(DiagramView.class.getName());
+
     protected DiagramModel model;
-    protected Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
+    protected transient Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
+    protected transient Rectangle2D dragRectangle = new Rectangle2D.Double(0, 0, 0, 0);
+
+    private double scale = 1.0;
+
+    /**
+     * Necessary for remembering the necessary max width and height of the view area in
+     * order not to unnecessarily update the size of the panel. Unfortunately
+     * getSize() of the panel does not serve because the size changes outside of the
+     * program and the values almost never match.
+     */
+    private int maxWidth;
+    private int maxHeight;
 
     protected DiagramView(DiagramModel m) {
         model = m;
@@ -33,16 +50,45 @@ public abstract class DiagramView extends JPanel implements Observer {
         }
 
         setBackground(Color.white);
-        setSize(500, 400);
         setDoubleBuffered(true);
+   }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = ScaleRound.roundTo05(scale);
+        changeSizeToFitAllElements();
+        repaint();
+    }
+
+    public void zoomIn() {
+        setScale(scale * 1.1);
     }
     
+    public void zoomOut() {
+        setScale(scale * 0.9);
+    }
+
+    private int scaleTo(double number) {
+        return (int) (number * getScale());
+    }
+
     public Line2D getDragLine() {
         return dragLine;
     }
 
     public void setDragLine(Line2D dragLine) {
         this.dragLine = dragLine;
+    }
+
+    public Rectangle2D getDragRectangle() {
+        return dragRectangle;
+    }
+
+    public void setDragRectangle(Rectangle2D dragRectangle) {
+        this.dragRectangle = dragRectangle;
     }
 
     @Override
@@ -53,6 +99,8 @@ public abstract class DiagramView extends JPanel implements Observer {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        g2d.scale(scale, scale);
 
         drawDiagram(g2d);
     }
@@ -117,27 +165,54 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public void drawDiagram(Graphics2D g) {
         SystemWideObjectNamePool.drawLock.lock();
-        
+
+        // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
-                .filter(ge -> ge instanceof LinkGR)
+                .filter(LinkGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
+        // .. and then everything else
         model.getGraphicalElements().stream()
                 .filter(ge -> ! (ge instanceof LinkGR))
                 .forEach(ge -> ge.draw(g));
 
-        g.setPaint(Color.GRAY);
 
-        // find the maxX and maxY of all the elements of the diagram
-        // and resize the panel accordingly
-        Point2D.Double maxPoint = getMaxPositionOfElements();
-        int maxX = (int) Math.max( maxPoint.getX(), this.getSize().getWidth());
-        int maxY = (int) Math.max( maxPoint.getY(), this.getSize().getHeight());
-        this.setSize(maxX, maxY);
+
         
-        g.draw(dragLine);
+        // ... finally draw the dragline and rectangle
+        drawLineAndRectangle(g);
 
         SystemWideObjectNamePool.drawLock.unlock();
+    }
+
+    /**
+     * Resizes the panel to fit the maximum dimensions of all the elements in the
+     * diagram.
+     */
+    public void changeSizeToFitAllElements() {
+
+        Point2D.Double maxPoint = getMaxPositionOfElements();
+        int maxX = Math.max( scaleTo(maxPoint.getX()), model.getFrame().getDrawingAreaWidth());
+        int maxY = Math.max( scaleTo(maxPoint.getY()), model.getFrame().getDrawingAreaHeight());
+
+        if (maxX != this.maxWidth || maxY != this.maxHeight) {
+            maxWidth = maxX;
+            maxHeight = maxY;
+            logger.fine(() -> "Scale: " + scale + " New View size: "+ maxWidth + ", " + maxHeight);   
+           
+            this.setSize(new Dimension(maxWidth, maxHeight));     
+            revalidate();
+        }
+    }
+
+    protected void drawLineAndRectangle(Graphics2D g) {
+        g.setPaint(Color.GRAY);
+        g.draw(dragLine);
+
+        float[] dashes = { 2 };
+
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.draw(dragRectangle);
     }
 
     public void setModel(DiagramModel m) {
@@ -157,6 +232,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         return model;
     }
 
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(getWidth(), getHeight());
     }
@@ -165,7 +241,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         repaint();
     }
 
-    private Point2D.Double getMaxPositionOfElements() {
+    public Point2D.Double getMaxPositionOfElements() {
         double maxX = 0;
         double maxY = 0;
         for(GraphicalElement ge: model.getGraphicalElements()) {

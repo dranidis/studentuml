@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//SDMessageGR.java
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 import java.awt.BasicStroke;
@@ -17,9 +14,8 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-/**
- * @author  Kristi
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class SDMessageGR extends GraphicalElement {
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
@@ -32,7 +28,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     // of the x and y coordinates, only y is significant, since
     // the x coordinate is derived from the x coordinates of source and target
-    public SDMessageGR(RoleClassifierGR from, RoleClassifierGR to, SDMessage m, int y) {
+    protected SDMessageGR(RoleClassifierGR from, RoleClassifierGR to, SDMessage m, int y) {
         source = from;
         target = to;
         message = m;
@@ -56,10 +52,9 @@ public abstract class SDMessageGR extends GraphicalElement {
         return endingX;
     }
 
+    @Override
     public void draw(Graphics2D g) {
         int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
-
-        SDMessage message = getMessage();
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
@@ -74,7 +69,6 @@ public abstract class SDMessageGR extends GraphicalElement {
         int endingX = getEndingX();
         
         if (!message.isReflective()) {
-            //Stroke originalStroke = g.getStroke();
             boolean forward = (endingX > startingX);
             if(!forward) 
                 startingX -= barWidth;
@@ -121,22 +115,20 @@ public abstract class SDMessageGR extends GraphicalElement {
             if (errorMessage != null && errorMessage.length() > 0) {
                 g.drawString(errorMessage, messageStartX + textX, getY() - messageDY - 10);
             }
-        } else // handle reflective message rendering 'ad-hoc'
-        {
-            //Stroke originalStroke = g.getStroke();
-
+        } else { // handle reflective message rendering 'ad-hoc'
+        
             g.setStroke(getStroke());
 
             GeneralPath path = new GeneralPath();
 
             if(this instanceof CallMessageGR)
-                path.moveTo(startingX - barWidth/2, getY());
+                path.moveTo(startingX - barWidth/2.0, getY());
             else
-                path.moveTo(startingX + barWidth/2, getY());
+                path.moveTo(startingX + barWidth/2.0, getY());
             
-            path.lineTo(startingX + 40, getY());
-            path.lineTo(startingX + 40, getY() + 15);
-            path.lineTo(startingX, getY() + 15);
+            path.lineTo(startingX + 40.0, getY());
+            path.lineTo(startingX + 40.0, getY() + 15.0);
+            path.lineTo(startingX, getY() + 15.0);
             g.draw(path);
 
             // restore the original stroke
@@ -161,29 +153,28 @@ public abstract class SDMessageGR extends GraphicalElement {
             int boundsWidth = Math.abs(getStartingX() - getEndingX());
 
             // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(boundsX, getY() - 5, boundsWidth, 10);
+            Rectangle2D bounds = new Rectangle2D.Double(boundsX, getY() - 5.0, boundsWidth, 10.0);
 
             return bounds.contains(point);
         } else {
 
             // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(getStartingX(), getY(), 40, 15);
+            Rectangle2D bounds = new Rectangle2D.Double(getStartingX(), getY(), 40.0, 15.0);
 
             return bounds.contains(point);
         }
     }
 
-    // OVERRIDE ABSTRACT METHOD getBounds() of GraphicalElement
+    @Override
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return new Rectangle2D.Double(
-                Math.min(getStartingX(), getEndingX()) - 5,
-                getY() - 5,
-                Math.abs(getStartingX() - getEndingX()) + 10,
-                10);
+                Math.min(getStartingX(), getEndingX()) - 5.0, getY() - 5.0,
+                Math.abs(getStartingX() - getEndingX()) + 10.0, 10.0);
     }
 
-    // override abstract method move of GraphicalElement
     // all messages respond to drag and drop by moving only vertically
+    @Override
     public void move(int x, int y) {
         startingPoint.setLocation(startingPoint.getX(), y);
     }
@@ -207,4 +198,5 @@ public abstract class SDMessageGR extends GraphicalElement {
     void setErrorMsg(String validatedStr) {
         errorMessage = validatedStr;
     }
+
 }

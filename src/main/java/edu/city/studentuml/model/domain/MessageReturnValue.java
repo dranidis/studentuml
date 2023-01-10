@@ -1,10 +1,11 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//MessageReturnValue.java
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class MessageReturnValue implements Serializable {
 
     private String name;

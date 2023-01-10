@@ -4,20 +4,23 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import java.awt.Rectangle;
 
 /**
- *
  * @author dimitris
-*/
+ */
 public class FrameProperties {
 
-    public final Rectangle R;
+    public final Rectangle rectangle;
     public final boolean selected;
     public final boolean iconified;
-    public DiagramModel model;
+    public final DiagramModel model;
+    public final double scale;
+    public final boolean maximized;
 
-    public FrameProperties(DiagramModel model, Rectangle R, boolean selected, boolean iconified) {
+    public FrameProperties(DiagramModel model, Rectangle rectangle, boolean selected, boolean iconified, double scale, boolean maximized) {
         this.model = model;
-        this.R = R;
+        this.rectangle = rectangle;
         this.selected = selected;
         this.iconified = iconified;
+        this.scale = scale;
+        this.maximized = maximized;
     }
 }

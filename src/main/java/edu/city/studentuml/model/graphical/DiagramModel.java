@@ -1,23 +1,24 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.UMLProject;
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DiagramModel.java
-//Class DiagramModel is a Model component of the MVC architecture
-//It stores the graphical representation of UML concepts that are part of a UML diagram.
-//This class is abstract with known subclasses including SSD/SD/CCD/DCDModel.
-//It extends Observable to notify the views of any changes that occur.
+
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
@@ -25,95 +26,134 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
+/**
+ * Class DiagramModel is a Model component of the MVC architecture It stores the
+ * graphical representation of UML concepts that are part of a UML diagram. This
+ * class is abstract with known subclasses including SSD/SD/CCD/DCDModel. It
+ * extends Observable to notify the views of any changes that occur.
+ */
+@JsonIncludeProperties({ "name", "internalid", "graphicalElements" })
 public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
-    
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(DiagramModel.class.getName());
+    private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
-    public static final int UCD = 0;
-    public static final int SSD = 1;
-    public static final int SD = 2;
-    public static final int CCD = 3;
-    public static final int DCD = 4;
-    public static final int AD = 5;
-    
+    @JsonProperty("name")
     protected String diagramName;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;
     protected Vector<GraphicalElement> selected;
 
-    // every diagram has to have a reference to the central repository of UML elements
+    // every diagram has to have a reference to the central repository of UML
+    // elements
     protected CentralRepository repository;
     protected UMLProject umlProject;
 
-    public DiagramModel() {
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
-    public DiagramModel(String name, UMLProject umlp) {
+    protected DiagramModel(String name, UMLProject umlp) {
         diagramName = name;
         graphicalElements = new NotifierVector<>();
         selected = null;
         umlProject = umlp;
         repository = umlp.getCentralRepository();
         umlProject.addDiagram(this);
-        selected = new Vector<GraphicalElement>();
+        selected = new Vector<>();
     }
 
-    public void setFrame(DiagramInternalFrame frm) {
-        frame = frm;
+    public void setFrame(DiagramInternalFrame diagramInternalFrame) {
+        frame = diagramInternalFrame;
     }
 
     public DiagramInternalFrame getFrame() {
         return frame;
     }
 
-    // This method adds a graphical element to the diagram, triggered by the controller.
-    // The default behavior is to simply add the graphical element to the list
-    // and notify the view observers, but subclasses may override this behavior,
-    // for example in case the addition of one element affects other elements
+    /**
+     * This method adds a graphical element to the diagram, triggered by the
+     * controller. The default behavior is to simply add the graphical element to
+     * the list and notify the view observers, but subclasses may override this
+     * behavior, for example in case the addition of one element affects other
+     * elements
+     * 
+     * @param e
+     */
     public void addGraphicalElement(GraphicalElement e) {
-        logger.fine("Adding Element e: " + e.getClass().getSimpleName());
+        logger.fine(() -> "Adding Element e: " + e.toString() + " " + e.getClass().getSimpleName());
         e.objectAdded(e);
         graphicalElements.add(e);
+
+        changeViewSize();
+        
         modelChanged();
     }
 
     public void insertGraphicalElementAt(GraphicalElement e, int index) {
+        logger.fine(() -> "Inserting Element e: " + e.toString() + " " + e.getClass().getSimpleName() + " at index: " + index);
         e.objectAdded(e);
         graphicalElements.insertElementAt(e, index);
+
+        changeViewSize();
+
         modelChanged();
     }
 
-    // This method removes a graphical element from the diagram, triggered by the controller.
-    // The default behavior is to simply remove the graphical element from the list, if
-    // it exists, and notify the observers, but subclasses may override this behavior,
-    // for example in case the deletion of one element (e.g. design class) triggers the
-    // deletion of other elements (associations, dependencies, etc.)
+    /**
+     * This method removes a graphical element from the diagram, triggered by the
+     * controller. The default behavior is to simply remove the graphical element
+     * from the list, if it exists, and notify the observers, but subclasses may
+     * override this behavior, for example in case the deletion of one element (e.g.
+     * design class) triggers the deletion of other elements (associations,
+     * dependencies, etc.)
+     * 
+     * @param e
+     */
     public void removeGraphicalElement(GraphicalElement e) {
         e.objectRemoved(e);
         graphicalElements.remove(e);
+
+        changeViewSize();
+
         modelChanged();
     }
 
-    // This method moves a graphical element in the drawing area, by changing its coordinates.
-    // The method is usually triggered by a drag event caused by the drag-and-drop controller.
-    // Each element responds polymorphically with its move() method.
-    // The simplest behavior is implemented by calling the element's move method, but
-    // subclasses may override this behavior in case the movement of one element affects
-    // other elements
+
+    /**
+     * This method moves a graphical element in the drawing area, by changing its
+     * coordinates. The method is usually triggered by a drag event caused by the
+     * drag-and-drop controller. Each element responds polymorphically with its
+     * move() method. The simplest behavior is implemented by calling the element's
+     * move method, but subclasses may override this behavior in case the movement
+     * of one element affects other elements
+     * 
+     * @param e
+     * @param x
+     * @param y
+     */
     public void moveGraphicalElement(GraphicalElement e, int x, int y) {
         e.move(x, y);
+
+        changeViewSize();
+
         modelChanged();
     }
 
-    // This method moves a graphical element in the drawing area, but in difference from
-    // moveGraphicalElement(), it is triggered by a releasing of the mouse button after
-    // dragging, in case the moved element may have to be validated in its new position.
-    // The simplest behavior is exactly the same as move(), but subclasses may override it.
+
+    /**
+     * This method moves a graphical element in the drawing area, but in difference
+     * from moveGraphicalElement(), it is triggered by a releasing of the mouse
+     * button after dragging, in case the moved element may have to be validated in
+     * its new position. The simplest behavior is exactly the same as move(), but
+     * subclasses may override it.
+     * 
+     * @param e
+     * @param x
+     * @param y
+     */
     public void settleGraphicalElement(GraphicalElement e, int x, int y) {
         moveGraphicalElement(e, x, y);
     }
@@ -124,16 +164,15 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         int i = graphicalElements.indexOf(el);
 
         if (i != -1) {
-            GraphicalElement e = (GraphicalElement) graphicalElements.get(i);
+            GraphicalElement e = graphicalElements.get(i);
             selected.add(e);
             e.setSelected(true);
             modelChanged();
-            //SystemWideObjectNamePool.getInstance().reload();
         }
     }
 
     public void clearSelected() {
-        for(GraphicalElement element : graphicalElements) {
+        for (GraphicalElement element : graphicalElements) {
             element.setSelected(false);
         }
 
@@ -141,25 +180,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             selected.clear();
             modelChanged();
         }
-        //SystemWideObjectNamePool.getInstance().reload();
     }
 
-    // retrieves the currently selected graphical element, if any
     public Vector<GraphicalElement> getSelectedGraphicalElements() {
         return selected;
-    }
-
-    // retrieves the graphical element of a particular index, null if doesn't exist
-    public GraphicalElement getGraphicalElement(int index) {
-        GraphicalElement ge = null;
-
-        try {
-            ge = (GraphicalElement) graphicalElements.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-
-        return ge;
     }
 
     public NotifierVector<GraphicalElement> getGraphicalElements() {
@@ -178,18 +202,23 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         diagramName = name;
     }
 
-    // retrieves the graphical element in the diagram that contains a given 2D point
-    // Usually triggered by a select, drag-and-drop, and addition event.
+    /**
+     * Retrieves the graphical element in the diagram that contains a given 2D point
+     * Usually triggered by a select, drag-and-drop, and addition event.
+     * 
+     * Get the first element that contains the point, starting from the end of the
+     * list, i.e. from the most recently drawn grapical element, so that the
+     * uppermost is returned in case elements are overlayed one on top of the other.
+     * 
+     * @param point
+     * @return
+     */
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
 
-        // get the first element that contains the point, starting from the end of the list,
-        // i.e. from the most recently drawn grapical element, so that the uppermost is
-        // returned in case elements are overlayed one on top of the other
         ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
-        GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            GraphicalElement element = listIterator.previous();
 
             if (element.contains(point)) {
                 return element;
@@ -204,10 +233,29 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return this.getContainingGraphicalElement(new Point2D.Double(x, y));
     }
 
-    // clears the drawing area of a diagram by setting all graphical elements to empty
+    public List<GraphicalElement> getContainedGraphicalElements(int x, int y, int toX, int toY) {
+        List<GraphicalElement> contained = new ArrayList<>();
+        ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
+
+        while (listIterator.hasPrevious()) {
+            GraphicalElement element = listIterator.previous();
+            if (element.containedInArea(x, y, toX, toY) ) {
+                contained.add(element);
+            }
+        }
+
+        return contained;
+    }
+
+    public List<GraphicalElement> getContainedGraphicalElements(Rectangle2D r) {
+        return getContainedGraphicalElements((int) r.getMinX(), (int) r.getMinY(), (int) r.getMaxX(), (int) r.getMaxY());
+    }
+
+    // clears the drawing area of a diagram by setting all graphical elements to
+    // empty
     public void clear() {
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
+        while (!graphicalElements.isEmpty()) {
+            removeGraphicalElement(graphicalElements.get(0));
         }
         graphicalElements.clear();
         graphicalElements = new NotifierVector<>();
@@ -224,33 +272,38 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public String toString() {
         return diagramName;
     }
-    
+
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
-    // this custom method is called whenever a change in the diagram occurs to notify observers
+
+    // this custom method is called whenever a change in the diagram occurs to
+    // notify observers
     public void modelChanged() {
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.finest(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
-
     }
 
     public void setRect(String rect) {
         if (rect != null) {
-            java.lang.System.out.println("RECT : " + rect);
+            logger.finest(() -> "RECT : " + rect);
         }
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getDiagramName());
         if (frame != null) {
-            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + "," + frame.getBounds().height;
+            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + ","
+                    + frame.getBounds().height;
             node.setAttribute("framex", values);
             node.setAttribute("selected", Boolean.toString(frame.isSelected()));
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
+            node.setAttribute("scale", Double.toString(frame.getView().getScale()));
+            node.setAttribute("maximized", Boolean.toString(frame.isMaximum()));
+
         }
         streamer.streamObjects(node, graphicalElements.iterator());
     }
@@ -265,4 +318,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     public UMLProject getUmlProject() {
         return umlProject;
     }
+
+    protected void changeViewSize() {
+        // frame might be null in tests with only models
+        if (frame != null) {
+            frame.getView().changeSizeToFitAllElements();
+        }
+    }
+
 }

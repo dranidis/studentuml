@@ -1,56 +1,53 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2006</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
-import edu.city.studentuml.util.Mode;
-import edu.city.studentuml.model.graphical.AbstractSDModel;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.model.graphical.DCDModel;
-import edu.city.studentuml.model.graphical.CCDModel;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.view.gui.ApplicationGUI;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.ClassGR;
-import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
-
-import java.io.Serializable;
 import java.io.File;
-import java.util.Iterator;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
+import edu.city.studentuml.model.graphical.AbstractSDModel;
+import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.SystemInstanceGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.ApplicationGUI;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+
+@JsonIncludeProperties({ "diagramModels" })
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
-    
-    Logger logger = Logger.getLogger(UMLProject.class.getName());
 
-    private static UMLProject ref = null;
+    private static final Logger logger = Logger.getLogger(UMLProject.class.getName());
+
+    private static final String PROJECT = "project";
+
+    private static UMLProject instance = null;
     private NotifierVector<DiagramModel> diagramModels;
     private CentralRepository repository;
     private boolean projectSaved = true;
     private String user;
-    //for applet
+    // for applet
     private int status;
     private int exid;
     private int parentid;
@@ -58,38 +55,33 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     private String title;
     private String comment;
     private Mode mode;
-    //for desktop application
+    // for desktop application
     private String projectFilename = "";
     private String projectFilepath = "";
     private String projectName = "";
 
     protected UMLProject() {
-        ref = this;
-        projectInit();
-    }
-
-    protected UMLProject(String Filepath, String filename) {
         projectInit();
     }
 
     private void projectInit() {
         repository = new CentralRepository();
-        diagramModels = new NotifierVector();
-        //applet
+        diagramModels = new NotifierVector<>();
+        // applet
         title = "";
         comment = "";
         status = 0;
         nodeType = "";
 
-        //application
+        // application
         projectName = "New Project";
     }
 
     public static UMLProject getInstance() {
-        if (ref == null) {
-            ref = new UMLProject();
+        if (instance == null) {
+            instance = new UMLProject();
         }
-        return ref;
+        return instance;
     }
 
     public void clear() {
@@ -99,7 +91,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setSaved(true);
         setChanged();
         notifyObservers();
@@ -107,16 +99,16 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
-    }    
+    }
 
     public CentralRepository getCentralRepository() {
         return repository;
     }
 
     public DiagramModel getDiagramModel(int index) {
-        return (DiagramModel) diagramModels.elementAt(index);
+        return diagramModels.elementAt(index);
     }
 
     public Vector<DiagramModel> getDiagramModels() {
@@ -128,7 +120,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void setSaved(boolean saved) {
-        logger.fine("Setting projectSaved: " + saved);
+        logger.fine(() -> "Setting projectSaved: " + saved);
         projectSaved = saved;
     }
 
@@ -137,7 +129,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         dm.addObserver(this);
         projectChanged();
-        }
+    }
 
     public void removeDiagram(DiagramModel dm) {
         dm.deleteObserver(this);
@@ -148,8 +140,8 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void projectChanged() {
         logger.fine("Project changed");
         setSaved(false);
-        
-        logger.fine("Notifying observers: " + this.countObservers());
+
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
 
@@ -160,22 +152,23 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         if (object != null) {
             objString = object.getClass().getSimpleName();
         }
-        logger.fine("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objString);
+        String logArg = objString;
+        logger.finest(() -> "UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + logArg);
         projectChanged();
     }
 
-    public void loadFromXML(String filename) {
-        logger.fine("Loading from XML: " + filename);
+    public void loadFromXML(String filename) throws IOException {
+        logger.finer(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFile(filename);
 
-        Element e = streamer.getNodeById(null, "project");
+        Element e = streamer.getNodeById(null, PROJECT);
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.finer(".......end from XML: \n" + filename);
+        logger.finer(() -> ".......end from XML: \n" + filename);
         setSaved(true);
     }
     // Embed4Auto
@@ -185,30 +178,29 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadURL(url);
 
-        Element e = streamer.getNodeById(null, "project");
+        Element e = streamer.getNodeById(null, PROJECT);
 
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.fine("Loading from URL: " + url);
+        logger.fine(() -> "Loading from URL: " + url);
         projectChanged();
     }
 
-    //for undo/redo
+    // for undo/redo
     public void loadFromXMLString(String xmlString) {
 
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFromString(xmlString);
 
-        Element e = streamer.getNodeById(null, "project");
+        Element e = streamer.getNodeById(null, PROJECT);
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.fine("Loading from XMLString: " + xmlString);
+        logger.finer(() -> "Loading from XMLString: " + xmlString);
         projectChanged();
     }
-
 
     public void streamToXML() {
         if (projectFilepath == null || projectFilepath.length() == 0) {
@@ -218,10 +210,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         streamToXML(projectFilepath);
         setSaved(true);
     }
-    
+
     public void streamToXML(String path) {
         XMLStreamer streamer = new XMLStreamer();
-        streamer.streamObject(null, "project", this);
+        streamer.streamObject(null, PROJECT, this);
 
         if (ApplicationGUI.isApplet()) {
             streamer.saveToURL(path);
@@ -230,10 +222,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         }
     }
 
-    //for undo/redo
+    // for undo/redo
     public String streamToXMLString() {
         XMLStreamer streamer = new XMLStreamer();
-        streamer.streamObject(null, "project", this);
+        streamer.streamObject(null, PROJECT, this);
         return streamer.streamToString();
     }
 
@@ -243,114 +235,99 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        streamer.streamObjects(node, diagramModels.iterator());
+        streamer.streamObjects(node, getDiagramsByZOrderOfFrames().iterator());
     }
 
+    /**
+     * Determines if the specified abstract class is referenced by any graphical
+     * elements in the diagramModels list, excluding the specified graphical
+     * element.
+     *
+     * @param el            the graphical element to exclude from the search
+     * @param abstractClass the abstract class to search for references to
+     * @return true if the abstract class is referenced by any graphical element in
+     *         the diagramModels list, excluding the specified element; false
+     *         otherwise
+     */
     public boolean isClassReferenced(GraphicalElement el, AbstractClass abstractClass) {
-        if (abstractClass == null) {
-            return false;
-        }
-
-        Iterator it = diagramModels.iterator();
-        DiagramModel dm = null;
-
-        while (it.hasNext()) {
-            dm = (DiagramModel) it.next();
-            NotifierVector grElements = dm.getGraphicalElements();
-
-            if (dm instanceof CCDModel) {
-                for (int i = 0; i < grElements.size(); i++) {
-                    GraphicalElement currEl = (GraphicalElement) grElements.get(i);
-                    if (currEl instanceof ConceptualClassGR) {
-                        if (currEl != el && ((ConceptualClassGR) currEl).getConceptualClass() == abstractClass) {
-                            return true;
-                        }
-                    }
+        for (DiagramModel model : diagramModels) {
+            for (GraphicalElement element : model.getGraphicalElements()) {
+                if (element == el) {
+                    continue;
                 }
-            }
-
-            if (dm instanceof DCDModel) {
-                for (int i = 0; i < grElements.size(); i++) {
-                    GraphicalElement currEl = (GraphicalElement) grElements.get(i);
-                    if (currEl instanceof ClassGR) {
-                        if (currEl != el && ((ClassGR) currEl).getDesignClass() == abstractClass) {
-                            return true;
-                        }
-                    }
+                if (element instanceof ConceptualClassGR
+                        && ((ConceptualClassGR) element).getConceptualClass() == abstractClass) {
+                    return true;
                 }
-            }
-
-            if (dm instanceof SDModel) {
-                for (int i = 0; i < grElements.size(); i++) {
-                    GraphicalElement currEl = (GraphicalElement) grElements.get(i);
-                    if (currEl instanceof SDObjectGR) {
-                        if (currEl != el && ((SDObjectGR) currEl).getSDObject().getDesignClass() == abstractClass) {
-                            return true;
-                        }
-                    }
-                    if (currEl instanceof MultiObjectGR) {
-                        if (currEl != el && ((MultiObjectGR) currEl).getMultiObject().getDesignClass() == abstractClass) {
-                            return true;
-                        }
-                    }
+                if (element instanceof ClassGR && ((ClassGR) element).getDesignClass() == abstractClass) {
+                    return true;
+                }
+                if (element instanceof SDObjectGR
+                        && ((SDObjectGR) element).getSDObject().getDesignClass() == abstractClass) {
+                    return true;
+                }
+                if (element instanceof MultiObjectGR
+                        && ((MultiObjectGR) element).getMultiObject().getDesignClass() == abstractClass) {
+                    return true;
                 }
             }
         }
-
         return false;
     }
 
+    /**
+     * Determines if the specified actor is referenced by any actor instance
+     * graphical elements in the diagramModels list, excluding the specified
+     * graphical element.
+     *
+     * @param el    the graphical element to exclude from the search
+     * @param actor the actor to search for references to
+     * @return true if the actor is referenced by any actor instance graphical
+     *         element in the diagramModels list, excluding the specified element;
+     *         false otherwise
+     */
     public boolean isActorReferenced(GraphicalElement el, Actor actor) {
-        if (actor == null) {
-            return false;
-        }
-
-        Iterator it = diagramModels.iterator();
-        DiagramModel dm = null;
-
-        while (it.hasNext()) {
-            dm = (DiagramModel) it.next();
-            NotifierVector grElements = dm.getGraphicalElements();
-
-            if (dm instanceof AbstractSDModel) {
-                for (int i = 0; i < grElements.size(); i++) {
-                    GraphicalElement currEl = (GraphicalElement) grElements.get(i);
-                    if (currEl instanceof ActorInstanceGR) {
-                        if (currEl != el && ((ActorInstanceGR) currEl).getActorInstance().getActor() == actor) {
-                            return true;
-                        }
-                    }
+        for (DiagramModel model : diagramModels) {
+            if (!(model instanceof AbstractSDModel)) {
+                continue;
+            }
+            for (GraphicalElement element : model.getGraphicalElements()) {
+                if (element == el || !(element instanceof ActorInstanceGR)) {
+                    continue;
+                }
+                if (((ActorInstanceGR) element).getActorInstance().getActor() == actor) {
+                    return true;
                 }
             }
         }
-
         return false;
     }
 
+    /**
+     * Determines if the specified system is referenced by any system instance
+     * graphical elements in the diagramModels list, excluding the specified
+     * graphical element.
+     *
+     * @param el     the graphical element to exclude from the search
+     * @param system the system to search for references to
+     * @return true if the system is referenced by any system instance graphical
+     *         element in the diagramModels list, excluding the specified element;
+     *         false otherwise
+     */
     public boolean isSystemReferenced(GraphicalElement el, System system) {
-        if (system == null) {
-            return false;
-        }
-
-        Iterator it = diagramModels.iterator();
-        DiagramModel dm = null;
-
-        while (it.hasNext()) {
-            dm = (DiagramModel) it.next();
-            NotifierVector grElements = dm.getGraphicalElements();
-
-            if (dm instanceof SSDModel) {
-                for (int i = 0; i < grElements.size(); i++) {
-                    GraphicalElement currEl = (GraphicalElement) grElements.get(i);
-                    if (currEl instanceof SystemInstanceGR) {
-                        if (currEl != el && ((SystemInstanceGR) currEl).getSystemInstance().getSystem() == system) {
-                            return true;
-                        }
-                    }
+        for (DiagramModel model : diagramModels) {
+            if (!(model instanceof SSDModel)) {
+                continue;
+            }
+            for (GraphicalElement element : model.getGraphicalElements()) {
+                if (element == el || !(element instanceof SystemInstanceGR)) {
+                    continue;
+                }
+                if (((SystemInstanceGR) element).getSystemInstance().getSystem() == system) {
+                    return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -442,7 +419,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void setFilepath(String filepath) {
         projectFilepath = filepath;
         if (filepath.length() > 0) {
-            projectFilename = filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);            
+            projectFilename = filepath.substring(filepath.lastIndexOf(File.separatorChar) + 1);
             projectName = projectFilename.substring(0, projectFilename.lastIndexOf("."));
         }
     }
@@ -454,4 +431,31 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setSaved(true);
         setName("New Project");
     }
+
+    public Vector<DiagramModel> getDiagramsByZOrderOfFrames() {
+        Vector<DiagramModel> orderedDiagrams = new Vector<>();
+
+        if (diagramModels.isEmpty()) {
+            return orderedDiagrams;
+        }
+
+        DiagramInternalFrame diagramInternalFrame = diagramModels.get(0).getFrame();
+        if (diagramInternalFrame == null) {
+            logger.severe(
+                    "There is no internal frame for the diagram model. Probably running in tests... returning diagrams unordered");
+            return diagramModels;
+        }
+
+        JDesktopPane desktopPane = (JDesktopPane) diagramInternalFrame.getParent();
+        JInternalFrame[] allFrames = desktopPane.getAllFrames();
+
+        // sort the frames by their z-order (back to front)
+        Arrays.sort(allFrames, (f1, f2) -> desktopPane.getComponentZOrder(f1) - desktopPane.getComponentZOrder(f2));
+
+        for (JInternalFrame internalFrame : allFrames) {
+            orderedDiagrams.add(((DiagramInternalFrame) internalFrame).getModel());
+        }
+        return orderedDiagrams;
+    }
+
 }

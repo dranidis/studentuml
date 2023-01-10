@@ -1,10 +1,6 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//CallMessageEditor.java
 import edu.city.studentuml.model.graphical.UMLNoteGR;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -18,9 +14,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class UMLNoteEditor extends JPanel implements ActionListener {
 
     private UMLNoteGR note;
@@ -36,13 +36,13 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
         this.note = note;
         
         textLabel = new JLabel("UML note text: ");
-        textArea = new JTextArea(5, 20);
+        textArea = new JTextArea(10, 30);
         textArea.setEditable(true);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         JScrollPane textScroll = new JScrollPane(
-                textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -96,7 +96,7 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
         noteDialog.pack();
         noteDialog.setResizable(false);
         noteDialog.setLocationRelativeTo(owner);
-        noteDialog.show();
+        noteDialog.setVisible(true);
 
         return ok;
     }
@@ -114,7 +114,6 @@ public class UMLNoteEditor extends JPanel implements ActionListener {
             noteDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
-            System.out.println(event.getSource());
             noteDialog.setVisible(false);
         }
     }

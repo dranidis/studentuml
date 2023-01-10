@@ -13,30 +13,14 @@ import org.w3c.dom.Element;
  */
 public abstract class UCLink implements Serializable, IXMLCustomStreamable {
 
-//    private Classifier from;
-//    private Classifier to;
-
     protected String name;
     protected UCDComponent source;
     protected UCDComponent target;
 
-//    protected UCLink(Classifier from, Classifier to) {
-//        this.from = from;
-//        this.to = to;
-//    }
-
-    public UCLink(UCDComponent source, UCDComponent target) {
+    protected UCLink(UCDComponent source, UCDComponent target) {
         this.name = "";
         this.source = source;
         this.target = target;
-    }
-
-    public Classifier getClassifierFrom() {
-        return source;
-    }
-
-    public Classifier getClassifierTo() {
-        return target;
     }
 
     public UCDComponent getSource() {
@@ -66,7 +50,7 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
         throw new UnsupportedOperationException("Not supported!");
     }
 
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         throw new UnsupportedOperationException("Not supported!");
     }
 
@@ -91,8 +75,6 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-//        node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(from));
-//        node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(to));
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(source));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(target));
     }

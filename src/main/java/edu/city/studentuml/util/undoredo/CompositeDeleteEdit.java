@@ -1,39 +1,43 @@
 package edu.city.studentuml.util.undoredo;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.SystemInstance;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
  *
  * @author draganbisercic
  */
 public class CompositeDeleteEdit extends DeleteEditComponent {
+    private static final Logger logger = Logger.getLogger(CompositeDeleteEdit.class.getName());
 
-    List deleteEditComponents = new ArrayList();
-    Object clone;   //need to store model elements before they are cleared at deletion
+    private List<DeleteEditComponent> deleteEditComponents = new ArrayList<>();
+    private Object clone; // need to store model elements before they are cleared at deletion
+
+    private List<GraphicalElement> deletedGraphicalElements = new ArrayList<>();
 
     CompositeDeleteEdit(GraphicalElement element, DiagramModel model) {
         super(element, model);
@@ -56,28 +60,40 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
                 clone = ((SDObjectGR) element).getSDObject().clone();
             } else if (element instanceof MultiObjectGR) {
                 clone = ((MultiObjectGR) element).getMultiObject().clone();
-            }
+            } 
+        } else {
+            logger.severe(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : " + element.toString());
         }
     }
 
+    /**
+     * Check first if element was already added in the composite
+     */
+    @Override
     public void add(DeleteEditComponent edit) {
-        deleteEditComponents.add(edit);
+        GraphicalElement e = edit.getElement();
+        if (!deletedGraphicalElements.contains(e)) {
+            deletedGraphicalElements.add(e);
+            deleteEditComponents.add(edit);
+        }
     }
 
+    @Override
     public void remove(DeleteEditComponent edit) {
         deleteEditComponents.remove(edit);
     }
 
+    @Override
     public DeleteEditComponent getChild(int i) {
-        return (DeleteEditComponent) deleteEditComponents.get(i);
+        return deleteEditComponents.get(i);
     }
 
     @Override
     public void undo() throws CannotUndoException {
         DeleteEditComponent comp;
-        Iterator i = deleteEditComponents.iterator();
+        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
         while (i.hasNext()) {
-            comp = (DeleteEditComponent) i.next();
+            comp = i.next();
             comp.undo();
         }
 
@@ -118,15 +134,15 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
             MultiObject m = ((MultiObjectGR) element).getMultiObject();
             MultiObject n = (MultiObject) clone;
             model.getCentralRepository().editMultiObject(m, n.clone());
-        } 
+        }
     }
 
     @Override
     public void redo() throws CannotRedoException {
         DeleteEditComponent comp;
-        Iterator i = deleteEditComponents.iterator();
+        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
         while (i.hasNext()) {
-            comp = (DeleteEditComponent) i.next();
+            comp = i.next();
             comp.redo();
         }
     }

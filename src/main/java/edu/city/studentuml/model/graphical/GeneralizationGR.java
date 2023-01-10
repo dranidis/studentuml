@@ -1,12 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//GeneralizationGR.java
-import edu.city.studentuml.model.domain.Generalization;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -14,15 +7,25 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
-public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
+import edu.city.studentuml.model.domain.Generalization;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+@JsonIncludeProperties({ "internalid", "from", "to", "generalization" })
+public class GeneralizationGR extends LinkGR {
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
-    private AbstractClassGR superClass;
-    private AbstractClassGR baseClass;
+    @JsonProperty("to")
+    private ClassifierGR superClass;
+    @JsonProperty("from")
+    private ClassifierGR baseClass;
 
-    public GeneralizationGR(ClassGR parent, ClassGR child, Generalization gener) {
+    public GeneralizationGR(ClassifierGR parent, ClassifierGR child, Generalization gener) {
         super(child, parent);
         outlineColor = Color.black;
         highlightColor = Color.blue;
@@ -31,14 +34,6 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
         generalization = gener;
     }
 
-    public GeneralizationGR(ConceptualClassGR parent, ConceptualClassGR child, Generalization gener) {
-        super(child, parent);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        superClass = parent;
-        baseClass = child;
-        generalization = gener;
-    }
 
     protected ClassifierGR getClassifierA() {
         return this.baseClass;
@@ -52,11 +47,11 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
         return generalization;
     }
 
-    public AbstractClassGR getSuperClass() {
+    public ClassifierGR getSuperClass() {
         return superClass;
     }
 
-    public AbstractClassGR getBaseClass() {
+    public ClassifierGR getBaseClass() {
         return baseClass;
     }
 
@@ -92,6 +87,7 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
         return superClass.getHeight();
     }
 
+    @Override
     public void draw(Graphics2D g) {
         baseClass.refreshDimensions(g);
         superClass.refreshDimensions(g);
@@ -146,15 +142,20 @@ public class GeneralizationGR extends LinkGR implements IXMLCustomStreamable {
         return false;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(baseClass));
         node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(superClass));
 
         streamer.streamObject(node, "generalization", generalization);
     }
+
+    @Override
+    public String toString() {
+        return "" + baseClass + " ---generalization---> " + superClass;
+    }      
 }

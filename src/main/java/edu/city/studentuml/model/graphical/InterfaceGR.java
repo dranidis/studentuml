@@ -1,13 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//InterfaceGR.java
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -21,9 +13,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
-public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLCustomStreamable {
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.Interface;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.util.XMLStreamer;
+
+/**
+ * @author Ervin Ramollari
+ */
+@JsonIncludeProperties({ "interface", "internalid", "startingPoint" })
+public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
     private static int methodFieldXOffset = 4;
     private static int methodFieldYOffset = 3;
@@ -32,6 +36,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
     private static int minimumWidth = 70;
     private static int nameFieldXOffset = 3;
     private static int nameFieldYOffset = 3;
+    @JsonProperty("interface")
     private Interface coreInterface;
     private Font methodFont;
     private Font nameFont;
@@ -40,7 +45,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
         coreInterface = i;
         startingPoint = start;
 
-        // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumNameFieldHeight + minimumMethodFieldHeight;
 
@@ -51,6 +55,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
         methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
+    @Override
     public void draw(Graphics2D g) {
         if (fillColor == null) {
             fillColor = GraphicalElement.lighter(this.myColor());
@@ -63,7 +68,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
         refreshDimensions(g);
 
         int nameFieldHeight = calculateNameFieldHeight(g);
-        int methodFieldHeight = calculateMethodFieldHeight(g);
         int startingX = getX();
         int startingY = getY();
 
@@ -73,7 +77,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
         g.setPaint(fillColor);
         g.fill(shape);
 
-        Stroke originalStroke = g.getStroke();
+        Stroke originalStroke;
 
         g.setStroke(new BasicStroke(1.2f));
 
@@ -245,14 +249,12 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR, IXMLC
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "interface", getInterface());
         node.setAttribute("x", Integer.toString(startingPoint.x));

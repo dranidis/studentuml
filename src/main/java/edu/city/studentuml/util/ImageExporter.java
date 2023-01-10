@@ -1,8 +1,5 @@
 package edu.city.studentuml.util;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ImageExporter.java
 import edu.city.studentuml.view.DiagramView;
 import java.awt.Component;
 import java.awt.Frame;
@@ -13,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.prefs.Preferences;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -23,15 +18,26 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.w3c.tools.codec.Base64Encoder;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class ImageExporter {
+
+    private ImageExporter() {
+    }
 
     public static final String PNG = ".png";
 
-    // static method exportToImage() takes a diagram view and saves the
-    // drawn elements as an image after showing a file chooser dialog.
-    // In the future this method can be extended to handle any image type
-    // by adding one method for each image type and giving the user
-    // the option to select the format
+
+    /**
+     * Static method exportToImage() takes a diagram view and saves the drawn
+     * elements as an image after showing a file chooser dialog. In the future this
+     * method can be extended to handle any image type by adding one method for each
+     * image type and giving the user the option to select the format
+     * 
+     * @param view
+     * @param parent
+     */
     public static void exportToImage(DiagramView view, Component parent) {
         BufferedImage image = view.getImage();
 
@@ -45,7 +51,7 @@ public class ImageExporter {
         }
 
         JFileChooser fileChooser = new JFileChooser();
-        String path = Preferences.userRoot().get("DEFAULT_PATH", "");
+        String path = Settings.getDefaultPath();
         if (path.length() > 0)
             fileChooser.setCurrentDirectory(new File(path));
         
@@ -81,6 +87,7 @@ public class ImageExporter {
         try {
             ImageIO.write(image, "PNG", file);
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

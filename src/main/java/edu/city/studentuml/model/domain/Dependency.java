@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Dependency.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -10,6 +7,10 @@ import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class Dependency implements Serializable, IXMLCustomStreamable {
 
     private DesignClass from;
@@ -29,12 +30,9 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
-
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(from));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(to));
     }

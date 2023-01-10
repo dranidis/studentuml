@@ -1,14 +1,15 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//MessageParameter.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class MessageParameter implements Serializable, IXMLCustomStreamable {
 
     private String name;
@@ -30,12 +31,10 @@ public class MessageParameter implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         name = node.getAttribute("name");
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", name);
     }
 

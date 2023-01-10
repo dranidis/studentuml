@@ -19,6 +19,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
@@ -28,7 +30,9 @@ import javax.swing.undo.UndoableEdit;
  */
 public abstract class ResizeWithCoveredElementsController {
 
-    private DiagramInternalFrame frame;
+    private static final Logger logger = Logger.getLogger(ResizeWithCoveredElementsController.class.getName());
+
+    private DiagramInternalFrame diagramInternalFrame;
     private DiagramModel model;
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
@@ -38,12 +42,12 @@ public abstract class ResizeWithCoveredElementsController {
     private SizeWithCoveredElements lastSize = null;
     private SizeWithCoveredElements undoSize = null;
     private SizeWithCoveredElements redoSize = null;
-    private List<Size> undoContextSizes = new ArrayList<Size>();
-    private List<Size> redoContextSizes = new ArrayList<Size>();
+    private List<Size> undoContextSizes = new ArrayList<>();
+    private List<Size> redoContextSizes = new ArrayList<>();
     private SelectionController selectionController; // need to disable move when resizing
 
-    public ResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
-        this.frame = f;
+    protected ResizeWithCoveredElementsController(DiagramInternalFrame f, DiagramModel m, SelectionController s) {
+        this.diagramInternalFrame = f;
         this.model = m;
         this.selectionController = s;
 
@@ -75,7 +79,8 @@ public abstract class ResizeWithCoveredElementsController {
             return;
         }
 
-        Point p = event.getPoint();
+        Point p = scalePoint(event.getPoint());
+
         GraphicalElement e = model.getContainingGraphicalElement(p);
 
         if (e == null) {
@@ -133,7 +138,6 @@ public abstract class ResizeWithCoveredElementsController {
                 // adding newly covered elements after resize
                 addContainingElements();
 
-//                UndoableEdit edit = new ActivityResizeWithCoveredElementsEdit(resizableElement, undoSize, redoSize, model);
                 CompoundEdit edit = new CompoundResizeEdit();
                 UndoableEdit resizeEdit = ResizeWithCoveredElementsEditFactory.getInstance().createResizeEdit(resizableElement, undoSize, redoSize, model);
                 edit.addEdit(resizeEdit);
@@ -149,11 +153,11 @@ public abstract class ResizeWithCoveredElementsController {
                     }
                 } else {
                     // TEST
-                    System.err.println(false);
+                    logger.severe(() -> "undoContextSizes.size() != redoContextSizes.size()");
                 }
 
                 edit.end();
-                frame.getUndoSupport().postEdit(edit);
+                diagramInternalFrame.getUndoSupport().postEdit(edit);
             }
 
             handle = null;
@@ -171,9 +175,7 @@ public abstract class ResizeWithCoveredElementsController {
         }
     }
 
-    protected void addContainingElements() {
-        // empty by default
-    }
+    protected abstract void addContainingElements();
 
     private void myMouseDragged(MouseEvent event) {
         if (!selectionMode) {
@@ -185,12 +187,25 @@ public abstract class ResizeWithCoveredElementsController {
         }
 
         // resize the resizable element by moving the handle
-        handle.move(event.getX(), event.getY());
+        handle.move(scale(event.getX()), scale(event.getY()));
+        
         lastSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
         lastSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));
 
         // MODEL CHANGED
         model.modelChanged();
+    }
+
+
+
+    private Point scalePoint(Point point) {
+        int newx = scale(point.getX());
+        int newy = scale(point.getY());
+        return new Point(newx, newy);
+    }
+
+    private int scale(double number) {
+        return (int) (number / diagramInternalFrame.getView().getScale());
     }
 
     public DiagramModel getModel() {
@@ -217,12 +232,12 @@ public abstract class ResizeWithCoveredElementsController {
         this.mouseMotionListener = mouseMotionListener;
     }
 
-    public DiagramInternalFrame getFrame() {
-        return frame;
+    public DiagramInternalFrame getDiagramInternalFrame() {
+        return diagramInternalFrame;
     }
 
-    public void setFrame(DiagramInternalFrame frame) {
-        this.frame = frame;
+    public void setDiagramInternalFrame(DiagramInternalFrame frame) {
+        this.diagramInternalFrame = frame;
     }
 
     public boolean isSelectionMode() {
@@ -253,7 +268,7 @@ public abstract class ResizeWithCoveredElementsController {
         return selectionController;
     }
 
-    private void loadContextSizes(Resizable context, List sizes) {
+    private void loadContextSizes(Resizable context, List<Size> sizes) {
         Size size = new Size();
         size.setStartingPosition(new Point(context.getStartingPoint().x, context.getStartingPoint().y));
         size.setDimension(new Dimension(context.getWidth(), context.getHeight()));

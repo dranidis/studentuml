@@ -1,38 +1,49 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//GraphicalElement.java
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.view.gui.ApplicationGUI;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.Random;
 import java.util.logging.Logger;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__type")
 public abstract class GraphicalElement implements Serializable, IXMLCustomStreamable {
-    
-    Logger logger = Logger.getLogger(GraphicalElement.class.getName());
+
+    private static final Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
+    @JsonIgnore
     protected Color fillColor;
+    @JsonIgnore
     protected Color highlightColor;
+    @JsonIgnore
     protected Color outlineColor;
     protected Point startingPoint;
     protected int width;
     protected int height;
     protected String myUid;
-    private Font baseFont = new Font("SansSerif", Font.PLAIN, 8);
     public static final Color DESKTOP_USER_COLOR = Color.yellow;
 
+    private Random r = new Random();
+
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return new Rectangle2D.Double(this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
@@ -44,22 +55,28 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return myUid;
     }
 
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
+    }
+
     public Color myColor() {
+        
         if (getMyUid() == null) {
             logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
             return new Color(0, 0, 0);
         }
         if (SystemWideObjectNamePool.userColorMap.containsKey(getMyUid())) {
-            return (Color) SystemWideObjectNamePool.userColorMap.get(getMyUid());
+            return SystemWideObjectNamePool.userColorMap.get(getMyUid());
         }
         logger.fine("============= UID: " + getMyUid());
-        SystemWideObjectNamePool.userColorMap.put(getMyUid(), getMyUid().equals(ApplicationGUI.DESKTOP_USER) ? DESKTOP_USER_COLOR : new Color((int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128), (int) (Math.random() * 128.0 + 128)));
+        SystemWideObjectNamePool.userColorMap.put(getMyUid(),
+                getMyUid().equals(Constants.DESKTOP_USER) ? DESKTOP_USER_COLOR
+                        : new Color(r.nextInt(128) + 128, r.nextInt(128) + 128, r.nextInt(128) + 128));
         return this.myColor();
     }
 
     public static Color lighter(Color sourceColor) {
-        //return new Color(255,0,0,128); alpha is cool
-        //return new Color(Math.min(sourceColor.getRed() + 50, 255), Math.min(sourceColor.getGreen() + 50, 255), Math.min(sourceColor.getBlue() + 50, 255));
         return sourceColor.equals(DESKTOP_USER_COLOR) ? new Color(255, 255, 205) : sourceColor.brighter();
     }
 
@@ -97,7 +114,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return outlineColor;
     }
 
-    public Color getHightlightColor() {
+    public Color getHighlightColor() {
         return highlightColor;
     }
 
@@ -110,15 +127,21 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     public void draw(Graphics2D g) {
-        /* if (SystemWideObjectNamePool.userColorMap.size() > 1 && this instanceof UMLNoteGR) {
-        g.setFont(baseFont);
-        g.drawString("user: "+this.myUid, getX(), getY()-5);
-        } */
+
     }
 
     public abstract void move(int x, int y);
 
     public abstract boolean contains(Point2D p);
+
+    public boolean containedInArea(int x, int y, int toX, int toY) {
+        Rectangle2D b = getBounds();
+        int minx = (int) b.getMinX();
+        int miny = (int) b.getMinY();
+        int maxx = (int) b.getMaxX();
+        int maxy = (int) b.getMaxY();
+        return minx > x && miny > y && maxx < toX && maxy < toY;
+    }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         String uid = node.getAttribute("uid");
@@ -129,11 +152,16 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
         ((GraphicalElement) instance).myUid = uid;
 
-        logger.finer("Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
+        logger.finer(() -> "Streaming from " + instance.getClass().getName() + " " + instance.equals(this));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        logger.finer("Streaming to " + this.getClass().getName());
+        logger.finer(() -> "Streaming to " + this.getClass().getName());
         node.setAttribute("uid", this.getMyUid());
     }
+
+    public String toString() {
+        return "[" + getX() + ", " + getY() + "][" + getWidth() + ", " + getHeight() + "]";
+    }
+    
 }

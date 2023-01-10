@@ -1,0 +1,5 @@
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dcd" selected="true"/>
+  </object>
+</uml>

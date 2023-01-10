@@ -1,0 +1,17 @@
+package edu.city.studentuml.view.gui.components;
+
+import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.AttributeEditor;
+
+public class AttributesPanel extends ListPanel<Attribute> {
+
+    public AttributesPanel(String title, CentralRepository repository) {
+        super(title, repository);
+    }
+
+       @Override
+    protected ElementEditor<Attribute> createElementEditor(Attribute attribute, CentralRepository repository) {
+        return new AttributeEditor(attribute, repository);
+    }
+}

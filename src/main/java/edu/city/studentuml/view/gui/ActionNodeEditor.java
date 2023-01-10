@@ -79,13 +79,13 @@ public class ActionNodeEditor extends JPanel implements ActionListener {
         actionNodeDialog.pack();
         actionNodeDialog.setResizable(false);
         actionNodeDialog.setLocationRelativeTo(owner);
-        actionNodeDialog.show();
+        actionNodeDialog.setVisible(true);
 
         return ok;
     }
 
     public void initialize() {
-        ActionNode node = (ActionNode) actionNodeGR.getNodeComponent();
+        ActionNode node = (ActionNode) actionNodeGR.getComponent();
 
         actionNameField.setText(node.getName());
     }

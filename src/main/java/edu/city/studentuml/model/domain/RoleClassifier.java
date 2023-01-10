@@ -1,10 +1,11 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//RoleClassifier.java
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public abstract class RoleClassifier implements Serializable {
 
     protected Classifier classifier;

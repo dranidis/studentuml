@@ -14,39 +14,43 @@ import java.util.ListIterator;
  */
 public abstract class CompositeNodeGR extends NodeComponentGR {
 
-    protected List<NodeComponentGR> nodeComponents;
+    protected List<NodeComponentGR> components;
 
-    public CompositeNodeGR(CompositeNode compositeNode, int x, int y) {
+    protected CompositeNodeGR(CompositeNode compositeNode, int x, int y) {
         super(compositeNode, x, y);
-        nodeComponents = new ArrayList<NodeComponentGR>();
+        components = new ArrayList<>();
+    }
+
+    public List<NodeComponentGR> getComponents() {
+        return components;
     }
 
     @Override
     public void add(NodeComponentGR nodeGR) {
-        nodeComponents.add(nodeGR);
-        nodeComponent.add(nodeGR.getNodeComponent());
+        components.add(nodeGR);
+        component.add(nodeGR.getComponent());
     }
 
     @Override
     public void remove(NodeComponentGR nodeGR) {
-        nodeComponents.remove(nodeGR);
-        nodeComponent.remove(nodeGR.getNodeComponent());
+        components.remove(nodeGR);
+        component.remove(nodeGR.getComponent());
     }
 
     /*
      * Returns the number of node components contained
      */
     public int getNumberOfNodeComponents() {
-        return nodeComponents.size();
+        return components.size();
     }
 
     public NodeComponentGR getNodeComponent(int index) {
-        return nodeComponents.get(index);
+        return components.get(index);
     }
 
     @Override
-    public Iterator createIterator() {
-        return new CompositeNodeGRIterator(nodeComponents.iterator());
+    public Iterator<NodeComponentGR> createIterator() {
+        return new CompositeNodeGRIterator(components.iterator());
     }
 
     @Override
@@ -55,11 +59,8 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
         int deltaY = y - startingPoint.y;
         startingPoint.setLocation(x, y);
 
-        Iterator iterator = nodeComponents.iterator();
-        while (iterator.hasNext()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.next();
-            node.move(node.getStartingPoint().x + deltaX, node.getStartingPoint().y + deltaY);
-        }
+        components
+                .forEach(comp -> comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY));
     }
 
     public boolean contains(NodeComponentGR otherNodeComponent) {
@@ -97,9 +98,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
-        ListIterator iterator = nodeComponents.listIterator(nodeComponents.size());
+        ListIterator<NodeComponentGR> iterator = components.listIterator(components.size());
         while (iterator.hasPrevious()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.previous();
+            NodeComponentGR node = iterator.previous();
             if (node.contains(point)) {
                 return node.getContainingGraphicalElement(point);
             }
@@ -109,9 +110,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public NodeComponentGR findContext(NodeComponentGR node) {
-        Iterator iterator = nodeComponents.iterator();
+        Iterator<NodeComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            NodeComponentGR myNode = (NodeComponentGR) iterator.next();
+            NodeComponentGR myNode = iterator.next();
             if (myNode.contains(node)) {
                 return myNode.findContext(node);
             }
@@ -121,9 +122,9 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public void clearSelected() {
-        Iterator iterator = nodeComponents.iterator();
+        Iterator<NodeComponentGR> iterator = components.iterator();
         while (iterator.hasNext()) {
-            NodeComponentGR node = (NodeComponentGR) iterator.next();
+            NodeComponentGR node = iterator.next();
             node.clearSelected();
         }
 

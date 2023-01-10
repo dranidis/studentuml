@@ -14,18 +14,18 @@ import java.util.List;
  */
 public abstract class NodeComponentGR extends GraphicalElement {
 
-    protected NodeComponent nodeComponent;
+    protected NodeComponent component;
     public static final NodeComponentGR DEFAULT_CONTEXT = null;
     protected NodeComponentGR context;
-    protected List<EdgeGR> incomingEdges;
-    protected List<EdgeGR> outgoingEdges;
+    protected List<EdgeGR> incomingRelations;
+    protected List<EdgeGR> outgoingRelations;
 
-    public NodeComponentGR(NodeComponent nodeComponent, int x, int y) {
-        this.nodeComponent = nodeComponent;
+    protected NodeComponentGR(NodeComponent nodeComponent, int x, int y) {
+        this.component = nodeComponent;
         startingPoint = new Point(x, y);
         context = DEFAULT_CONTEXT;
-        incomingEdges = new ArrayList<EdgeGR>();
-        outgoingEdges = new ArrayList<EdgeGR>();
+        incomingRelations = new ArrayList<>();
+        outgoingRelations = new ArrayList<>();
     }
 
     public void add(NodeComponentGR nodeGR) {
@@ -43,46 +43,46 @@ public abstract class NodeComponentGR extends GraphicalElement {
     public void setContext(NodeComponentGR context) {
         this.context = context;
         if (context != NodeComponentGR.DEFAULT_CONTEXT) {
-            nodeComponent.setContext(context.getNodeComponent());
+            component.setContext(context.getComponent());
         } else {
-            nodeComponent.setContext(NodeComponent.DEFAULT_CONTEXT);
+            component.setContext(NodeComponent.DEFAULT_CONTEXT);
         }
     }
 
     public void addIncomingEdge(EdgeGR edge) {
-        incomingEdges.add(edge);
-        nodeComponent.addIncomingEdge(edge.getEdge());
+        incomingRelations.add(edge);
+        component.addIncomingEdge(edge.getEdge());
     }
 
     public void removeIncomingEdge(EdgeGR edge) {
-        incomingEdges.remove(edge);
-        nodeComponent.removeIncomingEdge(edge.getEdge());
+        incomingRelations.remove(edge);
+        component.removeIncomingEdge(edge.getEdge());
     }
 
     public int getNumberOfIncomingEdges() {
-        return incomingEdges.size();
+        return incomingRelations.size();
     }
 
-    public Iterator getIncomingEdges() {
-        return incomingEdges.iterator();
+    public Iterator<EdgeGR> getIncomingRelations() {
+        return incomingRelations.iterator();
     }
 
     public void addOutgoingEdge(EdgeGR edge) {
-        outgoingEdges.add(edge);
-        nodeComponent.addOutgoingEdge(edge.getEdge());
+        outgoingRelations.add(edge);
+        component.addOutgoingEdge(edge.getEdge());
     }
 
     public void removeOutgoingEdge(EdgeGR edge) {
-        outgoingEdges.remove(edge);
-        nodeComponent.removeOutgoingEdge(edge.getEdge());
+        outgoingRelations.remove(edge);
+        component.removeOutgoingEdge(edge.getEdge());
     }
 
     public int getNumberOfOutgoingEdges() {
-        return outgoingEdges.size();
+        return outgoingRelations.size();
     }
 
-    public Iterator getOutgoingEdges() {
-        return outgoingEdges.iterator();
+    public Iterator<EdgeGR> getOutgoingRelations() {
+        return outgoingRelations.iterator();
     }
 
     /*
@@ -92,10 +92,10 @@ public abstract class NodeComponentGR extends GraphicalElement {
 
     public abstract NodeComponentGR getNodeComponent(int index);
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<NodeComponentGR> createIterator();
 
-    public NodeComponent getNodeComponent() {
-        return nodeComponent;
+    public NodeComponent getComponent() {
+        return component;
     }
 
     public abstract boolean contains(NodeComponentGR otherNodeComponent);
@@ -114,4 +114,9 @@ public abstract class NodeComponentGR extends GraphicalElement {
     protected abstract int calculateWidth(Graphics2D g);
 
     protected abstract int calculateHeight(Graphics2D g);
+
+    @Override
+    public String toString() {
+        return component.getName() + " : " +  component.getClass().getSimpleName();
+    }   
 }

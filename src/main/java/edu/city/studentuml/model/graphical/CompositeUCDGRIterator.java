@@ -6,16 +6,16 @@ import java.util.Iterator;
  *
  * @author Biser
  */
-public class CompositeUCDGRIterator extends CompositeGRIterator {
+public class CompositeUCDGRIterator extends CompositeGRIterator<UCDComponentGR> {
 
-    public CompositeUCDGRIterator(Iterator iterator) {
+    public CompositeUCDGRIterator(Iterator<UCDComponentGR> iterator) {
         super(iterator);
     }
 
     @Override
-    protected Object getNextObject() {
-        Iterator iterator = (Iterator) stack.peek(); // get iterator
-        UCDComponentGR ucdComponent = (UCDComponentGR) iterator.next(); // get the next component
+    protected UCDComponentGR getNextObject() {
+        Iterator<UCDComponentGR> iterator = stack.peek(); // get iterator
+        UCDComponentGR ucdComponent = iterator.next(); // get the next component
 
         // TESTED (works)
         if (iterator instanceof CompositeUCDGRIterator) {

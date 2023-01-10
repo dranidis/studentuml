@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Generalization.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -12,35 +9,27 @@ import org.w3c.dom.Element;
 
 public class Generalization implements Serializable, IXMLCustomStreamable {
 
-    private AbstractClass baseClass;
-    private AbstractClass superClass;
+    private Classifier baseClass;
+    private Classifier superClass;
 
-    public Generalization(DesignClass parent, DesignClass child) {
+    public Generalization(Classifier parent, Classifier child) {
         superClass = parent;
         baseClass = child;
     }
 
-    public Generalization(ConceptualClass parent, ConceptualClass child) {
-        superClass = parent;
-        baseClass = child;
-    }
-
-    public AbstractClass getSuperClass() {
+    public Classifier getSuperClass() {
         return superClass;
     }
 
-    public AbstractClass getBaseClass() {
+    public Classifier getBaseClass() {
         return baseClass;
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(baseClass));
         node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(superClass));
-
     }
 }

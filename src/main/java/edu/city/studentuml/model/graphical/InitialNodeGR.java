@@ -83,7 +83,7 @@ public class InitialNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "initialnode", (InitialNode) getNodeComponent());
+        streamer.streamObject(node, "initialnode", (InitialNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

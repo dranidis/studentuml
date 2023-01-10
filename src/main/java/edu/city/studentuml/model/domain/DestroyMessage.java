@@ -1,13 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//DestroyMessage.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class DestroyMessage extends SDMessage implements IXMLCustomStreamable {
 
     public DestroyMessage(RoleClassifier from, RoleClassifier to) {
@@ -19,7 +20,6 @@ public class DestroyMessage extends SDMessage implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

@@ -7,12 +7,12 @@ import java.util.Stack;
  *
  * @author Biser
  */
-public abstract class CompositeGRIterator implements Iterator {
+public abstract class CompositeGRIterator<E> implements Iterator<E> {
 
-    protected Stack stack;
+    protected Stack<Iterator<E>> stack;
 
-    public CompositeGRIterator(Iterator iterator) {
-        stack = new Stack();
+    protected CompositeGRIterator(Iterator<E> iterator) {
+        stack = new Stack<>();
         stack.push(iterator);
     }
 
@@ -20,7 +20,7 @@ public abstract class CompositeGRIterator implements Iterator {
         if (stack.isEmpty()) {
             return false;
         } else {
-            Iterator iterator = (Iterator) stack.peek(); // get iterator
+            Iterator<E> iterator = stack.peek(); // get iterator
             if (!iterator.hasNext()) {
                 // if no more elements
                 stack.pop();
@@ -31,7 +31,7 @@ public abstract class CompositeGRIterator implements Iterator {
         }
     }
 
-    public Object next() {
+    public E next() {
         if (hasNext()) {
             return getNextObject();
         } else {
@@ -39,9 +39,10 @@ public abstract class CompositeGRIterator implements Iterator {
         }
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("remove() not supported.");
     }
 
-    protected abstract Object getNextObject();
+    protected abstract E getNextObject();
 }

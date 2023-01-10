@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="UCDModel" framex="0,0,591,480" iconified="false" id="" internalid="ucdmodel0" name="UCD: ucd" selected="true">
+      <object class="UCActorGR" id="" internalid="ucactorgr0" uid="Desktop Application User" x="30" y="42">
+        <object class="Actor" id="ucActor" internalid="actor0" name="A"/>
+      </object>
+      <object class="UCActorGR" id="" internalid="ucactorgr1" uid="Desktop Application User" x="42" y="193">
+        <object class="Actor" id="ucActor" internalid="actor1" name="A2"/>
+      </object>
+      <object class="UseCaseGR" id="" internalid="usecasegr0" uid="Desktop Application User" x="176" y="41">
+        <object class="UseCase" id="useCase" internalid="usecase0" name="U"/>
+      </object>
+      <object class="UseCaseGR" id="" internalid="usecasegr2" uid="Desktop Application User" x="157" y="272">
+        <object class="UseCase" id="useCase" internalid="usecase2" name=""/>
+      </object>
+      <object class="UseCaseGR" id="" internalid="usecasegr1" uid="Desktop Application User" x="211" y="177">
+        <object class="UseCase" id="useCase" internalid="usecase1" name="U2"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr0" id="" internalid="ucassociationgr0" to="usecasegr0">
+        <object class="UCAssociation" from="actor0" id="link" internalid="ucassociation0" to="usecase0"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr1" id="" internalid="ucassociationgr2" to="usecasegr0">
+        <object class="UCAssociation" from="actor1" id="link" internalid="ucassociation2" to="usecase0"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr0" id="" internalid="ucassociationgr1" to="usecasegr1">
+        <object class="UCAssociation" from="actor0" id="link" internalid="ucassociation1" to="usecase1"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr1" id="" internalid="ucassociationgr3" to="usecasegr1">
+        <object class="UCAssociation" from="actor1" id="link" internalid="ucassociation3" to="usecase1"/>
+      </object>
+      <object class="UCExtendGR" from="usecasegr1" id="" internalid="ucextendgr0" to="usecasegr0">
+        <object class="UCExtend" from="usecase1" id="link" internalid="ucextend0" to="usecase0">
+          <object id="extensionpoints">
+            <object class="ExtensionPoint" id="" name="New Extension Point"/>
+          </object>
+        </object>
+      </object>
+      <object class="UCIncludeGR" from="usecasegr1" id="" internalid="ucincludegr0" to="usecasegr2">
+        <object class="UCInclude" from="usecase1" id="link" internalid="ucinclude0" to="usecase2"/>
+      </object>
+    </object>
+  </object>
+</uml>

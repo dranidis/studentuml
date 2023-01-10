@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
  * @author Biser
  */
 public class State implements IXMLCustomStreamable {
-    
+
     private String name;
 
     public State(String name) {
@@ -35,7 +35,6 @@ public class State implements IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

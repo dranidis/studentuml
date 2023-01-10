@@ -1,7 +1,5 @@
 package edu.city.studentuml.applet;
 
-// Author: Ervin Ramollari
-// LoginPanel.java
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -9,19 +7,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-// JPanel with components for inputting drawing view size
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class LoginPanel extends JPanel implements ActionListener {
 
     private JLabel usernameLabel;
@@ -34,7 +32,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     private JButton cancelButton;
     private JPanel bottomPanel;
     private JDialog loginDialog;
-    private boolean ok;	// stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
 
     public LoginPanel() {
         usernameLabel = new JLabel("Username: ");
@@ -98,7 +96,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         loginDialog.pack();
         loginDialog.setResizable(false);
         loginDialog.setLocationRelativeTo(owner);
-        loginDialog.show();
+        loginDialog.setVisible(true);
 
         return ok;
     }
@@ -112,7 +110,6 @@ public class LoginPanel extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
         if ((e.getSource() == okButton) || (e.getSource() == passwordField)) {
             ok = true;
             loginDialog.setVisible(false);

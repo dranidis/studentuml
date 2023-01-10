@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.view.gui.DocumentSizeFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -22,7 +21,7 @@ public class RuleEditor extends JPanel {
     static final int MAX_CHARACTERS = 99000000;
     String newline = "\n";
     HashMap<Object, Action> actions;
-    //undo helpers
+    // undo helpers
     protected UndoAction undoAction;
     protected RedoAction redoAction;
     protected UndoManager undo = new UndoManager();
@@ -30,7 +29,7 @@ public class RuleEditor extends JPanel {
     public RuleEditor(String currentRuleFile) {
         super(new java.awt.BorderLayout());
         this.currentRuleFile = currentRuleFile;
-        //Create the text pane and configure it.
+        // Create the text pane and configure it.
         textPane = new JTextPane() {
 
             public void setSize(Dimension d) {
@@ -48,8 +47,8 @@ public class RuleEditor extends JPanel {
         /**
          * TODO: disabled till save is fixed
          */
-        textPane.setEditable(false);//FIXME: STAVI GO NA KRAJ TRUE
-        
+        textPane.setEditable(false);// FIXME: STAVI GO NA KRAJ TRUE
+
         textPane.setCaretPosition(0);
         textPane.setMargin(new Insets(5, 5, 5, 5));
         StyledDocument styledDoc = textPane.getStyledDocument();
@@ -63,87 +62,84 @@ public class RuleEditor extends JPanel {
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setPreferredSize(new Dimension(200, 200));
 
-        //Create the text area for the status log and configure it.
+        // Create the text area for the status log and configure it.
 
+        // Create a split pane for the change log and the text area.
 
-        //Create a split pane for the change log and the text area.
-
-
-        //Create the status area.
+        // Create the status area.
         JPanel statusPane = new JPanel(new GridLayout(1, 1));
         statusLabel = new JLabel("Status");
         statusPane.add(statusLabel);
 
-        //Add the components.
+        // Add the components.
         add(scrollPane, BorderLayout.CENTER);
         add(statusPane, BorderLayout.PAGE_END);
 
-        //Set up the menu bar.
+        // Set up the menu bar.
         createActionTable(textPane);
 
-
-        //Add some key bindings.
+        // Add some key bindings.
         addBindings();
 
-        //Put the initial text into the text pane.
+        // Put the initial text into the text pane.
         initDocument();
         textPane.setCaretPosition(0);
 
-        //Start watching for undoable edits and caret changes.
+        // Start watching for undoable edits and caret changes.
         doc.addUndoableEditListener(new MyUndoableEditListener());
-        //textPane.addCaretListener(caretListenerLabel);
+        // textPane.addCaretListener(caretListenerLabel);
         doc.addDocumentListener(new MyDocumentListener());
     }
 
-    //This listens for and reports caret movements.
-//    protected class CaretListenerLabel extends JLabel
-//                                       implements CaretListener {
-//        public CaretListenerLabel(String label) {
-//            super(label);
-//        }
-//
-//        //Might not be invoked from the event dispatch thread.
-//        public void caretUpdate(CaretEvent e) {
-//            displaySelectionInfo(e.getDot(), e.getMark());
-//        }
-//
-//        //This method can be invoked from any thread.  It
-//        //invokes the setText and modelToView methods, which
-//        //must run on the event dispatch thread. We use
-//        //invokeLater to schedule the code for execution
-//        //on the event dispatch thread.
-//        protected void displaySelectionInfo(final int dot,
-//                                            final int mark) {
-//            SwingUtilities.invokeLater(new Runnable() {
-//                public void run() {
-//                    if (dot == mark) {  // no selection
-//
-//                            setText("caret: text position: " + dot
-//                                    + newline);
-//
-//                    } else if (dot < mark) {
-//                        setText("selection from: " + dot
-//                                + " to " + mark + newline);
-//                    } else {
-//                        setText("selection from: " + mark
-//                                + " to " + dot + newline);
-//                    }
-//                }
-//            });
-//        }
-//    }
-    //This one listens for edits that can be undone.
+    // This listens for and reports caret movements.
+    // protected class CaretListenerLabel extends JLabel
+    // implements CaretListener {
+    // public CaretListenerLabel(String label) {
+    // super(label);
+    // }
+    //
+    // //Might not be invoked from the event dispatch thread.
+    // public void caretUpdate(CaretEvent e) {
+    // displaySelectionInfo(e.getDot(), e.getMark());
+    // }
+    //
+    // //This method can be invoked from any thread. It
+    // //invokes the setText and modelToView methods, which
+    // //must run on the event dispatch thread. We use
+    // //invokeLater to schedule the code for execution
+    // //on the event dispatch thread.
+    // protected void displaySelectionInfo(final int dot,
+    // final int mark) {
+    // SwingUtilities.invokeLater(new Runnable() {
+    // public void run() {
+    // if (dot == mark) { // no selection
+    //
+    // setText("caret: text position: " + dot
+    // + newline);
+    //
+    // } else if (dot < mark) {
+    // setText("selection from: " + dot
+    // + " to " + mark + newline);
+    // } else {
+    // setText("selection from: " + mark
+    // + " to " + dot + newline);
+    // }
+    // }
+    // });
+    // }
+    // }
+    // This one listens for edits that can be undone.
     protected class MyUndoableEditListener implements UndoableEditListener {
 
         public void undoableEditHappened(UndoableEditEvent e) {
-            //Remember the edit and update the menus.
+            // Remember the edit and update the menus.
             undo.addEdit(e.getEdit());
             undoAction.updateUndoState();
             redoAction.updateRedoState();
         }
     }
 
-    //And this one listens for any changes to the document.
+    // And this one listens for any changes to the document.
     protected class MyDocumentListener implements DocumentListener {
 
         public void insertUpdate(DocumentEvent e) {
@@ -160,59 +156,59 @@ public class RuleEditor extends JPanel {
 
         private void displayEditInfo(DocumentEvent e) {
             statusLabel.setText("Rules changed. Press Ctrl+S to save, Ctrl+Z to undo, Ctrl+Y to redo.");
-//            Document document = (Document)e.getDocument();
-//            int changeLength = e.getLength();
-//            changeLog.append(e.getType().toString() + ": " +
-//                changeLength + " character" +
-//                ((changeLength == 1) ? ". " : "s. ") +
-//                " Text length = " + document.getLength() +
-//                "." + newline);
+            // Document document = (Document)e.getDocument();
+            // int changeLength = e.getLength();
+            // changeLog.append(e.getType().toString() + ": " +
+            // changeLength + " character" +
+            // ((changeLength == 1) ? ". " : "s. ") +
+            // " Text length = " + document.getLength() +
+            // "." + newline);
         }
     }
 
-    //Add a couple of  key bindings.
+    // Add a couple of key bindings.
     protected void addBindings() {
         InputMap inputMap = textPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        //Ctrl-b to go backward one character
+        // Ctrl-b to go backward one character
         KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.backwardAction);
 
-        //Ctrl-f to go forward one character
+        // Ctrl-f to go forward one character
         key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.forwardAction);
 
-        //Ctrl-p to go up one line
+        // Ctrl-p to go up one line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.upAction);
 
-        //Ctrl-n to go down one line
+        // Ctrl-n to go down one line
         key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.downAction);
 
-        //Ctrl-z undo
+        // Ctrl-z undo
         undoAction = new UndoAction();
         key = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK);
         inputMap.put(key, undoAction);
 
-        //Ctrl-y redo
+        // Ctrl-y redo
         redoAction = new RedoAction();
         key = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK);
         inputMap.put(key, redoAction);
 
-        //Ctrl-x cut
+        // Ctrl-x cut
         key = KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.cutAction);
 
-        //Ctrl-c copy
+        // Ctrl-c copy
         key = KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.copyAction);
 
-        //Ctrl-v paste
+        // Ctrl-v paste
         key = KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK);
         inputMap.put(key, DefaultEditorKit.pasteAction);
 
-        //Ctrl-s save
+        // Ctrl-s save
         /**
          * needs fixing!
          */
@@ -227,10 +223,8 @@ public class RuleEditor extends JPanel {
                     bw.close();
                     statusLabel.setText("Rules saved.");
                 } catch (FileNotFoundException ex1) {
-                    // TODO Auto-generated catch block
                     ex1.printStackTrace();
                 } catch (IOException ex2) {
-                    // TODO Auto-generated catch block
                     ex2.printStackTrace();
                 }
             }
@@ -264,16 +258,14 @@ public class RuleEditor extends JPanel {
 
             objBrIn.close();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    //The following two methods allow us to find an
-    //action provided by the editor kit by its name.
+    // The following two methods allow us to find an
+    // action provided by the editor kit by its name.
     private void createActionTable(JTextComponent textComponent) {
         actions = new HashMap<Object, Action>();
         Action[] actionsArray = textComponent.getActions();

@@ -40,9 +40,9 @@ public class AddControlFlowController extends AddEdgeController {
 
         if (trg instanceof DecisionNodeGR) {
             // the incominging edge must be of the same type as the outgoing edges
-            Iterator it = trg.getNodeComponent().getOutgoingEdges();
+            Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -57,9 +57,9 @@ public class AddControlFlowController extends AddEdgeController {
         String guard = "";  // needed for the outgoing edges from the decision node
         if (src instanceof DecisionNodeGR) {
             // the outgoing edge must be of the same type as the other edges
-            Iterator it = src.getNodeComponent().getIncomingEdges();
+            Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -70,9 +70,9 @@ public class AddControlFlowController extends AddEdgeController {
                 }
             }
 
-            it = src.getNodeComponent().getOutgoingEdges();
+            it = src.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -95,7 +95,7 @@ public class AddControlFlowController extends AddEdgeController {
                 return;
             }
 
-            it = src.getNodeComponent().getOutgoingEdges();
+            it = src.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = (Edge) it.next();
                 String s = edge.getGuard();
@@ -109,9 +109,9 @@ public class AddControlFlowController extends AddEdgeController {
 
         if (src instanceof MergeNodeGR) {
             // the outgoing edge must be of the same type as the incoming edges
-            Iterator it = src.getNodeComponent().getIncomingEdges();
+            Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -125,9 +125,9 @@ public class AddControlFlowController extends AddEdgeController {
 
         if (trg instanceof MergeNodeGR) {
             // the incominging edge must be of the same type as the other edges
-            Iterator it = trg.getNodeComponent().getOutgoingEdges();
+            Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -138,9 +138,9 @@ public class AddControlFlowController extends AddEdgeController {
                 }
             }
 
-            it = trg.getNodeComponent().getIncomingEdges();
+            it = trg.getComponent().getIncomingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -154,9 +154,9 @@ public class AddControlFlowController extends AddEdgeController {
 
         if (trg instanceof ForkNodeGR) {
             // the incominging edge must be of the same type as the outgoing edges
-            Iterator it = trg.getNodeComponent().getOutgoingEdges();
+            Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -170,9 +170,9 @@ public class AddControlFlowController extends AddEdgeController {
 
         if (src instanceof ForkNodeGR) {
             // the outgoing edge must be of the same type as the other edges
-            Iterator it = src.getNodeComponent().getIncomingEdges();
+            Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -183,9 +183,9 @@ public class AddControlFlowController extends AddEdgeController {
                 }
             }
 
-            it = src.getNodeComponent().getOutgoingEdges();
+            it = src.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -200,9 +200,9 @@ public class AddControlFlowController extends AddEdgeController {
         if (src instanceof JoinNodeGR) {
             // if at least one incoming edge is object flow, then the outgoing
             // edge must be object flow as well
-            Iterator it = src.getNodeComponent().getIncomingEdges();
+            Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
-                Edge edge = (Edge) it.next();
+                Edge edge = it.next();
                 if (edge instanceof ControlFlow) {
                     // nothing on purpose
                 } else {
@@ -221,7 +221,7 @@ public class AddControlFlowController extends AddEdgeController {
             // therefore, the incoming control flow can always be added
         }
 
-        ControlFlow flow = new ControlFlow(src.getNodeComponent(), trg.getNodeComponent());
+        ControlFlow flow = new ControlFlow(src.getComponent(), trg.getComponent());
         if (!guard.isEmpty()) {
             flow.setGuard(guard);
         }

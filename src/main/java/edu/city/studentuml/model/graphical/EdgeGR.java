@@ -30,27 +30,28 @@ public abstract class EdgeGR extends GraphicalElement {
     protected List<AbstractPointGR> points;
     private Font font;
 
-    /*
-     * This constructor is used in persistency module only (ObjectFactory)
+    /**
+     * This constructor is used in persistency module only (ObjectFactory).
+     * It does not populate the points list which remains empty until endpoints are read and set
      */
-    public EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
+    protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
         this.source = source;
         this.target = target;
         this.edge = edge;
 
-        points = new ArrayList<AbstractPointGR>();
+        points = new ArrayList<>();
 
         font = new Font("SansSerif", Font.PLAIN, 10);
         outlineColor = Color.black;
         highlightColor = Color.blue;
     }
 
-    public EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
+    protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
         this.source = source;
         this.target = target;
         this.edge = edge;
 
-        points = new ArrayList<AbstractPointGR>();
+        points = new ArrayList<>();
         points.add(getInitialPoint(srcPoint));
         points.add(getInitialPoint(trgPoint));
 
@@ -87,7 +88,7 @@ public abstract class EdgeGR extends GraphicalElement {
         points.remove(point);
     }
 
-    public Iterator getPoints() {
+    public Iterator<AbstractPointGR> getPoints() {
         return points.iterator();
     }
 
@@ -108,7 +109,17 @@ public abstract class EdgeGR extends GraphicalElement {
         return getStartPoint().getMyPoint();
     }
 
+    /**
+     * Normally returns the first EndPoint in the points list. If the points list is
+     * empty it returns the source point. This is necessary when element is created
+     * by reading XML in which case the points list is initially empty
+     * 
+     */
     public AbstractPointGR getStartPoint() {
+
+        if (points.isEmpty()) {
+            return new EndPointGR(source.getX(), source.getY());
+        }
         return points.get(0);
     }
 

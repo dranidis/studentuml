@@ -1,6 +1,5 @@
 package edu.city.studentuml.applet;
 
-// Author: Igor Janevski, Ervin Ramollari;
 import edu.city.studentuml.model.domain.UMLProject;
 import java.io.*;
 import java.util.HashMap;
@@ -14,8 +13,10 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-
+/**
+ * @author Igor Janevski
+ * @author Ervin Ramollari
+ */
 public class ServerInterface {
 
     private String toolkey = "studentuml-toolkey-t63r5nlh";
@@ -34,7 +35,8 @@ public class ServerInterface {
     protected Document callAPI(HashMap arguments, int api_try) throws APICallException, AuthenticationFailedException {
         Document doc = null;
 
-        // System.out.println("Sending "+arguments.toString().replaceAll(", ", "&").replaceAll("\\{", "").replaceAll("\\}","").trim());
+        // System.out.println("Sending "+arguments.toString().replaceAll(", ",
+        // "&").replaceAll("\\{", "").replaceAll("\\}","").trim());
 
         if (this.currentAuthToken != null) {
             if (arguments.get("auth_token") == null) {
@@ -65,7 +67,6 @@ public class ServerInterface {
                 }
             }
 
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(result));
             String line;
             StringBuffer xmlResponse = new StringBuffer();
@@ -95,7 +96,6 @@ public class ServerInterface {
                 throw new APICallException(errorString);
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             if (e.getMessage().indexOf("HTTP response code: 401") > 0) {
                 if ((arguments.get("auth_username") == null) || (api_try < 3)) {
                     LoginPanel loginPanel = new LoginPanel();
@@ -125,10 +125,8 @@ public class ServerInterface {
             }
             e.printStackTrace();
         } catch (SAXException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -190,8 +188,8 @@ public class ServerInterface {
         return callAPI(args);
     }
 
-    public Document saveNodeBySolutionFileID(String username, int exid, int parentid,
-            String title, String comment, String nodetype, boolean isprivate, int solutionfileid)
+    public Document saveNodeBySolutionFileID(String username, int exid, int parentid, String title, String comment,
+            String nodetype, boolean isprivate, int solutionfileid)
             throws APICallException, AuthenticationFailedException {
         HashMap args = this.getBaseNodeAction("create");
         args.put("exerciseid", exid);
@@ -205,9 +203,8 @@ public class ServerInterface {
         return callAPI(args);
     }
 
-    public Document saveNode(String username, int exid, int parentid, String title,
-            String comment, String nodetype, boolean isprivate, String solution, String pic)
-            throws APICallException, AuthenticationFailedException {
+    public Document saveNode(String username, int exid, int parentid, String title, String comment, String nodetype,
+            boolean isprivate, String solution, String pic) throws APICallException, AuthenticationFailedException {
         HashMap args = this.getBaseNodeAction("create");
         args.put("exerciseid", exid);
         args.put("parentnodeid", parentid);
@@ -232,21 +229,18 @@ public class ServerInterface {
     }
 
     /*
-    public Document saveNode(int uid, int parentid, int exid, int status, String title,
-    String comment, boolean isprivate, String solution)
-    {
-    String getString = "?module=node&action=save&toolkey=" + toolkey
-    + "&authorid=" + uid;
-
-    String postString = null;
-
-    postString = "&parentid=" + parentid + "&exerciseid=" + exid
-    + "&userid=" + uid + "&title=" + title + "&comment="
-    + comment + "&statusid=" + status + "&isprivate=" + (isprivate ? "1" : "0")
-    + "&solution=" + solution;
-
-    return callAPI(getString, postString);
-    } */
+     * public Document saveNode(int uid, int parentid, int exid, int status, String
+     * title, String comment, boolean isprivate, String solution) { String getString
+     * = "?module=node&action=save&toolkey=" + toolkey + "&authorid=" + uid;
+     * 
+     * String postString = null;
+     * 
+     * postString = "&parentid=" + parentid + "&exerciseid=" + exid + "&userid=" +
+     * uid + "&title=" + title + "&comment=" + comment + "&statusid=" + status +
+     * "&isprivate=" + (isprivate ? "1" : "0") + "&solution=" + solution;
+     * 
+     * return callAPI(getString, postString); }
+     */
     public Document getStatuses() throws APICallException, AuthenticationFailedException {
         HashMap args = this.getBaseNodeAction("getallsolutionstates");
         // quck & dirty patch
@@ -255,15 +249,15 @@ public class ServerInterface {
         Vector toRemove = new Vector();
 
         for (int i = 0; i < statuses.getLength(); i++) {
-//            if (SystemWideObjectNamePool.umlProject.getParentid() > 0) {
+            // if (SystemWideObjectNamePool.umlProject.getParentid() > 0) {
             if (UMLProject.getInstance().getParentid() > 0) {
 
-                //statuses.item(i).getParentNode().removeChild(statuses.item(i));
+                // statuses.item(i).getParentNode().removeChild(statuses.item(i));
                 toRemove.add(statuses.item(i));
 
             } else {
                 if (!statuses.item(i).getTextContent().trim().equals("opendiscussion")) {
-                    //statuses.item(i).getParentNode().removeChild(statuses.item(i));
+                    // statuses.item(i).getParentNode().removeChild(statuses.item(i));
                     toRemove.add(statuses.item(i));
                 }
             }
@@ -275,7 +269,6 @@ public class ServerInterface {
             t.getParentNode().removeChild(t);
         }
 
-
         return result;
     }
 
@@ -285,7 +278,7 @@ public class ServerInterface {
         NodeList statuses = result.getElementsByTagName("type");
         Vector toRemove = new Vector();
         for (int i = 0; i < statuses.getLength(); i++) {
-//            if (SystemWideObjectNamePool.umlProject.getParentid() == 0) {
+            // if (SystemWideObjectNamePool.umlProject.getParentid() == 0) {
             if (UMLProject.getInstance().getParentid() == 0) {
                 toRemove.add(statuses.item(i));
             }

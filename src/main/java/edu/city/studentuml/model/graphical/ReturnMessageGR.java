@@ -1,34 +1,24 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ReturnMessageGR.java
-import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.model.domain.SDMessage;
-import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.prefs.Preferences;
-
 import org.w3c.dom.Element;
 
-public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable {
+public class ReturnMessageGR extends SDMessageGR {
 
     public ReturnMessageGR(RoleClassifierGR from, RoleClassifierGR to, ReturnMessage message, int y) {
         super(from, to, message, y);
     }
 
     public Stroke getStroke() {
-        float dashes[] = {8};    // the pattern of dashes for drawing the return line
+        float[] dashes = { 8 }; // the pattern of dashes for drawing the return line
 
         return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
     }
@@ -43,10 +33,10 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
         }
     }
 
+    @Override
     public void draw(Graphics2D g) {
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
-        
-        if (showReturnPref) {
+
+        if (Settings.showReturnArrows()) {
             super.draw(g);
             return;
         }
@@ -62,15 +52,15 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
 
         int startingX = getStartingX();
 
-        g.drawLine(startingX - barWidth/2, getY(), startingX + barWidth/2, getY());
+        g.drawLine(startingX - barWidth / 2, getY(), startingX + barWidth / 2, getY());
         // restore the original stroke
         g.setStroke(originalStroke);
-    }    
-    
+    }
+
+    @Override
     public boolean contains(Point2D point) {
-        boolean showReturnPref = Preferences.userRoot().get("SHOW_RETURN_SD", "").equals("TRUE") ? true : false;
-        
-        if (showReturnPref) {
+
+        if (Settings.showReturnArrows()) {
             return super.contains(point);
         }
 
@@ -87,18 +77,18 @@ public class ReturnMessageGR extends SDMessageGR implements IXMLCustomStreamable
             return bounds.contains(point);
         }
     }
-    
-    
+
     public ReturnMessage getReturnMessage() {
         return (ReturnMessage) getMessage();
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         node.setAttribute("y", Integer.toString(getY()));

@@ -106,8 +106,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw acticity node name
-        if (!nodeComponent.toString().equals("")) {
-            String activityName = nodeComponent.toString();
+        if (!component.toString().equals("")) {
+            String activityName = component.toString();
             TextLayout layout = new TextLayout(activityName, activityNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
 
@@ -132,8 +132,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         FontRenderContext frc = g.getFontRenderContext();
 
         // consider action name text dimensions
-        if (nodeComponent.toString().length() != 0) {
-            TextLayout layout = new TextLayout(nodeComponent.toString(), activityNameFont, frc);
+        if (component.toString().length() != 0) {
+            TextLayout layout = new TextLayout(component.toString(), activityNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             activityNameWidth = (int) bounds.getWidth() + (2 * activityNameXOffset);
 
@@ -326,18 +326,18 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "nodes"), new Vector(nodeComponents), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "nodes"), new Vector(components), this);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "activitynode", (ActivityNode) getNodeComponent());
+        streamer.streamObject(node, "activitynode", (ActivityNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
         node.setAttribute("width", Integer.toString(width));
         node.setAttribute("height", Integer.toString(height));
 
-        streamer.streamObjects(streamer.addChild(node, "nodes"), nodeComponents.iterator());
+        streamer.streamObjects(streamer.addChild(node, "nodes"), components.iterator());
     }
 }

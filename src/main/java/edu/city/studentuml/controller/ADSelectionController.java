@@ -9,27 +9,24 @@ import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.State;
-import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
-import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
-import edu.city.studentuml.util.undoredo.RemoveEditFactory;
 import edu.city.studentuml.view.gui.ActionNodeEditor;
 import edu.city.studentuml.view.gui.ActivityNodeEditor;
 import edu.city.studentuml.view.gui.ControlFlowEditor;
@@ -37,8 +34,9 @@ import edu.city.studentuml.view.gui.DecisionNodeEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -47,9 +45,11 @@ import javax.swing.undo.UndoableEdit;
  * @author Biser
  */
 public class ADSelectionController extends SelectionController {
+
+    private static final Logger logger1 = Logger.getLogger(ADSelectionController.class.getName());
     
-    public ADSelectionController(DiagramInternalFrame parent, ADModel m) {
-        super(parent, m);
+    public ADSelectionController(DiagramInternalFrame parent, DiagramModel model) {
+        super(parent, model);
     }
     
     @Override
@@ -58,9 +58,7 @@ public class ADSelectionController extends SelectionController {
             editEdge((EdgeGR) selectedElement);
         } else if (selectedElement instanceof NodeComponentGR) {
             editNodeComponent((NodeComponentGR) selectedElement);
-        } else if (selectedElement instanceof UMLNoteGR) {
-            editUMLNote((UMLNoteGR) selectedElement);
-        }
+        } 
     }
     
     private void editEdge(EdgeGR edgeGR) {
@@ -69,7 +67,7 @@ public class ADSelectionController extends SelectionController {
         } else if (edgeGR instanceof ObjectFlowGR) {
             editObjectFlow((ObjectFlowGR) edgeGR);
         } else {
-            java.lang.System.err.println("Error in editEdge(edge)");
+            logger1.severe("Error in editEdge(edge)");
         }
     }
     
@@ -193,13 +191,13 @@ public class ADSelectionController extends SelectionController {
         } else if (nodeComponentGR instanceof DecisionNodeGR) {
             editDecisionNode((DecisionNodeGR) nodeComponentGR);
         }else {
-            java.lang.System.err.println("Error in editNode(node)");
+            logger1.severe("Error in editNode(node)");
         }
     }
     
     private void editActionNode(ActionNodeGR actionNodeGR) {
         ActionNodeEditor actionNodeEditor = new ActionNodeEditor(actionNodeGR);
-        ActionNode actionNode = (ActionNode) actionNodeGR.getNodeComponent();
+        ActionNode actionNode = (ActionNode) actionNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!actionNodeEditor.showDialog(parentComponent, "Action Node Editor")) {
@@ -224,7 +222,7 @@ public class ADSelectionController extends SelectionController {
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
         ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(objectNodeGR, repository);
-        ObjectNode objectNode = (ObjectNode) objectNodeGR.getNodeComponent();
+        ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
 
         // show the object node editor dialog and check whether the user has pressed cancel
         if (!objectNodeEditor.showDialog(parentComponent, "Object Node Editor")) {
@@ -232,7 +230,6 @@ public class ADSelectionController extends SelectionController {
         }
 
         // Undo/Redo
-        ObjectNode undoObjectNode = (ObjectNode) objectNode.clone();
 
         // do not edit if name and type are both empty
         if ((objectNodeEditor.getObjectName().isEmpty())
@@ -248,9 +245,9 @@ public class ADSelectionController extends SelectionController {
             newObjectNode.setType(objectNodeEditor.getType());
 
             // add the states to the new object node
-            Iterator stateIterator = objectNodeEditor.getStates().iterator();
+            Iterator<State> stateIterator = objectNodeEditor.getStates().iterator();
             while (stateIterator.hasNext()) {
-                newObjectNode.addState((State) stateIterator.next());
+                newObjectNode.addState(stateIterator.next());
             }
 
             // Undo/Redo [edit]
@@ -266,7 +263,7 @@ public class ADSelectionController extends SelectionController {
     
     private void editActivityNode(ActivityNodeGR activityNodeGR) {
         ActivityNodeEditor activityNodeEditor = new ActivityNodeEditor(activityNodeGR);
-        ActivityNode activityNode = (ActivityNode) activityNodeGR.getNodeComponent();
+        ActivityNode activityNode = (ActivityNode) activityNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!activityNodeEditor.showDialog(parentComponent, "Activity Node Editor")) {
@@ -291,7 +288,7 @@ public class ADSelectionController extends SelectionController {
 
     private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
         DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);
-        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getNodeComponent();
+        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
         if (!decisionNodeEditor.showDialog(parentComponent, "Decision Node Editor")) {
@@ -312,42 +309,5 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
 
-        // Undo/Redo [edit note]
-        String undoText = noteGR.getText();
-        
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-        
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-    
-    @Override
-    public void deleteElement(GraphicalElement selectedElement) {
-        UndoableEdit edit = RemoveEditFactory.getInstance().createRemoveEdit(selectedElement, model);
-        
-        model.removeGraphicalElement(selectedElement);
-        synchronized(this){
-        for (Object o : model.getGraphicalElements()) {
-            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                model.removeGraphicalElement((UMLNoteGR) o);
-            }
-        }
-        }
-        parentComponent.setSelectionMode();
-        
-        parentComponent.getUndoSupport().postEdit(edit);
-    }
 }

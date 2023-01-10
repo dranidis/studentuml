@@ -2,20 +2,31 @@ package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-/**
- *
- * @author draganbisercic
- */
+
 public abstract class DeleteEditComponent extends AbstractUndoableEdit{
+    /**
+     * This static list stores all the undone element that have a context set and
+     * will not be added to the model. When the containing element is restored then
+     * it is populated from this list.
+     */
+    protected static List<GraphicalElement> withContext = new ArrayList<>();
 
     protected GraphicalElement element;
+    public GraphicalElement getElement() {
+        return element;
+    }
+
     protected DiagramModel model;
 
-    public DeleteEditComponent(GraphicalElement element, DiagramModel model) {
+    protected DeleteEditComponent(GraphicalElement element, DiagramModel model) {
         this.element = element;
         this.model = model;
     }

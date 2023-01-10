@@ -1,12 +1,10 @@
 package edu.city.studentuml.view;
 
-//Author: Ervin Ramollari
-import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 
-//SDView.java
 public class SDView extends DiagramView {
 
-    public SDView(SDModel m) {
+    public SDView(DiagramModel m) {
         super(m);
     }
 }

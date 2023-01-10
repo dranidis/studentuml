@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ramollari Ervin
-//Role.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -10,6 +7,10 @@ import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class Role implements Serializable, IXMLCustomStreamable {
 
     private String roleName;
@@ -34,7 +35,7 @@ public class Role implements Serializable, IXMLCustomStreamable {
     // 'get' methods
     public String getName() {
         if (roleName == null)
-            return "";        
+            return "";
         return roleName.trim();
     }
 
@@ -49,15 +50,14 @@ public class Role implements Serializable, IXMLCustomStreamable {
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         setName(node.getAttribute("name"));
         setMultiplicity(node.getAttribute("multiplicity"));
-        referredClass = (Classifier) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute("classifier"));
+        referredClass = (Classifier) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(node.getAttribute("classifier"));
 
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         node.setAttribute("name", getName());
         node.setAttribute("multiplicity", getMultiplicity());
 

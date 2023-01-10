@@ -92,7 +92,7 @@ public class ObjectFlowEditor extends JPanel implements ActionListener {
         objectFlowDialog.pack();
         objectFlowDialog.setResizable(false);
         objectFlowDialog.setLocationRelativeTo(owner);
-        objectFlowDialog.show();
+        objectFlowDialog.setVisible(true);
 
         return ok;
     }

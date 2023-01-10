@@ -1,13 +1,10 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
@@ -15,19 +12,18 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Stack;
-import org.w3c.dom.Element;
 
 /**
  *
  * @author draganbisercic
  */
-public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXMLCustomStreamable {
+public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
     private Font nameFont;
 
-    public AbstractSDObjectGR(RoleClassifier obj, int x) {
+    protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
         width = minimumNameBoxWidth;
         height = nameBoxHeight;
@@ -44,12 +40,13 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXM
         Rectangle2D rectangle1 = new Rectangle2D.Double(getX(), getY(), width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2 - 8, getY() + height, 
+        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + height, 
                 16, endingY - (getY() + height));
 
         return (rectangle1.contains(point) || rectangle2.contains(point));
     }
 
+    @Override
     public void draw(Graphics2D g) {
         if (fillColor == null) {
             fillColor = this.myColor();
@@ -108,8 +105,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXM
             g.setPaint(outlineColor);
         }
 
-        //Stroke originalStroke = g.getStroke();
-        float dashes[] = {8};    // the pattern of dashes for drawing the realization line
+        float[] dashes = {8};    // the pattern of dashes for drawing the realization line
 
         g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
         g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
@@ -141,20 +137,12 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXM
         return width;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        super.streamFromXML(node, streamer, instance);
-    }
-
-    public void streamToXML(Element node, XMLStreamer streamer) {
-        super.streamToXML(node, streamer);
-    }
-
     private void drawActivationBars(Graphics2D g) {
         /**
          * collect all bars in a stack while parsing the messages
          */
-        Stack<ActivationBar> bars = new Stack();
-        Stack<ActivationBar> finalBars = new Stack();
+        Stack<ActivationBar> bars = new Stack<>();
+        Stack<ActivationBar> finalBars = new Stack<>();
         
         int previousActivation = 0;
         for(int i=0; i < messageYs.size(); i++) {
@@ -200,7 +188,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR implements IXM
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
             g.setStroke(new BasicStroke(2));
-            g.setPaint(getHightlightColor());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
             g.setPaint(getOutlineColor());

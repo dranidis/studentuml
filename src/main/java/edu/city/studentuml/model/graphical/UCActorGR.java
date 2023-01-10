@@ -70,7 +70,7 @@ public class UCActorGR extends LeafUCDElementGR {
         g.setPaint(outlineColor);
 
 //        String actorName = getActor().getName();
-        String actorName = getUCDComponent().getName();
+        String actorName = getComponent().getName();
         if (actorName == null || actorName.length() == 0) {
             actorName = " ";
         }
@@ -106,7 +106,7 @@ public class UCActorGR extends LeafUCDElementGR {
     }
 
     public int calculateWidth(Graphics2D g) {
-        String actorName = getUCDComponent().getName();
+        String actorName = getComponent().getName();
         if (actorName == null || actorName.length() == 0) {
             actorName = " ";
         }
@@ -125,7 +125,7 @@ public class UCActorGR extends LeafUCDElementGR {
     }
 
     public int calculateHeight(Graphics2D g) {
-        String actorName = getUCDComponent().getName();
+        String actorName = getComponent().getName();
         if (actorName == null || actorName.length() == 0) {
             actorName = " ";
         }
@@ -157,7 +157,7 @@ public class UCActorGR extends LeafUCDElementGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "ucActor", (Actor) getUCDComponent());
+        streamer.streamObject(node, "ucActor", (Actor) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

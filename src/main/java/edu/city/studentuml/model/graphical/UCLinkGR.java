@@ -5,7 +5,6 @@ import edu.city.studentuml.model.domain.UCLink;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 import org.w3c.dom.Element;
@@ -23,7 +22,6 @@ public abstract class UCLinkGR extends LinkGR {
     protected UCDComponentGR source;
     protected UCDComponentGR target;
     protected UCLink link;
-    private Font font;
 
     protected UCLinkGR(UCDComponentGR source, UCDComponentGR target, UCLink link) {
         super(source, target);
@@ -34,7 +32,6 @@ public abstract class UCLinkGR extends LinkGR {
         this.target = target;
         this.link = link;
 
-        font = new Font("SansSerif", Font.PLAIN, 10);
         outlineColor = Color.black;
         highlightColor = Color.blue;
     }
@@ -102,7 +99,7 @@ public abstract class UCLinkGR extends LinkGR {
         link.removeExtensionPoint(extensionPoint);
     }
 
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         return link.getExtensionPoints();
     }
 

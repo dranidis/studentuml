@@ -40,20 +40,16 @@ public class DesignAssociationClass extends AbstractAssociationClass {
         ((DesignClass) associationClass).removeMethod(m);
     }
 
-    public void setMethods(NotifierVector meths) {
+    public void setMethods(NotifierVector<Method> meths) {
         ((DesignClass) associationClass).setMethods(meths);
     }
 
-    public NotifierVector getMethods() {
+    public NotifierVector<Method> getMethods() {
         return ((DesignClass) associationClass).getMethods();
     }
 
     public Method getMethodByName(String n) {
         return ((DesignClass) associationClass).getMethodByName(n);
-    }
-
-    public Method getMethodByIndex(int index) {
-        return ((DesignClass) associationClass).getMethodByIndex(index);
     }
 
     @Override

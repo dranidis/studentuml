@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="UCDModel" framex="0,0,591,491" iconified="false" id="" internalid="ucdmodel0" name="UCD: ucd" selected="true">
+      <object class="UCActorGR" id="" internalid="ucactorgr0" uid="Desktop Application User" x="17" y="45">
+        <object class="Actor" id="ucActor" internalid="actor0" name="A1"/>
+      </object>
+      <object class="SystemGR" height="329" id="" internalid="systemgr0" uid="Desktop Application User" width="310" x="123" y="25">
+        <object class="System" id="system" internalid="system0" name="S1"/>
+        <object id="ucdcomponents">
+          <object class="UseCaseGR" id="" internalid="usecasegr0" uid="Desktop Application User" x="182" y="282">
+            <object class="UseCase" id="useCase" internalid="usecase0" name="U3"/>
+          </object>
+          <object class="UseCaseGR" id="" internalid="usecasegr2" uid="Desktop Application User" x="312" y="201">
+            <object class="UseCase" id="useCase" internalid="usecase2" name="U2"/>
+          </object>
+          <object class="UseCaseGR" id="" internalid="usecasegr1" uid="Desktop Application User" x="204" y="69">
+            <object class="UseCase" id="useCase" internalid="usecase1" name="U1"/>
+          </object>
+        </object>
+      </object>
+      <object class="UCActorGR" id="" internalid="ucactorgr1" uid="Desktop Application User" x="22" y="188">
+        <object class="Actor" id="ucActor" internalid="actor1" name="A2"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr1" id="" internalid="ucassociationgr2" to="usecasegr0">
+        <object class="UCAssociation" from="actor1" id="link" internalid="ucassociation2" to="usecase0"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr0" id="" internalid="ucassociationgr0" to="usecasegr1">
+        <object class="UCAssociation" from="actor0" id="link" internalid="ucassociation0" to="usecase1"/>
+      </object>
+      <object class="UCAssociationGR" from="ucactorgr1" id="" internalid="ucassociationgr1" to="usecasegr1">
+        <object class="UCAssociation" from="actor1" id="link" internalid="ucassociation1" to="usecase1"/>
+      </object>
+    </object>
+  </object>
+</uml>

@@ -1,8 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ObjectEditor.java
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.Type;
@@ -20,9 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
+import java.util.Optional;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -33,7 +29,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+/**
+ * @author Ervin Ramollari
+ */
 public class ObjectEditor extends JPanel implements ActionListener, ItemListener {
+
+    private static final String UNNAMED = "(unnamed)";
     
     private JDialog objectDialog;
     private JPanel namePanel;
@@ -41,7 +42,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     private JTextField nameField;
     private JPanel centerPanel;
     private JPanel typePanel;
-    private JComboBox typeComboBox;
+    private JComboBox<String> typeComboBox;
     private JLabel typeLabel;
     private JPanel cardPanel;
     private JPanel nonemptyPanel;
@@ -55,13 +56,13 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     private boolean ok;
     private SDObjectGR objectGR;
     private DesignClass objectType;
-    private Vector types;
+    private Vector<DesignClass> types;
     private CentralRepository repository;
     
     public ObjectEditor(SDObjectGR obj, CentralRepository cr) {
         objectGR = obj;
         repository = cr;
-        types = (Vector) repository.getClasses().clone();
+        types = (Vector<DesignClass>) repository.getClasses().clone();
         setLayout(new BorderLayout());
         centerPanel = new JPanel(new GridLayout(3, 1));
         namePanel = new JPanel(new FlowLayout());
@@ -72,7 +73,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         namePanel.add(nameField);
         typePanel = new JPanel(new FlowLayout());
         typeLabel = new JLabel("Object's type: ");
-        typeComboBox = new JComboBox();
+        typeComboBox = new JComboBox<>();
         typeComboBox.setMaximumRowCount(5);
         typeComboBox.addItemListener(this);
         typePanel.add(typeLabel);
@@ -130,7 +131,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         objectDialog.pack();
         objectDialog.setResizable(false);
         objectDialog.setLocationRelativeTo(owner);
-        objectDialog.show();
+        objectDialog.setVisible(true);
         
         return ok;
     }
@@ -142,50 +143,27 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         objectType = object.getDesignClass();
 
         // initialize the class names combo box
-        if (!isInList(objectType, types)) {
+        if (!types.contains(objectType)) {
             types.add(objectType);
         }
+        types.add(new DesignClass(""));
+        typeComboBox.addItem(UNNAMED);
         
-        DesignClass dc;
-        Iterator iterator = types.iterator();
-        boolean hasEmpty = false;
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-            
-            if (dc != null && !dc.getName().equals("")) {
+        for (DesignClass dc: types) {
+            if (!dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } else if (dc != null && dc.getName().equals("")) {
-                hasEmpty = true;
-                typeComboBox.addItem("(unnamed)");
-            }
+            } 
         }
-        if (!hasEmpty) {
-            types.add(new DesignClass(""));
-            typeComboBox.addItem("(unnamed)");
-        }
+
+
         if (objectType.getName().equals("")) {
-            typeComboBox.setSelectedItem("(unnamed)");
+            typeComboBox.setSelectedItem(UNNAMED);
         } else {
             typeComboBox.setSelectedItem(objectType.getName());
         }
         updateAddTypePanel();
     }
-    
-    public boolean isInList(DesignClass designClass, Vector list) {
-        Iterator iterator = list.iterator();
-        DesignClass dc;
-        
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-            
-            if (dc == designClass) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
+
     public String getObjectName() {
         return nameField.getText();
     }
@@ -194,12 +172,12 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         return objectType;
     }
     
-    public String addNewType() {
+    public String getNameOfNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
         ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
         
         if (!classNameEditor.showDialog(this, "Class Editor")) {
-            return "fail";
+            return null;
         }
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
         if ((repository.getDesignClass(newClass.getName()) != null)
@@ -207,7 +185,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
+            return null;
         } else {
             types.add(newClass);
             repository.addClass(newClass);
@@ -215,20 +193,16 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         }
     }
 
-    // edits the class of object o
-    public String editTypeName(DesignClass dc) {
+    public String getNameOfEditedType(DesignClass dc) {
         ClassGR classGR = new ClassGR(dc, new Point(0, 0));
         ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {
-            return "fail";
+            return null;
         }
         
-        repository.addClass(dc);
-        
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
-
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
@@ -238,7 +212,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
+            return null;
         } else {
             repository.editClass(dc, newClass);
             return newClass.getName();
@@ -246,52 +220,56 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     }
 
     // updates the combo box according to the list of classes
-    public void updateComboBox(String index) {
+    private void updateComboBox(String index) {
         typeComboBox.removeAllItems();
-        DesignClass dc;
-        Iterator iterator = types.iterator();
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-            if (dc != null && !dc.getName().equals("")) {
+
+        typeComboBox.addItem(UNNAMED);
+        types.forEach(dc -> {
+            if (!dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } else if (dc != null && dc.getName().equals("")) {
-                typeComboBox.addItem("(unnamed)");
             }
-        }
+        });
+
         typeComboBox.setSelectedItem(index);
     }
     
-    private void setSelectedType() {
-        objectType = (DesignClass) types.get(typeComboBox.getSelectedIndex());
-    }
-    
+    private DesignClass getTypeofSelectedItem() {
+        Optional<DesignClass> a = types.stream().filter(dc -> dc.getName().equals(typeComboBox.getSelectedItem())
+                || (typeComboBox.getSelectedItem().equals(UNNAMED) && dc.getName().equals(""))).findAny();
+        if (a.isPresent()) {
+            return a.get();
+        } else {
+            return null;
+        }
+    } 
+
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            setSelectedType();
+            objectType = getTypeofSelectedItem();
             objectDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
             objectDialog.setVisible(false);
         } else if (event.getSource() == addTypeButton) {
-            String index = addNewType();
-            if (!index.equals("fail")) {
-                updateComboBox(index);
+            String typeName = getNameOfNewType();
+            if (typeName != null) {
+                updateComboBox(typeName);
                 updateAddTypePanel();
             }
         } else if (event.getSource() == editTypeButton) {
-            String index = editTypeName((DesignClass) types.elementAt(typeComboBox.getSelectedIndex()));
-            if (!index.equals("fail")) {
-                updateComboBox(index);
+            String typeName = getNameOfEditedType(getTypeofSelectedItem());
+            if (typeName != null) {
+                updateComboBox(typeName);
                 updateAddTypePanel();
             }
         } else if (event.getSource() == deleteTypeButton) {
             deleteType();
-            updateComboBox("(unnamed)");
+            updateComboBox(UNNAMED);
         }
     }
     
     private void deleteType() {
-        if (typeComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (typeComboBox.getSelectedItem().equals(UNNAMED)) {
             return;
         }
         int n = JOptionPane.showConfirmDialog(
@@ -314,7 +292,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     private void updateAddTypePanel() {
         String s = getSelectedItem();
         
-        if (s.equals("(unnamed)")) {
+        if (s.equals(UNNAMED)) {
             editTypeButton.setEnabled(false);
             deleteTypeButton.setEnabled(false);
         } else {

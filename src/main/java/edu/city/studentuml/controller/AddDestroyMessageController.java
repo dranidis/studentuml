@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddDestroyMessageController.java
 import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
@@ -18,10 +15,14 @@ import java.util.ListIterator;
 import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
 
+/**
+ * 
+ * @author Ervin Ramollari
+ */
 public class AddDestroyMessageController extends AddElementController {
 
     private RoleClassifierGR source = null;
-    private Vector elements;
+    private Vector<GraphicalElement> elements;
 
     public AddDestroyMessageController(SDModel model, DiagramInternalFrame frame) {
         super(model, frame);
@@ -30,7 +31,7 @@ public class AddDestroyMessageController extends AddElementController {
     public void pressed(int x, int y) {
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
@@ -56,7 +57,7 @@ public class AddDestroyMessageController extends AddElementController {
 
         elements = diagramModel.getGraphicalElements();
 
-        ListIterator listIterator = elements.listIterator(elements.size());
+        ListIterator<GraphicalElement> listIterator = elements.listIterator(elements.size());
         Point2D origin = new Point2D.Double(x, y);
         GraphicalElement element = null;
 
@@ -81,7 +82,7 @@ public class AddDestroyMessageController extends AddElementController {
         DestroyMessageGR messageGR = new DestroyMessageGR(source, target, message, y);
 
         UndoableEdit edit = new AddEdit(messageGR, diagramModel);
-        
+
         diagramModel.addGraphicalElement(messageGR);
         if (parentFrame instanceof SDInternalFrame) {
             ((SDInternalFrame) parentFrame).setSelectionMode();

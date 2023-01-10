@@ -90,7 +90,7 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
         classDialog.pack();
         classDialog.setResizable(false);
         classDialog.setLocationRelativeTo(owner);
-        classDialog.show();
+        classDialog.setVisible(true);
 
         return ok;
     }
@@ -126,10 +126,8 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
     }
 
     public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == nameField) {
-            if (nameField.getText() == null || nameField.getText().equals("")) {
-                okButton.setEnabled(false);
-            }
+        if (event.getSource() == nameField && (nameField.getText() == null || nameField.getText().equals(""))) {
+            okButton.setEnabled(false);
         }
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
             if ((nameField.getText() == null) || nameField.getText().equals("")) {

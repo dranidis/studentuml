@@ -1,7 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-//Author: Ervin Ramollari
-//Classifier.java
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+/**
+ * @author Ervin Ramollari
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__type")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
 public interface Classifier {
 
     public String getName();

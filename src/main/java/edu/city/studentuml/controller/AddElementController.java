@@ -1,8 +1,5 @@
 package edu.city.studentuml.controller;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AddElementController.java
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import java.awt.event.MouseAdapter;
@@ -19,7 +16,7 @@ public abstract class AddElementController {
     private MouseListener mouseListener;
     private MouseMotionListener mouseMotionListener;
 
-    public AddElementController(DiagramModel model, DiagramInternalFrame frame) {
+    protected AddElementController(DiagramModel model, DiagramInternalFrame frame) {
         diagramModel = model;
         parentFrame = frame;
         mouseListener = new MouseAdapter() {
@@ -33,7 +30,7 @@ public abstract class AddElementController {
                     return;
                 }
 
-                pressed(e.getX(), e.getY());
+                pressed(scale(e.getX()), scale(e.getY()));
             }
 
             @Override
@@ -42,19 +39,24 @@ public abstract class AddElementController {
                     return;
                 }
 
-                released(e.getX(), e.getY());
+                released(scale(e.getX()), scale(e.getY()));
             }
         };
         mouseMotionListener = new MouseMotionAdapter() {
 
+            @Override
             public void mouseDragged(MouseEvent e) {
                 if (selectionMode || e.isMetaDown() || e.isAltDown()) {
                     return;
                 }
 
-                dragged(e.getX(), e.getY());
+                dragged(scale(e.getX()), scale(e.getY()));
             }
         };
+    }
+
+    private int scale(int number) {
+        return (int) (number / parentFrame.getView().getScale());
     }
 
     public MouseListener getMouseListener() {
@@ -69,10 +71,7 @@ public abstract class AddElementController {
         selectionMode = selMode;
     }
 
-    // to be implemented by subclasses that handle the addition of particular UML elements
-    public void pressed(int x, int y) {
-        //System.out.println(this.getClass().getName());
-    }
+    public abstract void pressed(int x, int y);
 
     public abstract void dragged(int x, int y);
 

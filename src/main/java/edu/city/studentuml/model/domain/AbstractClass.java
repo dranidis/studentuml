@@ -1,29 +1,36 @@
 package edu.city.studentuml.model.domain;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+
+
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+
 /**
  *
  * @author draganbisercic
  */
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.XMLStreamer;
-import java.io.Serializable;
-import java.util.Iterator;
-
-import org.w3c.dom.Element;
-
 public abstract class AbstractClass implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
     protected GenericClass genericClass;
-    protected NotifierVector attributes;
+    protected NotifierVector<Attribute> attributes;
 
-    public AbstractClass(GenericClass gc) {
+    protected AbstractClass(GenericClass gc) {
         genericClass = gc;
-        attributes = new NotifierVector();
+        attributes = new NotifierVector<>();
     }
 
-    public AbstractClass(String name) {
+    protected AbstractClass(String name) {
         this(new GenericClass(name));
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 
     public void setGenericClass(GenericClass gc) {
@@ -42,21 +49,21 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
         return genericClass.getName();
     }
 
-    public void setAttributes(NotifierVector attribs) {
+    public void setAttributes(NotifierVector<Attribute> attribs) {
         attributes.clear();
         attributes = attribs;
     }
 
-    public NotifierVector getAttributes() {
+    public NotifierVector<Attribute> getAttributes() {
         return attributes;
     }
 
     public Attribute getAttributeByName(String n) {
         Attribute attrib;
-        Iterator iterator = attributes.iterator();
+        Iterator<Attribute> iterator = attributes.iterator();
 
         while (iterator.hasNext()) {
-            attrib = (Attribute) iterator.next();
+            attrib = iterator.next();
 
             if (attrib.getName().equals(n)) {
                 return attrib;
@@ -64,18 +71,6 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
         }
 
         return null;
-    }
-
-    public Attribute getAttributeByIndex(int index) {
-        Attribute attrib = null;
-
-        try {
-            attrib = (Attribute) attributes.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
-
-        return attrib;
     }
 
     // add an attribute only if it has unique name
@@ -94,12 +89,7 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
         attributes.clear();
     }
 
-    public abstract void streamFromXML(Element node, XMLStreamer streamer, Object instance);
-
-    public abstract void streamToXML(Element node, XMLStreamer streamer);
-    
     public String toString() {
         return getName();
     }
 }
-

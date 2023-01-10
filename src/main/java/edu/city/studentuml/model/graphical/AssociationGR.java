@@ -1,10 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AssociationGR.java
 import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -17,14 +13,20 @@ import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.w3c.dom.Element;
 
-public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
+@JsonIncludeProperties({ "from", "to", "internalid", "association" })
+public class AssociationGR extends LinkGR {
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
-    private ClassifierGR classA;
-    private ClassifierGR classB;
+    @JsonProperty("from")
+    protected ClassifierGR classA;
+    @JsonProperty("to")
+    protected ClassifierGR classB;
     private Font nameFont;
     private Font roleFont;
 
@@ -79,6 +81,7 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         return classB.getHeight();
     }
 
+    @Override
     public void draw(Graphics2D g) {
         classA.refreshDimensions(g);
         classB.refreshDimensions(g);
@@ -87,8 +90,6 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
             super.draw(g);
         }
 
-        //if (outlineColor == null)
-        //	outlineColor = this.myColor();
         int xA = getXA();
         int yA = getYA();
         int xB = getXB();
@@ -142,18 +143,20 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw role names and multiplicities
             g.setFont(roleFont);
-            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(), true, g);
-            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),  true, g);
+            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(),
+                    true, g);
+            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),
+                    true, g);
 
         } else // handle rendering of reflective associations in an ad-hoc way
         {
             GeneralPath reflective = new GeneralPath();
-            int step = getReflectiveStep();
+            float step = getReflectiveStep();
             reflective.moveTo(xA, yA);
             reflective.lineTo(xA, yA - REFLECTIVE_UP * step); // up 2
             reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yA - REFLECTIVE_UP * step); // right 4
             reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yB); // down 4
-            reflective.lineTo(xB, yB);  // left 2          
+            reflective.lineTo(xB, yB); // left 2
 
             g.draw(reflective);
 
@@ -163,14 +166,15 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             // draw the association name string
             g.setFont(nameFont);
-//            g.drawString(association.getName(), getXA(), getTopLeftYA() - REFLECTIVE_UP * getReflectiveStep() - 2);
+
             double angle = 0;
             if (association.getLabelDirection() == Association.FROM_A_TO_B) {
                 angle = Math.toRadians(0);
             } else {
                 angle = Math.toRadians(180);
             }
-            drawAssociationName(xA + REFLECTIVE_RIGHT * step / 2, yA - REFLECTIVE_UP * step, angle, association.getName(), association.getShowArrow(), g);
+            drawAssociationName((int) (xA + REFLECTIVE_RIGHT * step / 2), (int) (yA - REFLECTIVE_UP * step), angle,
+                    association.getName(), association.getShowArrow(), g);
 
             // draw role names and multiplicities
             g.setFont(roleFont);
@@ -187,8 +191,6 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     protected void drawArrowHeads(Graphics2D g) {
-        // TODO Auto-generated method stub
-
         if (association.getDirection() == Association.AB) {
             drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
         } else if (association.getDirection() == Association.BA) {
@@ -203,10 +205,10 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         int direction = association.getDirection();
         if (direction == Association.AB || direction == Association.BIDIRECTIONAL_FIX) {
             drawAssociationArrowHead(getXB(), getYB(), Math.PI, g);
-        } 
+        }
         if (direction == Association.BA || direction == Association.BIDIRECTIONAL_FIX) {
             drawAssociationArrowHead(getXA(), getYA(), Math.PI / 2, g);
-        } 
+        }
     }
 
     public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
@@ -256,9 +258,9 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             GeneralPath triangle = new GeneralPath();
 
-            triangle.moveTo(offset + 5, 5);
-            triangle.lineTo(offset + 5, 15);
-            triangle.lineTo(offset + 15, 10);
+            triangle.moveTo(offset + 5.0, 5.0);
+            triangle.lineTo(offset + 5.0, 15.0);
+            triangle.lineTo(offset + 15.0, 10.0);
             triangle.closePath();
             g.fill(triangle);
             g.rotate(-angle);
@@ -269,9 +271,9 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
             GeneralPath triangle = new GeneralPath();
 
-            triangle.moveTo(offset + 5, -5);
-            triangle.lineTo(offset + 5, -15);
-            triangle.lineTo(offset + 15, -10);
+            triangle.moveTo(offset + 5.0, -5.0);
+            triangle.lineTo(offset + 5.0, -15.0);
+            triangle.lineTo(offset + 15.0, -10.0);
             triangle.closePath();
             g.fill(triangle);
             g.rotate(-angle);
@@ -279,7 +281,8 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up, Graphics2D g) {
+    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up,
+            Graphics2D g) {
         boolean sameDirection = true;
 
         if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
@@ -301,8 +304,7 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         int xOffset = (int) bounds.getX();
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();
-        int textHeight = (int) bounds.getHeight();
-        
+
         if (sameDirection) {
             if (up) {
                 g.drawString(sb.toString(), 12 + xOffset, -5);
@@ -329,18 +331,16 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
         return association;
     }
 
-    public AbstractClassGR getClassA() {
-        return (AbstractClassGR) classA;
+    public ClassifierGR getClassA() {
+        return classA;
     }
 
-    public AbstractClassGR getClassB() {
-        return (AbstractClassGR) classB;
+    public ClassifierGR getClassB() {
+        return classB;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        super.streamFromXML(node, streamer, instance);
-    }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
@@ -349,4 +349,10 @@ public class AssociationGR extends LinkGR implements IXMLCustomStreamable {
 
         streamer.streamObject(node, "association", association);
     }
+
+    @Override
+    public String toString() {
+        return "" + classA + " ---association---> " + classB + " " + super.toString();
+    }
+
 }

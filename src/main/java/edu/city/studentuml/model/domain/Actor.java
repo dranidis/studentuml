@@ -1,14 +1,15 @@
 package edu.city.studentuml.model.domain;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//Actor.java
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import org.w3c.dom.Element;
 
-public class Actor extends LeafUCDElement implements Serializable, Classifier, IXMLCustomStreamable {
+/**
+ * 
+ * @author Ervin Ramollari
+ */
+public class Actor extends LeafUCDElement implements Serializable, IXMLCustomStreamable {
 
     public Actor(String n) {
         super(n);

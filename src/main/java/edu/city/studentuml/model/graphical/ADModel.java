@@ -5,12 +5,15 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Biser
  */
 public class ADModel extends DiagramModel {
+
+    private static final  Logger logger = Logger.getLogger(ADModel.class.getName());
 
     public ADModel(String title, UMLProject project) {
         super(title, project);
@@ -50,18 +53,17 @@ public class ADModel extends DiagramModel {
             // does not have a default context activity
             context.add(nodeComponentGR);
             nodeComponentGR.setContext(context);
-            repository.addNodeComponent(nodeComponentGR.getNodeComponent());
+            repository.addNodeComponent(nodeComponentGR.getComponent());
             SystemWideObjectNamePool.getInstance().objectAdded(nodeComponentGR);
             modelChanged();
             return;
         }
 
         nodeComponentGR.setContext(NodeComponentGR.DEFAULT_CONTEXT);
-        repository.addNodeComponent(nodeComponentGR.getNodeComponent());
+        repository.addNodeComponent(nodeComponentGR.getComponent());
         super.insertGraphicalElementAt(nodeComponentGR, getFirstEdgeIndex());
     }
 
-    // override superclass method removeGraphicalElement()
     @Override
     public void removeGraphicalElement(GraphicalElement e) {
         SystemWideObjectNamePool.getInstance().loading();
@@ -71,6 +73,9 @@ public class ADModel extends DiagramModel {
             removeNodeComponent((NodeComponentGR) e);
         } else if (e instanceof UMLNoteGR) {
             super.removeGraphicalElement(e);
+        } else {
+            logger.severe("Unexpected class: " + e.getClass().getName());
+            throw new UnsupportedOperationException("removeGraphicalElement() not supported");
         }
         SystemWideObjectNamePool.getInstance().done();
     }
@@ -97,29 +102,33 @@ public class ADModel extends DiagramModel {
         }
 
         // remove all the edges to the node
-        Iterator incomingEdges = nodeComponentGR.getIncomingEdges();
+        Iterator<EdgeGR> incomingEdges = nodeComponentGR.getIncomingRelations();
         while (incomingEdges.hasNext()) {
-            EdgeGR edge = (EdgeGR) incomingEdges.next();
+            EdgeGR edge = incomingEdges.next();
             removeEdge(edge);
             // need to update iterator
-            incomingEdges = nodeComponentGR.getIncomingEdges();
+            incomingEdges = nodeComponentGR.getIncomingRelations();
         }
 
-        Iterator outgoingEdges = nodeComponentGR.getOutgoingEdges();
+        Iterator<EdgeGR> outgoingEdges = nodeComponentGR.getOutgoingRelations();
         while (outgoingEdges.hasNext()) {
-            EdgeGR edge = (EdgeGR) outgoingEdges.next();
+            EdgeGR edge = outgoingEdges.next();
             removeEdge(edge);
             // need to update iterator
-            outgoingEdges = nodeComponentGR.getOutgoingEdges();
+            outgoingEdges = nodeComponentGR.getOutgoingRelations();
         }
 
         // and lastly remove the node
         NodeComponentGR context = nodeComponentGR.getContext();
-        repository.removeNodeComponent(nodeComponentGR.getNodeComponent());
+        repository.removeNodeComponent(nodeComponentGR.getComponent());
+
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
             super.removeGraphicalElement(nodeComponentGR);
         } else {
             context.remove(nodeComponentGR);
+
+            changeViewSize();
+
             modelChanged();
         }
     }
@@ -128,11 +137,11 @@ public class ADModel extends DiagramModel {
     @Override
     public GraphicalElement getContainingGraphicalElement(Point2D point) {
 
-        ListIterator listIterator = graphicalElements.listIterator(graphicalElements.size());
+        ListIterator<GraphicalElement> listIterator = graphicalElements.listIterator(graphicalElements.size());
         GraphicalElement element = null;
 
         while (listIterator.hasPrevious()) {
-            element = (GraphicalElement) listIterator.previous();
+            element = listIterator.previous();
 
             if (element.contains(point)) {
                 if (element instanceof NodeComponentGR) {
@@ -153,11 +162,11 @@ public class ADModel extends DiagramModel {
      */
     public NodeComponentGR findContext(NodeComponentGR node) {
 
-        Iterator iterator = graphicalElements.iterator();
+        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
         GraphicalElement element = null;
 
         while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+            element = iterator.next();
 
             if (element instanceof NodeComponentGR) {
                 NodeComponentGR myNode = (NodeComponentGR) element;
@@ -181,11 +190,11 @@ public class ADModel extends DiagramModel {
     // Override: needed because of the composite structure
     @Override
     public void clearSelected() {
-        Iterator iterator = graphicalElements.iterator();
+        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
         GraphicalElement element;
 
         while (iterator.hasNext()) {
-            element = (GraphicalElement) iterator.next();
+            element = iterator.next();
             if (element instanceof NodeComponentGR) {
                 NodeComponentGR node = (NodeComponentGR) element;
                 node.clearSelected();
@@ -198,16 +207,6 @@ public class ADModel extends DiagramModel {
             selected.clear();
             modelChanged();
         }
-    }
-
-    @Override
-    public void clear() {
-
-        while (graphicalElements.size() > 0) {
-            removeGraphicalElement((GraphicalElement) graphicalElements.get(0));
-        }
-
-        super.clear();
     }
 
     /*
@@ -240,13 +239,16 @@ public class ADModel extends DiagramModel {
                 }
             }
         }
+
+        changeViewSize();
+
         modelChanged();
     }
 
     private int getFirstEdgeIndex() {
         int index;
         for (index = 0; index < graphicalElements.size(); index++) {
-            GraphicalElement el = (GraphicalElement) graphicalElements.get(index);
+            GraphicalElement el = graphicalElements.get(index);
             if (el instanceof EdgeGR) {
                 return index;
             }

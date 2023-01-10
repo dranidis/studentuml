@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
  */
 public class ActivityNode extends CompositeNode implements IXMLCustomStreamable {
 
-    private ActivityNode(String name) {
+    public ActivityNode(String name) {
         super(name);
     }
 
@@ -39,7 +39,6 @@ public class ActivityNode extends CompositeNode implements IXMLCustomStreamable 
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

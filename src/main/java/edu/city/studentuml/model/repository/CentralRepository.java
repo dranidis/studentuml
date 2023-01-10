@@ -1,17 +1,6 @@
 package edu.city.studentuml.model.repository;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//CentralRepository.java
-//Class CentralRepository is the core of the application data.
-//It represents the domain model layer of the model component in MVC.
-//All domain concepts of UML diagrams, such as classes, interfaces, messages, etc.
-//are stored here in their own lists. These concepts do not keep
-//graphical rendering information as is the case with GraphicalElements in UML diagrams.
-//Whatever UML element is added in a diagram, its corresponding domain concept
-//is added to this repository. There exists only one Central Repository for each project.
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
-import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -51,6 +40,7 @@ import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UCLink;
@@ -60,105 +50,117 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+/**
+ * CentralRepository is the core of the application data. It represents the
+ * domain model layer of the model component in MVC. All domain concepts of UML
+ * diagrams, such as classes, interfaces, messages, etc. are stored here in
+ * their own lists. These concepts do not keep graphical rendering information
+ * as is the case with GraphicalElements in UML diagrams. Whatever UML element
+ * is added in a diagram, its corresponding domain concept is added to this
+ * repository. There exists only one Central Repository for each project.
+ * 
+ * @author Ervin Ramollari
+ */
 public class CentralRepository extends Observable implements Serializable {
-    Logger logger = Logger.getLogger(CentralRepository.class.getName());
+    private static final Logger logger = Logger.getLogger(CentralRepository.class.getName());
 
-    private Vector datatypes;
-    private NotifierVector useCases;
-    private NotifierVector ucLinks;
-    private NotifierVector actorInstances;
-    private NotifierVector systemInstances;
-    private NotifierVector systems;
-    private NotifierVector actors;
-    private NotifierVector aggregations;
-    private NotifierVector associations;
-    private NotifierVector classes;
-    private NotifierVector concepts;
-    private NotifierVector conceptualAssociationClasses;
-    private NotifierVector designAssociationClasses;
-    private NotifierVector dependencies;
-    private NotifierVector generalizations;
-    private NotifierVector genericAttributes;
-    private NotifierVector genericClasses;
-    private NotifierVector genericOperations;
-    private NotifierVector interfaces;
-    private NotifierVector multiObjects;
-    private NotifierVector objects;
-    private NotifierVector realizations;
-    private NotifierVector sdMessages;
-    private NotifierVector ssdMessages;
-    private NotifierVector controlFlows;
-    private NotifierVector objectFlows;
-    private NotifierVector actionNodes;
-    private NotifierVector initialNodes;
-    private NotifierVector activityFinalNodes;
-    private NotifierVector flowFinalNodes;
-    private NotifierVector decisionNodes;
-    private NotifierVector mergeNodes;
-    private NotifierVector forkNodes;
-    private NotifierVector joinNodes;
-    private NotifierVector objectNodes;
-    private NotifierVector activityNodes;
+    private Vector<DataType> datatypes;
+    private NotifierVector<UseCase> useCases;
+    private NotifierVector<UCLink> ucLinks;
+    private NotifierVector<ActorInstance> actorInstances;
+    private NotifierVector<SystemInstance> systemInstances;
+    private NotifierVector<System> systems;
+    private NotifierVector<Actor> actors;
+    private NotifierVector<Aggregation> aggregations;
+    private NotifierVector<Association> associations;
+    private NotifierVector<DesignClass> classes;
+    private NotifierVector<ConceptualClass> concepts;
+    private NotifierVector<ConceptualAssociationClass> conceptualAssociationClasses;
+    private NotifierVector<DesignAssociationClass> designAssociationClasses;
+    private NotifierVector<Dependency> dependencies;
+    private NotifierVector<Generalization> generalizations;
+    private NotifierVector<GenericAttribute> genericAttributes;
+    private NotifierVector<GenericClass> genericClasses;
+    private NotifierVector<GenericOperation> genericOperations;
+    private NotifierVector<Interface> interfaces;
+    private NotifierVector<MultiObject> multiObjects;
+    private NotifierVector<SDObject> sdObjects;
+    private NotifierVector<Realization> realizations;
+    private NotifierVector<SDMessage> sdMessages;
+    private NotifierVector ssdMessages; // TODO: remove????
+    private NotifierVector<ControlFlow> controlFlows;
+    private NotifierVector<ObjectFlow> objectFlows;
+    private NotifierVector<ActionNode> actionNodes;
+    private NotifierVector<InitialNode> initialNodes;
+    private NotifierVector<ActivityFinalNode> activityFinalNodes;
+    private NotifierVector<FlowFinalNode> flowFinalNodes;
+    private NotifierVector<DecisionNode> decisionNodes;
+    private NotifierVector<MergeNode> mergeNodes;
+    private NotifierVector<ForkNode> forkNodes;
+    private NotifierVector<JoinNode> joinNodes;
+    private NotifierVector<ObjectNode> objectNodes;
+    private NotifierVector<ActivityNode> activityNodes;
 
     public CentralRepository() {
 
-        datatypes = new Vector();
-        initialiseDataTypes();        // all the lists of domain concepts created in a project
+        datatypes = new Vector<>();
+        initialiseDataTypes(); // all the lists of domain concepts created in a project
 
-        ucLinks = new NotifierVector();
-        useCases = new NotifierVector();
+        ucLinks = new NotifierVector<>();
+        useCases = new NotifierVector<>();
 
         // basic shared concepts
-        genericClasses = new NotifierVector();
-        genericAttributes = new NotifierVector();
-        genericOperations = new NotifierVector();
+        genericClasses = new NotifierVector<>();
+        genericAttributes = new NotifierVector<>();
+        genericOperations = new NotifierVector<>();
 
-        classes = new NotifierVector();
-        interfaces = new NotifierVector();
-        associations = new NotifierVector();
-        generalizations = new NotifierVector();
-        aggregations = new NotifierVector();
-        realizations = new NotifierVector();
-        dependencies = new NotifierVector();
-        designAssociationClasses = new NotifierVector();
+        classes = new NotifierVector<>();
+        interfaces = new NotifierVector<>();
+        associations = new NotifierVector<>();
+        generalizations = new NotifierVector<>();
+        aggregations = new NotifierVector<>();
+        realizations = new NotifierVector<>();
+        dependencies = new NotifierVector<>();
+        designAssociationClasses = new NotifierVector<>();
 
-        concepts = new NotifierVector();
-        conceptualAssociationClasses = new NotifierVector();
+        concepts = new NotifierVector<>();
+        conceptualAssociationClasses = new NotifierVector<>();
 
-        systems = new NotifierVector();
-        systemInstances = new NotifierVector();
-        actors = new NotifierVector();
-        actorInstances = new NotifierVector();
-        objects = new NotifierVector();
-        multiObjects = new NotifierVector();
-        sdMessages = new NotifierVector();
-        ssdMessages = new NotifierVector();
+        systems = new NotifierVector<>();
+        systemInstances = new NotifierVector<>();
+        actors = new NotifierVector<>();
+        actorInstances = new NotifierVector<>();
+        sdObjects = new NotifierVector<>();
+        multiObjects = new NotifierVector<>();
+        sdMessages = new NotifierVector<>();
+        ssdMessages = new NotifierVector<>();
 
-        controlFlows = new NotifierVector();
-        objectFlows =  new NotifierVector();
-        actionNodes = new NotifierVector();
-        initialNodes = new NotifierVector();
-        activityFinalNodes = new NotifierVector();
-        flowFinalNodes = new NotifierVector();
-        decisionNodes = new NotifierVector();
-        mergeNodes = new NotifierVector();
-        forkNodes = new NotifierVector();
-        joinNodes = new NotifierVector();
-        objectNodes = new NotifierVector();
-        activityNodes = new NotifierVector();
+        controlFlows = new NotifierVector<>();
+        objectFlows = new NotifierVector<>();
+        actionNodes = new NotifierVector<>();
+        initialNodes = new NotifierVector<>();
+        activityFinalNodes = new NotifierVector<>();
+        flowFinalNodes = new NotifierVector<>();
+        decisionNodes = new NotifierVector<>();
+        mergeNodes = new NotifierVector<>();
+        forkNodes = new NotifierVector<>();
+        joinNodes = new NotifierVector<>();
+        objectNodes = new NotifierVector<>();
+        activityNodes = new NotifierVector<>();
     }
 
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
-    }  
-    
-    public Vector getAllObjects() {
-        Vector v = new Vector();
+    }
+
+    public Vector<Object> getAllObjects() {
+        Vector<Object> v = new Vector<>();
 
         v.addAll(actorInstances);
         v.addAll(actors);
@@ -174,10 +176,10 @@ public class CentralRepository extends Observable implements Serializable {
         v.addAll(genericOperations);
         v.addAll(interfaces);
         v.addAll(multiObjects);
-        v.addAll(objects);
+        v.addAll(sdObjects);
         v.addAll(realizations);
         v.addAll(sdMessages);
-        v.addAll(ssdMessages);
+        v.addAll(ssdMessages); // ????
 
         v.addAll(ucLinks);
         v.addAll(useCases);
@@ -211,9 +213,8 @@ public class CentralRepository extends Observable implements Serializable {
         aggregations.clear();
         realizations.clear();
         dependencies.clear();
-        // getDatatypes().clear();
         concepts.clear();
-        objects.clear();
+        sdObjects.clear();
         multiObjects.clear();
         actors.clear();
         actorInstances.clear();
@@ -244,16 +245,15 @@ public class CentralRepository extends Observable implements Serializable {
         activityNodes.clear();
     }
 
-    // this method occurs whenever a change in the repository occurs to notify observers
+    // this method occurs whenever a change in the repository occurs to notify
+    // observers
     public void repositoryChanged() {
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers();
-
     }
 
     private void initialiseDataTypes() {
-        // TODO Auto-generated method stub
         datatypes.add(DataType.VOID);
         datatypes.add(DataType.INTEGER);
         datatypes.add(DataType.FLOAT);
@@ -264,24 +264,34 @@ public class CentralRepository extends Observable implements Serializable {
         datatypes.add(DataType.STRING);
     }
 
-    public void setDatatypes(Vector datatypes) {
+    public void setDatatypes(Vector<DataType> datatypes) {
         this.datatypes = datatypes;
     }
 
-    public Vector getDatatypes() {
+    public Vector<DataType> getDatatypes() {
         return datatypes;
     }
 
-    public Vector getTypes() {
-        Vector types = new Vector();
+    public Vector<Type> getTypes() {
+        Vector<Type> types = new Vector<>();
         types.addAll(datatypes);
-        types.addAll(classes);
-        types.addAll(interfaces);
+
+        classes.forEach(c -> {
+            if (!c.getName().equals("")) {
+                types.add(c);
+            }
+        });
+
+        interfaces.forEach(c -> {
+            if (!c.getName().equals("")) {
+                types.add(c);
+            }
+        });
 
         return types;
     }
 
-    //methods for manipulating the list of conceptual classes
+    // methods for manipulating the list of conceptual classes
     public boolean addConceptualClass(ConceptualClass c) {
         ConceptualClass existingClass = getConceptualClass(c.getName());
 
@@ -305,25 +315,19 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public ConceptualClass getConceptualClass(String name) {
-        ConceptualClass cc;
-        Iterator iterator = concepts.iterator();
 
-        while (iterator.hasNext()) {
-            cc = (ConceptualClass) iterator.next();
-
-            if (cc.getName().equals(name)) {
-                return cc;
-            }
+        Optional<ConceptualClass> found = concepts.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     public boolean editConceptualClass(ConceptualClass originalClass, ConceptualClass newClass) {
         ConceptualClass existingClass = getConceptualClass(newClass.getName());
 
-        if (!originalClass.getName().equals(newClass.getName())
-                && (existingClass != null)
+        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
                 && !newClass.getName().equals("")) {
             return false;
         }
@@ -352,7 +356,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getConceptualClasses() {
+    public Vector<ConceptualClass> getConceptualClasses() {
         return concepts;
     }
 
@@ -361,7 +365,8 @@ public class CentralRepository extends Observable implements Serializable {
         logger.fine("Adding class:" + c.getName());
         DesignClass existingClass = getDesignClass(c.getName());
 
-        // if a class with the same name doesn't exist, or the class hasn't been named yet,
+        // if a class with the same name doesn't exist, or the class hasn't been named
+        // yet,
         // add it and return true; else return false
         if ((existingClass == null) || c.getName().equals("")) {
             classes.add(c);
@@ -377,9 +382,11 @@ public class CentralRepository extends Observable implements Serializable {
             }
 
             repositoryChanged();
+            logger.fine(() -> "Classes:" + classes);
 
             return true;
         } else {
+            logger.fine(() -> "Already in repository:" + c.getName());
             return false;
         }
     }
@@ -391,8 +398,7 @@ public class CentralRepository extends Observable implements Serializable {
         // if the name of the class is changed and the new name causes conflict
         // with an existing class, and the new name is non-blank, then don't edit
         // and return false
-        if (!originalClass.getName().equals(newClass.getName())
-                && (existingClass != null)
+        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
                 && !newClass.getName().equals("")) {
             return false;
         }
@@ -423,28 +429,25 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getClasses() {
+    public Vector<DesignClass> getClasses() {
         return classes;
     }
 
-    // this method retrieves a design class by its name
-    // If no match is found, the method returns null
-    // This method is useful when adding a graphical class
-    // in a design class diagram in order to determine if there is a
-    // class with the same name.
+    /**
+     * Retrieves a design class by its name. If no match is found, the method
+     * returns null. This method is useful when adding a graphical class in a design
+     * class diagram in order to determine if there is a class with the same name.
+     *
+     * @param name
+     * @return
+     */
     public DesignClass getDesignClass(String name) {
-        DesignClass dc;
-        Iterator iterator = classes.iterator();
-
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-
-            if (dc.getName().equals(name)) {
-                return dc;
-            }
+        Optional<DesignClass> found = classes.stream().filter(dc -> dc.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project interfaces
@@ -488,28 +491,24 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getInterfaces() {
+    public Vector<Interface> getInterfaces() {
         return interfaces;
     }
 
-    // this method retrieves an interface by its name
-    // If no match is found, the method returns null
-    // This method is useful when adding a graphical interface
-    // in a design class diagram in order to determine if there is an
-    // inteface with the same name.
+    /**
+     * Retrieves an interface by its name If no match is found, the method returns
+     * null This method is useful when adding a graphical interface in a design
+     * class diagram in order to determine if there is an inteface with the same
+     * name.
+     */
     public Interface getInterface(String name) {
-        Interface interf;
-        Iterator iterator = interfaces.iterator();
 
-        while (iterator.hasNext()) {
-            interf = (Interface) iterator.next();
-
-            if (interf.getName().equals(name)) {
-                return interf;
-            }
+        Optional<Interface> found = interfaces.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project associations
@@ -530,7 +529,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getAssociations() {
+    public Vector<Association> getAssociations() {
         return associations;
     }
 
@@ -547,26 +546,20 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeAssociationClass(AbstractAssociationClass a) {
-        if (a instanceof ConceptualAssociationClass) {
-            if (conceptualAssociationClasses.remove((ConceptualAssociationClass) a)) {
-                repositoryChanged();
-                return true;
-            }
-        } else if (a instanceof DesignAssociationClass) {
-            if (designAssociationClasses.remove((DesignAssociationClass) a)) {
-                repositoryChanged();
-                return true;
-            }
+        if (a instanceof ConceptualAssociationClass && conceptualAssociationClasses.remove(a)
+                || a instanceof DesignAssociationClass && designAssociationClasses.remove(a)) {
+            repositoryChanged();
+            return true;
         }
 
         return false;
     }
 
-    public Vector getConceptualAssociationClasses() {
+    public Vector<ConceptualAssociationClass> getConceptualAssociationClasses() {
         return conceptualAssociationClasses;
     }
 
-    public Vector getDesignAssociationClasses() {
+    public Vector<DesignAssociationClass> getDesignAssociationClasses() {
         return designAssociationClasses;
     }
 
@@ -594,23 +587,20 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getGeneralizations() {
+    public Vector<Generalization> getGeneralizations() {
         return generalizations;
     }
 
     // retrieves the generalization that exists between two classes, if any
-    public Generalization getGeneralization(AbstractClass parent, AbstractClass child) {
-        Generalization generalization;
-        Iterator iterator = generalizations.iterator();
-        while (iterator.hasNext()) {
-            generalization = (Generalization) iterator.next();
-
-            if ((generalization.getSuperClass() == parent) && (generalization.getBaseClass() == child)) {
-                return generalization;
-            }
+    public Generalization getGeneralization(Classifier parent, Classifier child) {
+        Optional<Generalization> found = generalizations.stream().filter(
+                generalization -> generalization.getSuperClass() == parent && generalization.getBaseClass() == child)
+                .findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project aggregations
@@ -631,7 +621,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getAggregations() {
+    public Vector<Aggregation> getAggregations() {
         return aggregations;
     }
 
@@ -659,25 +649,21 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getRealizations() {
+    public Vector<Realization> getRealizations() {
         return realizations;
     }
 
     // retrieves the realization that exists between
     // one class and one interface, if any
     public Realization getRealization(DesignClass c, Interface i) {
-        Iterator iterator = realizations.iterator();
-        Realization realization;
 
-        while (iterator.hasNext()) {
-            realization = (Realization) iterator.next();
-
-            if ((realization.getTheClass() == c) && (realization.getTheInterface() == i)) {
-                return realization;
-            }
+        Optional<Realization> found = realizations.stream()
+                .filter(realization -> realization.getTheClass() == c && realization.getTheInterface() == i).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project dependencies
@@ -704,24 +690,20 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getDependencies() {
+    public Vector<Dependency> getDependencies() {
         return dependencies;
     }
 
     // returns the dependency that exists between two classes, if any
     public Dependency getDependency(DesignClass from, DesignClass to) {
-        Iterator iterator = dependencies.iterator();
-        Dependency dependency;
 
-        while (iterator.hasNext()) {
-            dependency = (Dependency) iterator.next();
-
-            if ((dependency.getFrom() == from) && (dependency.getTo() == to)) {
-                return dependency;
-            }
+        Optional<Dependency> found = dependencies.stream()
+                .filter(dependency -> dependency.getFrom() == from && dependency.getTo() == to).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project objects
@@ -740,8 +722,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editSystemInstance(SystemInstance originalSystemInstance, SystemInstance newSystemInstance) {
         SystemInstance existingSystemInstance = getSystemInstance(newSystemInstance.getName());
 
-        if (!originalSystemInstance.getName().equals(newSystemInstance.getName())
-                && (existingSystemInstance != null)
+        if (!originalSystemInstance.getName().equals(newSystemInstance.getName()) && (existingSystemInstance != null)
                 && !newSystemInstance.getName().equals("")) {
             return false;
         }
@@ -754,21 +735,16 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public SystemInstance getSystemInstance(String name) {
-        SystemInstance s;
-        Iterator iterator = systemInstances.iterator();
 
-        while (iterator.hasNext()) {
-            s = (SystemInstance) iterator.next();
-
-            if (s.getName().equals(name)) {
-                return s;
-            }
+        Optional<SystemInstance> found = systemInstances.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
-    public Vector getSystemInstances() {
+    public Vector<SystemInstance> getSystemInstances() {
         return systemInstances;
     }
 
@@ -797,8 +773,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     public boolean editSystem(System originalSystem, System newSystem) {
         System existingSystem = getSystem(newSystem.getName());
-        if (!originalSystem.getName().equals(newSystem.getName())
-                && (existingSystem != null)
+        if (!originalSystem.getName().equals(newSystem.getName()) && (existingSystem != null)
                 && !newSystem.getName().equals("")) {
             return false;
         }
@@ -810,20 +785,16 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public System getSystem(String name) {
-        System s;
-        Iterator iterator = systems.iterator();
-        while (iterator.hasNext()) {
-            s = (System) iterator.next();
 
-            if (s.getName().equals(name)) {
-                return s;
-            }
+        Optional<System> found = systems.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
-    public Vector getSystems() {
+    public Vector<System> getSystems() {
         return systems;
     }
 
@@ -838,14 +809,14 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean addObject(SDObject o) {
-        logger.fine("Adding object " + o.toString());
+        logger.fine(() -> "Adding object " + o.toString());
         SDObject existingObject = getObject(o.getName());
 
         if ((existingObject == null) || o.getName().equals("")) {
-            objects.add(o);
+            sdObjects.add(o);
             repositoryChanged();
 
-            logger.finer("objects: " + objects);
+            logger.finer(() -> "objects: " + sdObjects);
             return true;
         } else {
             return false;
@@ -856,8 +827,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editObject(SDObject originalObject, SDObject newObject) {
         SDObject existingObject = getObject(newObject.getName());
 
-        if (!originalObject.getName().equals(newObject.getName())
-                && (existingObject != null)
+        if (!originalObject.getName().equals(newObject.getName()) && (existingObject != null)
                 && !newObject.getName().equals("")) {
             return false;
         }
@@ -870,7 +840,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeObject(SDObject o) {
-        if (objects.remove(o)) {
+        if (sdObjects.remove(o)) {
             repositoryChanged();
 
             return true;
@@ -879,8 +849,8 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getObjects() {
-        return objects;
+    public Vector<SDObject> getSdObjects() {
+        return sdObjects;
     }
 
     // this method retrieves an object by its name
@@ -889,18 +859,13 @@ public class CentralRepository extends Observable implements Serializable {
     // in a sequence diagram in order to determine if there is an
     // object with the same name.
     public SDObject getObject(String name) {
-        SDObject o;
-        Iterator iterator = objects.iterator();
 
-        while (iterator.hasNext()) {
-            o = (SDObject) iterator.next();
-
-            if (o.getName().equals(name)) {
-                return o;
-            }
+        Optional<SDObject> found = sdObjects.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project multi-objects
@@ -944,25 +909,20 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getMultiObjects() {
+    public Vector<MultiObject> getMultiObjects() {
         return multiObjects;
     }
 
     // this method retrieves a multi-object by its name
     // If no match is found, the method returns null
     public MultiObject getMultiObject(String name) {
-        MultiObject mo;
-        Iterator iterator = multiObjects.iterator();
 
-        while (iterator.hasNext()) {
-            mo = (MultiObject) iterator.next();
-
-            if (mo.getName().equals(name)) {
-                return mo;
-            }
+        Optional<MultiObject> found = multiObjects.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project actors
@@ -1004,25 +964,20 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getActors() {
+    public Vector<Actor> getActors() {
         return actors;
     }
 
     // this method retrieves an actor by its name
     // If no match is found, the method returns null
     public Actor getActor(String name) {
-        Actor a;
-        Iterator iterator = actors.iterator();
 
-        while (iterator.hasNext()) {
-            a = (Actor) iterator.next();
-
-            if (a.getName().equals(name)) {
-                return a;
-            }
+        Optional<Actor> found = actors.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of actor instances
@@ -1066,30 +1021,25 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getActorInstances() {
+    public Vector<ActorInstance> getActorInstances() {
         return actorInstances;
     }
 
     // this method retrieves an actor instance by its name
     // If no match is found, the method returns null
     public ActorInstance getActorInstance(String name) {
-        ActorInstance a;
-        Iterator iterator = actorInstances.iterator();
 
-        while (iterator.hasNext()) {
-            a = (ActorInstance) iterator.next();
-
-            if (a.getName().equals(name)) {
-                return a;
-            }
+        Optional<ActorInstance> found = actorInstances.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of project sequence diagram messages
     public boolean addSDMessage(SDMessage m) {
-        logger.fine("Adding message " + m.toString());
+        logger.fine(() -> "Adding message " + m.toString());
         sdMessages.add(m);
         repositoryChanged();
 
@@ -1106,13 +1056,14 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getSDMessages() {
+    public Vector<SDMessage> getSDMessages() {
         return sdMessages;
     }
 
     // The following methods manage the lists of generic concepts which can be
     // shared by more than one type of UML concept. For example, a generic operation
-    // can be referred to by a System Sequence Diagram message, a Sequence Diagram message,
+    // can be referred to by a System Sequence Diagram message, a Sequence Diagram
+    // message,
     // and by a Class Method
     // methods for manipulating the list of generic classes
     public boolean addGenericClass(GenericClass gc) {
@@ -1132,7 +1083,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getGenericClasses() {
+    public Vector<GenericClass> getGenericClasses() {
         return genericClasses;
     }
 
@@ -1142,18 +1093,13 @@ public class CentralRepository extends Observable implements Serializable {
     // in the repository in order to determine if there
     // already exists a generic class with the same name
     public GenericClass getGenericClass(String name) {
-        GenericClass gc;
-        Iterator iterator = genericClasses.iterator();
 
-        while (iterator.hasNext()) {
-            gc = (GenericClass) iterator.next();
-
-            if (gc.getName().equals(name)) {
-                return gc;
-            }
+        Optional<GenericClass> found = genericClasses.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     // methods for manipulating the list of generic operations
@@ -1174,7 +1120,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getGenericOperations() {
+    public Vector<GenericOperation> getGenericOperations() {
         return genericOperations;
     }
 
@@ -1182,21 +1128,22 @@ public class CentralRepository extends Observable implements Serializable {
     // If no match is found, the method returns null
     // This method is useful when adding a message or class method
     // in the repository in order to determine if there
-    // already exists a generic operation with the same name AND belonging to the same class
+    // already exists a generic operation with the same name AND belonging to the
+    // same class
     // to which the element can refer
     public GenericOperation getGenericOperation(String name, GenericClass parentClass) {
         GenericOperation go;
         DesignClass designClass;
-        Iterator iterator = classes.iterator();
+        Iterator<DesignClass> iterator = classes.iterator();
 
         while (iterator.hasNext()) {
-            designClass = (DesignClass) iterator.next();
+            designClass = iterator.next();
 
             if (designClass.getGenericClass() == parentClass) {
-                Iterator goIterator = genericOperations.iterator();
+                Iterator<GenericOperation> goIterator = genericOperations.iterator();
 
                 while (goIterator.hasNext()) {
-                    go = (GenericOperation) goIterator.next();
+                    go = goIterator.next();
 
                     if (go.getName().equals(name)) {
                         return go;
@@ -1226,7 +1173,7 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public Vector getGenericAttributes() {
+    public Vector<GenericAttribute> getGenericAttributes() {
         return genericAttributes;
     }
 
@@ -1234,20 +1181,21 @@ public class CentralRepository extends Observable implements Serializable {
     // If no match is found, the method returns null
     // This method is useful when adding a design or conceptual class
     // attribute in the repository in order to determine if there
-    // already exists a generic attribute with the same name and belonging to same class
+    // already exists a generic attribute with the same name and belonging to same
+    // class
     public GenericAttribute getGenericAttribute(String name, GenericClass parentClass) {
         GenericAttribute ga;
 
         DesignClass designClass;
-        Iterator iterator = classes.iterator();
+        Iterator<DesignClass> iterator = classes.iterator();
         while (iterator.hasNext()) {
-            designClass = (DesignClass) iterator.next();
+            designClass = iterator.next();
 
             if (designClass.getGenericClass() == parentClass) {
-                Iterator gaIterator = genericAttributes.iterator();
+                Iterator<GenericAttribute> gaIterator = genericAttributes.iterator();
 
                 while (gaIterator.hasNext()) {
-                    ga = (GenericAttribute) gaIterator.next();
+                    ga = gaIterator.next();
 
                     if (ga.getName().equals(name)) {
                         return ga;
@@ -1257,15 +1205,15 @@ public class CentralRepository extends Observable implements Serializable {
         }
 
         ConceptualClass concept;
-        iterator = concepts.iterator();
-        while (iterator.hasNext()) {
-            concept = (ConceptualClass) iterator.next();
+        Iterator<ConceptualClass> iterator2 = concepts.iterator();
+        while (iterator2.hasNext()) {
+            concept = iterator2.next();
 
             if (concept.getGenericClass() == parentClass) {
-                Iterator gaIterator = genericAttributes.iterator();
+                Iterator<GenericAttribute> gaIterator = genericAttributes.iterator();
 
                 while (gaIterator.hasNext()) {
-                    ga = (GenericAttribute) gaIterator.next();
+                    ga = gaIterator.next();
 
                     if (ga.getName().equals(name)) {
                         return ga;
@@ -1290,26 +1238,20 @@ public class CentralRepository extends Observable implements Serializable {
         }
     }
 
-    public UseCase getUseCase(String s) {
-        UseCase useCase;
-        Iterator iterator = useCases.iterator();
-        while (iterator.hasNext()) {
-            useCase = (UseCase) iterator.next();
+    public UseCase getUseCase(String name) {
 
-            if (useCase.getName().equals(s)) {
-                return useCase;
-            }
+        Optional<UseCase> found = useCases.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     public boolean editUseCase(UseCase original, UseCase other) {
         UseCase existingUseCase = getUseCase(other.getName());
 
-        if (!original.getName().equals(other.getName())
-                && (existingUseCase != null)
-                && !other.getName().equals("")) {
+        if (!original.getName().equals(other.getName()) && (existingUseCase != null) && !other.getName().equals("")) {
             return false;
         }
 
@@ -1331,8 +1273,8 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean addUCLink(UCLink link) {
-        if ((getUCLink(link.getClassifierFrom(), link.getClassifierTo()) == null)
-                && getUCLink(link.getClassifierTo(), link.getClassifierFrom()) == null) {
+        if ((getUCLink(link.getSource(), link.getTarget()) == null)
+                && getUCLink(link.getTarget(), link.getSource()) == null) {
             ucLinks.add(link);
             repositoryChanged();
 
@@ -1343,21 +1285,17 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public UCLink getUCLink(Classifier classifierFrom, Classifier classifierTo) {
-        UCLink link;
-        Iterator iterator = ucLinks.iterator();
-        while (iterator.hasNext()) {
-            link = (UCLink) iterator.next();
 
-            if ((link.getClassifierFrom() == classifierFrom)
-                    && (link.getClassifierTo() == classifierTo)) {
-                return link;
-            }
+        Optional<UCLink> found = ucLinks.stream()
+                .filter(link -> link.getSource() == classifierFrom && link.getTarget() == classifierTo).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
-    public Vector getUCLinks() {
+    public Vector<UCLink> getUCLinks() {
         return ucLinks;
     }
 
@@ -1373,9 +1311,9 @@ public class CentralRepository extends Observable implements Serializable {
 
     public void editUCExtend(UCExtend originalUCExtend, UCExtend newUCExtend) {
         originalUCExtend.clearPoints();
-        Iterator i = newUCExtend.getExtensionPoints();
+        Iterator<ExtensionPoint> i = newUCExtend.getExtensionPoints();
         while (i.hasNext()) {
-            originalUCExtend.addExtensionPoint(((ExtensionPoint) i.next()).clone());
+            originalUCExtend.addExtensionPoint((i.next()).clone());
         }
     }
 
@@ -1387,7 +1325,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (ucdComponent instanceof UseCase) {
             return addUseCase((UseCase) ucdComponent);
         } else {
-            java.lang.System.err.println("Error in addUCDComponent()");
+            logger.severe("Error in addUCDComponent()");
             return false;
         }
     }
@@ -1400,7 +1338,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (ucdComponent instanceof UseCase) {
             return removeUseCase((UseCase) ucdComponent);
         } else {
-            java.lang.System.err.println("Error in removeUCDComponent()");
+            logger.severe("Error in removeUCDComponent()");
             return false;
         }
     }
@@ -1411,7 +1349,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (edge instanceof ObjectFlow) {
             return addObjectFlow((ObjectFlow) edge);
         } else {
-            java.lang.System.err.println("Error in addEdge()");
+            logger.severe("Error in addEdge()");
             return false;
         }
     }
@@ -1436,7 +1374,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (edge instanceof ObjectFlow) {
             return removeObjectFlow((ObjectFlow) edge);
         } else {
-            java.lang.System.err.println("Error in removeEdge()");
+            logger.severe("Error in removeEdge()");
             return false;
         }
     }
@@ -1471,7 +1409,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (nodeComponent instanceof ActivityNode) {
             return addActivityNode((ActivityNode) nodeComponent);
         } else {
-            java.lang.System.err.println("Error in addNodeComponent()");
+            logger.severe("Error in addNodeComponent()");
             return false;
         }
     }
@@ -1491,17 +1429,13 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public ActionNode getActionNode(String name) {
-        ActionNode actionNode;
-        Iterator iterator = actionNodes.iterator();
-        while (iterator.hasNext()) {
-            actionNode = (ActionNode) iterator.next();
 
-            if (actionNode.getName().equals(name)) {
-                return actionNode;
-            }
+        Optional<ActionNode> found = actionNodes.stream().filter(x -> x.getName().equals(name)).findAny();
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     private boolean addControlNode(ControlNode controlNode) {
@@ -1520,7 +1454,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (controlNode instanceof JoinNode) {
             return addJoinNode((JoinNode) controlNode);
         } else {
-            java.lang.System.err.println("Error in addControlNode()");
+            logger.severe("Error in addControlNode()");
             return false;
         }
     }
@@ -1598,7 +1532,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (nodeComponent instanceof ActivityNode) {
             return removeActivityNode((ActivityNode) nodeComponent);
         } else {
-            java.lang.System.err.println("Error in removeNodeComponent()");
+            logger.severe("Error in removeNodeComponent");
             return false;
         }
     }
@@ -1629,7 +1563,7 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (controlNode instanceof JoinNode) {
             return removeJoinNode((JoinNode) controlNode);
         } else {
-            java.lang.System.err.println("Error in addControlNode()");
+            logger.severe("Error in removeControlNode");
             return false;
         }
     }
@@ -1729,9 +1663,9 @@ public class CentralRepository extends Observable implements Serializable {
         originalObjectNode.setType(newObjectNode.getType());
 
         originalObjectNode.clearStates();
-        Iterator it = newObjectNode.getStates();
+        Iterator<State> it = newObjectNode.getStates();
         while (it.hasNext()) {
-            State state = (State) it.next();
+            State state = it.next();
             originalObjectNode.addState(state);
         }
 

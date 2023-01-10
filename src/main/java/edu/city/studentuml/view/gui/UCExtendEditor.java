@@ -30,7 +30,7 @@ import javax.swing.WindowConstants;
 public class UCExtendEditor extends JPanel implements ActionListener {
 
     private List<ExtensionPoint> extensionPoints;
-    private JList extensionsList;
+    private JList<String> extensionsList;
     private JButton addExtensionButton;
     private JButton editExtensionButton;
     private JButton deleteExtensionButton;
@@ -50,7 +50,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         extensionPointsPanel = new JPanel(new BorderLayout());
         extensionPointsPanel.setBorder(BorderFactory.createTitledBorder("Extension Points"));
 
-        extensionsList = new JList();
+        extensionsList = new JList<>();
         extensionsList.setFixedCellWidth(300);
         extensionsList.setVisibleRowCount(4);
         addExtensionButton = new JButton("Add...");
@@ -85,22 +85,22 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        extensionPoints = new ArrayList<ExtensionPoint>();
+        extensionPoints = new ArrayList<>();
 
         // if extensions modified and then canceled
-        Iterator i = ucExtendGR.getExtensionPoints();
+        Iterator<ExtensionPoint> i = ucExtendGR.getExtensionPoints();
         while (i.hasNext()) {
-            ExtensionPoint extension = (ExtensionPoint) i.next();
+            ExtensionPoint extension = i.next();
             extensionPoints.add(extension);
         }
         updateExtensionsList();
     }
 
     private void updateExtensionsList() {
-        Vector v = new Vector();
-        Iterator i = getExtensionPoints();
+        Vector<String> v = new Vector<>();
+        Iterator<ExtensionPoint> i = getExtensionPoints();
         while (i.hasNext()) {
-            String s = ((ExtensionPoint) i.next()).getName();
+            String s = (i.next()).getName();
             v.add(s);
         }
         extensionsList.setListData(v);
@@ -125,12 +125,12 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         ucExtendDialog.pack();
         ucExtendDialog.setResizable(false);
         ucExtendDialog.setLocationRelativeTo(owner);
-        ucExtendDialog.show();
+        ucExtendDialog.setVisible(true);
 
         return ok;
     }
 
-    public Iterator getExtensionPoints() {
+    public Iterator<ExtensionPoint> getExtensionPoints() {
         return extensionPoints.iterator();
     }
 

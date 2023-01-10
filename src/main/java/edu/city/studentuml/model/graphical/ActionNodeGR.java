@@ -74,8 +74,8 @@ public class ActionNodeGR extends LeafNodeGR  {
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw action node name
-        if (!nodeComponent.toString().equals("")) {
-            String actionName = nodeComponent.toString();
+        if (!component.toString().equals("")) {
+            String actionName = component.toString();
             TextLayout layout = new TextLayout(actionName, actionNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
@@ -93,8 +93,8 @@ public class ActionNodeGR extends LeafNodeGR  {
         FontRenderContext frc = g.getFontRenderContext();
 
         // consider action name text dimensions
-        if (nodeComponent.toString().length() != 0) {
-            TextLayout layout = new TextLayout(nodeComponent.toString(), actionNameFont, frc);
+        if (component.toString().length() != 0) {
+            TextLayout layout = new TextLayout(component.toString(), actionNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int actionNameWidth = (int) bounds.getWidth() + (2 * actionNameXOffset);
 
@@ -132,7 +132,7 @@ public class ActionNodeGR extends LeafNodeGR  {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "actionnode", (ActionNode) getNodeComponent());
+        streamer.streamObject(node, "actionnode", (ActionNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

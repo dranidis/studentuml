@@ -1,12 +1,11 @@
 package edu.city.studentuml.view.gui;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//AttributeEditor.java
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.ElementEditor;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -14,7 +13,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -27,12 +25,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-public class AttributeEditor extends JPanel implements ActionListener {
+public class AttributeEditor extends JPanel implements ActionListener, ElementEditor<Attribute> {
 
     private static final String[] scopes = {"instance", "classifier"};
     private static final String[] visibilities = {"private", "public", "protected"};
-    private Vector comboBoxStringList;
-    private Vector comboBoxTypeList;
+    private Vector<String> comboBoxStringList;
+    private Vector<DataType> comboBoxTypeList;
     private Attribute attribute;
     private JDialog attributeDialog;
     private JPanel bottomPanel;
@@ -43,18 +41,19 @@ public class AttributeEditor extends JPanel implements ActionListener {
     private JPanel namePanel;
     private boolean ok;
     private JButton okButton;
-    private JComboBox scopeComboBox;
+    private JComboBox<String> scopeComboBox;
     private JLabel scopeLabel;
     private JPanel scopePanel;
-    private JComboBox typeComboBox;
+    private JComboBox<String> typeComboBox;
     private JLabel typeLabel;
     private JPanel typePanel;
-    private JComboBox visibilityComboBox;
+    private JComboBox<String> visibilityComboBox;
     private JLabel visibilityLabel;
     private JPanel visibilityPanel;
     // THIS REFERENCE IS NEEDED TO LOAD THE TYPES DYNAMICALLY FROM CR
     // INSTEAD OF HARD-CODING THEM HERE
     CentralRepository repository;
+    private static final String TITLE = "Attribute Editor";
 
     public AttributeEditor(Attribute attrib, CentralRepository cr) {
         attribute = attrib;
@@ -67,29 +66,25 @@ public class AttributeEditor extends JPanel implements ActionListener {
         typeLabel = new JLabel("Data Type: ");
 
         // AD-HOC replacement of the VOID data type with null
-        comboBoxTypeList = new Vector(repository.getDatatypes());
+        comboBoxTypeList = new Vector<>(repository.getDatatypes());
         comboBoxTypeList.remove(DataType.VOID);
         comboBoxTypeList.add(0, null);
 
         // INITIALIZE THE STRING LIST ACCORDING TO THE ABOVE COMBOBOX TYPE LIST
-        comboBoxStringList = new Vector();
-        Iterator iterator = comboBoxTypeList.iterator();
+        comboBoxStringList = new Vector<>();
 
-        while (iterator.hasNext()) {
-            Object next = iterator.next();
-
+        comboBoxTypeList.forEach(next -> {
             if (next == null) {
-                comboBoxStringList.add("unspecified");
-            } else {
-                comboBoxStringList.add(((Type) next).getName());
-            }
-        }
+            comboBoxStringList.add("unspecified");
+        } else {
+            comboBoxStringList.add(next.getName());
+        }});
 
-        typeComboBox = new JComboBox(comboBoxStringList);
+        typeComboBox = new JComboBox<>(comboBoxStringList);
         visibilityLabel = new JLabel("Visibility: ");
-        visibilityComboBox = new JComboBox(visibilities);
+        visibilityComboBox = new JComboBox<>(visibilities);
         scopeLabel = new JLabel("Scope: ");
-        scopeComboBox = new JComboBox(scopes);
+        scopeComboBox = new JComboBox<>(scopes);
         namePanel = new JPanel();
         namePanel.setLayout(new FlowLayout());
         namePanel.add(nameLabel);
@@ -125,7 +120,8 @@ public class AttributeEditor extends JPanel implements ActionListener {
         initialize();
     }
 
-    public boolean showDialog(Component parent, String title) {
+    @Override
+    public boolean showDialog(Component parent) {
         ok = false;
 
         // find the owner frame
@@ -139,12 +135,12 @@ public class AttributeEditor extends JPanel implements ActionListener {
 
         attributeDialog = new JDialog(owner, true);
         attributeDialog.getContentPane().add(this);
-        attributeDialog.setTitle(title);
+        attributeDialog.setTitle(TITLE);
         attributeDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         attributeDialog.pack();
         attributeDialog.setResizable(false);
         attributeDialog.setLocationRelativeTo(owner);
-        attributeDialog.show();
+        attributeDialog.setVisible(true);
 
         return ok;
     }
@@ -161,7 +157,7 @@ public class AttributeEditor extends JPanel implements ActionListener {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < comboBoxStringList.size(); i++) {
-                if (((String) comboBoxStringList.get(i)).equals(attribute.getType().getName())) {
+                if (comboBoxStringList.get(i).equals(attribute.getType().getName())) {
                     typeComboBox.setSelectedIndex(i);
 
                     break;
@@ -192,7 +188,7 @@ public class AttributeEditor extends JPanel implements ActionListener {
 
     public Type getType() {
         try {
-            return (Type) comboBoxTypeList.get(typeComboBox.getSelectedIndex());
+            return comboBoxTypeList.get(typeComboBox.getSelectedIndex());
         } catch (IndexOutOfBoundsException ioobe) {
             return null;
         }
@@ -230,4 +226,24 @@ public class AttributeEditor extends JPanel implements ActionListener {
             attributeDialog.setVisible(false);
         }
     }
+
+    @Override
+    public Attribute createElement() {
+        Attribute newAttribute = new Attribute(this.getAttributeName());
+
+        newAttribute.setType(this.getType());
+        newAttribute.setVisibility(this.getVisibility());
+        newAttribute.setScope(this.getScope());
+
+        return newAttribute;
+    }
+
+    @Override
+    public void editElement() {
+        attribute.setName(this.getAttributeName());
+        attribute.setType(this.getType());
+        attribute.setVisibility(this.getVisibility());
+        attribute.setScope(this.getScope());
+    }
+
 }

@@ -1,6 +1,6 @@
 package edu.city.studentuml.view;
 
-import edu.city.studentuml.model.graphical.CCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 
 /**
  *
@@ -8,7 +8,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
  */
 public class CCDView extends DiagramView {
 
-    public CCDView(CCDModel m) {
+    public CCDView(DiagramModel m) {
         super(m);
     }
 }

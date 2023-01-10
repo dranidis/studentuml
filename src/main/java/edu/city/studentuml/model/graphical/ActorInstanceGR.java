@@ -1,11 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-//~--- JDK imports ------------------------------------------------------------
-//Author: Ervin Ramollari
-//ActorInstanceGR.java
-import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -20,7 +14,14 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 
-public class ActorInstanceGR extends RoleClassifierGR implements IXMLCustomStreamable {
+import edu.city.studentuml.model.domain.ActorInstance;
+import edu.city.studentuml.util.XMLStreamer;
+
+/**
+ * 
+ * @author Ervin Ramollari
+ */
+public class ActorInstanceGR extends RoleClassifierGR {
 
     private static int actorTextDistance = 6;
     private static int stickFigureHeight = 35;
@@ -104,8 +105,8 @@ public class ActorInstanceGR extends RoleClassifierGR implements IXMLCustomStrea
             g.setPaint(outlineColor);
         }
 
-        //Stroke originalStroke = g.getStroke();
-        float dashes[] = {8};    // the pattern of dashes for drawing the realization line
+        // Stroke originalStroke = g.getStroke();
+        float dashes[] = { 8 }; // the pattern of dashes for drawing the realization line
 
         g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
         g.drawLine(startingX + width / 2, startingY + height + 4, startingX + width / 2, endingY);
@@ -170,14 +171,12 @@ public class ActorInstanceGR extends RoleClassifierGR implements IXMLCustomStrea
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "actor", getActorInstance());
         node.setAttribute("x", Integer.toString(startingPoint.x));

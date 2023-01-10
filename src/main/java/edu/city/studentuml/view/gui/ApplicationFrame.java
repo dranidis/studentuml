@@ -1,60 +1,54 @@
 package edu.city.studentuml.view.gui;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.RecentFiles;
+import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 
 public class ApplicationFrame extends ApplicationGUI {
-    
+
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
-    Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
+    private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
-    public static String applicationName = "StudentUML";
-    private JFileChooser xmlFileChooser;
-    Preferences pref= Preferences.userRoot();
-    String path = pref.get("DEFAULT_PATH", "");
-    
+    public static final String APPLICATION_NAME = "StudentUML";
+
     public ApplicationFrame(StudentUMLFrame frame) {
         super(frame);
 
-        try {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    logger.fine("Look and feel: Nimbus");
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // If Nimbus is not available, you can set the GUI to another look and feel.
-        }
+        logger.fine(() -> "Path: " + Settings.getDefaultPath());
+
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         frame.setIconImage(icon.getImage());
-        xmlFileChooser = new JFileChooser();
+        createXMLFileChooser();
+
+        umlProject.setUser(Constants.DESKTOP_USER);
+    }
+
+    private JFileChooser createXMLFileChooser() {
+        String pathToOpen = Settings.getDefaultPath();
+
+        JFileChooser xmlFileChooser = new JFileChooser();
         xmlFileChooser.setFileFilter(new XMLFileFilter());
-        xmlFileChooser.setCurrentDirectory(new File(path));
-        
-        umlProject.setUser(DESKTOP_USER);
+        xmlFileChooser.setCurrentDirectory(new File(pathToOpen));
+        return xmlFileChooser;
     }
 
     @Override
@@ -62,19 +56,14 @@ public class ApplicationFrame extends ApplicationGUI {
         super.update(observable, object);
         updateFrameTitle();
     }
-    
+
     private void updateFrameTitle() {
-        if (closingOrLoading) return;
+        if (closingOrLoading)
+            return;
 
-        // if (SystemWideObjectNamePool.getInstance().isLoading()) {
-        //     return;
-        // }
+        logger.finest("Updating title: saved: " + umlProject.isSaved());
 
-        if (logger != null) {
-            logger.finer("Updating title: saved: " + umlProject.isSaved());
-        }
-
-        String title = applicationName + " - " + umlProject.getName();
+        String title = APPLICATION_NAME + " - " + umlProject.getName();
         if (!umlProject.isSaved()) {
             title += " (not saved)";
         }
@@ -86,16 +75,15 @@ public class ApplicationFrame extends ApplicationGUI {
         if (!closeProject()) {
             return;
         }
-        
+
         umlProject.createNewProject();
         updateFrameTitle();
     }
 
     @Override
     public void openProject() {
-        boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
-        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
+        JFileChooser xmlFileChooser = createXMLFileChooser();
         int response = xmlFileChooser.showOpenDialog(this);
         if (response != JFileChooser.APPROVE_OPTION) {
             return;
@@ -105,65 +93,90 @@ public class ApplicationFrame extends ApplicationGUI {
             return;
         }
 
+        String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
+
+        openProjectFile(file);
+    }
+
+    public void openProjectFile(String fileName) {
+        boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         checkTreeManager.getSelectionModel().clearSelection();
         messageTree.setModel(null);//
         factsTree.setModel(null);//
         repairButton.setEnabled(false);
-        
-        String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
+
+        logger.fine(fileName);
+
+        addToRecentFiles(fileName);
 
         closingOrLoading = true;
 
-        umlProject.loadFromXML(file);
+        try {
+            umlProject.loadFromXML(fileName);
+        } catch (IOException e) {
+            logger.finer(e::getMessage);
+            JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be found.", "IO Error",
+                    JOptionPane.ERROR_MESSAGE);
+            RecentFiles.getInstance().removeRecentFile(fileName);
+            menuBar.loadRecentFilesInMenu();
+            return;
+        }
 
         repositoryTreeView.expandDiagrams();
         repositoryTreeView.update(null, null);
-        
-        umlProject.setFilepath(file);
+
+        umlProject.setFilepath(fileName);
 
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
             SystemWideObjectNamePool.getInstance().reloadRules();
         }
-        
-        try {
-            if (selectedFrame != null)
-                selectedFrame.setSelected(true);
-        } catch (PropertyVetoException ex) {
-            Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         umlProject.setSaved(true);
         closingOrLoading = false;
         updateFrameTitle();
         logger.fine("Opened project");
+
+        Settings.setDefaultPath(fileName);
+
+    }
+
+    private void addToRecentFiles(String fileName) {
+        RecentFiles.getInstance().addRecentFile(fileName);
+        menuBar.loadRecentFilesInMenu();
     }
 
     @Override
     public void saveProject() {
-        String path = umlProject.getFilepath();
+        String umlProjectFilePath = umlProject.getFilepath();
 
-        if ((path == null) || path.equals("")) {
+        if ((umlProjectFilePath == null) || umlProjectFilePath.equals("")) {
             // if no file has yet been chosen, prompt via method saveProjectAs
             saveProjectAs();
         } else {
             umlProject.streamToXML();
             updateFrameTitle();
 
-            pref.put("DEFAULT_PATH", path);
+            Settings.setDefaultPath(umlProjectFilePath);
         }
     }
 
     @Override
     @SuppressWarnings("static-access")
     public void saveProjectAs() {
+        JFileChooser xmlFileChooser = createXMLFileChooser();
+
         xmlFileChooser.setSelectedFile(new File(umlProject.getFilename()));
+        xmlFileChooser.setDialogTitle("Save as");
         int response = xmlFileChooser.showSaveDialog(this);
         if (response != xmlFileChooser.APPROVE_OPTION) {
             return;
         }
         if (xmlFileChooser.getSelectedFile().exists()) {
-            int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?", "Confirm",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int existsResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to override existing file?",
+                    "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (existsResponse == JOptionPane.NO_OPTION || existsResponse == JOptionPane.CLOSED_OPTION) {
                 return;
             }
@@ -175,28 +188,29 @@ public class ApplicationFrame extends ApplicationGUI {
         }
 
         umlProject.setFilepath(filePath);
-        
-        logger.log(Level.INFO, "Saving file as: {0}", filePath);
+
+        logger.log(Level.FINE, "Saving file as: {0}", filePath);
 
         umlProject.streamToXML();
         updateFrameTitle();
-        
-        pref.put("DEFAULT_PATH", filePath);
+
+        addToRecentFiles(filePath);
+
+        Settings.setDefaultPath(filePath);
     }
 
     @Override
     public void exportImage() {
-        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        JInternalFrame paneSelectedFrame = desktopPane.getSelectedFrame();
 
-        if (selectedFrame != null) {
-            DiagramView view = ((DiagramInternalFrame) selectedFrame).getView();
-
-            //ImageExporter.exportToPNGImageString(view);
+        if (paneSelectedFrame != null) {
+            DiagramView view = ((DiagramInternalFrame) paneSelectedFrame).getView();
             ImageExporter.exportToImage(view, this);
         }
     }
 
     @Override
     public void help() {
+        // to be implemented
     }
 }

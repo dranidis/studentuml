@@ -9,25 +9,25 @@ import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.Ray;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author draganbisercic
  */
-public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
+public class AssociationClassGR extends LinkGR {
 
     private AbstractAssociationClass associationClass;
     private AssociationGR associationElement;
@@ -35,33 +35,30 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
     // the graphical classes that the association line connects in the diagram
     private ClassifierGR classifierA;
     private ClassifierGR classifierB;
-    private Font nameFont;
-    private Font roleFont;
     private Point associationCenterPoint;
-    public static int DIST = 30;    //minimum distance from association to association class
+    public static int DIST = 30; // minimum distance from association to association class
 
     public AssociationClassGR(ClassifierGR a, ClassifierGR b, AbstractAssociationClass associationClass) {
         super(a, b);
         this.associationClass = associationClass;
         associationElement = new AssociationGR(a, b, associationClass.getAssociation());
         if (associationClass instanceof ConceptualAssociationClass) {
-            classElement = new ConceptualClassGR((ConceptualClass) associationClass.getAssociationClass(), new Point(0, 0));
+            classElement = new ConceptualClassGR((ConceptualClass) associationClass.getAssociationClass(),
+                    new Point(0, 0));
         } else if (associationClass instanceof DesignAssociationClass) {
             classElement = new ClassGR((DesignClass) associationClass.getAssociationClass(), new Point(0, 0));
         } else {
             System.err.println("Some error occured in AssociationClassGR constructor!");
         }
-        
+
         associationCenterPoint = getAssociationCenterPoint();
         classifierA = a;
         classifierB = b;
         outlineColor = Color.black;
         highlightColor = Color.blue;
-        nameFont = new Font("SansSerif", Font.PLAIN, 12);
-        roleFont = new Font("SansSerif", Font.PLAIN, 10);
     }
 
-    // redifine object added
+    @Override
     public void objectAdded(GraphicalElement obj) {
         if ((!this.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
             this.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
@@ -75,8 +72,8 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
             this.linkInstances.remove(obj);
         }
         associationElement.objectRemoved(associationElement);
-    }    
-    
+    }
+
     public AssociationGR getAssociationElement() {
         return associationElement;
     }
@@ -145,8 +142,11 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         if (!isReflective()) {
             associationCenterPoint = getAssociationCenterPoint();
         } else {
-//            associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15, getTopLeftYA() - 15);
-            associationCenterPoint = new Point(associationElement.getXA() + REFLECTIVE_RIGHT * associationElement.getReflectiveStep(), getTopLeftYA() - 15);
+            // associationCenterPoint = new Point(getTopLeftXA() + getWidthA() + 15,
+            // getTopLeftYA() - 15);
+            associationCenterPoint = new Point(
+                    associationElement.getXA() + REFLECTIVE_RIGHT * associationElement.getReflectiveStep(),
+                    getTopLeftYA() - 15);
         }
         drawClassAndDashedLine(g);
     }
@@ -180,7 +180,7 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         int x2 = (int) p.getX();
         int y2 = (int) p.getY();
 
-        float dashes[] = {8};
+        float dashes[] = { 8 };
         if (isSelected()) {
             g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
             g.setPaint(highlightColor);
@@ -221,20 +221,18 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
         }
     }
 
-//    // when removing
-//    public void clear() {
-//        associationElement.objectRemoved(associationElement);
-//    }
+    // // when removing
+    // public void clear() {
+    // associationElement.objectRemoved(associationElement);
+    // }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        // TODO Auto-generated method stub
         super.streamFromXML(node, streamer, instance);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        // TODO Auto-generated method stub
         super.streamToXML(node, streamer);
 
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classifierA));
@@ -242,7 +240,7 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
 
         streamer.streamObject(node, "associationclass", getAssociationClass());
     }
-    
+
     @Override
     public boolean contains(Point2D p) {
         boolean classElementContains = classElement.contains(p);
@@ -252,7 +250,13 @@ public class AssociationClassGR extends LinkGR implements IXMLCustomStreamable {
     }
 
     @Override
+    @JsonIgnore
     public Rectangle2D getBounds() {
         return classElement.getBounds();
     }
+
+    @Override
+    public String toString() {
+        return "" + classifierA + " ---associationClass---> " + classifierB;
+    }      
 }

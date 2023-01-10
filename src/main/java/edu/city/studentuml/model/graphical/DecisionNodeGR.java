@@ -73,8 +73,8 @@ public class DecisionNodeGR extends ControlNodeGR {
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw decision node string
-        if (!nodeComponent.toString().equals("")) {
-            String decisionName = nodeComponent.toString();
+        if (!component.toString().equals("")) {
+            String decisionName = component.toString();
             TextLayout layout = new TextLayout(decisionName, decisionFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
@@ -114,7 +114,7 @@ public class DecisionNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "decisionnode", (DecisionNode) getNodeComponent());
+        streamer.streamObject(node, "decisionnode", (DecisionNode) getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
