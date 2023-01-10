@@ -23,6 +23,7 @@ public class DCDSelectionControllerTest {
     DCDModel model;
     DCDInternalFrame internalFrame;
     Helper h;
+    SelectionController selectionController;
 
     @Before
     public void setup() {
@@ -31,23 +32,25 @@ public class DCDSelectionControllerTest {
         model = new DCDModel("ccd", umlProject);
         internalFrame = new DCDInternalFrame(model, true);
         h = new Helper(model);
+        selectionController  = new DCDSelectionController(internalFrame, model);
     }
 
     @Test
     public void testCreation() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
-        assertNotNull(ccdSelectionController);
+        
+        assertNotNull(selectionController);
     }
 
     @Test 
     public void testDeleteInterfaceWithAnAssociation() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        
         InterfaceGR i = h.addInterface("I");
         ClassGR a = h.addClass("A");
 
         h.addAssociation(a, i);
         
-        ccdSelectionController.deleteElement(i);
+        selectionController.addElementToSelection(i);
+        selectionController.deleteSelected();
 
         assertEquals(1, model.getGraphicalElements().size());
 
@@ -55,14 +58,15 @@ public class DCDSelectionControllerTest {
 
     @Test
     public void testDeleteElementUndo() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        
 
         /**
          * Adds a conceptual class A
          */
         GraphicalElement cGr = h.addClass("A");
 
-        ccdSelectionController.deleteElement(cGr);
+        selectionController.addElementToSelection(cGr);
+        selectionController.deleteSelected();
 
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> 
         ge instanceof ClassGR));
@@ -75,7 +79,7 @@ public class DCDSelectionControllerTest {
 
     @Test
     public void testDeleteElementWithRelationshipsUndo() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -98,8 +102,9 @@ public class DCDSelectionControllerTest {
         /**
          * DELETE a
          */
-        ccdSelectionController.deleteElement(a);
-
+        selectionController.addElementToSelection(a);
+        selectionController.deleteSelected();
+        
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR
                 && ((ClassGR) ge).getAbstractClass().getName().equals("A")));
         assertEquals(0, h.countRelationshipsWithClassNamed("A"));
@@ -122,7 +127,7 @@ public class DCDSelectionControllerTest {
     
     @Test
     public void testdeleteSelectedElements() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -137,8 +142,8 @@ public class DCDSelectionControllerTest {
         /**
          * DELETE all
          */
-        ccdSelectionController.selectAll();
-        ccdSelectionController.deleteSelected();
+        selectionController.selectAll();
+        selectionController.deleteSelected();
 
 
         System.out.println("DELETE ALL");
@@ -166,7 +171,7 @@ public class DCDSelectionControllerTest {
 
     @Test
     public void testdeleteSelectedElementsWithNotes() {
-        DCDSelectionController ccdSelectionController  = new DCDSelectionController(internalFrame, model);
+        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -188,8 +193,8 @@ public class DCDSelectionControllerTest {
         /**
          * DELETE all
          */
-        ccdSelectionController.selectAll();
-        ccdSelectionController.deleteSelected();
+        selectionController.selectAll();
+        selectionController.deleteSelected();
 
 
         System.out.println("DELETE ALL");
