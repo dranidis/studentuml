@@ -1,58 +1,42 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.model.domain.Attribute;
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.model.graphical.ClassGR;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.AttributesPanel;
-import edu.city.studentuml.view.gui.components.AutocompleteJComboBox;
-import edu.city.studentuml.view.gui.components.MethodsPanel;
-import edu.city.studentuml.view.gui.components.StringSearchable;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
+
+import edu.city.studentuml.controller.ClassEditorI;
+import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.ConceptualClass;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.AttributesPanel;
+import edu.city.studentuml.view.gui.components.MethodsPanel;
 
 /**
  * @author Ervin Ramollari
+ * @author Dimitris Dranidis
  */
-public class ClassEditor extends JPanel implements ActionListener, KeyListener {
+public class ClassEditor extends ClassifierEditor implements ClassEditorI {
     private static final Logger logger = Logger.getLogger(ClassEditor.class.getName());
 
-    private Vector<Attribute> tempAttributes;
+    private List<Attribute> attributesFromConceptualClass;
     private AttributesPanel attributesPanel;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
-    private JPanel centerPanel;
-    private JDialog classDialog;
-    private ClassGR classGR; // the design class that the dialog edits
     private JPanel fieldsPanel;
     private MethodsPanel methodsPanel;
-    private AutocompleteJComboBox nameField;
-    private JLabel nameLabel;
-    private JPanel namePanel;
-    private boolean ok; // stores whether the user has pressed ok
-    private JButton okButton;
     private JTextField stereotypeField;
     private JLabel stereotypeLabel;
     private JPanel stereotypePanel;
@@ -61,31 +45,16 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
     private JLabel addAttributesLabel;
     private JButton addAttributesButton;
     private JPanel emptyPanel;
-    private CentralRepository repository;
 
-    public ClassEditor(ClassGR classGR, CentralRepository cr) {
-        logger.finest("creating ClassEditor");
-        this.classGR = classGR;
-        repository = cr;
+    private JPanel centerPanel;
 
-        setLayout(new BorderLayout());
-        nameLabel = new JLabel("Class Name: ");
-
-        /* read existing classes to populate the nameField */
-        Vector<DesignClass> types = repository.getClasses();
-        List<String> existingDesignClasses = new ArrayList<>();
-        types.stream().filter(dc -> !dc.getName().equals("")).forEach(dc -> existingDesignClasses.add(dc.getName()));
-
-        nameField = new AutocompleteJComboBox(new StringSearchable(existingDesignClasses));
-        nameField.setPrototypeDisplayValue("some long text for the class name");
+    public ClassEditor(DesignClass designClass, CentralRepository cr) {
+        super(designClass, cr, ClassifierEditor.AUTO_COMPLETE);
 
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
         stereotypeField.addActionListener(this);
-        namePanel = new JPanel();
-        namePanel.setLayout(new FlowLayout());
-        namePanel.add(nameLabel);
-        namePanel.add(nameField);
+
         stereotypePanel = new JPanel();
         stereotypePanel.setLayout(new FlowLayout());
         stereotypePanel.add(stereotypeLabel);
@@ -106,15 +75,10 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
 
         fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(3, 1));
+
         fieldsPanel.add(namePanel);
         fieldsPanel.add(stereotypePanel);
         fieldsPanel.add(cardPanel);
-
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
 
         centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
@@ -124,75 +88,14 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         methodsPanel = new MethodsPanel("Class Methods", cr);
         centerPanel.add(methodsPanel);
 
-        FlowLayout bottomLayout = new FlowLayout();
-
-        bottomLayout.setHgap(30);
-        bottomPanel.setLayout(bottomLayout);
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
+        setLayout(new BorderLayout());
         add(fieldsPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        initialize();
-    }
-
-    public boolean showDialog(Component parent, String title) {
-        ok = false;
-
-        // find the owner frame
-        Frame owner = null;
-
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        }
-
-        classDialog = new JDialog(owner, true);
-        classDialog.getContentPane().add(this);
-        classDialog.setTitle(title);
-        classDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        classDialog.pack();
-        classDialog.setResizable(false);
-        classDialog.setLocationRelativeTo(owner);
-        classDialog.setVisible(true);
-
-        return ok;
-    }
-
-    public String getClassName() {
-        return (String) nameField.getSelectedItem();
-    }
-
-    public String getStereotype() {
-        if (stereotypeField.getText() == null || "".equals(stereotypeField.getText())) {
-            return null;
-        } else {
-            return stereotypeField.getText();
-        }
-    }
-
-    public Vector<Attribute> getAttributes() {
-        return attributesPanel.getElements();
-    }
-
-    public Vector<Method> getMethods() {
-        return methodsPanel.getElements();
-    }
-
-    // initialize the text fields and other components with the
-    // data of the class object to be edited; only copies of the attributes and methods are made
-    private void initialize() {
-        DesignClass designClass = classGR.getDesignClass();
-
-        // initialize the attributes and methods to an empty list
-        // in order to populate them with COPIES of the class attributes and methods
-        tempAttributes = new Vector<>();
+        attributesFromConceptualClass = new Vector<>();
 
         if (designClass != null) {
-            nameField.setSelectedItem(designClass.getName());
-
             if (designClass.getStereotype() != null) {
                 stereotypeField.setText(designClass.getStereotype());
             }
@@ -200,55 +103,53 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
             attributesPanel.setElements(designClass.getAttributes());
             methodsPanel.setElements(designClass.getMethods());
 
-            setTempAttributes();
+            setAttributesFromConceptualClass();
+        }   
+     }
+
+    public DesignClass getDesignClass() {
+        DesignClass newClass = new DesignClass(getClassName());
+        newClass.setStereotype(getStereotype());
+
+        // add the attributes to the new class
+        getAttributes().forEach(newClass::addAttribute);
+
+        // add the methods to the new class
+        getMethods().forEach(newClass::addMethod);
+
+        return newClass;
+    }
+
+    private String getStereotype() {
+        if (stereotypeField.getText() == null || "".equals(stereotypeField.getText())) {
+            return null;
+        } else {
+            return stereotypeField.getText();
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == stereotypeField) {
-            if (getClassName().equals("")) {
-                JOptionPane.showMessageDialog(this, "You must provide a class name", "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-
-                return;
-            }
-
-            classDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            classDialog.setVisible(false);
-        } else if (event.getSource() == addAttributesButton) {
-            Vector<Attribute> attributes = attributesPanel.getElements();
-            tempAttributes.forEach(attributes::add);
-            attributesPanel.updateElementsList();
-            tempAttributes.clear();
-            updateAddAttributesPanel();
-        }
+    private Vector<Attribute> getAttributes() {
+        return attributesPanel.getElements();
     }
 
-    public void keyTyped(KeyEvent e) {
-        // empty
+    private Vector<Method> getMethods() {
+        return methodsPanel.getElements();
     }
 
-    public void keyPressed(KeyEvent e) {
-        // empty
-    }
-
-    public void keyReleased(KeyEvent e) {
-        setTempAttributes();
-    }
-
-    private void setTempAttributes() {
-        tempAttributes.clear();
+    /**
+     * Populates attributes with attributes from a conceptual class with the same
+     * name.
+     */
+    private void setAttributesFromConceptualClass() {
+        attributesFromConceptualClass.clear();
 
         if (!getClassName().equals("")) {
             ConceptualClass concept = repository.getConceptualClass(getClassName());
             if (concept != null) {
                 concept.getAttributes().forEach(conceptualAttribute -> {
                     if ((!isAttributeInList(conceptualAttribute, getAttributes()))
-                            && (!isAttributeInList(conceptualAttribute, tempAttributes))) {
-                        tempAttributes.add(conceptualAttribute.clone());
+                            && (!isAttributeInList(conceptualAttribute, attributesFromConceptualClass))) {
+                        attributesFromConceptualClass.add(conceptualAttribute.clone());
                     }
                 });
             }
@@ -257,17 +158,54 @@ public class ClassEditor extends JPanel implements ActionListener, KeyListener {
         updateAddAttributesPanel();
     }
 
-    private boolean isAttributeInList(Attribute attribute, Vector<Attribute> attributes) {
+    private boolean isAttributeInList(Attribute attribute, List<Attribute> attributes) {
         return attributes.stream().anyMatch(a -> attribute.getName().equals(a.getName()));
     }
 
     private void updateAddAttributesPanel() {
         CardLayout cl = (CardLayout) cardPanel.getLayout();
-        if (tempAttributes.isEmpty()) {
+        if (attributesFromConceptualClass.isEmpty()) {
             cl.show(cardPanel, "empty");
         } else {
             addAttributesLabel.setText("Add attributes from the conceptual class " + getClassName() + " -->");
             cl.show(cardPanel, "nonempty");
+        }
+    }
+
+    @Override
+    protected List<Classifier> getTypes() {
+        List<Classifier> l = new ArrayList<>();
+        l.addAll(repository.getClasses());
+        return l;
+    }
+
+    @Override
+    protected void handleOK(ActionEvent event) {
+        boolean matchingInterface = repository.getInterfaces().stream().anyMatch(i -> {
+            String name = i.getName();
+            return !name.equals("") && name.equals(getClassName());
+        });
+
+        if (matchingInterface) {
+            JOptionPane.showMessageDialog(this, "There is an interface with the same name", "Warning",
+                    JOptionPane.ERROR_MESSAGE);
+
+            setReturnToFalse();
+            return;
+        }
+
+        classifierDialog.setVisible(false);
+        setReturnToTrue();
+    }
+
+    @Override
+    protected void handleRest(ActionEvent event) {
+        if (event.getSource() == addAttributesButton) {
+            Vector<Attribute> attributes = attributesPanel.getElements();
+            attributesFromConceptualClass.forEach(attributes::add);
+            attributesPanel.updateElementsList();
+            attributesFromConceptualClass.clear();
+            updateAddAttributesPanel();
         }
     }
 }

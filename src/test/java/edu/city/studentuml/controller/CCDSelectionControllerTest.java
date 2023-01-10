@@ -20,6 +20,7 @@ public class CCDSelectionControllerTest {
     CCDModel model;
     CCDInternalFrame ccdInternalFrame;
     Helper h;
+    SelectionController selectionController;
 
     @Before
     public void setup() {
@@ -28,24 +29,26 @@ public class CCDSelectionControllerTest {
         model = new CCDModel("ccd", umlProject);
         ccdInternalFrame = new CCDInternalFrame(model);
         h = new Helper(model);
+        selectionController  = new CCDSelectionController(ccdInternalFrame, model);
     }
 
     @Test
     public void testCreation() {
-        CCDSelectionController ccdSelectionController  = new CCDSelectionController(ccdInternalFrame, model);
-        assertNotNull(ccdSelectionController);
+        
+        assertNotNull(selectionController);
     }
 
     @Test
     public void testDeleteElementUndo() {
-        CCDSelectionController ccdSelectionController  = new CCDSelectionController(ccdInternalFrame, model);
+        
 
         /**
          * Adds a conceptual class A
          */
         GraphicalElement cGr = h.addConceptualClass("A");
 
-        ccdSelectionController.deleteElement(cGr);
+        selectionController.addElementToSelection(cGr);
+        selectionController.deleteSelected();
 
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> 
         ge instanceof ConceptualClassGR));
@@ -81,7 +84,8 @@ public class CCDSelectionControllerTest {
         /**
          * DELETE a
          */
-        ccdSelectionController.deleteElement(a);
+        selectionController.addElementToSelection(a);
+        selectionController.deleteSelected();
 
         assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR
                 && ((ConceptualClassGR) ge).getAbstractClass().getName().equals("A")));

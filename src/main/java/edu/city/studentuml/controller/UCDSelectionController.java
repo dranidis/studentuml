@@ -1,30 +1,32 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
+
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ExtensionPoint;
-import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCExtend;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.EditActorEdit;
-import edu.city.studentuml.util.undoredo.EditSystemEdit;
-import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
+import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCExtendGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditActorEdit;
+import edu.city.studentuml.util.undoredo.EditSystemEdit;
 import edu.city.studentuml.util.undoredo.EditUCExtendEdit;
+import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
+import edu.city.studentuml.view.gui.ActorEditor;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.UCExtendEditor;
-import java.util.Iterator;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
 
 /**
- *
  * @author draganbisercic
  */
 public class UCDSelectionController extends SelectionController {
@@ -45,27 +47,23 @@ public class UCDSelectionController extends SelectionController {
             editSystem((SystemGR) selectedElement);
         } else if (selectedElement instanceof UCExtendGR) {
             editExtend((UCExtendGR) selectedElement);
-        } 
+        }
     }
 
     private void editActor(UCActorGR uCActorGR) {
         CentralRepository repository = model.getCentralRepository();
         Actor originalActor = (Actor) uCActorGR.getComponent();
+        ActorEditor actorEditor = new ActorEditor(originalActor, repository);
 
-        String actorName = JOptionPane.showInputDialog("Enter the Actor's Name",
-                uCActorGR.getComponent().getName());
-
-        if (actorName == null) {    // user canceled
+        if (!actorEditor.showDialog(parentComponent, "Actor Editor")) {
             return;
         }
 
-        Actor newActor = new Actor(actorName);
+        Actor newActor = actorEditor.getActor();
 
-        if (!originalActor.getName().equals(newActor.getName())
-                && (repository.getActor(newActor.getName()) != null)
+        if (!originalActor.getName().equals(newActor.getName()) && (repository.getActor(newActor.getName()) != null)
                 && !newActor.getName().equals("")) {
-            JOptionPane.showMessageDialog(null,
-                    "There is an existing actor with the given name already!\n",
+            JOptionPane.showMessageDialog(null, "There is an existing actor with the given name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]
@@ -83,8 +81,7 @@ public class UCDSelectionController extends SelectionController {
         CentralRepository repository = model.getCentralRepository();
         UseCase originalUseCase = (UseCase) useCaseGR.getComponent();
 
-        String useCaseName = JOptionPane.showInputDialog("Enter the Use Case's Name",
-                originalUseCase.getName());
+        String useCaseName = JOptionPane.showInputDialog("Enter the Use Case's Name", originalUseCase.getName());
 
         if (useCaseName == null) {
             // cancel clicked
@@ -94,10 +91,8 @@ public class UCDSelectionController extends SelectionController {
         UseCase newUseCase = new UseCase(useCaseName);
 
         if (!originalUseCase.getName().equals(newUseCase.getName())
-                && (repository.getUseCase(newUseCase.getName()) != null)
-                && !newUseCase.getName().equals("")) {
-            JOptionPane.showMessageDialog(null,
-                    "There is an existing use case with the same name already!\n",
+                && (repository.getUseCase(newUseCase.getName()) != null) && !newUseCase.getName().equals("")) {
+            JOptionPane.showMessageDialog(null, "There is an existing use case with the same name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]
@@ -115,20 +110,17 @@ public class UCDSelectionController extends SelectionController {
         CentralRepository repository = model.getCentralRepository();
         System originalSystem = (System) systemGR.getComponent();
 
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name",
-                systemGR.getComponent().getName());
+        String systemName = JOptionPane.showInputDialog("Enter the System's Name", systemGR.getComponent().getName());
 
-        if (systemName == null) {    // user canceled
+        if (systemName == null) { // user canceled
             return;
         }
 
         System newSystem = new System(systemName);
 
-        if (!originalSystem.getName().equals(newSystem.getName())
-                && (repository.getSystem(newSystem.getName()) != null)
+        if (!originalSystem.getName().equals(newSystem.getName()) && (repository.getSystem(newSystem.getName()) != null)
                 && !newSystem.getName().equals("")) {
-            JOptionPane.showMessageDialog(null,
-                    "There is an existing system with the given name already!\n",
+            JOptionPane.showMessageDialog(null, "There is an existing system with the given name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
             // Undo/Redo [edit]

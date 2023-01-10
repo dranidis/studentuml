@@ -40,6 +40,10 @@ public class RecentFiles {
         // Add the new file to the list, removing any duplicates.
         recentFiles = addToList(recentFiles, file);
 
+        storeInPreferences(recentFiles);
+    }
+
+    private void storeInPreferences(List<String> recentFiles) {
         // Store the list in the preferences.
         for (int i = 0; i < recentFiles.size(); i++) {
             prefs.put(PREF_KEY_PREFIX + i, recentFiles.get(i));
@@ -63,6 +67,13 @@ public class RecentFiles {
             i++;
         }
         return recentFiles;
+    }
+
+    public void removeRecentFile(String file) {
+        List<String> recentFiles = getRecentFiles();
+
+        recentFiles.remove(file);
+        storeInPreferences(recentFiles);
     }
 
     /**

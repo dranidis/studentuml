@@ -1,26 +1,8 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.Mode;
-import edu.city.studentuml.model.graphical.AbstractSDModel;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.SSDModel;
-import edu.city.studentuml.view.gui.ApplicationGUI;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.model.graphical.ActorInstanceGR;
-import edu.city.studentuml.model.graphical.ClassGR;
-import edu.city.studentuml.model.graphical.ConceptualClassGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
-
-import java.io.Serializable;
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
@@ -30,9 +12,28 @@ import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
-import org.w3c.dom.Element;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
+import edu.city.studentuml.model.graphical.ActorInstanceGR;
+import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.model.graphical.SSDModel;
+import edu.city.studentuml.model.graphical.SystemInstanceGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.ApplicationGUI;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 @JsonIncludeProperties({ "diagramModels" })
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
@@ -156,7 +157,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
-    public void loadFromXML(String filename) {
+    public void loadFromXML(String filename) throws IOException {
         logger.finer(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
@@ -273,7 +274,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         }
         return false;
     }
-    
+
     /**
      * Determines if the specified actor is referenced by any actor instance
      * graphical elements in the diagramModels list, excluding the specified
@@ -440,17 +441,18 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         DiagramInternalFrame diagramInternalFrame = diagramModels.get(0).getFrame();
         if (diagramInternalFrame == null) {
-            logger.severe("There is no internal frame for the diagram model. Probably running in tests... returning diagrams unordered");
+            logger.severe(
+                    "There is no internal frame for the diagram model. Probably running in tests... returning diagrams unordered");
             return diagramModels;
         }
 
         JDesktopPane desktopPane = (JDesktopPane) diagramInternalFrame.getParent();
         JInternalFrame[] allFrames = desktopPane.getAllFrames();
-    
+
         // sort the frames by their z-order (back to front)
         Arrays.sort(allFrames, (f1, f2) -> desktopPane.getComponentZOrder(f1) - desktopPane.getComponentZOrder(f2));
-    
-        for (JInternalFrame internalFrame: allFrames) {
+
+        for (JInternalFrame internalFrame : allFrames) {
             orderedDiagrams.add(((DiagramInternalFrame) internalFrame).getModel());
         }
         return orderedDiagrams;
