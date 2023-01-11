@@ -152,6 +152,10 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
+        umlProject.clear();
+
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
 
         DesignClass dc = new DesignClass("A");
@@ -175,6 +179,10 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
+        umlProject.clear();
+
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
 
         DesignClass dc1 = new DesignClass("A");
@@ -206,6 +214,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
 
         DesignClass dc1 = new DesignClass("A");
@@ -236,6 +246,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
 
         String jsonString = "";
@@ -255,6 +267,7 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
 
         String jsonString = "";
         try {
@@ -273,6 +286,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         new DCDModel("dcd diagram", umlProject);
         new DCDModel("dcd2 diagram", umlProject);
 
@@ -293,6 +308,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         DCDModel dcd = new DCDModel("dcd diagram", umlProject);
         DCDModel dcd2 = new DCDModel("dcd2 diagram", umlProject);
 
@@ -342,6 +359,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         DCDModel dcd = new DCDModel("dcd diagram", umlProject);
         DCDModel dcd2 = new DCDModel("dcd2 diagram", umlProject);
 
@@ -477,6 +496,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
         try {
             umlProject.loadFromXML(filename);
         } catch (IOException e1) {
