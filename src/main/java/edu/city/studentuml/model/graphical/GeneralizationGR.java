@@ -7,10 +7,10 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -157,5 +157,10 @@ public class GeneralizationGR extends LinkGR {
     @Override
     public String toString() {
         return "" + baseClass + " ---generalization---> " + superClass;
+    }
+
+    public void setGeneralization(Generalization generalization) {
+        this.generalization = generalization;
     }      
+    
 }

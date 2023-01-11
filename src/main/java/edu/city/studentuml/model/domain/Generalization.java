@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+
 public class Generalization implements Serializable, IXMLCustomStreamable {
 
     private Classifier baseClass;
@@ -32,4 +34,10 @@ public class Generalization implements Serializable, IXMLCustomStreamable {
         node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(baseClass));
         node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(superClass));
     }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
+    }
+    
 }

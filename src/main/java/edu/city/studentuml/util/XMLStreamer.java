@@ -179,6 +179,8 @@ public class XMLStreamer {
             String internalID = SystemWideObjectNamePool.getInstance().getNameForObject(o);
             if (internalID != null) {
                 child.setAttribute("internalid", internalID);
+            } else {
+                logger.severe("Null internalid for " + o.getClass().getName() + " : " + o.toString());
             }
             ((IXMLCustomStreamable) o).streamToXML(child, this);
         }

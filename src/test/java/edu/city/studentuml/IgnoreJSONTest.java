@@ -1,11 +1,14 @@
 package edu.city.studentuml;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -284,6 +287,108 @@ public class IgnoreJSONTest {
         System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
+
+    @Test
+    public void projectWithTwoDiagramsTwoClassesAndGeneralizations() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
+        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        UMLProject umlProject = UMLProject.getInstance();
+        DCDModel dcd = new DCDModel("dcd diagram", umlProject);
+        DCDModel dcd2 = new DCDModel("dcd2 diagram", umlProject);
+
+        DesignClass dcA = new DesignClass("A");
+        ClassGR cgrA = new ClassGR(dcA, new Point());
+        DesignClass dcB = new DesignClass("B");
+        ClassGR cgrB = new ClassGR(dcB, new Point());
+        Generalization gen = new Generalization(dcA, dcB);
+        GeneralizationGR genGR = new GeneralizationGR(cgrA, cgrB, gen);
+
+        dcd.addGraphicalElement(cgrA);
+        dcd.addGraphicalElement(cgrB);
+        dcd.addGraphicalElement(genGR);
+
+        ClassGR cgrA2 = new ClassGR(dcA, new Point());
+        ClassGR cgrB2 = new ClassGR(dcB, new Point());
+        Generalization gen2 = new Generalization(dcA, dcB);
+        GeneralizationGR genGR2 = new GeneralizationGR(cgrA, cgrB, gen2);
+
+        dcd2.addGraphicalElement(cgrA2);
+        dcd2.addGraphicalElement(cgrB2);
+        dcd2.addGraphicalElement(genGR2);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+
+        int count = 0, index = 0;
+
+        while ((index = jsonString.indexOf("\"internalid\" : \"generalization0\"", index)) != -1 ){
+            count++;
+            index++;
+        }
+
+        assertEquals(2, count);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+    @Test
+    public void projectWithTwoDiagramsAClassAnInterfaceAndRealizations() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
+        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        UMLProject umlProject = UMLProject.getInstance();
+        DCDModel dcd = new DCDModel("dcd diagram", umlProject);
+        DCDModel dcd2 = new DCDModel("dcd2 diagram", umlProject);
+
+        DesignClass dc = new DesignClass("A");
+        ClassGR cgr = new ClassGR(dc, new Point());
+        Interface in = new Interface(("In"));
+        InterfaceGR ingr = new InterfaceGR(in, new Point());
+        Realization r = new Realization(dc, in);
+        RealizationGR rgr = new RealizationGR(cgr, ingr, r);
+
+        dcd.addGraphicalElement(cgr);
+        dcd.addGraphicalElement(ingr);
+        dcd.addGraphicalElement(rgr);
+
+        ClassGR cgr2 = new ClassGR(dc, new Point());
+        InterfaceGR ingr2 = new InterfaceGR(in, new Point());
+        Realization r2 = new Realization(dc, in);
+        // although we add a realizationGR with a new realization r2
+        // we expect that both realizationGRs reference the same realization (r)
+        RealizationGR rgr2 = new RealizationGR(cgr2, ingr2, r2);
+
+        dcd2.addGraphicalElement(cgr2);
+        dcd2.addGraphicalElement(ingr2);
+        dcd2.addGraphicalElement(rgr2);
+
+        String jsonString = "";
+        try {
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonString);
+
+        int count = 0, index = 0;
+
+        while ((index = jsonString.indexOf("\"internalid\" : \"realization0\"", index)) != -1 ){
+            count++;
+            index++;
+        }
+
+        assertEquals(2, count);
+        // assertFalse(jsonString.contains("sdmethods"));
+    }
+
+
 
     @Test
     public void realization() {
