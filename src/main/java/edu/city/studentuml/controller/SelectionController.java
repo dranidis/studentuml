@@ -398,7 +398,7 @@ public abstract class SelectionController {
                 editMenuItem.setVisible(true);
             }
 
-            popupMenuOne.show(event.getComponent(), scale(event.getX()), scale(event.getY()));
+            popupMenuOne.show(event.getComponent(), event.getX(), event.getY());
         }
     }
 
@@ -412,7 +412,7 @@ public abstract class SelectionController {
             if ((event.getSource() == editMenuItem) && (selectedElements.size() == 1)) {
 
                 // call abstract method editElement that is to be overridden by subclasses
-                editElement(selectedElements.get(0));
+                mapeditElement(selectedElements.get(0));
             } else if (event.getSource() == deleteMenuItem) {
                 deleteSelected();
             }
