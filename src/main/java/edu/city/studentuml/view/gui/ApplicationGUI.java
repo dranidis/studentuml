@@ -196,9 +196,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      */
     private void setUserId() {
         if (isApplet) {
-            SystemWideObjectNamePool.uid = applet.getUsername();
+            SystemWideObjectNamePool.getInstance().setUid(applet.getUsername());
         } else {
-            SystemWideObjectNamePool.uid = Constants.DESKTOP_USER;
+            SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
         }
     }
 

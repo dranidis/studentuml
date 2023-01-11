@@ -50,7 +50,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
     private String getMyUid() {
         if (myUid == null) {
-            myUid = SystemWideObjectNamePool.uid;
+            myUid = SystemWideObjectNamePool.getInstance().getUid();
         }
         return myUid;
     }
@@ -66,11 +66,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
             logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
             return new Color(0, 0, 0);
         }
-        if (SystemWideObjectNamePool.userColorMap.containsKey(getMyUid())) {
-            return SystemWideObjectNamePool.userColorMap.get(getMyUid());
+        if (SystemWideObjectNamePool.getInstance().getUserColorMap().containsKey(getMyUid())) {
+            return SystemWideObjectNamePool.getInstance().getUserColorMap().get(getMyUid());
         }
         logger.fine("============= UID: " + getMyUid());
-        SystemWideObjectNamePool.userColorMap.put(getMyUid(),
+        SystemWideObjectNamePool.getInstance().getUserColorMap().put(getMyUid(),
                 getMyUid().equals(Constants.DESKTOP_USER) ? DESKTOP_USER_COLOR
                         : new Color(r.nextInt(128) + 128, r.nextInt(128) + 128, r.nextInt(128) + 128));
         return this.myColor();
@@ -147,7 +147,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         String uid = node.getAttribute("uid");
 
         if ((uid != null) && (uid.equals(""))) {
-            uid = SystemWideObjectNamePool.uid;
+            uid = SystemWideObjectNamePool.getInstance().getUid();
         }
 
         ((GraphicalElement) instance).myUid = uid;

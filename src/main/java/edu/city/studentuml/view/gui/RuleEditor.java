@@ -1,18 +1,49 @@
 package edu.city.studentuml.view.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.undo.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 public class RuleEditor extends JPanel {
+
+    private static final Logger logger = Logger.getLogger(RuleEditor.class.getName());
 
     private String currentRuleFile;
     JTextPane textPane;
@@ -32,6 +63,7 @@ public class RuleEditor extends JPanel {
         // Create the text pane and configure it.
         textPane = new JTextPane() {
 
+            @Override
             public void setSize(Dimension d) {
                 if (d.width < getParent().getSize().width) {
                     d.width = getParent().getSize().width;
@@ -40,6 +72,7 @@ public class RuleEditor extends JPanel {
                 super.setSize(d);
             }
 
+            @Override
             public boolean getScrollableTracksViewportWidth() {
                 return false;
             }
@@ -56,7 +89,7 @@ public class RuleEditor extends JPanel {
             doc = (AbstractDocument) styledDoc;
             doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
         } else {
-            System.err.println("Text pane's document isn't an AbstractDocument!");
+            logger.severe("Text pane's document isn't an AbstractDocument!");
             System.exit(-1);
         }
         JScrollPane scrollPane = new JScrollPane(textPane);
@@ -214,19 +247,14 @@ public class RuleEditor extends JPanel {
          */
         Action save = new AbstractAction() {
 
-            public void actionPerformed(ActionEvent e) {
-                BufferedWriter bw;
-                try {
-                    bw = new BufferedWriter(new FileWriter(new File("rules/" + currentRuleFile)));
+            public void actionPerformed(ActionEvent event) {
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File("rules/" + currentRuleFile)))) {
                     bw.write(textPane.getText());
                     bw.flush();
-                    bw.close();
                     statusLabel.setText("Rules saved.");
-                } catch (FileNotFoundException ex1) {
-                    ex1.printStackTrace();
-                } catch (IOException ex2) {
-                    ex2.printStackTrace();
-                }
+                } catch (IOException  e) {
+                    e.printStackTrace();
+                } 
             }
         };
         key = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
@@ -257,8 +285,6 @@ public class RuleEditor extends JPanel {
             textPane.setText(strOut.toString());
 
             objBrIn.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -267,16 +293,12 @@ public class RuleEditor extends JPanel {
     // The following two methods allow us to find an
     // action provided by the editor kit by its name.
     private void createActionTable(JTextComponent textComponent) {
-        actions = new HashMap<Object, Action>();
+        actions = new HashMap<>();
         Action[] actionsArray = textComponent.getActions();
         for (int i = 0; i < actionsArray.length; i++) {
             Action a = actionsArray[i];
             actions.put(a.getValue(Action.NAME), a);
         }
-    }
-
-    private Action getActionByName(String name) {
-        return actions.get(name);
     }
 
     class UndoAction extends AbstractAction {
@@ -290,7 +312,7 @@ public class RuleEditor extends JPanel {
             try {
                 undo.undo();
             } catch (CannotUndoException ex) {
-                System.out.println("Unable to undo: " + ex);
+                logger.severe("Unable to undo: " + ex.getMessage());
                 ex.printStackTrace();
             }
             updateUndoState();
@@ -319,7 +341,7 @@ public class RuleEditor extends JPanel {
             try {
                 undo.redo();
             } catch (CannotRedoException ex) {
-                System.out.println("Unable to redo: " + ex);
+                logger.severe("Unable to redo: " + ex.getMessage());
                 ex.printStackTrace();
             }
             updateRedoState();
