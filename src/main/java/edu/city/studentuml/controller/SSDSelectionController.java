@@ -6,7 +6,6 @@ import javax.swing.undo.UndoableEdit;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -23,15 +22,10 @@ public class SSDSelectionController extends AbstractSDSelectionController {
 
     public SSDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
+        editElementMapper.put(SystemInstanceGR.class, el -> editSystemInstance((SystemInstanceGR) el));
     }
 
-    public void editElement(GraphicalElement selectedElement) {
-        if (selectedElement instanceof SystemInstanceGR) {
-            editSystemInstance((SystemInstanceGR) selectedElement);
-        } 
-    }
-
-    public void editSystemInstance(SystemInstanceGR systemInstanceGR) {
+    private void editSystemInstance(SystemInstanceGR systemInstanceGR) {
         CentralRepository repository = model.getCentralRepository();
         SystemInstanceEditor systemEditor = new SystemInstanceEditor(systemInstanceGR, repository);
         SystemInstance originalSystemInstance = systemInstanceGR.getSystemInstance();

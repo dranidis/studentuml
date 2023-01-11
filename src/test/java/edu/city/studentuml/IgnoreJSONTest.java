@@ -7,10 +7,10 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Test;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.Test;
 
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
@@ -132,7 +132,7 @@ public class IgnoreJSONTest {
     @Test
     public void graphicalClass() {
         ObjectMapper mapper = new ObjectMapper();
-        DesignClass dc = new DesignClass("A");
+        new DesignClass("A");
         ClassGR graphicalClass = new ClassGR(new DesignClass("A"), new java.awt.Point(10, 12));
         String jsonString = "";
         try {
@@ -164,7 +164,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("\"name\" : \"dcd diagram\""));
     }
 
     @Test
@@ -272,8 +272,8 @@ public class IgnoreJSONTest {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
         SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
-        DCDModel diagramModel1 = new DCDModel("dcd diagram", umlProject);
-        DCDModel diagramModel2 = new DCDModel("dcd2 diagram", umlProject);
+        new DCDModel("dcd diagram", umlProject);
+        new DCDModel("dcd2 diagram", umlProject);
 
         String jsonString = "";
         try {

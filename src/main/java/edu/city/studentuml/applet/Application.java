@@ -176,7 +176,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         // initialize the SystemWideObjectNamePool singleton for the first time
         // with the current rules file
-        SystemWideObjectNamePool.uid = username;
+        SystemWideObjectNamePool.getInstance().setUid(username);
         SystemWideObjectNamePool.getInstance().init(currentRuleFile);
         SystemWideObjectNamePool.getInstance().addObserver(this);
 

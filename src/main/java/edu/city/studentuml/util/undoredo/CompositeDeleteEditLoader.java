@@ -61,7 +61,7 @@ public class CompositeDeleteEditLoader {
                 }
                 edit.add(new LeafDeleteEdit(c, model));
 
-                c.getIncomingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+                c.getIncomingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
                 c.getOutgoingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 

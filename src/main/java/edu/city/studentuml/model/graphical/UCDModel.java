@@ -96,12 +96,12 @@ public class UCDModel extends DiagramModel {
         }
 
         // remove all the links to the element
-        Iterator<UCLinkGR> incomingLinks = ucdComponentGR.getIncomingRelations();
+        Iterator<UCLinkGR> incomingLinks = ucdComponentGR.getIncomingRelations().iterator();
         while (incomingLinks.hasNext()) {
             UCLinkGR link = incomingLinks.next();
             removeLink(link);
             // need to update iterator
-            incomingLinks = ucdComponentGR.getIncomingRelations();
+            incomingLinks = ucdComponentGR.getIncomingRelations().iterator();
         }
 
         Iterator<UCLinkGR> outgoingLinks = ucdComponentGR.getOutgoingRelations();
