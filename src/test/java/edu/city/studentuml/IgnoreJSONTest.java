@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -49,7 +47,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
         assertTrue(jsonString.contains("attributes"));
         assertTrue(jsonString.contains("methods"));
@@ -69,7 +67,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
         assertTrue(jsonString.contains("attributes"));
         assertTrue(jsonString.contains("methods"));
@@ -89,7 +87,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
         assertTrue(jsonString.contains("\"__type\" : \"Interface\""));
@@ -106,7 +104,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
         assertTrue(jsonString.contains("interface"));
@@ -128,7 +126,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -143,7 +141,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -166,7 +164,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertTrue(jsonString.contains("\"name\" : \"dcd diagram\""));
     }
 
@@ -197,7 +195,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -227,7 +225,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -246,7 +244,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -264,7 +262,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -284,7 +282,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -375,7 +373,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
 
         int count = 0, index = 0;
 
@@ -404,7 +402,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -425,7 +423,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -446,7 +444,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -467,7 +465,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
@@ -491,7 +489,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         // assertFalse(jsonString.contains("sdmethods"));
     }
 
