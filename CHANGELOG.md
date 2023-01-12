@@ -1,5 +1,11 @@
 # StudentUML Changelog
 
+## 1.2.2 - 2023-01-12
+
+### Fixed
+
+- Close working project when opening a recent file.
+
 ## 1.2.1 - 2023-01-11
 
 ### Fixed
