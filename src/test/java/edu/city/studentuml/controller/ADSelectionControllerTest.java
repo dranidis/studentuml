@@ -11,6 +11,8 @@ import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.InitialNodeGR;
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
@@ -24,6 +26,8 @@ public class ADSelectionControllerTest {
 
     @Before
     public void setup() {
+        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
+        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
         umlProject = UMLProject.getInstance();
         umlProject.clear();
         model = new ADModel("ad", umlProject);

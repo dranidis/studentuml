@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
@@ -42,6 +43,8 @@ public abstract class DiagramView extends JPanel implements Observer {
     private int maxWidth;
     private int maxHeight;
 
+    protected ReentrantLock lock = new ReentrantLock();
+    
     protected DiagramView(DiagramModel m) {
         model = m;
 
@@ -164,7 +167,7 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     public void drawDiagram(Graphics2D g) {
-        SystemWideObjectNamePool.drawLock.lock();
+        lock.lock();
 
         // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
@@ -175,14 +178,11 @@ public abstract class DiagramView extends JPanel implements Observer {
         model.getGraphicalElements().stream()
                 .filter(ge -> ! (ge instanceof LinkGR))
                 .forEach(ge -> ge.draw(g));
-
-
-
         
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
 
-        SystemWideObjectNamePool.drawLock.unlock();
+        lock.unlock();
     }
 
     /**

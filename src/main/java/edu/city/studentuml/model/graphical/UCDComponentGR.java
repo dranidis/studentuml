@@ -65,8 +65,8 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return incomingRelations.size();
     }
 
-    public Iterator<UCLinkGR> getIncomingRelations() {
-        return incomingRelations.iterator();
+    public List<UCLinkGR> getIncomingRelations() {
+        return incomingRelations;
     }
 
     public void addOutgoingLink(UCLinkGR link) {

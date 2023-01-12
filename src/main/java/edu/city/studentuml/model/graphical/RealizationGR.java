@@ -7,10 +7,10 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -162,4 +162,9 @@ public class RealizationGR extends LinkGR {
 
         streamer.streamObject(node, "realization", realization);
     }
+
+    public void setRealization(Realization realization) {
+        this.realization = realization;
+    }
+
 }

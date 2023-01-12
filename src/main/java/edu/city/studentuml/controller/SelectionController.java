@@ -80,9 +80,8 @@ public abstract class SelectionController {
     JPopupMenu popupMenuOne;
 
     /**
-     * A map mapping a class to its editor.
-     * Each subclass of SelectionController implements editors for the
-     * elements that the diagram implements.
+     * A map mapping a class to its editor. Each subclass of SelectionController
+     * implements editors for the elements that the diagram implements.
      */
     protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
 
@@ -90,7 +89,7 @@ public abstract class SelectionController {
 
         editElementMapper = new HashMap<>();
         editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
-        
+
         parentComponent = parent;
         model = m;
 
@@ -159,7 +158,7 @@ public abstract class SelectionController {
 
         KeyStroke selAll = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK);
         parentComponent.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(selAll, "ctrl-a");
-        parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);        
+        parentComponent.getActionMap().put("ctrl-a", selectAllActionListener);
     }
 
     private void mapeditElement(GraphicalElement element) {
@@ -167,7 +166,8 @@ public abstract class SelectionController {
         if (editElementConsumer != null) {
             editElementConsumer.accept(element);
         } else {
-            editElement(element);
+            logger.severe("No edit function in the mapper for " + element.getClass().getName());
+            throw new UnsupportedOperationException("not implemented yet!!!");
         }
     }
 
@@ -239,11 +239,12 @@ public abstract class SelectionController {
             selectedElements.clear();
             model.clearSelected();
             selectedElements.add(element);
-        } 
+        }
 
         model.clearSelected();
         for (GraphicalElement el : selectedElements) {
-            logger.finer(() -> "Element " + el + " " + el.getX() + ", " + el.getY() + " - " + el.getWidth() + ", " + el.getHeight());
+            logger.finer(() -> "Element " + el + " " + el.getX() + ", " + el.getY() + " - " + el.getWidth() + ", "
+                    + el.getHeight());
             model.selectGraphicalElement(el);
         }
 
@@ -295,8 +296,7 @@ public abstract class SelectionController {
     }
 
     protected void myMouseClicked(MouseEvent event) {
-        if (event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2
-                && selectedElements.size() == 1) {
+        if (event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2 && selectedElements.size() == 1) {
             Point2D origin = new Point2D.Double(scale(event.getX()), scale(event.getY()));
             lastX = scale(event.getX());
             lastY = scale(event.getY());
@@ -334,13 +334,13 @@ public abstract class SelectionController {
             lastY = y;
 
             /**
-             * Make sure that none of the selected elements go beyond the top and left edge margin.
+             * Make sure that none of the selected elements go beyond the top and left edge
+             * margin.
              */
             for (GraphicalElement e : selectedElements) {
                 /**
-                 * First condition is for SD messages: they have getX = 0. Without
-                 * the condition messages cannot be moved because they look like they are out of
-                 * the margin.
+                 * First condition is for SD messages: they have getX = 0. Without the condition
+                 * messages cannot be moved because they look like they are out of the margin.
                  */
                 if (e.getX() != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
                     return;
@@ -350,7 +350,7 @@ public abstract class SelectionController {
                 }
             }
 
-            for(GraphicalElement e: selectedElements) {
+            for (GraphicalElement e : selectedElements) {
                 model.moveGraphicalElement(e, deltaX + e.getX(), deltaY + e.getY());
             }
         }
@@ -383,10 +383,6 @@ public abstract class SelectionController {
         setSelectionMode(false);
     }
 
-    // abstract method that is overridden by subclasses handling editing of
-    // a selected graphical element
-    public abstract void editElement(GraphicalElement selectedElement);
-
     // method that shows a popup menu when the right mouse button has been clicked
     public void managePopup(MouseEvent event) {
         if (event.isPopupTrigger()) {
@@ -398,7 +394,7 @@ public abstract class SelectionController {
                 editMenuItem.setVisible(true);
             }
 
-            popupMenuOne.show(event.getComponent(), scale(event.getX()), scale(event.getY()));
+            popupMenuOne.show(event.getComponent(), event.getX(), event.getY());
         }
     }
 
@@ -412,7 +408,7 @@ public abstract class SelectionController {
             if ((event.getSource() == editMenuItem) && (selectedElements.size() == 1)) {
 
                 // call abstract method editElement that is to be overridden by subclasses
-                editElement(selectedElements.get(0));
+                mapeditElement(selectedElements.get(0));
             } else if (event.getSource() == deleteMenuItem) {
                 deleteSelected();
             }
@@ -421,11 +417,11 @@ public abstract class SelectionController {
 
     protected void deleteSelectedElements() {
         CompositeDeleteEdit edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElements.get(0), model);
-        
+
         selectedElements.forEach(e -> CompositeDeleteEditLoader.loadCompositeDeleteEdit(e, edit, model));
         parentComponent.getUndoSupport().postEdit(edit);
 
-        for (GraphicalElement selectedElement: selectedElements) {
+        for (GraphicalElement selectedElement : selectedElements) {
             // check if element was not already deleted by a link to another element
             if (inModel(selectedElement)) {
                 logger.fine(() -> ("DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString()));
@@ -497,7 +493,7 @@ public abstract class SelectionController {
             }
         }
         return false;
-    }    
+    }
 
     public void deleteSelected() {
         model.clearSelected();
@@ -515,7 +511,7 @@ public abstract class SelectionController {
         selectedElements.clear();
         model.clearSelected();
 
-        for (GraphicalElement el: model.getGraphicalElements()) {
+        for (GraphicalElement el : model.getGraphicalElements()) {
             selectedElements.add(el);
             model.selectGraphicalElement(el);
         }

@@ -1,11 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  * 
@@ -36,5 +39,10 @@ public class Realization implements Serializable, IXMLCustomStreamable {
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("a", SystemWideObjectNamePool.getInstance().getNameForObject(theClass));
         node.setAttribute("b", SystemWideObjectNamePool.getInstance().getNameForObject(theInterface));
+    }
+
+    @JsonGetter("internalid")
+    public String getInternalid() {
+        return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
 }

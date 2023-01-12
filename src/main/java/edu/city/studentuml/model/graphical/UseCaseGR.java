@@ -1,6 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.ExtensionPoint;
+import edu.city.studentuml.model.domain.UCLink;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
@@ -96,13 +97,12 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private int getNumberOfExtensionPoints() {
         int counter = 0;
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
                 counter = counter + extend.getNumberOfExtensionPoints();
-            }
+            }            
         }
 
         return counter;
@@ -144,9 +144,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         // get the largest width of all extension points
         int largest = 0;
 
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -165,9 +163,8 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         // draw extension points
         g.setFont(extensionPointFont);
-        i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -234,9 +231,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         }
 
         // check every extension string
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -253,6 +248,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                     }
                 }
             }
+
         }
 
         width = (int) (newWidth * multiplier);
@@ -288,9 +284,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         newHeight += ((int) bounds.getHeight()) + VGAP_BETWEEN_EXTENSION_POINTS;
 
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 

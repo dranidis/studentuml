@@ -1,5 +1,13 @@
 package edu.city.studentuml.model.repository;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Optional;
+import java.util.Vector;
+import java.util.logging.Logger;
+
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
@@ -46,13 +54,6 @@ import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UCLink;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.util.NotifierVector;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Optional;
-import java.util.Vector;
-import java.util.logging.Logger;
 
 /**
  * CentralRepository is the core of the application data. It represents the
@@ -563,9 +564,11 @@ public class CentralRepository extends Observable implements Serializable {
         return designAssociationClasses;
     }
 
-    // methods for manipulating the list of project generalizations
-    // adds the generalization between two classes only if there
-    // doesn't exists one between them as there is no need for more than one
+
+    /**
+     * Adds the generalization between two classes only if there
+     * doesn't exists one between them as there is no need for more than one
+     */
     public boolean addGeneralization(Generalization g) {
         if (getGeneralization(g.getSuperClass(), g.getBaseClass()) == null) {
             generalizations.add(g);
@@ -625,9 +628,14 @@ public class CentralRepository extends Observable implements Serializable {
         return aggregations;
     }
 
-    // methods for manipulating the list of project realizations
-    // adds the realization between one class and one interface only if there
-    // doesn't exists one between them as there is no need for more than one
+
+    /**
+     * Adds the realization between one class and one interface only if there
+     * doesn't exists one between them as there is no need for more than one.
+     * 
+     * @param r
+     * @return
+     */
     public boolean addRealization(Realization r) {
         if (getRealization(r.getTheClass(), r.getTheInterface()) == null) {
             realizations.add(r);

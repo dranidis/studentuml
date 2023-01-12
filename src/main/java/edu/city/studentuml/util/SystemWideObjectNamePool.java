@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.util.validation.ConsistencyChecker;
@@ -24,34 +24,32 @@ import edu.city.studentuml.view.gui.CollectionTreeModel;
  * Also responsible for consistency checking (to be documented).
  */
 public class SystemWideObjectNamePool extends Observable {
+
     private static final Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName());
 
-    private static SystemWideObjectNamePool ref = null;
+    private static SystemWideObjectNamePool instance = null;
+
     private String ruleFile = null;
-    private static String selectedRule = null;
+    private String selectedRule = null;
     private ConsistencyChecker consistencyChecker = null;
     private boolean runtimeChecking = false;
-    private static HashSet<String> messageTypes = new HashSet<String>();
-    private static CollectionTreeModel messages = null;
-    private static CollectionTreeModel facts = null;
+    private HashSet<String> messageTypes = new HashSet<>();
+    private CollectionTreeModel messages = null;
+    private CollectionTreeModel facts = null;
     private HashMap<Object, String> objectMap = new HashMap<>();
     private HashMap<String, Object> namedMap = new HashMap<>();
-    public static String uid;
-    public static HashMap<String, Color> userColorMap = new HashMap<>();
-    public static ReentrantLock drawLock = new ReentrantLock();
-    // private String LastUndo = null;
-    // private Stack<String> undoBuffer = new Stack<String>();
-    // private Stack<String> redoBuffer = new Stack<String>();
+    private String uid;
+    private HashMap<String, Color> userColorMap = new HashMap<>();
     private int loading = 0;
 
     private SystemWideObjectNamePool() {
     }
 
     public static SystemWideObjectNamePool getInstance() {
-        if (ref == null) {
-            ref = new SystemWideObjectNamePool();
+        if (instance == null) {
+            instance = new SystemWideObjectNamePool();
         }
-        return ref;
+        return instance;
     }
 
     public void init(String ruleFile) {
@@ -62,7 +60,7 @@ public class SystemWideObjectNamePool extends Observable {
 
     @Override
     public synchronized void addObserver(Observer o) {
-        logger.fine("OBSERVER added: " + o.toString());
+        logger.fine(() -> "OBSERVER added: " + o.toString());
         super.addObserver(o);
     }
 
@@ -94,19 +92,16 @@ public class SystemWideObjectNamePool extends Observable {
 
     public void loading() {
         loading++;
-        logger.finer("loading: " + loading);
     }
 
     public void done() {
         loading--;
         if (loading == 0) {
-            reloadrules();
+            regenarateRuleSet();
         }
-        logger.finer("loading: " + loading);
     }
 
     public boolean isLoading() {
-        logger.finer("loading: " + loading);
         return loading > 0;
     }
 
@@ -149,7 +144,7 @@ public class SystemWideObjectNamePool extends Observable {
 
         facts.setName("<html><b>Facts</b>" + " [" + facts.size() + "]</html>");
 
-        logger.fine("Notifying observers: " + this.countObservers());
+        logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(this);
     }
@@ -159,14 +154,14 @@ public class SystemWideObjectNamePool extends Observable {
         done();
     }
 
-    public void reloadRules() {// FIXME: need reload? (loading/done)
+    public void reloadRules() {
         consistencyChecker = null;
         consistencyChecker = new ConsistencyChecker(ruleFile);
         reload();
     }
 
     @SuppressWarnings("unchecked")
-    private synchronized void reloadrules() {
+    private synchronized void regenarateRuleSet() {
         if (runtimeChecking) {
             synchronized (this) {
                 HashMap<Object, String> h = (HashMap<Object, String>) objectMap.clone();
@@ -248,24 +243,25 @@ public class SystemWideObjectNamePool extends Observable {
         return null;
     }
 
-    // used for XML streaming
     /**
      * Called by ObjectFactory newinstance that provides the internalid for the name
      * 
      * Usually the object does not exist in the maps (oldName = null) and it behaves
      * like adding the object and its name (internalid) in the maps.
+     * 
+     * used for XML streaming
      *
      * @param object the instance created by ObjectFactory
      * @param name   the internalid from the XML file
      */
     public void renameObject(Object object, String name) {
         // remove the old object and the old name
-        String oldName = (String) objectMap.remove(object);
+        String oldName = objectMap.remove(object);
         namedMap.remove(oldName);
 
         objectMap.put(object, name);
         namedMap.put(name, object);
-        logger.finer("RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name);
+        logger.finer(() -> "RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name);
     }
 
     public void clear() {
@@ -273,55 +269,22 @@ public class SystemWideObjectNamePool extends Observable {
         namedMap = new HashMap<>();
     }
 
-    public void undo() {
-        // if (undoBuffer.size() == 0) return;
-        //
-        // loading();
-        // String XML = undoBuffer.pop();
-        // if (LastUndo != null)
-        // redoBuffer.push(LastUndo);
-        //
-        // objectMap.clear();
-        // namedMap.clear();
-        // UMLProject.getInstance().clear();
-        // UMLProject.getInstance().loadFromXMLString(XML);
-        // LastUndo = null;
-        // done();
-    }
 
-    public void redo() {
-        // if (redoBuffer.size() == 0) return;
-        //
-        // loading();
-        // String XML = redoBuffer.pop();
-        // //if (LastUndo != null)
-        // undoBuffer.push(LastUndo);
-        // objectMap.clear();
-        // namedMap.clear();
-        // UMLProject.getInstance().clear();
-        // UMLProject.getInstance().loadFromXMLString(XML);
-        // LastUndo = null;
-        // done();
-    }
 
     public void setRuleFile(String ruleFile) {
         this.ruleFile = ruleFile;
     }
-    // private boolean isAlphaNumeric(final String s) {
-    // final char[] chars = s.toCharArray();
-    // for (int x = 0; x < chars.length; x++) {
-    // final char c = chars[x];
-    // if ((c >= 'a') && (c <= 'z')) continue; // lowercase
-    // if ((c >= 'A') && (c <= 'Z')) continue; // uppercase
-    // if ((c >= '0') && (c <= '9')) continue; // numeric
-    // return false;
-    // }
-    // return true;
-    // }
-    //
-    // private String isValidName(String newName) {
-    // if (newName.length() == 0) return null;
-    // if (isAlphaNumeric(newName)) return newName; else
-    // return null;
-    // }
+
+    public Map<String, Color> getUserColorMap() {
+        return userColorMap;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
 }

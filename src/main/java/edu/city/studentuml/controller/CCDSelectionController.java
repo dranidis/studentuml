@@ -157,9 +157,4 @@ public class CCDSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    // TODO to be removed when all in mappers
-    @Override
-    public void editElement(GraphicalElement selectedElement) {
-        // left empty
-    }
 }

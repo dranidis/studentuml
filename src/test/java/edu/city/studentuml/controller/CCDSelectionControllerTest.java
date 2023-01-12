@@ -61,7 +61,6 @@ public class CCDSelectionControllerTest {
 
     @Test
     public void testDeleteElementWithRelationshipsUndo() {
-        CCDSelectionController ccdSelectionController = new CCDSelectionController(ccdInternalFrame, model);
 
         ConceptualClassGR a = h.addConceptualClass("A");
         ConceptualClassGR b = h.addConceptualClass("B");

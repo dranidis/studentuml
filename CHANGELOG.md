@@ -1,5 +1,10 @@
 # StudentUML Changelog
 
+## 1.2.1 - 2023-01-11
+
+### Fixed
+
+- Popup-menu location and edit
 
 ## 1.2.0 - 2023-01-08
 

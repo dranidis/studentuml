@@ -35,19 +35,10 @@ public class UCDSelectionController extends SelectionController {
 
     public UCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
-    }
-
-    @Override
-    public void editElement(GraphicalElement selectedElement) {
-        if (selectedElement instanceof UCActorGR) {
-            editActor((UCActorGR) selectedElement);
-        } else if (selectedElement instanceof UseCaseGR) {
-            editUseCase((UseCaseGR) selectedElement);
-        } else if (selectedElement instanceof SystemGR) {
-            editSystem((SystemGR) selectedElement);
-        } else if (selectedElement instanceof UCExtendGR) {
-            editExtend((UCExtendGR) selectedElement);
-        }
+        editElementMapper.put(UCActorGR.class, e -> editActor((UCActorGR) e));
+        editElementMapper.put(UseCaseGR.class, e -> editUseCase((UseCaseGR) e));
+        editElementMapper.put(SystemGR.class, e -> editSystem((SystemGR) e));
+        editElementMapper.put(UCExtendGR.class, e -> editExtend((UCExtendGR) e));
     }
 
     private void editActor(UCActorGR uCActorGR) {

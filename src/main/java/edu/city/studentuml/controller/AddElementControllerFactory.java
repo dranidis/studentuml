@@ -3,6 +3,7 @@ package edu.city.studentuml.controller;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -597,17 +598,32 @@ public class AddElementControllerFactory {
 
     protected boolean relationshipExists(DiagramModel model, ClassifierGR baseClass, ClassifierGR superClass) {
 
-        boolean anyRealizationMatch = model.getCentralRepository().getRealizations().stream().anyMatch(
-                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
-                        || (r.getTheClass() == superClass.getClassifier()
-                                && r.getTheInterface() == baseClass.getClassifier()));
-
-        boolean anyGeneralizationnMatch = model.getCentralRepository().getGeneralizations().stream().anyMatch(
+         Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
                 r -> (r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
                         || r.getBaseClass() == superClass.getClassifier()
-                                && r.getSuperClass() == baseClass.getClassifier()));
+                                && r.getSuperClass() == baseClass.getClassifier())).findFirst();
 
-        if (anyRealizationMatch || anyGeneralizationnMatch) {
+        Optional<Realization> aRealization = model.getCentralRepository().getRealizations().stream().filter(
+                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
+                        || (r.getTheClass() == superClass.getClassifier()
+                                && r.getTheInterface() == baseClass.getClassifier()))
+                .findFirst();
+
+        if (aRealization.isPresent() || aGeneralization.isPresent()) {
+            if (aRealization.isPresent()) {
+                Realization realization = aRealization.get();
+                // it is the same relationship; allow
+                if (realization.getTheClass() == baseClass.getClassifier()) {
+                    return false;
+                }
+            }
+            if (aGeneralization.isPresent()) {
+                 Generalization generalization = aGeneralization.get();
+                // it is the same relationship; allow
+                if (generalization.getBaseClass() == baseClass.getClassifier()) {
+                    return false;
+                }
+            }
             return true;
         }
 
