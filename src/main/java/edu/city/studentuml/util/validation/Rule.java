@@ -1,22 +1,23 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.city.studentuml.util.validation;
 
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
  *
  * @author
  */
 public class Rule {
+
+    private static final Logger logger = Logger.getLogger(Rule.class.getName());
 
     private String prologExpression = null;
     private String severity = null;
@@ -27,12 +28,12 @@ public class Rule {
     private String helpurl = null;
     //private ConsistencyChecker owner = null;
 
-    /*
+    /**
      * The constructor creates a rule from the text file passed in v
      * only parses all the lines until it finds "}"
      *
      */
-    public Rule(Vector v) {
+    public Rule(Vector<String> v) {
 
         //owner = aowner;
         //ruleName = "unnamed_rule_" + rulesSize;
@@ -96,7 +97,7 @@ public class Rule {
                 }
             } catch (SecurityException e) {
             } catch (NoSuchMethodException e) {
-                System.out.println("ERROR no such method : set" + header);
+                logger.severe("ERROR no such method : set" + header);
             }
         }
     }
@@ -163,7 +164,7 @@ public class Rule {
         return helpurl;
     }
 
-    /*
+    /**
      * nest three methods parse the message returned after a rule has fired
      *
      * ex.
@@ -178,19 +179,19 @@ public class Rule {
         Object o = solutions.get(variableName);
 
         if (o instanceof Vector) {
-            String VectorString = "";
+            String vectorString = "";
             Vector v = (Vector) o;
 
             for (int i = 0; i < v.size(); i++) {
-                VectorString = VectorString + v.get(i).toString();
+                vectorString = vectorString + v.get(i).toString();
                 if (i < v.size() - 1) {
-                    VectorString = VectorString + ",";
+                    vectorString = vectorString + ",";
                 }
             }
 
-            VectorString = "[" + VectorString + "]";
+            vectorString = "[" + vectorString + "]";
 
-            return VectorString;
+            return vectorString;
         }
         if (o instanceof Integer) {
             return ((Integer) o).toString();
@@ -240,7 +241,7 @@ public class Rule {
         return s;
     }
 
-    /*
+    /**
      * runAction is applied only for one action from the action defined for the rules separated by ";"
      * for example if we have action1;action2;...;
      *
@@ -357,7 +358,7 @@ public class Rule {
         }
     }
 
-    /*
+    /**
      * Calls runAction for every member of the actions which is separated by ";"
      * ex : action1;action2;actionN...
      *

@@ -1,20 +1,20 @@
 package edu.city.studentuml.util.validation;
 
-import edu.city.studentuml.view.gui.CollectionTreeModel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.logging.Logger;
+
+import edu.city.studentuml.view.gui.CollectionTreeModel;
 
 public class ConsistencyChecker {
     
@@ -22,18 +22,17 @@ public class ConsistencyChecker {
 
     private RuleBasedSystemGenerator rbsg = new RuleBasedSystemGenerator();
     protected RuleBasedEngine rbs = new RuleBasedEngine();
-    protected HashMap factTemplates = new HashMap();
-    protected Vector<String> simplifications = new Vector<String>();
-    protected Vector rules = new Vector();
+    protected Map<String, Vector<ConsistencyCheckerFact>> factTemplates = new HashMap<>();
+    protected Vector<String> simplifications = new Vector<>();
+    protected Vector<Rule> rules = new Vector<>();
 
     public ConsistencyChecker(String location) {
-        //loadRules("rules/rules.txt");
         loadRules(location);
-        logger.finer(location + " (ConsistencyChecker constructor)");
-        logger.fine("Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
+        logger.finer(() -> location + " (ConsistencyChecker constructor)");
+        logger.fine(() -> "Consistency checker initialized " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
     }
 
-    /*
+    /**
      * stores the rules.txt in a vector of lines removing the commented lines out
      *
      */
@@ -47,13 +46,10 @@ public class ConsistencyChecker {
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String str;
-            Vector program = new Vector();
+            Vector<String> program = new Vector<>();
             while ((str = in.readLine()) != null) {
                 str = str.trim();
-                if (str.length() == 0) {
-                    continue;
-                }
-                if (str.charAt(0) == '#') {
+                if (str.length() == 0 || str.charAt(0) == '#') {
                     continue;
                 }
                 program.add(str);
@@ -66,12 +62,12 @@ public class ConsistencyChecker {
     }
 
     // load rules one by one
-    private void loadProgram(Vector v) {
+    private void loadProgram(Vector<String> v) {
 
         // while the vector is non-empty
-        while (v.size() > 0) {
+        while (!v.isEmpty()) {
 
-            String line = ((String) v.get(0)).trim();
+            String line = (v.get(0)).trim();
 
             if (line.length() > 0) {
                 if (line.split(" ")[0].equals(":-")) {
@@ -102,7 +98,7 @@ public class ConsistencyChecker {
 
         StringTokenizer t1 = new StringTokenizer(prologFact, "(),");
         String functionName = null;
-        Vector arguments = new Vector();
+        Vector<String> arguments = new Vector<>();
 
         while (t1.hasMoreTokens()) {
             String token = t1.nextToken();
@@ -115,16 +111,16 @@ public class ConsistencyChecker {
 
         ConsistencyCheckerFact factObject = new ConsistencyCheckerFact(className, functionName, arguments);
 
-        Vector classVector = (Vector) factTemplates.get(className);
-        if (classVector == null) {
-            classVector = new Vector();
-            factTemplates.put(className, classVector);
+        Vector<ConsistencyCheckerFact> classFacts = factTemplates.get(className);
+        if (classFacts == null) {
+            classFacts = new Vector<>();
+            factTemplates.put(className, classFacts);
         }
 
-        classVector.add(factObject);
+        classFacts.add(factObject);
     }
 
-    public HashMap getFactTemplates() {
+    public Map<String, Vector<ConsistencyCheckerFact>> getFactTemplates() {
         return factTemplates;
     }
 
@@ -144,27 +140,23 @@ public class ConsistencyChecker {
     }
 
     // must not throw exceptions!!
-    /*
+    /**
      * Creates new ruleBasedEngine (from prolog) asserts all the facts in to it
      * (the facts are generated from the fact template explained above) and then
      * for every rule that is defined in rules.txt, parsed and stored in the rules vector
      * it executes those rules
      *
      */
-    public boolean checkState(Set objects, String executeRule, HashSet messageTypes, CollectionTreeModel messages, CollectionTreeModel facts) {
+    public boolean checkState(Set<Object> objects, String executeRule, Set<String> messageTypes, CollectionTreeModel messages, CollectionTreeModel facts) {
         //FIXME: za site go povik. so exRu *
         rbs = new RuleBasedEngine();
 
-        Vector factsSet = new Vector();
-        Iterator it = objects.iterator();
+        Vector<String> factsSet = new Vector<>();
 
-        while (it.hasNext()) {
-            Object o = it.next();
-            rbsg.addRules(o, o.getClass(), factsSet, getFactTemplates());
-        }
+        objects.forEach(o -> rbsg.addRules(o, o.getClass(), factsSet, getFactTemplates()));
 
         for (int j = 0; j < factsSet.size(); j++) {
-            rbs.addClause((String) factsSet.get(j));
+            rbs.addClause(factsSet.get(j));
         }
 
         for (int j = 0; j < simplifications.size(); j++) {
@@ -174,26 +166,26 @@ public class ConsistencyChecker {
         rbs.printDatabase(facts);
 
         for (int i = 0; i < rules.size(); i++) {
-            Rule r = (Rule) rules.get(i);
+            Rule r = rules.get(i);
 
             String res = "all";
             Hashtable rez = rbs.checkRule(r.getexpression(), res.equals(r.getresult()));
 
             if (rez != null) {
-                Iterator solutionIterator = rez.keySet().iterator();
+                Iterator<String> solutionIterator = rez.keySet().iterator();
                 while (solutionIterator.hasNext()) {
-                    String solutionName = (String) solutionIterator.next();
+                    String solutionName = solutionIterator.next();
 
                     messageTypes.add(r.getSeverity());
                     messages.put(r.getSeverity(), r.getName());
                     messages.put(r.getName(), r.getMessage((Hashtable) rez.get(solutionName)));
 
-                    if (r.getName().equals(executeRule) || "*".equals(executeRule)) {
-                        if (r.executeAction((Hashtable) rez.get(solutionName))) {
-                            //factsSet = null;
-                            return true;
-                        }
+                    if ((r.getName().equals(executeRule) || "*".equals(executeRule))
+                            && r.executeAction((Hashtable) rez.get(solutionName))) {
+                        //factsSet = null;
+                        return true;
                     }
+
                 }
 
                 if (r.getSeverity().equals("failure")) {
