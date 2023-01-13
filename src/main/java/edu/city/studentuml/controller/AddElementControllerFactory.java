@@ -54,6 +54,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
+import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -490,7 +491,10 @@ public class AddElementControllerFactory {
 
                     Generalization generalization = new Generalization(superClass.getClassifier(),
                             baseClass.getClassifier());
-                    return new GeneralizationGR(superClass, baseClass, generalization);
+                    GeneralizationGR genGR = new GeneralizationGR(superClass, baseClass, generalization);
+                    logger.fine(genGR::toString);
+
+                    return genGR;
                 }
             };
 

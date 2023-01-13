@@ -12,12 +12,16 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Role;
+import edu.city.studentuml.model.graphical.AbstractCDModel;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -78,9 +82,17 @@ public class DCDSelectionController extends SelectionController {
             parentComponent.getUndoSupport().postEdit(edit);
         }
 
+        checkExtendRelationships(classGR);
+
         // set observable model to changed in order to notify its views
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
+    }
+
+    private void checkExtendRelationships(ClassGR classGR) {
+        
+        DCDModel dcdmodel = (DCDModel) model;
+        dcdmodel.checkExtendRelationships(classGR);
     }
 
     // Editing the selected graphical element if it is an interface

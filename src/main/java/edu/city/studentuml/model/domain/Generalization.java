@@ -39,5 +39,9 @@ public class Generalization implements Serializable, IXMLCustomStreamable {
     public String getInternalid() {
         return SystemWideObjectNamePool.getInstance().getNameForObject(this);
     }
+
+    public String toString() {
+        return getInternalid() + " : " + baseClass + " -gen-> " + superClass;
+    }
     
 }

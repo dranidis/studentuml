@@ -144,6 +144,7 @@ public class GeneralizationGR extends LinkGR {
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     @Override
@@ -156,7 +157,7 @@ public class GeneralizationGR extends LinkGR {
 
     @Override
     public String toString() {
-        return "" + baseClass + " ---generalization---> " + superClass;
+        return "" + baseClass + " ---generalization---> " + superClass + " domain: " + generalization.toString();
     }
 
     public void setGeneralization(Generalization generalization) {

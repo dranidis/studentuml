@@ -2,6 +2,7 @@ package edu.city.studentuml.model.graphical;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.city.studentuml.model.domain.Realization;
@@ -9,6 +10,8 @@ import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 public class DCDModel extends AbstractCDModel {
+
+    private static final Logger logger = Logger.getLogger(DCDModel.class.getName());
 
     public DCDModel(String title, UMLProject umlp) {
         super(title, umlp);
@@ -216,6 +219,14 @@ public class DCDModel extends AbstractCDModel {
     private void removeRealization(RealizationGR r) {
         repository.removeRealization(r.getRealization());
         super.removeGraphicalElement(r);
+    }
+
+    public void checkExtendRelationships(ClassGR classGR) {
+        
+        getClassGRGeneralizationGRs(classGR).forEach(e -> {
+            GeneralizationGR r = (GeneralizationGR) e;
+            logger.fine(r.toString());
+        });
     }
 
 }
