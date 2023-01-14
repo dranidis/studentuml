@@ -21,20 +21,20 @@
 
 :- Edge edge(this,'getGuard')
 :- Edge edgeBetween(this,getSource,getTarget)
-:- EdgeGR responisbleFor(getEdge,this)
+:- EdgeGR responsibleFor(getEdge,this)
 
 :- Association association(this,'getName')
 :- Association assocBetween(this,getClassA,getClassB,getDirection)
-:- AssociationGR responisbleFor(getAssociation,this)
+:- AssociationGR responsibleFor(getAssociation,this)
 
 :- Aggregation aggregation(this,'getName')
 :- Aggregation aggregBetween(this,getWhole,getPart)
 
 :- Dependency dependBetween(this,getFrom,getTo)
-:- DependencyGR responisbleFor(getDependency,this)
+:- DependencyGR responsibleFor(getDependency,this)
 
 :- Generalization generBetween(this,getBaseClass,getSuperClass)
-:- GeneralizationGR responisbleFor(getGeneralization,this)
+:- GeneralizationGR responsibleFor(getGeneralization,this)
 
 :- ConceptualClass concept(this,'getName')
 :- ConceptualClassGR responsibleFor(getConceptualClass,this)
@@ -60,7 +60,7 @@
 :- MultiObject isMultiObject(this)
 
 :- SDMessage messBetween(this,getSource,getTarget,'getName')
-:- CallMessage callMessageParam(this,getParameters.this,'this.toString')
+:- CallMessage callMessageParam(this,getParameters.this,'this.getName')
 :- CallMessage callMessage(this,getSource,getTarget,'getName','getReturnValueAsString','getRank')
 
 
