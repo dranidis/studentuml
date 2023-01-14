@@ -264,9 +264,7 @@ public abstract class SelectionController {
 
             // check if the event is a popup trigger event
             managePopup(event);
-
-            SystemWideObjectNamePool.getInstance().reload();
-
+            
             setRedoCoordinates();
 
             if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {

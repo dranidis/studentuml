@@ -256,8 +256,8 @@ public class RuleBasedSystemGenerator {
             return instance;
         }
         try {
-            Method m = instance.getClass().getMethod(methodName, new Class[] {});
-            return m.invoke(instance, new Object[] {});
+            Method m = instance.getClass().getMethod(methodName);
+            return m.invoke(instance);
         } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException
                 | InvocationTargetException e) {
             return null;

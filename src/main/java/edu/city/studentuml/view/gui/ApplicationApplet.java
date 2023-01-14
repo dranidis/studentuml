@@ -172,7 +172,7 @@ public class ApplicationApplet extends ApplicationGUI {
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
             if (runtimeChecking) {
-                SystemWideObjectNamePool.getInstance().reloadRules();
+                SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
             }
 
             return true;
@@ -302,7 +302,7 @@ public class ApplicationApplet extends ApplicationGUI {
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
                 if (runtimeChecking) {
-                    SystemWideObjectNamePool.getInstance().reloadRules();
+                    SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
                 }
             } catch (APICallException ace) {
                 JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),

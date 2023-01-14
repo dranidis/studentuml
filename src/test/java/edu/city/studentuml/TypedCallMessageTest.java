@@ -39,7 +39,7 @@ public class TypedCallMessageTest {
     @Before
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
 
         umlProject = UMLProject.getInstance();
         umlProject.clear();

@@ -166,9 +166,6 @@ public class Application extends JApplet implements Observer, KeyListener {
         String passedAuthenticationToken = getParameter("auth_token");
         serverInterface = new ServerInterface(apiURL, passedAuthenticationToken);
 
-        // initialize the rules files
-        // simpleRulesFile = getCodeBase() + "rules/simplerules.txt";
-        // advancedRulesFile = getCodeBase() + "rules/advancedrules.txt";
         String rulesLocation = "/edu/city/studentuml/util/validation/rules/";
         this.getClass().getResource(rulesLocation + "simplerules.txt").toString();
         advancedRulesFile = this.getClass().getResource(rulesLocation + "advancedrules.txt").toString();
@@ -177,7 +174,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         // initialize the SystemWideObjectNamePool singleton for the first time
         // with the current rules file
         SystemWideObjectNamePool.getInstance().setUid(username);
-        SystemWideObjectNamePool.getInstance().init(currentRuleFile);
+        SystemWideObjectNamePool.getInstance().setRuleFile(currentRuleFile);
         SystemWideObjectNamePool.getInstance().addObserver(this);
 
         factsTree = new JTree();
@@ -517,7 +514,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
             if (runtimeChecking) {
-                SystemWideObjectNamePool.getInstance().reloadRules();
+                SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
             }
 
             return true;
@@ -1306,7 +1303,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             } /*
                * else if (event.getSource() == validateSD_DCDButton) { validateSD_DCD(); }
                */ else if (event.getSource() == reloadRulesButton) {
-                SystemWideObjectNamePool.getInstance().reloadRules();
+                SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
             } else if (event.getSource() == helpButton) {
                 try {
                     URL helpURL = new URL(getCodeBase() + "help/StudentUMLHelp.htm");
@@ -1398,7 +1395,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
                 if (runtimeChecking) {
-                    SystemWideObjectNamePool.getInstance().reloadRules();
+                    SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
                 }
             } catch (APICallException ace) {
                 JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),

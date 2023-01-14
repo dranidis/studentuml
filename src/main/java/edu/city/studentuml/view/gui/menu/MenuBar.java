@@ -174,24 +174,34 @@ public class MenuBar {
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
         enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
         enableRuntimeConsistencyCheckBoxMenuItem.addActionListener(
-                e -> app.setRunTimeConsistencyCheck(enableRuntimeConsistencyCheckBoxMenuItem.isSelected())
+                e -> {
+                    Settings.setEnableConsistencyCheck(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
+                    app.setRunTimeConsistencyCheckAndShowTabbedPane(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
+                }
               );
-        enableRuntimeConsistencyCheckBoxMenuItem.setSelected(false);
+        enableRuntimeConsistencyCheckBoxMenuItem.setSelected(Settings.isConsistencyCheckEnabled());
         preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
 
         JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem = new JCheckBoxMenuItem();
         showRuleEditorCheckBoxMenuItem.setText("Show Rule Editor Tab");
-        showRuleEditorCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the rule editor tab that enables the user<br/> to edit the rules on which the consistency checking is being based</html>");
-        showRuleEditorCheckBoxMenuItem.addActionListener(e ->
-                app.showRuleEditorTab(showRuleEditorCheckBoxMenuItem.isSelected() && app.getRuleEditorTabPlacement() == -1)
-                );
+        showRuleEditorCheckBoxMenuItem.setToolTipText(
+                "<html><b>Advanced:</b> Displays the rule editor tab that enables the user<br/> to edit the rules on which the consistency checking is being based</html>");
+        showRuleEditorCheckBoxMenuItem.addActionListener(e -> {
+            Settings.setShowRules(showRuleEditorCheckBoxMenuItem.isSelected());
+            app.showRuleEditorTab(showRuleEditorCheckBoxMenuItem.isSelected() && app.getRuleEditorTabPlacement() == -1);
+        });
+        showRuleEditorCheckBoxMenuItem.setSelected(Settings.showRules());
         preferencesMenu.add(showRuleEditorCheckBoxMenuItem);
 
         JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
         showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
         showFactsTabCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the fact's tab</html>");
         showFactsTabCheckBoxMenuItem.addActionListener(
-                e -> app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected()));
+                e -> {
+                    Settings.setShowFacts(showFactsTabCheckBoxMenuItem.isSelected());
+                    app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected());
+                });
+        showFactsTabCheckBoxMenuItem.setSelected(Settings.showFacts());
         preferencesMenu.add(showFactsTabCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();

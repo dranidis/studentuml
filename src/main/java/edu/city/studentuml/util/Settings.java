@@ -14,6 +14,9 @@ public class Settings {
 
     private static final String DEFAULT_PATH = "DEFAULT_PATH";
     private static final String SELECT_LAST = "SELECT_LAST";
+    private static final String CONSISTENCY_CHECK = "CONSISTENCY_CHECK";
+    private static final String SHOW_RULES = "SHOW_RULES";
+    private static final String SHOW_FACTS = "SHOW_FACTS";
     private static final String SHOW_TYPES_SD = "SHOW_TYPES_SD";
     private static final String SHOW_RETURN_SD = "SHOW_RETURN_SD";
     private static final String LOOK_AND_FEEL = "LOOK_AND_FEEL";
@@ -26,12 +29,36 @@ public class Settings {
     private Settings() {
     }
 
+    public static boolean isConsistencyCheckEnabled() {
+        return pref.get(CONSISTENCY_CHECK, FALSE).equals(TRUE);
+    }
+
+    public static void setEnableConsistencyCheck(boolean enabled) {
+        pref.put(CONSISTENCY_CHECK, enabled ? TRUE : FALSE);
+    }
+
     public static boolean showTypes() {
         return pref.get(SHOW_TYPES_SD, "").equals(TRUE);
     }
 
     public static void setShowTypes(boolean show) {
         pref.put(SHOW_TYPES_SD, show ? TRUE : FALSE);
+    }
+
+    public static boolean showRules() {
+        return pref.get(SHOW_RULES, "").equals(TRUE);
+    }
+
+    public static void setShowRules(boolean show) {
+        pref.put(SHOW_RULES, show ? TRUE : FALSE);
+    }
+
+    public static boolean showFacts() {
+        return pref.get(SHOW_FACTS, "").equals(TRUE);
+    }
+
+    public static void setShowFacts(boolean show) {
+        pref.put(SHOW_FACTS, show ? TRUE : FALSE);
     }
 
     public static boolean showReturnArrows() {

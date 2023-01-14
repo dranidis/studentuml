@@ -44,12 +44,9 @@ public class RuleBasedEngine {
         prolog.query(action + "(" + clause + ").");
     }
 
-    public void printDatabase(CollectionTreeModel facts) {
-        Iterator<String> i = clauseTable.keySet().iterator();
-        while (i.hasNext()) {
-            String a = i.next();
+    public void addClauseTableToFacts(CollectionTreeModel facts) {
+        for (String a : clauseTable.keySet()) {
             logger.finest(() -> a + ".");
-            //SystemWideObjectNamePool.getInstance().addFact( a);
             facts.add(a);
         }
     }
