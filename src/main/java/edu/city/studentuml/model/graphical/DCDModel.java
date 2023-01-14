@@ -1,9 +1,15 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Point;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import edu.city.studentuml.model.domain.Aggregation;
+import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -216,6 +222,68 @@ public class DCDModel extends AbstractCDModel {
     private void removeRealization(RealizationGR r) {
         repository.removeRealization(r.getRealization());
         super.removeGraphicalElement(r);
+    }
+
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     * 
+     * @param dc
+     */
+    public void addC(DesignClass dc) {
+        SystemWideObjectNamePool.getInstance().loading();
+        Random rn = new Random();
+
+        ClassGR c = new ClassGR(dc, new Point(rn.nextInt(100), rn.nextInt(100)));
+        // add the class to the project repository first and then to the diagram
+        repository.addClass(c.getDesignClass());
+        super.addGraphicalElement(c);
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addAssoc(ClassifierGR classA, ClassifierGR classB) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        Association association = new Association(classA.getClassifier(), classB.getClassifier());
+        association.setDirection(Association.AB);
+        AssociationGR associationGR = new AssociationGR(classA, classB, association);
+
+        addAssociation(associationGR);
+
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addDep(ClassGR classA, ClassGR classB) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        Dependency dependency = new Dependency(classA.getDesignClass(), classB.getDesignClass());
+        DependencyGR dependencyGR = new DependencyGR(classA, classB, dependency);
+
+        addDependency(dependencyGR);
+
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addAggreg(ClassGR whole, ClassGR part) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        // the false flag indicates that the aggregation is not strong (composition)
+        Aggregation aggregation = new Aggregation(whole.getDesignClass(), part.getDesignClass(), false);
+        aggregation.setDirection(Association.AB);
+        AggregationGR aggregationGR = new AggregationGR(whole, part, aggregation);
+
+        addAggregation(aggregationGR);
+
+        SystemWideObjectNamePool.getInstance().done();
     }
 
 }
