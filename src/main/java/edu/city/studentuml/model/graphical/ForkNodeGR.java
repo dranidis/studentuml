@@ -19,9 +19,9 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public class ForkNodeGR extends ControlNodeGR {
 
-    private static int FORK_WIDTH = 60;
-    private static int FORK_HEIGHT = 10;
-    protected static int nameXOffset = 5;
+    private static final int FORK_WIDTH = 60;
+    private static final int FORK_HEIGHT = 10;
+    protected static final int NAME_X_OFFSET = 5;
     private Font forkFont;
 
     public ForkNodeGR(ForkNode forkNode, int x, int y) {
@@ -38,7 +38,6 @@ public class ForkNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -68,8 +67,8 @@ public class ForkNodeGR extends ControlNodeGR {
         // draw fork node string
         if (!component.toString().equals("")) {
             String decisionName = component.toString();
-            int nameX = width + nameXOffset;
-            int nameY = height; //+ (int) bounds.getY() / 2;
+            int nameX = width + NAME_X_OFFSET;
+            int nameY = height; 
 
             g.setFont(forkFont);
             g.drawString(decisionName, startingX + nameX, startingY + nameY);
@@ -105,7 +104,7 @@ public class ForkNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "forknode", (ForkNode) getComponent());
+        streamer.streamObject(node, "forknode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

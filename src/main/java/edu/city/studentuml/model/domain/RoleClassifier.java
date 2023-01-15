@@ -11,7 +11,7 @@ public abstract class RoleClassifier implements Serializable {
     protected Classifier classifier;
     protected String name;
 
-    public RoleClassifier(String n, Classifier c) {
+    protected RoleClassifier(String n, Classifier c) {
         name = n;
         classifier = c;
     }

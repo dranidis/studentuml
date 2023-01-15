@@ -13,10 +13,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.Interface;
@@ -60,9 +60,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         if (fillColor == null) {
             fillColor = GraphicalElement.lighter(this.myColor());
         }
-
-        // draw username string on top
-        super.draw(g);
 
         // refresh the width and height attributes
         refreshDimensions(g);

@@ -27,7 +27,7 @@ public abstract class LeafNodeGR extends NodeComponentGR {
     }
 
     @Override
-    public Iterator createIterator() {
+    public Iterator<NodeComponentGR> createIterator() {
         return new NullGRIterator();
     }
 

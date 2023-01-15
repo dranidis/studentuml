@@ -1,11 +1,5 @@
 package edu.city.studentuml.view;
 
-import edu.city.studentuml.model.graphical.LinkGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.ScaleRound;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,13 +10,19 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
+
+import edu.city.studentuml.model.graphical.ConstantsGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.util.ScaleRound;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 public abstract class DiagramView extends JPanel implements Observer {
 
@@ -209,9 +209,9 @@ public abstract class DiagramView extends JPanel implements Observer {
         g.setPaint(Color.GRAY);
         g.draw(dragLine);
 
-        float[] dashes = { 2 };
+        float[] rectangularDashes = { 2 };
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, rectangularDashes, 0));
         g.draw(dragRectangle);
     }
 

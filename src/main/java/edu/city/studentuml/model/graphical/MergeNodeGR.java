@@ -21,9 +21,9 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public class MergeNodeGR extends ControlNodeGR {
 
-    private static int MERGE_WIDTH = 22;
-    private static int MERGE_HEIGHT = 40;
-    protected static int nameYOffset = 5;
+    private static final int MERGE_WIDTH = 22;
+    private static final int MERGE_HEIGHT = 40;
+    protected static final int NAME_Y_OFFSET = 5;
     private Font mergeFont;
 
     public MergeNodeGR(MergeNode mergeNode, int x, int y) {
@@ -40,7 +40,6 @@ public class MergeNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -78,7 +77,7 @@ public class MergeNodeGR extends ControlNodeGR {
             TextLayout layout = new TextLayout(decisionName, mergeFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            int nameY = height + nameYOffset - (int) bounds.getY();
+            int nameY = height + NAME_Y_OFFSET - (int) bounds.getY();
 
             g.setFont(mergeFont);
             g.drawString(decisionName, startingX + nameX, startingY + nameY);
@@ -114,7 +113,7 @@ public class MergeNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "mergenode", (MergeNode) getComponent());
+        streamer.streamObject(node, "mergenode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

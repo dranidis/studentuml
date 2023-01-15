@@ -13,7 +13,6 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author Biser
  */
 public class FlowFinalNodeGR extends FinalNodeGR {
-    private static final Logger logger = Logger.getLogger(FlowFinalNodeGR.class.getName());
 
     public FlowFinalNodeGR(FlowFinalNode finalNode, int x, int y) {
         super(finalNode, x, y);
@@ -56,7 +55,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "flowfinalnode", (FlowFinalNode) getComponent());
+        streamer.streamObject(node, "flowfinalnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -1,12 +1,14 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *

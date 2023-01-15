@@ -5,10 +5,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -80,8 +80,6 @@ public class DependencyGR extends LinkGR {
         classA.refreshDimensions(g);
         classB.refreshDimensions(g);
 
-        super.draw(g);
-
         int xA = getXA();
         int yA = getYA();
         int xB = getXB();
@@ -90,12 +88,12 @@ public class DependencyGR extends LinkGR {
         Stroke originalStroke = g.getStroke();
 
         // the pattern of dashes for drawing the dependency line
-        float dashes[] = { 8 };
+        
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(highlightColor);
         } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(outlineColor);
         }
 
@@ -134,9 +132,12 @@ public class DependencyGR extends LinkGR {
         return classB;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
         node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));

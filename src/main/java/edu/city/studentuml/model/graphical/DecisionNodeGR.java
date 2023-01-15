@@ -21,8 +21,8 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public class DecisionNodeGR extends ControlNodeGR {
 
-    private static int DECISION_WIDTH = 22;
-    private static int DECISION_HEIGHT = 40;
+    private static final int DECISION_WIDTH = 22;
+    private static final int DECISION_HEIGHT = 40;
     protected static int nameYOffset = 5;
     private Font decisionFont;
 
@@ -40,7 +40,6 @@ public class DecisionNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -114,7 +113,7 @@ public class DecisionNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "decisionnode", (DecisionNode) getComponent());
+        streamer.streamObject(node, "decisionnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

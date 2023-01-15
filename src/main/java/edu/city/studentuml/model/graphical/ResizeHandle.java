@@ -14,7 +14,7 @@ public abstract class ResizeHandle extends GraphicalElement {
     protected Resizable resizableElement;
     public static final int SIZE = 8;
 
-    public ResizeHandle(Resizable resizableElement) {
+    protected ResizeHandle(Resizable resizableElement) {
         this.resizableElement = resizableElement;
         width = SIZE;
         height = SIZE;

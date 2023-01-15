@@ -29,8 +29,8 @@ public class CreateMessageGR extends CallMessageGR {
 
     @Override
     public Stroke getStroke() {
-        float[] dashes = { 8 };
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
+        
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
 
     @Override

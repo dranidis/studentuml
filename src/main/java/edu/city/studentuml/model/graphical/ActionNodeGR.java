@@ -43,7 +43,6 @@ public class ActionNodeGR extends LeafNodeGR  {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -79,7 +78,6 @@ public class ActionNodeGR extends LeafNodeGR  {
             TextLayout layout = new TextLayout(actionName, actionNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            //int nameY = actionNameYOffset - (int) bounds.getY();
             int nameY = ((height - (int) bounds.getHeight()) / 2) - (int) bounds.getY();
 
             g.setFont(actionNameFont);
@@ -132,7 +130,7 @@ public class ActionNodeGR extends LeafNodeGR  {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "actionnode", (ActionNode) getComponent());
+        streamer.streamObject(node, "actionnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

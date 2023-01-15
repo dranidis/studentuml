@@ -58,7 +58,6 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     protected DiagramModel(String name, UMLProject umlp) {
         diagramName = name;
         graphicalElements = new NotifierVector<>();
-        selected = null;
         umlProject = umlp;
         repository = umlp.getCentralRepository();
         umlProject.addDiagram(this);

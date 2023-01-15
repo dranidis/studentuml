@@ -1,15 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.util.Settings;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.util.Settings;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 public class ReturnMessageGR extends SDMessageGR {
 
@@ -18,9 +20,9 @@ public class ReturnMessageGR extends SDMessageGR {
     }
 
     public Stroke getStroke() {
-        float[] dashes = { 8 }; // the pattern of dashes for drawing the return line
+        
 
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
 
     public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
@@ -66,7 +68,7 @@ public class ReturnMessageGR extends SDMessageGR {
 
         if (!getMessage().isReflective()) {
             // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(getStartingX() - 10, getY() - 10, 20, 20);
+            Rectangle2D bounds = new Rectangle2D.Double(getStartingX() - 10.0, getY() - 10.0, 20, 20);
 
             return bounds.contains(point);
         } else {

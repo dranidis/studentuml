@@ -37,7 +37,7 @@ public class ActivityFinalNodeGR extends FinalNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "activityfinalnode", (ActivityFinalNode) getComponent());
+        streamer.streamObject(node, "activityfinalnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

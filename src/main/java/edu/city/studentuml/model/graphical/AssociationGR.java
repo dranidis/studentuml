@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,10 +10,14 @@ import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.w3c.dom.Element;
+import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 @JsonIncludeProperties({ "from", "to", "internalid", "association" })
 public class AssociationGR extends LinkGR {
@@ -85,10 +86,6 @@ public class AssociationGR extends LinkGR {
     public void draw(Graphics2D g) {
         classA.refreshDimensions(g);
         classB.refreshDimensions(g);
-
-        if (!isReflective()) {
-            super.draw(g);
-        }
 
         int xA = getXA();
         int yA = getYA();

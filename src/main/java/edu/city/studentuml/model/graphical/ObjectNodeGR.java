@@ -53,7 +53,6 @@ public class ObjectNodeGR extends LeafNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -197,7 +196,7 @@ public class ObjectNodeGR extends LeafNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "objectnode", (ObjectNode) getComponent());
+        streamer.streamObject(node, "objectnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

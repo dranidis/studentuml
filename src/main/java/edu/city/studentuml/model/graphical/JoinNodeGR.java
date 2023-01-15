@@ -19,9 +19,9 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public class JoinNodeGR extends ControlNodeGR {
 
-    private static int JOIN_WIDTH = 60;
-    private static int JOIN_HEIGHT = 10;
-    protected static int nameXOffset = 5;
+    private static final int JOIN_WIDTH = 60;
+    private static final int JOIN_HEIGHT = 10;
+    protected static final int nameXOffset = 5;
     private Font joinFont;
 
     public JoinNodeGR(JoinNode joinNode, int x, int y) {
@@ -38,7 +38,6 @@ public class JoinNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -105,7 +104,7 @@ public class JoinNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "joinnode", (JoinNode) getComponent());
+        streamer.streamObject(node, "joinnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

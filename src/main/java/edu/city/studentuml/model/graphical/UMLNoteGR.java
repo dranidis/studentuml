@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,6 +19,10 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 public class UMLNoteGR extends GraphicalElement {
     private static final Logger logger = Logger.getLogger(UMLNoteGR.class.getName());
@@ -64,8 +65,6 @@ public class UMLNoteGR extends GraphicalElement {
         this.width = calculateWidth(g);
         this.height = calculateHeight(g);
 
-        super.draw(g);
-
         // REPLACE super.draw(g) because only UMLNoteGR should show user
         g.setFont(new Font("SansSerif", Font.PLAIN, 8));
         
@@ -77,8 +76,8 @@ public class UMLNoteGR extends GraphicalElement {
         Rectangle2D toBounds = to.getBounds();
 
         // Draw connecting line
-        float[] dashes = {8};
-        g.setStroke(new BasicStroke(0.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        
+        g.setStroke(new BasicStroke(0.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
         g.drawLine(getX() + getWidth() / 2, getY() + getHeight() / 2, (int) toBounds.getCenterX(), (int) toBounds.getCenterY());
 
         // Draw note shape

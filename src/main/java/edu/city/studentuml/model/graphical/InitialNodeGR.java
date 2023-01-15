@@ -33,7 +33,6 @@ public class InitialNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -83,7 +82,7 @@ public class InitialNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "initialnode", (InitialNode) getComponent());
+        streamer.streamObject(node, "initialnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

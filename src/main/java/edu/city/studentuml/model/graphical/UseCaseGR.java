@@ -1,9 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ExtensionPoint;
-import edu.city.studentuml.model.domain.UCLink;
-import edu.city.studentuml.model.domain.UseCase;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,7 +12,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ExtensionPoint;
+import edu.city.studentuml.model.domain.UseCase;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -50,8 +51,6 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     @Override
     public void draw(Graphics2D g) {
-
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);

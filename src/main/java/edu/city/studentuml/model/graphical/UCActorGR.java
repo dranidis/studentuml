@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Actor;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,7 +11,11 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.Actor;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -44,8 +46,6 @@ public class UCActorGR extends LeafUCDElementGR {
         if (fillColor == null) {
             fillColor = GraphicalElement.lighter(this.myColor());
         }
-        
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -69,7 +69,6 @@ public class UCActorGR extends LeafUCDElementGR {
         // draw the actor description under the stick figure
         g.setPaint(outlineColor);
 
-//        String actorName = getActor().getName();
         String actorName = getComponent().getName();
         if (actorName == null || actorName.length() == 0) {
             actorName = " ";
@@ -87,7 +86,7 @@ public class UCActorGR extends LeafUCDElementGR {
     }
 
     public void drawStickFigure(int x, int y, Graphics2D g) {
-        Shape head = new Ellipse2D.Double(x - 6, y, 12, 12);
+        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
 
         g.setPaint(fillColor);
         g.fill(head);
@@ -157,7 +156,7 @@ public class UCActorGR extends LeafUCDElementGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "ucActor", (Actor) getComponent());
+        streamer.streamObject(node, "ucActor", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
@@ -36,7 +32,7 @@ public class AssociationClassGR extends LinkGR {
     private ClassifierGR classifierA;
     private ClassifierGR classifierB;
     private Point associationCenterPoint;
-    public static int DIST = 30; // minimum distance from association to association class
+    public static final int MINIMUM_DISTANCE = 30; // minimum distance from association to association class
 
     public AssociationClassGR(ClassifierGR a, ClassifierGR b, AbstractAssociationClass associationClass) {
         super(a, b);
@@ -172,7 +168,7 @@ public class AssociationClassGR extends LinkGR {
         int v = (int) (classElement.getBounds().getCenterY() - classElement.getBounds().getY());
         Vector2D h = new Vector2D(u, v);
         int length = (int) h.getLength();
-        Ray d = new Ray(associationCenterPoint, n.multiply(length + DIST));
+        Ray d = new Ray(associationCenterPoint, n.multiply(length + MINIMUM_DISTANCE));
         Point p = d.getDirection().add(d.getOrigin());
 
         int x1 = (int) (associationCenterPoint.getX());
@@ -180,12 +176,12 @@ public class AssociationClassGR extends LinkGR {
         int x2 = (int) p.getX();
         int y2 = (int) p.getY();
 
-        float dashes[] = { 8 };
+        
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(highlightColor);
         } else {
-            g.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(outlineColor);
         }
 

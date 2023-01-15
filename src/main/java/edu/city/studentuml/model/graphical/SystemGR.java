@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.System;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,7 +14,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.System;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -64,17 +66,11 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     @Override
     public void draw(Graphics2D g) {
 
-        super.draw(g);
-
         calculateWidth(g);
         calculateHeight(g);
 
         int startingX = getX();
         int startingY = getY();
-
-        // paint the system
-        // g.setPaint(fillColor);
-        // g.fillRect(startingX, startingY, width, height);
 
         g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
@@ -183,9 +179,9 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         if (noOfElements == 0 && systemNameWidth == 0) {
             tempWidth = (int) MIN.getWidth();
-        } else if (noOfElements == 0 && systemNameWidth != 0) {
+        } else if (noOfElements == 0) {
             tempWidth = Math.max(systemNameWidth, (int) MIN.getWidth());
-        } else if (noOfElements != 0 && systemNameWidth == 0) {
+        } else if (systemNameWidth == 0) {
             int minX = startingPoint.x + width;
             for (int i = 0; i < noOfElements; i++) {
                 UCDComponentGR comp = getElement(i);
@@ -211,9 +207,9 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         if (noOfElements == 0 && systemNameWidth == 0) {
             tempWidth = (int) MIN.getWidth();
-        } else if (noOfElements == 0 && systemNameWidth != 0) {
+        } else if (noOfElements == 0) {
             tempWidth = Math.max(systemNameWidth, (int) MIN.getWidth());
-        } else if (noOfElements != 0 && systemNameWidth == 0) {
+        } else if (systemNameWidth == 0) {
             int maxX = startingPoint.x;
             for (int i = 0; i < noOfElements; i++) {
                 UCDComponentGR comp = getElement(i);
@@ -273,11 +269,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         if (context == UCDComponentGR.DEFAULT_CONTEXT) {
             return false;
         } else {
-            if (context instanceof Resizable) {
-                return true;
-            } else {
-                return false;
-            }
+            return (context instanceof Resizable);
         }
     }
 
@@ -306,7 +298,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector(components), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector<>(components), this);
     }
 
     @Override

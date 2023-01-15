@@ -34,12 +34,12 @@ public class UCExtendGR extends UCLinkGR {
         g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
 
-        float dashes[] = {8};
+        
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(highlightColor);
         } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(outlineColor);
         }
 

@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.FinalNode;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,6 +7,8 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.logging.Logger;
+
+import edu.city.studentuml.model.domain.FinalNode;
 
 /**
  *
@@ -18,7 +19,7 @@ public abstract class FinalNodeGR extends ControlNodeGR {
 
     public static final int RADIUS = 14;
 
-    public FinalNodeGR(FinalNode finalNode, int x, int y) {
+    protected FinalNodeGR(FinalNode finalNode, int x, int y) {
         super(finalNode, x, y);
 
         width = 2 * RADIUS;
@@ -31,15 +32,14 @@ public abstract class FinalNodeGR extends ControlNodeGR {
 
     @Override
     public void draw(Graphics2D g) {
-        logger.finest("draw:" + this.toString());
-        super.draw(g);
+        logger.finest(() -> "draw:" + this.toString());
 
         calculateWidth(g);
         calculateHeight(g);
 
         int startingX = getX();
         int startingY = getY();
-        logger.finest("starting:X,Y: " + startingX + ", " + startingY);
+        logger.finest(() -> "starting:X,Y: " + startingX + ", " + startingY);
 
         // paint outer circle of the final node
         g.setPaint(fillColor);

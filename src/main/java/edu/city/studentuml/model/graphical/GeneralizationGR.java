@@ -91,7 +91,6 @@ public class GeneralizationGR extends LinkGR {
     public void draw(Graphics2D g) {
         baseClass.refreshDimensions(g);
         superClass.refreshDimensions(g);
-        super.draw(g);
 
         int baseX = getXA();
         int baseY = getYA();
@@ -144,6 +143,7 @@ public class GeneralizationGR extends LinkGR {
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     @Override

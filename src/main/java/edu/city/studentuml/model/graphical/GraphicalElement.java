@@ -126,9 +126,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return selected;
     }
 
-    public void draw(Graphics2D g) {
-
-    }
+    public abstract void draw(Graphics2D g);
 
     public abstract void move(int x, int y);
 

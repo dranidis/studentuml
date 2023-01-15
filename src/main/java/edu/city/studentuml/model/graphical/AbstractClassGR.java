@@ -11,9 +11,10 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.Attribute;
@@ -64,8 +65,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         if (fillColor == null) {
             fillColor = this.myColor();
         }
-
-        super.draw(g);
 
         // refresh the width and height attributes
         refreshDimensions(g);

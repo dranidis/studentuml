@@ -15,18 +15,12 @@ import org.w3c.dom.Element;
  */
 public abstract class UCLinkGR extends LinkGR {
 
-//    //same links cannot exist
-//    private ClassifierGR from;
-//    private ClassifierGR to;
-
     protected UCDComponentGR source;
     protected UCDComponentGR target;
     protected UCLink link;
 
     protected UCLinkGR(UCDComponentGR source, UCDComponentGR target, UCLink link) {
         super(source, target);
-//        this.from = from;
-//        this.to = to;
 
         this.source = source;
         this.target = target;
@@ -66,14 +60,6 @@ public abstract class UCLinkGR extends LinkGR {
             super.objectAdded(obj);
         }
     }
-
-//    public ClassifierGR getClassifierA() {
-//        return from;
-//    }
-//
-//    public ClassifierGR getClassifierB() {
-//        return to;
-//    }
 
     public UCLink getLink() {
         return link;
@@ -176,8 +162,6 @@ public abstract class UCLinkGR extends LinkGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-//        node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(from));
-//        node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(to));
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(source));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(target));
 

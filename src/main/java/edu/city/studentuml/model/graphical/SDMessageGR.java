@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.SDMessage;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -15,6 +13,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.SDMessage;
 
 public abstract class SDMessageGR extends GraphicalElement {
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");

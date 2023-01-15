@@ -82,8 +82,6 @@ public class RealizationGR extends LinkGR {
         classGR.refreshDimensions(g);
         interfaceGR.refreshDimensions(g);
 
-        super.draw(g);
-
         int classX = getXA();
         int classY = getYA();
         int interfaceX = getXB();
@@ -92,12 +90,11 @@ public class RealizationGR extends LinkGR {
         Stroke originalStroke = g.getStroke();
 
         // the pattern of dashes for drawing the realization line
-        float[] dashes = { 8 };
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(highlightColor);
         } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
             g.setPaint(outlineColor);
         }
 

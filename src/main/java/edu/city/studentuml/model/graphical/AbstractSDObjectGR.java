@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.RoleClassifier;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -11,7 +10,10 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+import edu.city.studentuml.model.domain.RoleClassifier;
 
 /**
  *
@@ -40,8 +42,8 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         Rectangle2D rectangle1 = new Rectangle2D.Double(getX(), getY(), width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + height, 
-                16, endingY - (getY() + height));
+        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + (double) height, 
+                16, (double) endingY - (getY() + height));
 
         return (rectangle1.contains(point) || rectangle2.contains(point));
     }
@@ -51,8 +53,6 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         if (fillColor == null) {
             fillColor = this.myColor();
         }
-
-        super.draw(g);
 
         refreshDimensions(g);
 
@@ -91,12 +91,14 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         g.setFont(nameFont);
         g.drawString(nameBoxText, startingX + nameX, startingY + nameY);
 
-        // underline the text
-        int underlineX = nameX + (int) bounds.getX();
-        int underlineY = nameY + (int) bounds.getY() + (int) bounds.getHeight();
+        if (ConstantsGR.UNDERLINE_OBJECTS) {
+            // underline the text
+            int underlineX = nameX + (int) bounds.getX();
+            int underlineY = nameY + (int) bounds.getY() + (int) bounds.getHeight();
 
-        g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
+            g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
+                    startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
+        }
 
         // draw the dashed lifeline below the name box
         if (isSelected()) {
@@ -105,9 +107,9 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             g.setPaint(outlineColor);
         }
 
-        float[] dashes = {8};    // the pattern of dashes for drawing the realization line
+            // the pattern of dashes for drawing the realization line
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
         g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
 
         // restore the original stroke
@@ -141,8 +143,8 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         /**
          * collect all bars in a stack while parsing the messages
          */
-        Stack<ActivationBar> bars = new Stack<>();
-        Stack<ActivationBar> finalBars = new Stack<>();
+        Deque<ActivationBar> bars = new ArrayDeque<>();
+        Deque<ActivationBar> finalBars = new ArrayDeque<>();
         
         int previousActivation = 0;
         for(int i=0; i < messageYs.size(); i++) {

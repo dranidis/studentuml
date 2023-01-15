@@ -44,8 +44,8 @@ public class ActorInstanceGR extends RoleClassifierGR {
         Rectangle2D rectangle1 = new Rectangle2D.Double(getX(), getY(), width, height);
 
         // The portion including the life line
-        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2 - 8, getY() + height + 4, 16,
-                endingY - (getY() + height + 4));
+        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8, getY() + height + 4.0, 16,
+                endingY - (getY() + height + 4.0));
 
         return (rectangle1.contains(point) || rectangle2.contains(point));
     }
@@ -55,8 +55,6 @@ public class ActorInstanceGR extends RoleClassifierGR {
         if (fillColor == null) {
             fillColor = GraphicalElement.lighter(this.myColor());
         }
-
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -91,12 +89,14 @@ public class ActorInstanceGR extends RoleClassifierGR {
         g.setFont(actorNameFont);
         g.drawString(actorText, startingX + nameX, startingY + nameY);
 
-        // underline the text
-        int underlineX = nameX + (int) bounds.getX();
-        int underlineY = nameY + (int) bounds.getHeight() + (int) bounds.getY();
+        if (ConstantsGR.UNDERLINE_OBJECTS) {
+            // underline the text
+            int underlineX = nameX + (int) bounds.getX();
+            int underlineY = nameY + (int) bounds.getHeight() + (int) bounds.getY();
 
-        g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
+            g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
+                    startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
+        }
 
         // draw the dashed lifeline below the name box
         if (isSelected()) {
@@ -105,10 +105,9 @@ public class ActorInstanceGR extends RoleClassifierGR {
             g.setPaint(outlineColor);
         }
 
-        // Stroke originalStroke = g.getStroke();
-        float dashes[] = { 8 }; // the pattern of dashes for drawing the realization line
+        
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
         g.drawLine(startingX + width / 2, startingY + height + 4, startingX + width / 2, endingY);
 
         // restore the original stroke
@@ -116,7 +115,7 @@ public class ActorInstanceGR extends RoleClassifierGR {
     }
 
     public void drawStickFigure(int x, int y, Graphics2D g) {
-        Shape head = new Ellipse2D.Double(x - 6, y, 12, 12);
+        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
 
         g.setPaint(fillColor);
         g.fill(head);
