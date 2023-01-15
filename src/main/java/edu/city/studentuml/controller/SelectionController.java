@@ -196,10 +196,6 @@ public abstract class SelectionController {
         return (int) (number / parentComponent.getView().getScale());
     }
 
-    private int scale(double number) {
-        return (int) (number / parentComponent.getView().getScale());
-    }
-
     protected void myMousePressed(MouseEvent event) {
         lastX = scale(event.getX());
         lastY = scale(event.getY());
@@ -403,6 +399,7 @@ public abstract class SelectionController {
     }
 
     public void handleCtrlShiftSelect(GraphicalElement element) {
+        // only the SD handle this
     }
 
     // listens for events from the menu items of the popup menu

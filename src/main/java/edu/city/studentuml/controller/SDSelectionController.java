@@ -1,34 +1,32 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.MethodParameter;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
-import edu.city.studentuml.view.gui.CallMessageEditor;
-import edu.city.studentuml.model.graphical.CreateMessageGR;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.view.gui.MultiObjectEditor;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
-import edu.city.studentuml.view.gui.ObjectEditor;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.AbstractSDModel;
-import edu.city.studentuml.model.graphical.SDMessageGR;
-import edu.city.studentuml.util.undoredo.EditCreateMessageEdit;
-import edu.city.studentuml.util.undoredo.EditMultiObjectEdit;
-import edu.city.studentuml.util.undoredo.MultiObjectEdit;
-import edu.city.studentuml.util.undoredo.ObjectEdit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.MethodParameter;
+import edu.city.studentuml.model.domain.MultiObject;
+import edu.city.studentuml.model.domain.SDObject;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.MultiObjectGR;
+import edu.city.studentuml.model.graphical.SDObjectGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditCreateMessageEdit;
+import edu.city.studentuml.util.undoredo.EditMultiObjectEdit;
+import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
+import edu.city.studentuml.util.undoredo.MultiObjectEdit;
+import edu.city.studentuml.util.undoredo.ObjectEdit;
+import edu.city.studentuml.view.gui.CallMessageEditor;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.MultiObjectEditor;
+import edu.city.studentuml.view.gui.ObjectEditor;
 
 //handles all events when the "selection" button in the SD toolbar is pressed
 public class SDSelectionController extends AbstractSDSelectionController {
@@ -176,20 +174,4 @@ public class SDSelectionController extends AbstractSDSelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
-    @Override
-    public void handleCtrlShiftSelect(GraphicalElement element) {
-        if(element instanceof SDMessageGR) {
-            if (!selectedElements.contains(element)) {
-                selectedElements.add(element);
-            }
-            SDMessageGR message = (SDMessageGR) element;
-            AbstractSDModel sdmodel = (AbstractSDModel) model;
-            List<SDMessageGR> belowMessages = sdmodel.getMessagesBelow(message);
-            for (SDMessageGR m: belowMessages) {
-                if (!selectedElements.contains(m)) {
-                    selectedElements.add(m);
-                }
-            }
-        }
-    }
 }

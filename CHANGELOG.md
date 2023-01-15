@@ -4,7 +4,8 @@
 
 ### Fixed
 
-- Close working project when opening a recent file.
+- Close working project when opening a recent file
+- CTRL-SHIFT message selection works in SSD as well
 
 ## 1.2.1 - 2023-01-11
 

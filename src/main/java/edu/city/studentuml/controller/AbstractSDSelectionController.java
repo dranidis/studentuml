@@ -9,19 +9,16 @@ import javax.swing.undo.UndoableEdit;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
-import edu.city.studentuml.model.graphical.UMLNoteGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
-import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
-import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
-import edu.city.studentuml.util.undoredo.DeleteEditFactory;
 import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
 import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
@@ -182,28 +179,21 @@ public abstract class AbstractSDSelectionController extends SelectionController 
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    public void deleteElement(GraphicalElement selectedElement) {
-        UndoableEdit edit = DeleteEditFactory.getInstance().createDeleteEdit(selectedElement, model);
-        if (edit instanceof CompositeDeleteEdit) {
-            CompositeDeleteEditLoader.loadCompositeDeleteEdit(selectedElement, (CompositeDeleteEdit) edit, model);
-        }
-        
-        /**
-         * uses for loop to avoid ConcurrentModificationException
-         */
-        NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
-        int i = 0;
-        while (i < elements.size()) {
-            GraphicalElement o = elements.get(i);
-            if (o instanceof UMLNoteGR && ((UMLNoteGR) o).getTo().equals(selectedElement)) {
-                deleteElement(o);
-            } else {
-                i++;
+    @Override
+    public void handleCtrlShiftSelect(GraphicalElement element) {
+        if(element instanceof SDMessageGR) {
+            if (!selectedElements.contains(element)) {
+                selectedElements.add(element);
+            }
+            SDMessageGR message = (SDMessageGR) element;
+            AbstractSDModel sdmodel = (AbstractSDModel) model;
+            List<SDMessageGR> belowMessages = sdmodel.getMessagesBelow(message);
+            for (SDMessageGR m: belowMessages) {
+                if (!selectedElements.contains(m)) {
+                    selectedElements.add(m);
+                }
             }
         }
-        
-        parentComponent.getUndoSupport().postEdit(edit);
-        model.removeGraphicalElement(selectedElement);
     }
 
 }
