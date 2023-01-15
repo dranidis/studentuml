@@ -98,7 +98,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JTree factsTree;
     protected JTree messageTree;
     protected CheckTreeManager checkTreeManager;
-    protected JTabbedPane tabbedPane;
+    protected JTabbedPane consistencyCheckTabbedPane;
     protected JSplitPane splitPane_1;
     protected JScrollPane scrollPane_p;
     protected JScrollPane scrollPane_f;
@@ -124,7 +124,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         isApplet = false;
         this.frame = frame;
         instance = this;
-        create();
+        initialize();
         addWindowClosing(frame);
         frame.getContentPane().add(this);
         frame.pack();
@@ -139,6 +139,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
+
+        setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
+
+        showFactsTab(Settings.showFacts());
+        showRuleEditorTab(Settings.showRules());
+
     }
 
     private void loadLookAndFeel() {
@@ -162,9 +168,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         isApplet = true;
         this.applet = applet;
         instance = this;
-        create();
+        initialize();
         applet.getContentPane().add(this);
         applet.setVisible(true);
+        setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
     }
 
     // NEED FOR BACKWARD COMPATIBILITY
@@ -172,14 +179,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return instance;
     }
 
-    private void create() {
+    private void initialize() {
         initializeRules();
         SystemWideObjectNamePool.getInstance().addObserver(this);
         setUserId();
         createLookAndFeel();
         addKeyListener(this);
         createInterface();
-        setRunTimeConsistencyCheck(false);
     }
 
     private void initializeRules() {
@@ -188,8 +194,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         currentRuleFile = advancedRulesFile;
 
         // set the rule file and construct the consistency checker
-        SystemWideObjectNamePool.getInstance().init(currentRuleFile);
+        SystemWideObjectNamePool.getInstance().setRuleFile(currentRuleFile);
+        
     }
+
 
     /*
      * sets the user id for coloring purposes (when drawing graphical elements)
@@ -262,14 +270,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createDiagramAndConsistencyArea() {
-        tabbedPane = new JTabbedPane();
+        consistencyCheckTabbedPane = new JTabbedPane();
         splitPane_1 = new JSplitPane();
         splitPane_1.setDividerSize(5);
         splitPane_1.setDividerLocation(450);
         splitPane_1.setResizeWeight(1);
         splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPane_1.setLeftComponent(desktopPane);
-        splitPane_1.setRightComponent(tabbedPane);
+        splitPane_1.setRightComponent(consistencyCheckTabbedPane);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -277,7 +285,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         // scrollPane_f = new JScrollPane();
         // scrollPane_f.setViewportView(factsTree);
-        tabbedPane.addTab("Problems", null, panel, null);
+        consistencyCheckTabbedPane.addTab("Problems", null, panel, null);
         // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
         // null);
         // tabbedPane.addTab("Facts", null, scrollPane_f, null);
@@ -589,7 +597,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void reloadRules() {
-        SystemWideObjectNamePool.getInstance().reloadRules();
+        SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
     }
 
     protected boolean isRuntimeChecking() {
@@ -762,9 +770,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return new Vector<>();
     }
 
-    public void setRunTimeConsistencyCheck(boolean b) {
+    public void setRunTimeConsistencyCheckAndShowTabbedPane(boolean b) {
         setRuntimeChecking(b);
-        tabbedPane.setVisible(b);
+        consistencyCheckTabbedPane.setVisible(b);
         if (b) {
             splitPane_1.setDividerSize(5);
             splitPane_1.setDividerLocation(getHeight() * 360 / 600);
@@ -776,11 +784,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void showRuleEditorTab(boolean b) {
         if (b) {
-            ruleEditorTabPlacement = tabbedPane.getTabCount();
-            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, tabbedPane.getTabCount());
-            tabbedPane.setSelectedIndex(ruleEditorTabPlacement);
+            ruleEditorTabPlacement = consistencyCheckTabbedPane.getTabCount();
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, consistencyCheckTabbedPane.getTabCount());
+            consistencyCheckTabbedPane.setSelectedIndex(ruleEditorTabPlacement);
         } else {
-            tabbedPane.remove(ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
             ruleEditorTabPlacement = -1;
         }
     }
@@ -791,11 +799,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
-            factsTreeTabPlacement = tabbedPane.getTabCount();
-            tabbedPane.insertTab("Facts", null, scrollPane_f, null, tabbedPane.getTabCount());
-            tabbedPane.setSelectedIndex(factsTreeTabPlacement);
+            factsTreeTabPlacement = consistencyCheckTabbedPane.getTabCount();
+            consistencyCheckTabbedPane.insertTab("Facts", null, scrollPane_f, null, consistencyCheckTabbedPane.getTabCount());
+            consistencyCheckTabbedPane.setSelectedIndex(factsTreeTabPlacement);
         } else {
-            tabbedPane.remove(factsTreeTabPlacement);
+            consistencyCheckTabbedPane.remove(factsTreeTabPlacement);
             factsTreeTabPlacement = -1;
         }
     }
@@ -805,15 +813,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         setRuleFile(simpleRulesFile);
         reloadRules();
         if (ruleEditorTabPlacement != -1) {
-            int selected = tabbedPane.getSelectedIndex();
-            tabbedPane.remove(ruleEditorTabPlacement);
-            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
-            tabbedPane.setSelectedIndex(selected);
+            int selected = consistencyCheckTabbedPane.getSelectedIndex();
+            consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.setSelectedIndex(selected);
         }
-        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramType.DCD);
-        for (int i = 0; i < dcdFrames.size(); i++) {
-            ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(false);
-        }
+
+        getInternalFramesOfType(DiagramType.DCD).forEach(iFrame -> ((DCDInternalFrame) iFrame).setAdvancedMode(false));
     }
 
     public void advancedMode() {
@@ -821,15 +827,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         setRuleFile(advancedRulesFile);
         reloadRules();
         if (ruleEditorTabPlacement != -1) {
-            int selected = tabbedPane.getSelectedIndex();
-            tabbedPane.remove(ruleEditorTabPlacement);
-            tabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
-            tabbedPane.setSelectedIndex(selected);
+            int selected = consistencyCheckTabbedPane.getSelectedIndex();
+            consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.setSelectedIndex(selected);
         }
-        Vector<JInternalFrame> dcdFrames = getInternalFramesOfType(DiagramType.DCD);
-        for (int i = 0; i < dcdFrames.size(); i++) {
-            ((DCDInternalFrame) dcdFrames.get(i)).setAdvancedMode(true);
-        }
+        getInternalFramesOfType(DiagramType.DCD).forEach(iFrame -> ((DCDInternalFrame) iFrame).setAdvancedMode(true));
     }
 
     /*

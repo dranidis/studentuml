@@ -150,7 +150,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -177,7 +177,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -212,7 +212,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -244,7 +244,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -265,7 +265,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -284,7 +284,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -306,7 +306,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -357,7 +357,7 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -494,7 +494,7 @@ public class IgnoreJSONTest {
         String filename = "diagrams" + File.separator + "tests" + File.separator + "classes.xml";
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 

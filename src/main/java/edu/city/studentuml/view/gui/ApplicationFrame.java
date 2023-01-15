@@ -131,7 +131,7 @@ public class ApplicationFrame extends ApplicationGUI {
 
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
-            SystemWideObjectNamePool.getInstance().reloadRules();
+            SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
         }
 
         umlProject.setSaved(true);

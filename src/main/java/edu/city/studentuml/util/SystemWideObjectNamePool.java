@@ -52,10 +52,8 @@ public class SystemWideObjectNamePool extends Observable {
         return instance;
     }
 
-    public void init(String ruleFile) {
+    public void setRuleFileAndCreateConsistencyChecker(String ruleFile) {
         setRuleFile(ruleFile);
-
-        consistencyChecker = new ConsistencyChecker(ruleFile);
     }
 
     @Override
@@ -95,6 +93,7 @@ public class SystemWideObjectNamePool extends Observable {
     }
 
     public void done() {
+        logger.finest("DONE");
         loading--;
         if (loading == 0) {
             regenarateRuleSet();
@@ -119,10 +118,6 @@ public class SystemWideObjectNamePool extends Observable {
         messageTypes.add(messageType);
         messages.put(messageType, ruleName);
         messages.put(ruleName, messagevalue);
-    }
-
-    public void addFact(String messageType) {
-        facts.add(messageType);
     }
 
     private synchronized void generateRuleSet(HashMap<Object, String> map) {
@@ -154,8 +149,7 @@ public class SystemWideObjectNamePool extends Observable {
         done();
     }
 
-    public void reloadRules() {
-        consistencyChecker = null;
+    public void createNewConsistencyCheckerAndReloadRules() {
         consistencyChecker = new ConsistencyChecker(ruleFile);
         reload();
     }
