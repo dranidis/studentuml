@@ -24,17 +24,11 @@ public class AssociationGR extends LinkGR {
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
-    @JsonProperty("from")
-    protected ClassifierGR classA;
-    @JsonProperty("to")
-    protected ClassifierGR classB;
     private Font nameFont;
     private Font roleFont;
 
     public AssociationGR(ClassifierGR a, ClassifierGR b, Association assoc) {
         super(a, b);
-        classA = a;
-        classB = b;
         association = assoc;
         outlineColor = Color.black;
         highlightColor = Color.blue;
@@ -42,50 +36,10 @@ public class AssociationGR extends LinkGR {
         roleFont = new Font("SansSerif", Font.PLAIN, 10);
     }
 
-    protected ClassifierGR getClassifierA() {
-        return this.classA;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.classB;
-    }
-
-    public int getTopLeftXA() {
-        return (int) classA.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYA() {
-        return (int) classA.getStartingPoint().getY();
-    }
-
-    public int getTopLeftXB() {
-        return (int) classB.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYB() {
-        return (int) classB.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return classA.getWidth();
-    }
-
-    public int getWidthB() {
-        return classB.getWidth();
-    }
-
-    public int getHeightA() {
-        return classA.getHeight();
-    }
-
-    public int getHeightB() {
-        return classB.getHeight();
-    }
-
     @Override
     public void draw(Graphics2D g) {
-        classA.refreshDimensions(g);
-        classB.refreshDimensions(g);
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
 
         int xA = getXA();
         int yA = getYA();
@@ -127,15 +81,8 @@ public class AssociationGR extends LinkGR {
                 angle = angleB;
             }
             if ((name != null) && !name.equals("")) {
-                if (association.getDirection() != Association.BA) {
-
-                    // draw the association name with arrow from role A to role B
-                    drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
-                } else {
-
-                    // draw the association name with arrow from role B to role A
-                    drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
-                }
+                // draw the association name with arrow from role A to role B
+                drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
             }
 
             // draw role names and multiplicities
@@ -259,6 +206,7 @@ public class AssociationGR extends LinkGR {
             triangle.lineTo(offset + 5.0, 15.0);
             triangle.lineTo(offset + 15.0, 10.0);
             triangle.closePath();
+            
             g.fill(triangle);
             g.rotate(-angle);
             g.translate(-x, -y);
@@ -272,6 +220,7 @@ public class AssociationGR extends LinkGR {
             triangle.lineTo(offset + 5.0, -15.0);
             triangle.lineTo(offset + 15.0, -10.0);
             triangle.closePath();
+
             g.fill(triangle);
             g.rotate(-angle);
             g.translate(-x, -y);
@@ -328,12 +277,14 @@ public class AssociationGR extends LinkGR {
         return association;
     }
 
+    @JsonProperty("from")
     public ClassifierGR getClassA() {
-        return classA;
+        return a;
     }
 
+    @JsonProperty("to")
     public ClassifierGR getClassB() {
-        return classB;
+        return b;
     }
 
 
@@ -341,15 +292,15 @@ public class AssociationGR extends LinkGR {
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
-        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));
+        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "association", association);
     }
 
     @Override
     public String toString() {
-        return "" + classA + " ---association---> " + classB + " " + super.toString();
+        return "" + a + " ---association---> " + b + " " + super.toString();
     }
 
 }

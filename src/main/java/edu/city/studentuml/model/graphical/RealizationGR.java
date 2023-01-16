@@ -24,63 +24,19 @@ public class RealizationGR extends LinkGR {
 
     // the graphical class and interface that the dependency line connects in the
     // diagram
-    private ClassGR classGR;
-    private InterfaceGR interfaceGR;
     private Realization realization;
-
-    protected ClassifierGR getClassifierA() {
-        return this.classGR;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.interfaceGR;
-    }
 
     public RealizationGR(ClassGR c, InterfaceGR i, Realization real) {
         super(c, i);
-        classGR = c;
-        interfaceGR = i;
         realization = real;
         outlineColor = Color.black;
         highlightColor = Color.blue;
     }
 
-    public int getTopLeftXA() {
-        return (int) classGR.getStartingPoint().getX();
-    }
-
-    public int getTopLeftXB() {
-        return (int) interfaceGR.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYA() {
-        return (int) classGR.getStartingPoint().getY();
-    }
-
-    public int getTopLeftYB() {
-        return (int) interfaceGR.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return classGR.getWidth();
-    }
-
-    public int getWidthB() {
-        return interfaceGR.getWidth();
-    }
-
-    public int getHeightA() {
-        return classGR.getHeight();
-    }
-
-    public int getHeightB() {
-        return interfaceGR.getHeight();
-    }
-
     @Override
     public void draw(Graphics2D g) {
-        classGR.refreshDimensions(g);
-        interfaceGR.refreshDimensions(g);
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
 
         int classX = getXA();
         int classY = getYA();
@@ -111,12 +67,7 @@ public class RealizationGR extends LinkGR {
         g.translate(x, y);
         g.rotate(angle);
 
-        GeneralPath triangle = new GeneralPath();
-
-        triangle.moveTo(0, 0);
-        triangle.lineTo(-8, -4);
-        triangle.lineTo(-8, 4);
-        triangle.closePath();
+        GeneralPath triangle = new Triangle().get();
 
         Paint originalPaint = g.getPaint();
 
@@ -139,23 +90,24 @@ public class RealizationGR extends LinkGR {
 
     @JsonProperty("from")
     public ClassGR getTheClass() {
-        return classGR;
+        return (ClassGR) a;
     }
 
     @JsonProperty("to")
     public InterfaceGR getTheInterface() {
-        return interfaceGR;
+        return (InterfaceGR) b;
     }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
 
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classGR));
-        node.setAttribute("interfaceb", SystemWideObjectNamePool.getInstance().getNameForObject(interfaceGR));
+        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("interfaceb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "realization", realization);
     }

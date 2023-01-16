@@ -25,8 +25,8 @@ public abstract class LinkGR extends AbstractLinkGR {
      */
     private static Map<Link, Integer> links = new HashMap<>();
 
-    private final ClassifierGR a;
-    private final ClassifierGR b;
+    protected final ClassifierGR a;
+    protected final ClassifierGR b;
 
     public ClassifierGR getA() {
         return a;
@@ -204,7 +204,6 @@ public abstract class LinkGR extends AbstractLinkGR {
         return getEndPointFrom(orX, orY, getWidthB(), getHeightB(), getTopLeftXB(), getTopLeftYB(), xA - xB, yA - yB);
     }
 
-    // override superclass method getStartingPoint()
     @Override
     public Point getStartingPoint() {
         return new Point(Math.min(getXA(), getXB()), Math.min(getYA(), getYB()));
@@ -218,6 +217,46 @@ public abstract class LinkGR extends AbstractLinkGR {
         return getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
     }
 
+    protected ClassifierGR getClassifierA() {
+        return a;
+    }
+
+    protected ClassifierGR getClassifierB() {
+        return b;
+    }
+
+    public int getTopLeftXA() {
+        return (int) a.getStartingPoint().getX();
+    }
+
+    public int getTopLeftYA() {
+        return (int) a.getStartingPoint().getY();
+    }
+
+    public int getTopLeftXB() {
+        return (int) b.getStartingPoint().getX();
+    }
+
+    public int getTopLeftYB() {
+        return (int) b.getStartingPoint().getY();
+    }
+
+    public int getWidthA() {
+        return a.getWidth();
+    }
+
+    public int getWidthB() {
+        return b.getWidth();
+    }
+
+    public int getHeightA() {
+        return a.getHeight();
+    }
+
+    public int getHeightB() {
+        return b.getHeight();
+    }
+    
     @Override
     public String toString() {
         return a.toString() + " --> " + b.toString() + " : " + super.toString();

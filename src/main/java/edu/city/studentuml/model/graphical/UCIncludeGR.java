@@ -24,8 +24,8 @@ public class UCIncludeGR extends UCLinkGR {
 
     @Override
     protected void drawLine(Graphics2D g) {
-        source.refreshDimensions(g);
-        target.refreshDimensions(g);
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
 
         Point from = new Point(getXA(), getYA());
         Point to = new Point(getXB(), getYB());

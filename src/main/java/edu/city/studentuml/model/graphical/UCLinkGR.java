@@ -15,15 +15,11 @@ import org.w3c.dom.Element;
  */
 public abstract class UCLinkGR extends LinkGR {
 
-    protected UCDComponentGR source;
-    protected UCDComponentGR target;
     protected UCLink link;
 
-    protected UCLinkGR(UCDComponentGR source, UCDComponentGR target, UCLink link) {
-        super(source, target);
+    protected UCLinkGR(UCDComponentGR a, UCDComponentGR b, UCLink link) {
+        super(a, b);
 
-        this.source = source;
-        this.target = target;
         this.link = link;
 
         outlineColor = Color.black;
@@ -66,11 +62,11 @@ public abstract class UCLinkGR extends LinkGR {
     }
 
     public UCDComponentGR getSource() {
-        return source;
+        return (UCDComponentGR) a;
     }
 
     public UCDComponentGR getTarget() {
-        return target;
+        return (UCDComponentGR) b;
     }
 
     public int getNumberOfExtensionPoints() {
@@ -102,58 +98,8 @@ public abstract class UCLinkGR extends LinkGR {
     }
 
     @Override
-    public int getTopLeftXA() {
-        return (int) source.getStartingPoint().getX();
-    }
-
-    @Override
-    public int getTopLeftXB() {
-        return (int) target.getStartingPoint().getX();
-    }
-
-    @Override
-    public int getTopLeftYA() {
-        return (int) source.getStartingPoint().getY();
-    }
-
-    @Override
-    public int getTopLeftYB() {
-        return (int) target.getStartingPoint().getY();
-    }
-
-    @Override
-    public int getWidthA() {
-        return source.getWidth();
-    }
-
-    @Override
-    public int getWidthB() {
-        return target.getWidth();
-    }
-
-    @Override
-    public int getHeightA() {
-        return source.getHeight();
-    }
-
-    @Override
-    public int getHeightB() {
-        return target.getHeight();
-    }
-
-    @Override
     public boolean isReflective() {
         return false;
-    }
-
-    @Override
-    protected ClassifierGR getClassifierA() {
-        return source;
-    }
-
-    @Override
-    protected ClassifierGR getClassifierB() {
-        return target;
     }
 
     @Override
@@ -162,8 +108,8 @@ public abstract class UCLinkGR extends LinkGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(source));
-        node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(target));
+        node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "link", link);
     }

@@ -25,8 +25,8 @@ public class UCGeneralizationGR extends UCLinkGR {
 
     @Override
     protected void drawLine(Graphics2D g) {
-        source.refreshDimensions(g);
-        target.refreshDimensions(g);
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
 
         Point base = new Point(getXA(), getYA());
         Point supr = new Point(getXB(), getYB());
@@ -55,12 +55,7 @@ public class UCGeneralizationGR extends UCLinkGR {
         g.translate(x, y);
         g.rotate(angle);
 
-        GeneralPath triangle = new GeneralPath();
-
-        triangle.moveTo(0, 0);
-        triangle.lineTo(-10, -5);
-        triangle.lineTo(-10, 5);
-        triangle.closePath();
+        GeneralPath triangle = new Triangle().get();
 
         Paint originalPaint = g.getPaint();
 

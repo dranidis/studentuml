@@ -21,64 +21,18 @@ import edu.city.studentuml.util.XMLStreamer;
 public class DependencyGR extends LinkGR {
 
     // the graphical classes that the dependency line connects in the diagram
-    @JsonProperty("from")
-    private ClassGR classA;
-    @JsonProperty("to")
-    private ClassGR classB;
     private Dependency dependency;
-
-    protected ClassifierGR getClassifierA() {
-        return this.classA;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.classB;
-    }
 
     public DependencyGR(ClassGR a, ClassGR b, Dependency dep) {
         super(a, b);
-        classA = a;
-        classB = b;
         dependency = dep;
         outlineColor = Color.black;
         highlightColor = Color.blue;
     }
 
-    public int getTopLeftXA() {
-        return (int) classA.getStartingPoint().getX();
-    }
-
-    public int getTopLeftXB() {
-        return (int) classB.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYA() {
-        return (int) classA.getStartingPoint().getY();
-    }
-
-    public int getTopLeftYB() {
-        return (int) classB.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return classA.getWidth();
-    }
-
-    public int getWidthB() {
-        return classB.getWidth();
-    }
-
-    public int getHeightA() {
-        return classA.getHeight();
-    }
-
-    public int getHeightB() {
-        return classB.getHeight();
-    }
-
     public void draw(Graphics2D g) {
-        classA.refreshDimensions(g);
-        classB.refreshDimensions(g);
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
 
         int xA = getXA();
         int yA = getYA();
@@ -124,12 +78,14 @@ public class DependencyGR extends LinkGR {
         return dependency;
     }
 
+    @JsonProperty("from")
     public ClassGR getClassA() {
-        return classA;
+        return (ClassGR) a;
     }
 
+    @JsonProperty("to")
     public ClassGR getClassB() {
-        return classB;
+        return (ClassGR) b;
     }
 
     @Override
@@ -139,8 +95,8 @@ public class DependencyGR extends LinkGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
-        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));
+        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "dependency", dependency);
     }

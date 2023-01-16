@@ -24,7 +24,6 @@ public class AggregationGR extends AssociationGR {
     @Override
     public void drawArrowHeads(Graphics2D g) {
         drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), getAngleRoleB(), g);
-        // drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
         super.drawArrowHeads(g);
     }
 
@@ -61,16 +60,6 @@ public class AggregationGR extends AssociationGR {
         g.translate(-x, -y);
     }
 
-    // public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D
-    // g) {
-    // g.translate(x, y);
-    // g.rotate(angle);
-    // g.drawLine(-8, 4, 0, 0);
-    // g.drawLine(-8, -4, 0, 0);
-    // g.rotate(-angle);
-    // g.translate(-x, -y);
-    // }
-
     public Aggregation getAggregation() {
         return (Aggregation) getAssociation();
     }
@@ -100,6 +89,6 @@ public class AggregationGR extends AssociationGR {
 
     @Override
     public String toString() {
-        return "" + classA + " ---aggregation---> " + classB;
+        return "" + a + " ---aggregation---> " + b;
     }    
 }
