@@ -1,6 +1,9 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
@@ -17,7 +20,13 @@ import edu.city.studentuml.util.Rotate;
  * 
  */
 public abstract class LinkGR extends AbstractLinkGR {
+
     private static final Logger logger = Logger.getLogger(LinkGR.class.getName());
+
+    public static final int AB = 1;
+    public static final int BA = 2;
+    public static final int BIDIRECTIONAL_FIX = 3;
+
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
      * of classifiers the number of their relationships is stored Note that only one of
@@ -73,6 +82,86 @@ public abstract class LinkGR extends AbstractLinkGR {
             return a.getClassifier().getName() + "-->" + b.getClassifier().getName();
         }
 
+    }
+
+    @Override
+    public void draw(Graphics2D g) {
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
+
+        int aX = getXA();
+        int aY = getYA();
+        int bX = getXB();
+        int bY = getYB();
+        double angleA = getAngleRoleA();
+        double angleB = getAngleRoleB();
+
+        Stroke originalStroke = g.getStroke();
+
+        // the pattern of dashes for drawing the line
+        if (isSelected()) {
+            g.setStroke(makeSelectedStroke());
+            g.setPaint(highlightColor);
+        } else {
+            g.setStroke(makeStroke());
+            g.setPaint(outlineColor);
+        }
+
+        if (!isReflective()) {
+            g.drawLine(aX, aY, bX, bY);
+
+            // restore the original stroke
+            g.setStroke(originalStroke);
+
+            drawArrowHeads(aX, aY, bX, bY, angleA, angleB, g);
+            drawStereoType(aX, aY, bX, bY, angleA, g);
+            drawName(aX, aY, bX, bY, angleA, angleB, g);
+            drawRoles(aX, aY, bX, bY, angleA, angleB, g);
+        } else {
+            drawReflective(aX, aY, bX, bY, angleA, angleB, g);
+            g.setStroke(originalStroke);
+        }
+    }
+
+
+    protected void drawReflective(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawRoles(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawName(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawArrowHeads(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        if (getLinkDirection() == AB) {
+            drawArrowHead(bX, bY, angleA, g);
+        } else if (getLinkDirection() == BA) {
+            drawArrowHead(aX, aY, angleB, g);
+        } else if (getLinkDirection() == BIDIRECTIONAL_FIX) {
+            drawArrowHead(bX, bY, angleA, g);
+            drawArrowHead(aX, aY, angleB, g);
+        }
+    }
+
+    protected int getLinkDirection() {
+        return AB;
+    }
+
+    protected void drawStereoType(int aX, int aY, int bX, int bY, double rotationAngle, Graphics2D g) {
+    }
+
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+    }
+
+    // TODO: make abstract after changes
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeSolidStroke();
+    }
+
+    // TODO: make abstract after changes
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
     }
 
     public int getNumberOfLinks(ClassifierGR a, ClassifierGR b) {
@@ -256,7 +345,7 @@ public abstract class LinkGR extends AbstractLinkGR {
     public int getHeightB() {
         return b.getHeight();
     }
-    
+
     @Override
     public String toString() {
         return a.toString() + " --> " + b.toString() + " : " + super.toString();

@@ -32,9 +32,9 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     @JsonIgnore
     protected Color fillColor;
     @JsonIgnore
-    protected Color highlightColor;
+    protected Color highlightColor = Color.blue;
     @JsonIgnore
-    protected Color outlineColor;
+    protected Color outlineColor = Color.black;
     protected Point startingPoint;
     protected int width;
     protected int height;

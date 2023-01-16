@@ -19,13 +19,13 @@ public class ReturnMessageGR extends SDMessageGR {
         super(from, to, message, y);
     }
 
-    public Stroke getStroke() {
-        
-
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+    @Override
+    protected Stroke makeMessageStroke() {
+        return GraphicsHelper.makeDashedStroke();
     }
 
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    @Override
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             g.drawLine(x, y, x - 8, y - 4);
             g.drawLine(x, y, x - 8, y + 4);

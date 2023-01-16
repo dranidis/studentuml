@@ -44,8 +44,7 @@ public class ObjectNodeGR extends LeafNodeGR {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.white;
         objectNameFont = new Font("SansSerif", Font.PLAIN, 14);
         objectStatesFont = new Font("SansSerif", Font.PLAIN, 11);

@@ -20,11 +20,13 @@ public class DestroyMessageGR extends SDMessageGR {
         refreshTargetPosition();
     }
 
-    public Stroke getStroke() {
+    @Override
+    protected Stroke makeMessageStroke() {
         return new BasicStroke();
     }
 
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    @Override
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             g.drawLine(x, y, x - 8, y - 4);
             g.drawLine(x, y, x - 8, y + 4);

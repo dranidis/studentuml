@@ -1,11 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
@@ -18,13 +14,12 @@ import edu.city.studentuml.util.XMLStreamer;
 
 @JsonIncludeProperties({ "internalid", "from", "to", "generalization" })
 public class GeneralizationGR extends LinkGR {
+
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
 
     public GeneralizationGR(ClassifierGR parent, ClassifierGR child, Generalization gener) {
         super(child, parent);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
         generalization = gener;
     }
 
@@ -43,47 +38,18 @@ public class GeneralizationGR extends LinkGR {
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
-
-        int baseX = getXA();
-        int baseY = getYA();
-        int superX = getXB();
-        int superY = getYB();
-
-        Stroke originalStroke = g.getStroke();
-
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(baseX, baseY, superX, superY);
-
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawGeneralizationArrowHead(superX, superY, rotationAngle, g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        GraphicsHelper.drawWhiteArrowHead(bX, bY, rotationAngle, g);
     }
 
-    public void drawGeneralizationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
+    @Override
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeSolidStroke();
+    }
 
-        GeneralPath triangle = new Triangle().get();
-
-        Paint originalPaint = g.getPaint();
-
-        g.setPaint(Color.white);
-        g.fill(triangle);
-        g.setPaint(originalPaint);
-        g.draw(triangle);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+    @Override
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
     }
 
     // generalizations cannot be reflective

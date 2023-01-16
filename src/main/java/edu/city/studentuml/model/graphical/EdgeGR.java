@@ -43,8 +43,7 @@ public abstract class EdgeGR extends GraphicalElement {
         points = new ArrayList<>();
 
         font = new Font("SansSerif", Font.PLAIN, 10);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
@@ -57,8 +56,7 @@ public abstract class EdgeGR extends GraphicalElement {
         points.add(getInitialPoint(trgPoint));
 
         font = new Font("SansSerif", Font.PLAIN, 10);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     public Edge getEdge() {

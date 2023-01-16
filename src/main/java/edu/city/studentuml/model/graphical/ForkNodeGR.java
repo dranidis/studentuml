@@ -30,8 +30,7 @@ public class ForkNodeGR extends ControlNodeGR {
         // initialize the element's width and height to the minimum ones
         width = FORK_WIDTH;
         height = FORK_HEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.black;
         forkFont = new Font("SansSerif", Font.ITALIC, 10);
     }

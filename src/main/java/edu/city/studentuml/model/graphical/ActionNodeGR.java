@@ -35,8 +35,7 @@ public class ActionNodeGR extends LeafNodeGR  {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = myColor();
         actionNameFont = new Font("SansSerif", Font.PLAIN, 14);
     }

@@ -1,85 +1,39 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.UCExtend;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Stroke;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.Rectangle2D;
+
+import edu.city.studentuml.model.domain.UCExtend;
 
 /**
  *
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
 public class UCExtendGR extends UCLinkGR {
-
-    private Font font = new Font("SansSerif", Font.ITALIC, 9);
 
     public UCExtendGR(UseCaseGR extendingUseCase, UseCaseGR extendedUseCase, UCExtend ucLink) {
         super(extendingUseCase, extendedUseCase, ucLink);
     }
 
     @Override
-    protected void drawLine(Graphics2D g) {
-
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
-
-        Point from = new Point(getXA(), getYA());
-        Point to = new Point(getXB(), getYB());
-
-        g.setStroke(new BasicStroke(1.2f));
-        Stroke originalStroke = g.getStroke();
-
-        
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(from.x, from.y, to.x, to.y);
-
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-
-        drawArrowHead(to.x, to.y, rotationAngle, g);
-
-        drawString(getLink().getName(), (from.x + to.x) / 2, (from.y + to.y) / 2, rotationAngle, g);
+    protected void drawStereoType(int aX, int aY, int bX, int bY, double rotationAngle, Graphics2D g) {
+        GraphicsHelper.drawString(getLink().getName(), (aX + bX) / 2, (aY + bY) / 2, rotationAngle, false, g);
     }
 
+    @Override
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeDashedStroke();
+    }
+
+    @Override
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
+    }
+
+    @Override
     public void drawArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-        g.drawLine(-8, -4, 0, 0);
-        g.drawLine(-8, 4, 0, 0);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
     }
 
-    public void drawString(String s, int x, int y, double angle, Graphics2D g) {
-        double textAngle = angle;
-
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
-            textAngle -= Math.PI;
-        }
-
-        FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(s, font, frc);
-        Rectangle2D bounds = layout.getBounds();
-        int textWidth = (int) bounds.getWidth();
-
-        g.setFont(font);
-        g.translate(x, y);
-        g.rotate(textAngle);
-        g.drawString(s, -textWidth / 2, -4);
-        g.rotate(-textAngle);
-        g.translate(-x, -y);
-    }
 }

@@ -47,8 +47,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = lighter(myColor());
         activityNameFont = new Font("SansSerif", Font.BOLD, 12);
 

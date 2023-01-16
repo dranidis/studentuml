@@ -1,11 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
@@ -29,54 +25,22 @@ public class RealizationGR extends LinkGR {
     public RealizationGR(ClassGR c, InterfaceGR i, Realization real) {
         super(c, i);
         realization = real;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
     }
 
-    @Override
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        drawRealizationArrowHead(bX, bY, rotationAngle, g);
+    }
 
-        int classX = getXA();
-        int classY = getYA();
-        int interfaceX = getXB();
-        int interfaceY = getYB();
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeDashedStroke();
+    }
 
-        Stroke originalStroke = g.getStroke();
-
-        // the pattern of dashes for drawing the realization line
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(classX, classY, interfaceX, interfaceY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawRealizationArrowHead(interfaceX, interfaceY, rotationAngle, g);
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     public void drawRealizationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-
-        GeneralPath triangle = new Triangle().get();
-
-        Paint originalPaint = g.getPaint();
-
-        g.setPaint(Color.white);
-        g.fill(triangle);
-        g.setPaint(originalPaint);
-        g.draw(triangle);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+        GraphicsHelper.drawWhiteArrowHead(x, y, angle, g);
     }
 
     // realizations cannot be reflective

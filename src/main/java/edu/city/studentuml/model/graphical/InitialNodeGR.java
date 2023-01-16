@@ -26,8 +26,7 @@ public class InitialNodeGR extends ControlNodeGR {
         width = 2 * RADIUS;
         height = width;
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = myColor();
     }
 

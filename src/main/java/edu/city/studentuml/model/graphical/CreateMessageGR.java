@@ -28,13 +28,12 @@ public class CreateMessageGR extends CallMessageGR {
     }
 
     @Override
-    public Stroke getStroke() {
-        
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+    protected Stroke makeMessageStroke() {
+        return GraphicsHelper.makeDashedStroke();
     }
 
     @Override
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             g.drawLine(x, y, x - 8, y - 4);
             g.drawLine(x, y, x - 8, y + 4);

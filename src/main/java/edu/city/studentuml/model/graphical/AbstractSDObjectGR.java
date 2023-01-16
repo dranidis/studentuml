@@ -31,8 +31,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         height = nameBoxHeight;
         nameFont = new Font("SansSerif", Font.BOLD, 12);
         fillColor = null;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     // the graphical sd object is selected if it is clicked at the name box

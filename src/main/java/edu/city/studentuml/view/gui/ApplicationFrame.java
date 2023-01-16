@@ -36,6 +36,7 @@ public class ApplicationFrame extends ApplicationGUI {
         logger.fine(() -> "Path: " + Settings.getDefaultPath());
 
         ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
+        logger.finer(() -> "ICON: " + icon);
         frame.setIconImage(icon.getImage());
         createXMLFileChooser();
 

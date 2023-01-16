@@ -15,16 +15,12 @@ public class AggregationGR extends AssociationGR {
 
     public AggregationGR(ClassifierGR w, ClassifierGR p, Aggregation aggreg) {
         super(w, p, aggreg);
-
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
     }
 
-    // OVERRIDE drawArrowHeads of AssociationGR
     @Override
-    public void drawArrowHeads(Graphics2D g) {
-        drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), getAngleRoleB(), g);
-        super.drawArrowHeads(g);
+    protected void drawArrowHeads(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        drawAggregationArrowHead(aX, aY, getAggregation().isStrong(), angleB, g);
+        super.drawArrowHeads(aX, aY, bX, bY, angleA, angleB, g);
     }
 
     @Override
@@ -77,7 +73,6 @@ public class AggregationGR extends AssociationGR {
         return getClassB();
     }
 
-
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(getWhole()));
@@ -85,7 +80,6 @@ public class AggregationGR extends AssociationGR {
 
         streamer.streamObject(node, "aggregation", getAggregation());
     }
-
 
     @Override
     public String toString() {

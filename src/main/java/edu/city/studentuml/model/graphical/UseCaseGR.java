@@ -44,8 +44,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         width = MIN.width;
         height = MIN.height;
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = myColor();
     }
 
