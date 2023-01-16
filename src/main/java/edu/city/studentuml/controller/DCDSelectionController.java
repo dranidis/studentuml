@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.swing.undo.UndoableEdit;
 
@@ -12,6 +11,7 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Role;
+import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
@@ -32,13 +32,13 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.InterfaceEditor;
 
 public class DCDSelectionController extends SelectionController {
-    private static final Logger logger = Logger.getLogger(DCDSelectionController.class.getName());
 
     public DCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
 
         editElementMapper.put(AssociationClassGR.class, e -> editAssociationClass((AssociationClassGR) e));
         editElementMapper.put(AssociationGR.class, e -> editAssociation((AssociationGR) e));
+        editElementMapper.put(AggregationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(ClassGR.class, e -> editClass((ClassGR) e));
         editElementMapper.put(InterfaceGR.class, e -> editInterface((InterfaceGR) e));
     }
