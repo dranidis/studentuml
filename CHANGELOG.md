@@ -6,6 +6,7 @@
 
 - Close working project when opening a recent file
 - CTRL-SHIFT message selection works in SSD as well
+- Association editor appears on Aggreration and Compositions
 
 ## 1.2.1 - 2023-01-11
 

@@ -13,6 +13,7 @@ import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.Role;
+import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
@@ -39,6 +40,7 @@ public class CCDSelectionController extends SelectionController {
         super(parent, model);
 
         editElementMapper.put(AssociationClassGR.class, e -> editAssociationClass((AssociationClassGR) e));
+        editElementMapper.put(AggregationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(AssociationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(ConceptualClassGR.class, e -> editClass((ConceptualClassGR) e));
     }
