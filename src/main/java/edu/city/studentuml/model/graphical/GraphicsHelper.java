@@ -12,6 +12,9 @@ import java.awt.geom.Rectangle2D;
 
 public class GraphicsHelper {
 
+    private GraphicsHelper() {
+    }
+
     public static void drawString(String s, int x, int y, double angle, boolean arrow, Graphics2D g) {
         if (s.equals("")) {
             return;
@@ -43,6 +46,14 @@ public class GraphicsHelper {
         }
     }
 
+    public static BasicStroke makeSolidStroke() {
+        return new BasicStroke(1);
+    }
+
+    public static BasicStroke makeSelectedSolidStroke() {
+        return new BasicStroke(2);
+    }
+
     public static BasicStroke makeDashedStroke() {
         return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
@@ -61,6 +72,14 @@ public class GraphicsHelper {
     }
 
     public static void drawWhiteArrowHead(int x, int y, double angle, Graphics2D g) {
+        drawFilledArrowHead(x, y, angle, Color.WHITE, g);
+    }
+
+    public static void drawBlackArrowHead(int x, int y, double angle, Graphics2D g) {
+        drawFilledArrowHead(x, y, angle, Color.BLACK, g);
+    }
+
+    private static void drawFilledArrowHead(int x, int y, double angle, Paint color, Graphics2D g) {
         g.translate(x, y);
         g.rotate(angle);
 
@@ -68,20 +87,12 @@ public class GraphicsHelper {
 
         Paint originalPaint = g.getPaint();
 
-        g.setPaint(Color.white);
+        g.setPaint(color);
         g.fill(triangle);
         g.setPaint(originalPaint);
         g.draw(triangle);
         g.rotate(-angle);
         g.translate(-x, -y);
-    }
-
-    public static BasicStroke makeSolidStroke() {
-        return new BasicStroke(1);
-    }
-
-    public static BasicStroke makeSelectedSolidStroke() {
-        return new BasicStroke(2);
     }
 
     // draws the solid triangular arrow that can be along with the association name

@@ -144,7 +144,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         showFactsTab(Settings.showFacts());
         showRuleEditorTab(Settings.showRules());
-
     }
 
     private void loadLookAndFeel() {
@@ -785,9 +784,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public void showRuleEditorTab(boolean b) {
         if (b) {
             ruleEditorTabPlacement = consistencyCheckTabbedPane.getTabCount();
-            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, consistencyCheckTabbedPane.getTabCount());
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null,
+                    consistencyCheckTabbedPane.getTabCount());
             consistencyCheckTabbedPane.setSelectedIndex(ruleEditorTabPlacement);
-        } else {
+        } else if (ruleEditorTabPlacement != -1) {
             consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
             ruleEditorTabPlacement = -1;
         }
@@ -800,9 +800,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
             factsTreeTabPlacement = consistencyCheckTabbedPane.getTabCount();
-            consistencyCheckTabbedPane.insertTab("Facts", null, scrollPane_f, null, consistencyCheckTabbedPane.getTabCount());
+            consistencyCheckTabbedPane.insertTab("Facts", null, scrollPane_f, null,
+                    consistencyCheckTabbedPane.getTabCount());
             consistencyCheckTabbedPane.setSelectedIndex(factsTreeTabPlacement);
-        } else {
+        } else if (factsTreeTabPlacement != -1) {
             consistencyCheckTabbedPane.remove(factsTreeTabPlacement);
             factsTreeTabPlacement = -1;
         }

@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
@@ -19,17 +18,17 @@ public class CallMessageGR extends SDMessageGR {
         super(from, to, message, y);
     }
 
-    public Stroke getStroke() {
-        return new BasicStroke();
+    @Override
+    protected Stroke makeMessageStroke() {
+        return GraphicsHelper.makeSolidStroke();
     }
 
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    @Override
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
-            g.drawLine(x, y, x - 8, y - 4);
-            g.drawLine(x, y, x - 8, y + 4);
+            GraphicsHelper.drawBlackArrowHead(x, y, 0, g);
         } else {
-            g.drawLine(x, y, x + 8, y - 4);
-            g.drawLine(x, y, x + 8, y + 4);
+            GraphicsHelper.drawBlackArrowHead(x, y, -Math.PI, g);
         }
     }
 

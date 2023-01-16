@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -18,6 +16,7 @@ import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 
 public abstract class SDMessageGR extends GraphicalElement {
+    
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
     // the message concept this graphical element refers to
@@ -27,8 +26,15 @@ public abstract class SDMessageGR extends GraphicalElement {
     protected RoleClassifierGR target;
     private String errorMessage;
 
-    // of the x and y coordinates, only y is significant, since
-    // the x coordinate is derived from the x coordinates of source and target
+    /**
+     * of the x and y coordinates, only y is significant, since the x coordinate is
+     * derived from the x coordinates of source and target
+     * 
+     * @param from
+     * @param to
+     * @param m
+     * @param y
+     */
     protected SDMessageGR(RoleClassifierGR from, RoleClassifierGR to, SDMessage m, int y) {
         source = from;
         target = to;
@@ -58,7 +64,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
             g.setPaint(highlightColor);
         } else {
             g.setStroke(originalStroke);
@@ -70,17 +76,17 @@ public abstract class SDMessageGR extends GraphicalElement {
         
         if (!message.isReflective()) {
             boolean forward = (endingX > startingX);
-            if(!forward) 
+            if (!forward) 
                 startingX -= barWidth;
             
             if (!(message instanceof CreateMessage)) {
-            if(forward)
-                endingX -= barWidth/2;
-            else
-                endingX += barWidth/2;                
+                if (forward)
+                    endingX -= barWidth / 2;
+                else
+                    endingX += barWidth / 2;
             }
 
-            g.setStroke(getStroke());
+            g.setStroke(makeMessageStroke());
             g.drawLine(startingX, getY(), endingX, getY());
             
             // restore the original stroke
@@ -117,7 +123,7 @@ public abstract class SDMessageGR extends GraphicalElement {
             }
         } else { // handle reflective message rendering 'ad-hoc'
         
-            g.setStroke(getStroke());
+            g.setStroke(makeMessageStroke());
 
             GeneralPath path = new GeneralPath();
 
@@ -179,9 +185,9 @@ public abstract class SDMessageGR extends GraphicalElement {
         startingPoint.setLocation(startingPoint.getX(), y);
     }
 
-    public abstract void drawMessageArrow(int x, int y, boolean forward, Graphics2D g);
+    protected abstract void drawMessageArrow(int x, int y, boolean forward, Graphics2D g);
 
-    public abstract Stroke getStroke();
+    protected abstract Stroke makeMessageStroke();
 
     public SDMessage getMessage() {
         return message;
