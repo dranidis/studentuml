@@ -30,8 +30,7 @@ public class AssociationGR extends LinkGR {
     public AssociationGR(ClassifierGR a, ClassifierGR b, Association assoc) {
         super(a, b);
         association = assoc;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         nameFont = new Font("SansSerif", Font.PLAIN, 12);
         roleFont = new Font("SansSerif", Font.PLAIN, 10);
     }
@@ -206,7 +205,7 @@ public class AssociationGR extends LinkGR {
             triangle.lineTo(offset + 5.0, 15.0);
             triangle.lineTo(offset + 15.0, 10.0);
             triangle.closePath();
-            
+
             g.fill(triangle);
             g.rotate(-angle);
             g.translate(-x, -y);

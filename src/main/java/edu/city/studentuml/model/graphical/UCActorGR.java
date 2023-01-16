@@ -34,8 +34,7 @@ public class UCActorGR extends LeafUCDElementGR {
         width = stickFigureWidth;
         height = stickFigureHeight;
         
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = myColor();
         actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
     }

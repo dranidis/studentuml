@@ -32,8 +32,7 @@ public class MultiObjectGR extends AbstractSDObjectGR {
         height = nameBoxHeight;
         nameFont = new Font("SansSerif", Font.BOLD + Font.ITALIC, 12);
         fillColor = null;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     @Override

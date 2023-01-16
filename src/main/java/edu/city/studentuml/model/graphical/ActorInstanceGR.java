@@ -34,8 +34,7 @@ public class ActorInstanceGR extends RoleClassifierGR {
         height = stickFigureHeight;
         actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
         fillColor = Color.orange;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     public boolean contains(Point2D point) {

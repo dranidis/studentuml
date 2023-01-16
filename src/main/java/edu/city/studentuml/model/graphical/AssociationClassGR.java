@@ -52,8 +52,7 @@ public class AssociationClassGR extends LinkGR {
         }
 
         associationCenterPoint = getAssociationCenterPoint();
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     @Override
@@ -91,7 +90,7 @@ public class AssociationClassGR extends LinkGR {
 
 
 
-
+    @Override
     public void draw(Graphics2D g) {
         if (isSelected()) {
             associationElement.setSelected(true);

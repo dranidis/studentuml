@@ -16,8 +16,7 @@ public class AggregationGR extends AssociationGR {
     public AggregationGR(ClassifierGR w, ClassifierGR p, Aggregation aggreg) {
         super(w, p, aggreg);
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     // OVERRIDE drawArrowHeads of AssociationGR

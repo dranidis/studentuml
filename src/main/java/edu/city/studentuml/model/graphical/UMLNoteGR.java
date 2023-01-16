@@ -47,8 +47,7 @@ public class UMLNoteGR extends GraphicalElement {
         width = MAXWIDTH;
         height = 50;
         fillColor = null;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
 
         paddingHorizontal = 10;
         paddingVertical = 15;

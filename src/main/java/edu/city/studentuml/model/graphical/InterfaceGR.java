@@ -49,8 +49,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         height = minimumNameFieldHeight + minimumMethodFieldHeight;
 
         fillColor = null;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         nameFont = new Font("SansSerif", Font.BOLD, 14);
         methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }

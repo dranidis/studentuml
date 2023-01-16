@@ -47,8 +47,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         systemNameFont = new Font("Sans Serif", Font.BOLD, 12);
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = lighter(myColor());
 
         // resize handles

@@ -49,8 +49,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // initialize the element's width and height to the minimum ones
         width = MINIMUMWIDTH;
         height = MINIMUMNAMEFIELDHEIGHT + MINIMUMATTRIBUTEFIELDHEIGHT + MINIMUMMETHODFIELDHEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = null;
         nameFont = new Font("SansSerif", Font.BOLD, 14);
         attributeFont = new Font("SansSerif", Font.PLAIN, 12);

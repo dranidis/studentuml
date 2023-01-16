@@ -29,38 +29,18 @@ public class RealizationGR extends LinkGR {
     public RealizationGR(ClassGR c, InterfaceGR i, Realization real) {
         super(c, i);
         realization = real;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
     }
 
-    @Override
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        drawRealizationArrowHead(bX, bY, rotationAngle, g);
+    }
 
-        int classX = getXA();
-        int classY = getYA();
-        int interfaceX = getXB();
-        int interfaceY = getYB();
+    protected BasicStroke makeStroke() {
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+    }
 
-        Stroke originalStroke = g.getStroke();
-
-        // the pattern of dashes for drawing the realization line
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(classX, classY, interfaceX, interfaceY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawRealizationArrowHead(interfaceX, interfaceY, rotationAngle, g);
+    protected BasicStroke makeSelectedStroke() {
+        return new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
 
     public void drawRealizationArrowHead(int x, int y, double angle, Graphics2D g) {

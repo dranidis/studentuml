@@ -34,8 +34,7 @@ public abstract class SDMessageGR extends GraphicalElement {
         target = to;
         message = m;
         startingPoint = new Point(0, y);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         messageFont = new Font("SansSerif", Font.PLAIN, 12);
     }
 

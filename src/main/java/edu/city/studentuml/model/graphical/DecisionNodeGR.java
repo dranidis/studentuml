@@ -32,8 +32,7 @@ public class DecisionNodeGR extends ControlNodeGR {
         // initialize the element's width and height to the minimum ones
         width = DECISION_WIDTH;
         height = DECISION_HEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.white;
         decisionFont = new Font("SansSerif", Font.ITALIC, 10);
     }

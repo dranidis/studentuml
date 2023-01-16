@@ -24,7 +24,7 @@ public class UCAssociationGR extends UCLinkGR {
         Point from = new Point(getXA(), getYA());
         Point to = new Point(getXB(), getYB());
 
-        g.setStroke(new BasicStroke(1.2f));
+        // g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
 
         if (isSelected()) {

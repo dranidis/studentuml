@@ -32,8 +32,7 @@ public class MergeNodeGR extends ControlNodeGR {
         // initialize the element's width and height to the minimum ones
         width = MERGE_WIDTH;
         height = MERGE_HEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.white;
         mergeFont = new Font("SansSerif", Font.ITALIC, 10);
     }

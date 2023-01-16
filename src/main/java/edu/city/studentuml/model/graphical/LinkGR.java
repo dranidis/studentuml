@@ -1,6 +1,9 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
@@ -73,6 +76,51 @@ public abstract class LinkGR extends AbstractLinkGR {
             return a.getClassifier().getName() + "-->" + b.getClassifier().getName();
         }
 
+    }
+
+    @Override
+    public void draw(Graphics2D g) {
+        a.refreshDimensions(g);
+        b.refreshDimensions(g);
+
+        int aX = getXA();
+        int aY = getYA();
+        int bX = getXB();
+        int bY = getYB();
+
+        Stroke originalStroke = g.getStroke();
+
+        // the pattern of dashes for drawing the line
+        if (isSelected()) {
+            g.setStroke(makeSelectedStroke());
+            g.setPaint(highlightColor);
+        } else {
+            g.setStroke(makeStroke());
+            g.setPaint(outlineColor);
+        }
+
+        if (!isReflective()) {
+            g.drawLine(aX, aY, bX, bY);
+
+            // restore the original stroke
+            g.setStroke(originalStroke);
+
+            double rotationAngle = getAngleRoleA();
+            drawArrowHead(bX, bY, rotationAngle, g);
+        } else {
+            
+        }
+    }
+
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+
+    }
+
+    protected BasicStroke makeStroke() {
+        return new BasicStroke(1);
+    }
+    protected BasicStroke makeSelectedStroke() {
+        return new BasicStroke(2);
     }
 
     public int getNumberOfLinks(ClassifierGR a, ClassifierGR b) {
@@ -256,7 +304,7 @@ public abstract class LinkGR extends AbstractLinkGR {
     public int getHeightB() {
         return b.getHeight();
     }
-    
+
     @Override
     public String toString() {
         return a.toString() + " --> " + b.toString() + " : " + super.toString();

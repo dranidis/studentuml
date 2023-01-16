@@ -23,8 +23,6 @@ public class GeneralizationGR extends LinkGR {
 
     public GeneralizationGR(ClassifierGR parent, ClassifierGR child, Generalization gener) {
         super(child, parent);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
         generalization = gener;
     }
 
@@ -42,32 +40,16 @@ public class GeneralizationGR extends LinkGR {
         return a;
     }
 
-    @Override
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        drawGeneralizationArrowHead(bX, bY, rotationAngle, g);
+    }
 
-        int baseX = getXA();
-        int baseY = getYA();
-        int superX = getXB();
-        int superY = getYB();
+    protected BasicStroke makeStroke() {
+        return new BasicStroke(1);
+    }
 
-        Stroke originalStroke = g.getStroke();
-
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(baseX, baseY, superX, superY);
-
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawGeneralizationArrowHead(superX, superY, rotationAngle, g);
+    protected BasicStroke makeSelectedStroke() {
+        return new BasicStroke(2);
     }
 
     public void drawGeneralizationArrowHead(int x, int y, double angle, Graphics2D g) {

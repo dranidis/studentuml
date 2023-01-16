@@ -30,8 +30,7 @@ public class JoinNodeGR extends ControlNodeGR {
         // initialize the element's width and height to the minimum ones
         width = JOIN_WIDTH;
         height = JOIN_HEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.black;
         joinFont = new Font("SansSerif", Font.ITALIC, 10);
     }

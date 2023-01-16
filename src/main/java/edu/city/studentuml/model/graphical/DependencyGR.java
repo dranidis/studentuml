@@ -26,38 +26,18 @@ public class DependencyGR extends LinkGR {
     public DependencyGR(ClassGR a, ClassGR b, Dependency dep) {
         super(a, b);
         dependency = dep;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
     }
 
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        drawDependencyArrowHead(bX, bY, rotationAngle, g);
+    }
 
-        int xA = getXA();
-        int yA = getYA();
-        int xB = getXB();
-        int yB = getYB();
+    protected BasicStroke makeStroke() {
+        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+    }
 
-        Stroke originalStroke = g.getStroke();
-
-        // the pattern of dashes for drawing the dependency line
-        
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(xA, yA, xB, yB);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawDependencyArrowHead(xB, yB, rotationAngle, g);
+    protected BasicStroke makeSelectedStroke() {
+        return new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
 
     public void drawDependencyArrowHead(int x, int y, double angle, Graphics2D g) {

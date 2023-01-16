@@ -25,8 +25,7 @@ public abstract class FinalNodeGR extends ControlNodeGR {
         width = 2 * RADIUS;
         height = width;
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         fillColor = Color.white;
     }
 

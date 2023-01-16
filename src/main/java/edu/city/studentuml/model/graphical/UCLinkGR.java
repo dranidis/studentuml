@@ -1,13 +1,14 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Graphics2D;
+import java.util.Iterator;
+
+import org.w3c.dom.Element;
+
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.UCLink;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.util.Iterator;
-import org.w3c.dom.Element;
 
 /**
  *
@@ -22,23 +23,17 @@ public abstract class UCLinkGR extends LinkGR {
 
         this.link = link;
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     // method template pattern; all subclasses draw by following this algorithm
     @Override
     public final void draw(Graphics2D g) {
         drawLine(g);
-        drawStereotype(g);
     }
 
     // subclasses draw different kinds of lines
     protected abstract void drawLine(Graphics2D g);
-
-    // hook for subclasses; optional stereotype
-    protected void drawStereotype(Graphics2D g) {
-    }
 
     protected boolean canAddLink() {
         for (int x = 0; x < AbstractLinkGR.linkInstances.size(); x++) {
