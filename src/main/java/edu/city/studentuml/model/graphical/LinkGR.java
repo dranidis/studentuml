@@ -20,7 +20,13 @@ import edu.city.studentuml.util.Rotate;
  * 
  */
 public abstract class LinkGR extends AbstractLinkGR {
+
     private static final Logger logger = Logger.getLogger(LinkGR.class.getName());
+
+    public static final int AB = 1;
+    public static final int BA = 2;
+    public static final int BIDIRECTIONAL_FIX = 3;
+
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
      * of classifiers the number of their relationships is stored Note that only one of
@@ -87,6 +93,8 @@ public abstract class LinkGR extends AbstractLinkGR {
         int aY = getYA();
         int bX = getXB();
         int bY = getYB();
+        double angleA = getAngleRoleA();
+        double angleB = getAngleRoleB();
 
         Stroke originalStroke = g.getStroke();
 
@@ -105,22 +113,55 @@ public abstract class LinkGR extends AbstractLinkGR {
             // restore the original stroke
             g.setStroke(originalStroke);
 
-            double rotationAngle = getAngleRoleA();
-            drawArrowHead(bX, bY, rotationAngle, g);
+            drawArrowHeads(aX, aY, bX, bY, angleA, angleB, g);
+            drawStereoType(aX, aY, bX, bY, angleA, g);
+            drawName(aX, aY, bX, bY, angleA, angleB, g);
+            drawRoles(aX, aY, bX, bY, angleA, angleB, g);
         } else {
-            
+            drawReflective(aX, aY, bX, bY, angleA, angleB, g);
+            g.setStroke(originalStroke);
         }
     }
 
+
+    protected void drawReflective(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawRoles(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawName(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+    }
+
+    protected void drawArrowHeads(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        if (getLinkDirection() == AB) {
+            drawArrowHead(bX, bY, angleA, g);
+        } else if (getLinkDirection() == BA) {
+            drawArrowHead(aX, aY, angleB, g);
+        } else if (getLinkDirection() == BIDIRECTIONAL_FIX) {
+            drawArrowHead(bX, bY, angleA, g);
+            drawArrowHead(aX, aY, angleB, g);
+        }
+    }
+
+    protected int getLinkDirection() {
+        return AB;
+    }
+
+    protected void drawStereoType(int aX, int aY, int bX, int bY, double rotationAngle, Graphics2D g) {
+    }
+
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
-
     }
 
+    // TODO: make abstract after changes
     protected BasicStroke makeStroke() {
-        return new BasicStroke(1);
+        return GraphicsHelper.makeSolidStroke();
     }
+
+    // TODO: make abstract after changes
     protected BasicStroke makeSelectedStroke() {
-        return new BasicStroke(2);
+        return GraphicsHelper.makeSelectedSolidStroke();
     }
 
     public int getNumberOfLinks(ClassifierGR a, ClassifierGR b) {

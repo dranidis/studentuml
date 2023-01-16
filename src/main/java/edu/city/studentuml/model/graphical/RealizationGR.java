@@ -1,11 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
@@ -36,27 +32,15 @@ public class RealizationGR extends LinkGR {
     }
 
     protected BasicStroke makeStroke() {
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+        return GraphicsHelper.makeDashedStroke();
     }
 
     protected BasicStroke makeSelectedStroke() {
-        return new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     public void drawRealizationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-
-        GeneralPath triangle = new Triangle().get();
-
-        Paint originalPaint = g.getPaint();
-
-        g.setPaint(Color.white);
-        g.fill(triangle);
-        g.setPaint(originalPaint);
-        g.draw(triangle);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+        GraphicsHelper.drawWhiteArrowHead(x, y, angle, g);
     }
 
     // realizations cannot be reflective

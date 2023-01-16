@@ -1,9 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 
 import org.w3c.dom.Element;
 
@@ -33,20 +31,15 @@ public class DependencyGR extends LinkGR {
     }
 
     protected BasicStroke makeStroke() {
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+        return GraphicsHelper.makeDashedStroke();
     }
 
     protected BasicStroke makeSelectedStroke() {
-        return new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     public void drawDependencyArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-        g.drawLine(-8, -4, 0, 0);
-        g.drawLine(-8, 4, 0, 0);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
     }
 
     // dependency cannot be reflective

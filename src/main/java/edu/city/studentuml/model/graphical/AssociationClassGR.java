@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -87,18 +86,11 @@ public class AssociationClassGR extends LinkGR {
         this.classElement = classElement;
     }
 
-
-
-
     @Override
     public void draw(Graphics2D g) {
-        if (isSelected()) {
-            associationElement.setSelected(true);
-            classElement.setSelected(true);
-        } else {
-            associationElement.setSelected(false);
-            classElement.setSelected(false);
-        }
+        associationElement.setSelected(isSelected());
+        classElement.setSelected(isSelected());
+
         associationElement.draw(g);
         if (!isReflective()) {
             associationCenterPoint = getAssociationCenterPoint();

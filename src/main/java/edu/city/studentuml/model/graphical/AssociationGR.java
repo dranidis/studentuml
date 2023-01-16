@@ -1,10 +1,8 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
@@ -36,197 +34,97 @@ public class AssociationGR extends LinkGR {
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        a.refreshDimensions(g);
-        b.refreshDimensions(g);
-
-        int xA = getXA();
-        int yA = getYA();
-        int xB = getXB();
-        int yB = getYB();
-        double angleA = getAngleRoleA();
-        double angleB = getAngleRoleB();
-
-        Stroke originalStroke = g.getStroke();
-
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
-        }
-
-        if (!isReflective()) {
-            g.drawLine(xA, yA, xB, yB);
-
-            // METHOD drawArrowHeads(g) TO BE OVERRIDED BY AGGREGATIONGR AND COMPOSITIONGR
-            drawArrowHeads(g);
-
-            g.setPaint(Color.black);
-
-            // draw the association name string
-            g.setFont(nameFont);
-
-            // determine the coordinates of the line center
-            int centerX = (xA + xB) / 2;
-            int centerY = (yA + yB) / 2;
-            String name = association.getName();
-            int labelDirection = association.getLabelDirection();
-            double angle;
-            if (labelDirection == Association.FROM_A_TO_B) {
-                angle = angleA;
-            } else {
-                angle = angleB;
-            }
-            if ((name != null) && !name.equals("")) {
-                // draw the association name with arrow from role A to role B
-                drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
-            }
-
-            // draw role names and multiplicities
-            g.setFont(roleFont);
-            drawRoleString(xA, yA, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(),
-                    true, g);
-            drawRoleString(xB, yB, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),
-                    true, g);
-
-        } else // handle rendering of reflective associations in an ad-hoc way
-        {
-            GeneralPath reflective = new GeneralPath();
-            float step = getReflectiveStep();
-            reflective.moveTo(xA, yA);
-            reflective.lineTo(xA, yA - REFLECTIVE_UP * step); // up 2
-            reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yA - REFLECTIVE_UP * step); // right 4
-            reflective.lineTo(xA + REFLECTIVE_RIGHT * step, yB); // down 4
-            reflective.lineTo(xB, yB); // left 2
-
-            g.draw(reflective);
-
-            drawArrowHeadsReflective(g);
-
-            g.setPaint(Color.black);
-
-            // draw the association name string
-            g.setFont(nameFont);
-
-            double angle = 0;
-            if (association.getLabelDirection() == Association.FROM_A_TO_B) {
-                angle = Math.toRadians(0);
-            } else {
-                angle = Math.toRadians(180);
-            }
-            drawAssociationName((int) (xA + REFLECTIVE_RIGHT * step / 2), (int) (yA - REFLECTIVE_UP * step), angle,
-                    association.getName(), association.getShowArrow(), g);
-
-            // draw role names and multiplicities
-            g.setFont(roleFont);
-            String roleAName = association.getRoleA().getName();
-            String roleAMultiplicity = association.getRoleA().getMultiplicity();
-            String roleBName = association.getRoleB().getName();
-            String roleBMultiplicity = association.getRoleB().getMultiplicity();
-            drawRoleString(getXA(), getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity, roleAName, true, g);
-            drawRoleString(getTopLeftXA() + getWidthA() - 5, getYB(), 0, roleBMultiplicity, roleBName, false, g);
-        }
-
-        g.setStroke(originalStroke);
-
+    protected int getLinkDirection() {
+        return association.getDirection();
     }
 
-    protected void drawArrowHeads(Graphics2D g) {
-        if (association.getDirection() == Association.AB) {
-            drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
-        } else if (association.getDirection() == Association.BA) {
-            drawAssociationArrowHead(getXA(), getYA(), getAngleRoleB(), g);
-        } else if (association.getDirection() == Association.BIDIRECTIONAL_FIX) {
-            drawAssociationArrowHead(getXB(), getYB(), getAngleRoleA(), g);
-            drawAssociationArrowHead(getXA(), getYA(), getAngleRoleB(), g);
+    @Override
+    protected void drawReflective(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        GeneralPath reflective = new GeneralPath();
+        float step = getReflectiveStep();
+        reflective.moveTo(aX, aY);
+        reflective.lineTo(aX, aY - REFLECTIVE_UP * step); // up 2
+        reflective.lineTo(aX + REFLECTIVE_RIGHT * step, aY - REFLECTIVE_UP * step); // right 4
+        reflective.lineTo(aX + REFLECTIVE_RIGHT * step, bY); // down 4
+        reflective.lineTo(bX, bY); // left 2
+
+        g.draw(reflective);
+
+        drawArrowHeadsReflective(g);
+
+        g.setPaint(Color.black);
+
+        // draw the association name string
+        g.setFont(nameFont);
+
+        double angle = 0;
+        if (association.getLabelDirection() == Association.FROM_A_TO_B) {
+            angle = Math.toRadians(0);
+        } else {
+            angle = Math.toRadians(180);
+        }
+        drawAssociationName((int) (aX + REFLECTIVE_RIGHT * step / 2), (int) (aY - REFLECTIVE_UP * step), angle,
+                association.getName(), association.getShowArrow(), g);
+
+        // draw role names and multiplicities
+        g.setFont(roleFont);
+        String roleAName = association.getRoleA().getName();
+        String roleAMultiplicity = association.getRoleA().getMultiplicity();
+        String roleBName = association.getRoleB().getName();
+        String roleBMultiplicity = association.getRoleB().getMultiplicity();
+        drawRoleString(aX, getTopLeftYA() + 5, -Math.PI / 2, roleAMultiplicity, roleAName, true, g);
+        drawRoleString(getTopLeftXA() + getWidthA() - 5, bY, 0, roleBMultiplicity, roleBName, false, g);
+    }
+
+    @Override
+    protected void drawRoles(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        // draw role names and multiplicities
+        g.setFont(roleFont);
+        drawRoleString(aX, aY, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(),
+                true, g);
+        drawRoleString(bX, bY, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),
+                true, g);
+    }
+
+    @Override
+    protected void drawName(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
+        // determine the coordinates of the line center
+        int centerX = (aX + bX) / 2;
+        int centerY = (aY + bY) / 2;
+        String name = association.getName();
+        int labelDirection = association.getLabelDirection();
+        double angle;
+        if (labelDirection == Association.FROM_A_TO_B) {
+            angle = angleA;
+        } else {
+            angle = angleB;
+        }
+        if ((name != null) && !name.equals("")) {
+            // draw the association name with arrow from role A to role B
+            drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
         }
     }
 
     protected void drawArrowHeadsReflective(Graphics2D g) {
         int direction = association.getDirection();
         if (direction == Association.AB || direction == Association.BIDIRECTIONAL_FIX) {
-            drawAssociationArrowHead(getXB(), getYB(), Math.PI, g);
+            drawArrowHead(getXB(), getYB(), Math.PI, g);
         }
         if (direction == Association.BA || direction == Association.BIDIRECTIONAL_FIX) {
-            drawAssociationArrowHead(getXA(), getYA(), Math.PI / 2, g);
+            drawArrowHead(getXA(), getYA(), Math.PI / 2, g);
         }
     }
 
-    public void drawAssociationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-        g.drawLine(-8, 4, 0, 0);
-        g.drawLine(-8, -4, 0, 0);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+    @Override
+    protected void drawArrowHead(int x, int y, double angle, Graphics2D g) {
+        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
     }
 
-    public void drawAssociationName(int x, int y, double angle, String string, boolean arrow, Graphics2D g) {
-        if (string.length() == 0)
-            return;
-
-        // modify the angle so that the text is always rotated to go from left to right
-        double textAngle = angle;
-
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
-            textAngle -= Math.PI;
-        }
-
-        FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(string, nameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
-        int textWidth = (int) bounds.getWidth();
-
-        g.translate(x, y);
-        g.rotate(textAngle);
-        g.drawString(string, -textWidth / 2, -4);
-        g.rotate(-textAngle);
-        g.translate(-x, -y);
-
-        // draw the name arrow
-        if (arrow) {
-            drawNameArrow(x, y, angle, textWidth / 2, g);
-        }
+    private void drawAssociationName(int x, int y, double angle, String string, boolean arrow, Graphics2D g) {
+        GraphicsHelper.drawString(string, x, y, angle, arrow, g);
     }
 
-    // draws the solid triangular arrow that can be along with the association name
-    public void drawNameArrow(int x, int y, double angle, int offset, Graphics2D g) {
-
-        // try to always draw the arrow above the association line
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
-            g.translate(x, y);
-            g.rotate(angle);
-
-            GeneralPath triangle = new GeneralPath();
-
-            triangle.moveTo(offset + 5.0, 5.0);
-            triangle.lineTo(offset + 5.0, 15.0);
-            triangle.lineTo(offset + 15.0, 10.0);
-            triangle.closePath();
-
-            g.fill(triangle);
-            g.rotate(-angle);
-            g.translate(-x, -y);
-        } else {
-            g.translate(x, y);
-            g.rotate(angle);
-
-            GeneralPath triangle = new GeneralPath();
-
-            triangle.moveTo(offset + 5.0, -5.0);
-            triangle.lineTo(offset + 5.0, -15.0);
-            triangle.lineTo(offset + 15.0, -10.0);
-            triangle.closePath();
-
-            g.fill(triangle);
-            g.rotate(-angle);
-            g.translate(-x, -y);
-        }
-    }
-
-    public void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up,
+    private void drawRoleString(int x, int y, double angle, String multiplicity, String roleName, boolean up,
             Graphics2D g) {
         boolean sameDirection = true;
 
@@ -285,7 +183,6 @@ public class AssociationGR extends LinkGR {
     public ClassifierGR getClassB() {
         return b;
     }
-
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
