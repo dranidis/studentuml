@@ -89,16 +89,15 @@ public class ApplicationFrame extends ApplicationGUI {
             return;
         }
 
-        if (!closeProject()) {
-            return;
-        }
-
         String file = xmlFileChooser.getSelectedFile().getAbsolutePath();
-
         openProjectFile(file);
     }
 
     public void openProjectFile(String fileName) {
+        if (!closeProject()) {
+            return;
+        }
+        
         boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 

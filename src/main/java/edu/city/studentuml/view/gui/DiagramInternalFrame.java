@@ -1,5 +1,25 @@
 package edu.city.studentuml.view.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
+import java.util.logging.Logger;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEditSupport;
+
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.AddElementControllerFactory;
 import edu.city.studentuml.controller.DrawLineController;
@@ -11,25 +31,6 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.view.DiagramView;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
-import java.util.logging.Logger;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEditSupport;
 
 public abstract class DiagramInternalFrame extends JInternalFrame {
 
@@ -147,10 +148,19 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     protected void createHelpMenubar() {
-        // intentionally empty
-        // to be overriden by internal frames which provide
-        // a help menu
+        JMenu helpMenu = new JMenu();
+        helpMenu.setText(" Help ");
+        menuBar.add(helpMenu);
+
+        JMenuItem selectMenuItem = new JMenuItem();
+        selectMenuItem.setText("Selection keystrokes");
+        selectMenuItem.addActionListener(e -> JOptionPane.showMessageDialog(this,
+                "Ctrl-click adds the clicked element to the selected elements.\n\n"
+                        + "Shift-Ctrl click (only for messages)  selects a message and all the messages below it",
+                "Selection keystrokes", JOptionPane.INFORMATION_MESSAGE));
+        helpMenu.add(selectMenuItem);
     }
+    
 
     private DrawRectangleController makeDrawRectangleController(DiagramView diagramView, DiagramModel model) {
         return new DrawRectangleController(view, model);
