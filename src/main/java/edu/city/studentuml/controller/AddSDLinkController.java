@@ -46,7 +46,7 @@ public abstract class AddSDLinkController extends AddElementController {
         GraphicalElement toClassifier = diagramModel.getContainingGraphicalElement(x, y);
 
         if (toClassifier instanceof RoleClassifierGR) {
-            addRelationship(fromClassifier, (RoleClassifierGR) toClassifier);
+            addRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
         }
 
         // set classA to null to start over again
@@ -54,8 +54,8 @@ public abstract class AddSDLinkController extends AddElementController {
         parentFrame.setSelectionMode();
     }
 
-    private void addRelationship(RoleClassifierGR classA, RoleClassifierGR classB) {
-        SDMessageGR linkGR = createRelationship(classA, classB);
+    private void addRelationship(RoleClassifierGR classA, RoleClassifierGR classB, int y) {
+        SDMessageGR linkGR = createRelationship(classA, classB, y);
 
         if (linkGR == null) {
             return;
@@ -70,5 +70,5 @@ public abstract class AddSDLinkController extends AddElementController {
         parentFrame.getUndoSupport().postEdit(edit);
     }
 
-    protected abstract SDMessageGR createRelationship(RoleClassifierGR classA, RoleClassifierGR classB);
+    protected abstract SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y);
 }
