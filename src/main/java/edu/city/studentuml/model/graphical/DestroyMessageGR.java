@@ -66,4 +66,10 @@ public class DestroyMessageGR extends SDMessageGR {
         node.setAttribute("y", Integer.toString(getY()));
         streamer.streamObject(node, "message", getDestroyMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return false;
+    }
+    
 }

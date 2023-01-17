@@ -1,12 +1,13 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 public abstract class AddElementController {
 

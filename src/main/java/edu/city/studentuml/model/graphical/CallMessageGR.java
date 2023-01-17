@@ -50,4 +50,10 @@ public class CallMessageGR extends SDMessageGR {
 
         streamer.streamObject(node, "message", getCallMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return message.isReflective();
+    }
+    
 }

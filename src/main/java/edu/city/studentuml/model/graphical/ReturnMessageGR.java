@@ -96,4 +96,9 @@ public class ReturnMessageGR extends SDMessageGR {
         node.setAttribute("y", Integer.toString(getY()));
         streamer.streamObject(node, "message", getReturnMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return message.isReflective();
+    }
 }

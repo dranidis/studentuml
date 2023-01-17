@@ -205,4 +205,6 @@ public abstract class SDMessageGR extends GraphicalElement {
         errorMessage = validatedStr;
     }
 
+    public abstract boolean isReflective();
+
 }
