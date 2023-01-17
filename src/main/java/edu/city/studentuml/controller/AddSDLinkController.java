@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.logging.Logger;
-
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -15,8 +13,6 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
  * @author Dimitris Dranidis
  */
 public abstract class AddSDLinkController extends AddElementController {
-
-    private static final Logger logger = Logger.getLogger(AddSDLinkController.class.getName());
 
     protected RoleClassifierGR fromClassifier = null;
 
@@ -54,7 +50,35 @@ public abstract class AddSDLinkController extends AddElementController {
         parentFrame.setSelectionMode();
     }
 
-    private void addRelationship(RoleClassifierGR classA, RoleClassifierGR classB, int y) {
+    @Override
+    protected void ctrlReleased(int x, int y) {
+        if (fromClassifier == null) {
+            return;
+        }
+
+        GraphicalElement toClassifier = diagramModel.getContainingGraphicalElement(x, y);
+
+        if (toClassifier instanceof RoleClassifierGR) {
+            addCompoundRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
+        }
+
+        // set classA to null to start over again
+        fromClassifier = null;
+        parentFrame.setSelectionMode();
+    }
+
+    /**
+     * This is the function to override for ctrl-released behaviour.
+     * 
+     * @param fromClassifier2
+     * @param toClassifier
+     * @param y
+     */
+    protected void addCompoundRelationship(RoleClassifierGR fromClassifier2, RoleClassifierGR toClassifier, int y) {
+        addRelationship(fromClassifier2, toClassifier, y);
+    }
+
+    protected void addRelationship(RoleClassifierGR classA, RoleClassifierGR classB, int y) {
         SDMessageGR linkGR = createRelationship(classA, classB, y);
 
         if (linkGR == null) {

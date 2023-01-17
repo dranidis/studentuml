@@ -22,6 +22,7 @@ import edu.city.studentuml.model.domain.DecisionNode;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.FlowFinalNode;
 import edu.city.studentuml.model.domain.ForkNode;
@@ -57,6 +58,7 @@ import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
+import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.FlowFinalNodeGR;
 import edu.city.studentuml.model.graphical.ForkNodeGR;
@@ -589,14 +591,25 @@ public class AddElementControllerFactory {
                     ReturnMessage message = new ReturnMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier(), "");
                     return new ReturnMessageGR(roleA, roleB, message, y);
                 }
-                
+
             };
         case "CallMessageGR":
             return new AddCallMessageController(model, frame);
         case "CreateMessageGR":
             return new AddCreateMessageController((SDModel) model, frame);
         case "DestroyMessageGR":
-            return new AddDestroyMessageController((SDModel) model, frame);
+            return new AddSDLinkController(model, frame) {
+
+                @Override
+                protected SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y) {
+                    if (roleA == roleB) {
+                        return null;
+                    }
+                    DestroyMessage message = new DestroyMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier());
+                    return new DestroyMessageGR(roleA, roleB, message, y);                    
+                }
+
+            };
         case "ControlFlowGR":
             return new AddControlFlowController((ADModel) model, frame);
         case "ObjectFlowGR":

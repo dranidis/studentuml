@@ -40,9 +40,16 @@ public abstract class AddElementController {
                     return;
                 }
 
-                released(scale(e.getX()), scale(e.getY()));
+                if (e.isControlDown()) {
+                    ctrlReleased(scale(e.getX()), scale(e.getY()));
+
+                } else {
+                    released(scale(e.getX()), scale(e.getY()));
+                }
             }
+
         };
+
         mouseMotionListener = new MouseMotionAdapter() {
 
             @Override
@@ -77,4 +84,17 @@ public abstract class AddElementController {
     public abstract void dragged(int x, int y);
 
     public abstract void released(int x, int y);
+
+    /**
+     * subclasses might react differently to CTRL-release
+     * Default is mouse release
+     * 
+     * @param x
+     * @param y
+     * @param e
+     */
+    protected void ctrlReleased(int x, int y) {
+        released(x, y);
+    }
+
 }
