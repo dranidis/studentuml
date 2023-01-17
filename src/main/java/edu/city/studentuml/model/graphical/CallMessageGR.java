@@ -24,6 +24,11 @@ public class CallMessageGR extends SDMessageGR {
     }
 
     @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
+    }
+
+    @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             GraphicsHelper.drawBlackArrowHead(x, y, 0, g);

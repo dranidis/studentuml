@@ -25,6 +25,11 @@ public class ReturnMessageGR extends SDMessageGR {
     }
 
     @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
+    }
+
+    @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             g.drawLine(x, y, x - 8, y - 4);
