@@ -1,11 +1,14 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ObjectFlow;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Point;
 import java.util.Vector;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ObjectFlow;
+import edu.city.studentuml.util.ObjectFactory;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -24,18 +27,18 @@ public class ObjectFlowGR extends EdgeGR {
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         super.streamFromXML(node, streamer, instance);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "points"), new Vector(points), this);
+        streamer.streamObjectsFrom(streamer.getNodeById(node, "points"), new Vector<>(points), this);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
-        node.setAttribute("source", SystemWideObjectNamePool.getInstance().getNameForObject(source));
-        node.setAttribute("target", SystemWideObjectNamePool.getInstance().getNameForObject(target));
+        node.setAttribute(ObjectFactory.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(source));
+        node.setAttribute(ObjectFactory.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(target));
 
-        streamer.streamObjects(streamer.addChild(node, "points"), getPoints());
+        streamer.streamObjects(streamer.addChild(node, "points"), getPoints().iterator());
 
-        streamer.streamObject(node, "objectflow", (ObjectFlow) getEdge());
+        streamer.streamObject(node, "objectflow", getEdge());
     }
 }

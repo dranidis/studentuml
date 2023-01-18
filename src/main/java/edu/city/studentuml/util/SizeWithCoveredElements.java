@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class SizeWithCoveredElements extends Size {
 
-        List containingElements = new ArrayList();
+        List containingElements = new ArrayList<>();
 
         public void setContainingElements(List containingElements) {
             this.containingElements.clear();

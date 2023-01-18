@@ -183,9 +183,8 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
     @JsonIgnore
     private String getParametersString() {
         StringJoiner sj = new StringJoiner(", ", "(", ")");
-        for (MethodParameter par : parameters) {
-            sj.add(par.toStringShowTypes());
-        }
+        parameters.forEach(par -> sj.add(par.toStringShowTypes()));
+
         return sj.toString();
     }
 

@@ -1,9 +1,11 @@
 package edu.city.studentuml.model.domain;
 
+import org.w3c.dom.Element;
+
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import org.w3c.dom.Element;
 
 /**
  * 
@@ -29,14 +31,12 @@ public class SDObject extends RoleClassifier implements IXMLCustomStreamable {
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
-        streamer.streamObject(node, "designclass", getDesignClass());
-        node.setAttribute("designclass", SystemWideObjectNamePool.getInstance().getNameForObject(getDesignClass()));
+        streamer.streamObject(node, ObjectFactory.DESIGNCLASS, getDesignClass());
+        node.setAttribute(ObjectFactory.DESIGNCLASS, SystemWideObjectNamePool.getInstance().getNameForObject(getDesignClass()));
     }
 
     // for Undo/Redo
     public SDObject clone() {
-        SDObject copySDObject = new SDObject(this.getName(), this.getDesignClass().clone());
-
-        return copySDObject;
+        return new SDObject(this.getName(), this.getDesignClass().clone());
     }
 }

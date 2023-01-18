@@ -33,10 +33,9 @@ public class ConceptualClass extends AbstractClass {
     public ConceptualClass clone() {
         ConceptualClass copyClass = new ConceptualClass(this.getName());
 
-        Attribute attribute;
-        Iterator attributeIterator = attributes.iterator();
+        Iterator<Attribute> attributeIterator = attributes.iterator();
         while (attributeIterator.hasNext()) {
-            attribute = (Attribute) attributeIterator.next();
+            Attribute attribute = attributeIterator.next();
             copyClass.addAttribute(attribute.clone());
         }
 

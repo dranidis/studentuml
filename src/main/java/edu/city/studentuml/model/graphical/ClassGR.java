@@ -6,12 +6,14 @@ import java.awt.Point;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
 
 @JsonIncludeProperties({ "class", "internalid", "startingPoint" })
@@ -163,7 +165,7 @@ public class ClassGR extends AbstractClassGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "designclass", getDesignClass());
+        streamer.streamObject(node, ObjectFactory.DESIGNCLASS, getDesignClass());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

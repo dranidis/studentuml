@@ -3,6 +3,7 @@ package edu.city.studentuml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Point;
 import java.io.File;
@@ -204,7 +205,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("association"));
     }
 
     @Test
@@ -236,7 +237,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("association"));
     }
 
     @Test
@@ -257,7 +258,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("dcd diagram"));
     }
 
     @Test
@@ -276,7 +277,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("diagramModels"));
     }
 
     @Test
@@ -298,7 +299,8 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("dcd diagram"));
+        assertTrue(jsonString.contains("dcd2 diagram"));
     }
 
     @Test
@@ -339,17 +341,16 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
 
         int count = 0, index = 0;
 
-        while ((index = jsonString.indexOf("\"internalid\" : \"generalization0\"", index)) != -1 ){
+        while ((index = jsonString.indexOf("\"internalid\" : \"generalization0\"", index)) != -1) {
             count++;
             index++;
         }
 
         assertEquals(2, count);
-        // assertFalse(jsonString.contains("sdmethods"));
     }
 
     @Test
@@ -396,16 +397,13 @@ public class IgnoreJSONTest {
 
         int count = 0, index = 0;
 
-        while ((index = jsonString.indexOf("\"internalid\" : \"realization0\"", index)) != -1 ){
+        while ((index = jsonString.indexOf("\"internalid\" : \"realization0\"", index)) != -1) {
             count++;
             index++;
         }
 
         assertEquals(2, count);
-        // assertFalse(jsonString.contains("sdmethods"));
     }
-
-
 
     @Test
     public void realization() {
@@ -422,7 +420,8 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("theClass"));
+        assertTrue(jsonString.contains("theInterface"));
     }
 
     @Test
@@ -443,7 +442,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("RealizationGR"));
     }
 
     @Test
@@ -464,7 +463,8 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("DependencyGR"));
+        assertTrue(jsonString.contains("dependency"));
     }
 
     @Test
@@ -485,7 +485,8 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("GeneralizationGR"));
+        assertTrue(jsonString.contains("generalization"));
     }
 
     @Test
@@ -510,8 +511,37 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        System.out.println(jsonString);
+        assertTrue(jsonString.contains("diagramModels"));
+    }
+
+    @Test
+    public void readStudentXML() {
+        ObjectMapper mapper = new ObjectMapper();
+        // String filename = "diagrams" + File.separator + "studentuml.xml";
+        String filename = "diagrams" + File.separator + "studentuml.xml";
+
+        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        UMLProject umlProject = UMLProject.getInstance();
+        umlProject.clear();
+
+        try {
+            umlProject.loadFromXML(filename);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            fail();
+        }
+
+        assertTrue(true);
+        // String jsonString = "";
+        // try {
+        //     jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
+        // } catch (JsonProcessingException e) {
+        //     e.printStackTrace();
+        // }
         // System.out.println(jsonString);
-        // assertFalse(jsonString.contains("sdmethods"));
+        // assertTrue(jsonString.contains("diagramModels"));
     }
 
 }

@@ -27,8 +27,8 @@ public abstract class LeafUCDElementGR extends UCDComponentGR {
     }
 
     @Override
-    public Iterator createIterator() {
-        return new NullGRIterator();
+    public Iterator<UCDComponentGR> createIterator() {
+        return new NullGRIterator<>();
     }
 
     public boolean contains(UCDComponentGR otherUCDComponent) {

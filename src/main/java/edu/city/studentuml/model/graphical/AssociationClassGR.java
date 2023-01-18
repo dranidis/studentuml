@@ -16,6 +16,7 @@ import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Ray;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
@@ -56,16 +57,16 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        if ((!this.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
-            this.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
+        if ((!AbstractLinkGR.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
+            AbstractLinkGR.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
         associationElement.objectAdded(associationElement);
     }
 
     @Override
     public void objectRemoved(GraphicalElement obj) {
-        if (this.linkInstances.contains(obj)) {
-            this.linkInstances.remove(obj);
+        if (AbstractLinkGR.linkInstances.contains(obj)) {
+            AbstractLinkGR.linkInstances.remove(obj);
         }
         associationElement.objectRemoved(associationElement);
     }
@@ -123,7 +124,7 @@ public class AssociationClassGR extends LinkGR {
         int v = (int) (classElement.getBounds().getCenterY() - classElement.getBounds().getY());
         Vector2D h = new Vector2D(u, v);
         int length = (int) h.getLength();
-        Ray d = new Ray(associationCenterPoint, n.multiply(length + MINIMUM_DISTANCE));
+        Ray d = new Ray(associationCenterPoint, n.multiply((double) length + MINIMUM_DISTANCE));
         Point p = d.getDirection().add(d.getOrigin());
 
         int x1 = (int) (associationCenterPoint.getX());
@@ -176,8 +177,8 @@ public class AssociationClassGR extends LinkGR {
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
-        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
+        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(ObjectFactory.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "associationclass", getAssociationClass());
     }

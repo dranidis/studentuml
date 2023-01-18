@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,7 +10,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -110,25 +108,19 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         g.setFont(methodFont);
 
-        Iterator iterator = coreInterface.getMethods().iterator();
-
         // draw the methods
         int currentY = nameFieldHeight + 2;
-        String name;
-        TextLayout layout;
-        Rectangle2D bounds;
-        int methodX;
-        int methodY;
 
-        while (iterator.hasNext()) {
-            name = ((Method) iterator.next()).toString();
-            layout = new TextLayout(name, methodFont, frc);
-            bounds = layout.getBounds();
-            methodX = methodFieldXOffset - (int) bounds.getX();
-            methodY = currentY + methodFieldYOffset - (int) bounds.getY();
+        for (Method m : coreInterface.getMethods()) {
+            String name = m.toString();
+            TextLayout layout = new TextLayout(name, methodFont, frc);
+            Rectangle2D bounds = layout.getBounds();
+            int methodX = methodFieldXOffset - (int) bounds.getX();
+            int methodY = currentY + methodFieldYOffset - (int) bounds.getY();
             g.drawString(name, startingX + methodX, startingY + methodY);
             currentY = currentY + methodFieldYOffset + (int) bounds.getHeight();
         }
+
     }
 
     public void move(int x, int y) {
@@ -163,26 +155,17 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
     public int calculateMethodFieldHeight(Graphics2D g) {
         int height = 0;
-        FontRenderContext frc = g.getFontRenderContext();
-        Iterator iterator = coreInterface.getMethods().iterator();
-        String method;
 
-        while (iterator.hasNext()) {
-            method = ((Method) iterator.next()).toString();
-
-            TextLayout layout = new TextLayout(method, methodFont, frc);
+        for (Method m : coreInterface.getMethods()) {
+            String method = m.toString();
+            TextLayout layout = new TextLayout(method, methodFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
-
-            height = height + (int) bounds.getHeight() + methodFieldYOffset;
+            height += (int) bounds.getHeight() + methodFieldYOffset;
         }
 
-        height = height + methodFieldYOffset;
+        height += methodFieldYOffset;
 
-        if (height > minimumMethodFieldHeight) {
-            return height;
-        } else {
-            return minimumMethodFieldHeight;
-        }
+        return Math.max(height, minimumMethodFieldHeight);
     }
 
     public void refreshDimensions(Graphics2D g) {
@@ -200,25 +183,16 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
             Rectangle2D bounds = layout.getBounds();
             int nameWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
 
-            if (nameWidth > newWidth) {
-                newWidth = nameWidth;
-            }
+            newWidth = Math.max(nameWidth, newWidth);
         }
 
         // consider method text dimensions
-        Iterator iterator = coreInterface.getMethods().iterator();
-        String method;
-
-        while (iterator.hasNext()) {
-            method = ((Method) iterator.next()).toString();
-
-            TextLayout layout = new TextLayout(method, methodFont, frc);
+        for (Method m : coreInterface.getMethods()) {
+            String method = m.toString();
+            TextLayout layout = new TextLayout(method, methodFont, g.getFontRenderContext());
             Rectangle2D bounds = layout.getBounds();
             int methodWidth = (int) bounds.getWidth() + (2 * methodFieldXOffset);
-
-            if (methodWidth > newWidth) {
-                newWidth = methodWidth;
-            }
+            newWidth = Math.max(methodWidth, newWidth);
         }
 
         width = newWidth;
@@ -241,15 +215,17 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
     }
 
     public Classifier getClassifier() {
-        return (Classifier) coreInterface;
+        return coreInterface;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
         streamer.streamObject(node, "interface", getInterface());

@@ -6,13 +6,13 @@ import java.util.Iterator;
  *
  * @author Biser
  */
-public class NullGRIterator implements Iterator<NodeComponentGR> {
+public class NullGRIterator<E> implements Iterator<E> {
 
     public boolean hasNext() {
         return false;
     }
 
-    public NodeComponentGR next() {
+    public E next() {
         return null;
     }
 

@@ -12,7 +12,7 @@ public abstract class UCDComponent implements Classifier {
 
     public static final UCDComponent DEFAULT_CONTEXT = null;
     protected String name;
-    protected UCDComponent context;    //containing system;
+    protected UCDComponent context;    //containing system
     protected List<UCLink> incomingLinks;
     protected List<UCLink> outgoingLinks;
 
@@ -31,7 +31,7 @@ public abstract class UCDComponent implements Classifier {
         throw new UnsupportedOperationException("remove() not supported");
     }
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<UCDComponent> createIterator();
 
     public String getName() {
         throw new UnsupportedOperationException("getName() not supported");

@@ -98,6 +98,8 @@ public class AddElementControllerFactory {
 
     private static final Logger logger = Logger.getLogger(AddElementControllerFactory.class.getName());
 
+    private static final String LINK_BETWEEN_CLASSIFIERS_EXISTS = "The link between these two classifiers already exists!";
+
     /**
      * Each frame has its own controllers, one for each command represented by the
      * string Controllers are dynamically created upon clicking on the toolbars and
@@ -467,7 +469,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, baseClass, superClass)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 
@@ -512,7 +514,7 @@ public class AddElementControllerFactory {
                     if (classA instanceof ClassGR && classB instanceof InterfaceGR) {
 
                         if (relationshipExists(model, classA, classB)) {
-                            showErrorMessage(frame, "The link between these two classifiers already exists!");
+                            showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                             return null;
                         }
                         ClassGR classGR = (ClassGR) classA;
@@ -535,7 +537,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, uc1, uc2)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 
@@ -561,7 +563,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, uc1, uc2)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 

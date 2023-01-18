@@ -1,13 +1,15 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.util.SizeWithCoveredElements;
+import java.awt.Point;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.util.Size;
+import edu.city.studentuml.util.SizeWithCoveredElements;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.awt.Point;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 /**
  *
@@ -15,7 +17,7 @@ import javax.swing.undo.CannotUndoException;
  */
 public abstract class ResizeWithCoveredElementsEdit extends ResizeEdit {
 
-    public ResizeWithCoveredElementsEdit(Resizable resizableElement, SizeWithCoveredElements originalResize, SizeWithCoveredElements newResize, DiagramModel model) {
+    protected ResizeWithCoveredElementsEdit(Resizable resizableElement, SizeWithCoveredElements originalResize, SizeWithCoveredElements newResize, DiagramModel model) {
         super(resizableElement, originalResize, newResize, model);
     }
 

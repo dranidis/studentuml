@@ -28,7 +28,7 @@ public abstract class LeafNodeGR extends NodeComponentGR {
 
     @Override
     public Iterator<NodeComponentGR> createIterator() {
-        return new NullGRIterator();
+        return new NullGRIterator<>();
     }
 
     public boolean contains(NodeComponentGR otherNodeComponent) {

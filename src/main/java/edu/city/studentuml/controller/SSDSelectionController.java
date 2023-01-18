@@ -5,7 +5,6 @@ import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;

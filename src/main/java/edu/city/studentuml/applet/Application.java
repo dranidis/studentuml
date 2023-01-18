@@ -135,6 +135,7 @@ public class Application extends JApplet implements Observer, KeyListener {
     // init method just creates an instance of the StudentUMLApplet class
     // which handles the rest of the program
     // Firefox: when a fresh browser is opened
+    @Override
     public void init() {
         addKeyListener(this);
         super.init();
@@ -144,13 +145,16 @@ public class Application extends JApplet implements Observer, KeyListener {
     }
 
     // Firefox: when the URL containing the applet is opened
+    @Override
     public void start() {
     }
 
     // Firefox: when the URL containing the applet is closed or navigated away
+    @Override
     public void stop() {
     }
 
+    @Override
     public void destroy() {
         // Firefox: when the last browser instance is closed
     }
@@ -296,11 +300,13 @@ public class Application extends JApplet implements Observer, KeyListener {
         repairButton = new JButton();
         repairButton.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 repairButton.setBorder(
                         new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
             }
@@ -1046,11 +1052,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             openButton = new JButton(openIcon);
             openButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1064,11 +1072,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             saveButton = new JButton(saveIcon);
             saveButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1083,11 +1093,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             ssdButton = new JButton(ssdIcon);
             ssdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1103,11 +1115,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             ccdButton = new JButton(ccdIcon);
             ccdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1122,11 +1136,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             sdButton = new JButton(sdIcon);
             sdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1140,11 +1156,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             dcdButton = new JButton(dcdIcon);
             dcdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1174,11 +1192,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             resizeButton = new JButton(resizeIcon);
             resizeButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1200,11 +1220,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             reloadRulesButton = new JButton(reloadIcon);
             reloadRulesButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1226,11 +1248,13 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             forwardEngineerButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1254,11 +1278,13 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             helpButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1475,12 +1501,14 @@ public class Application extends JApplet implements Observer, KeyListener {
     private void addPopup(final Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
                 }
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
@@ -1529,6 +1557,7 @@ public class Application extends JApplet implements Observer, KeyListener {
     private void showRepairButton(final Component component, final JButton button) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 // System.out.println(checkTreeManager.getSelectionModel().getSelectionPaths()
                 // != null);
@@ -1540,6 +1569,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 // }
             }
 
+            @Override
             public void mouseClicked(MouseEvent e) {
                 // System.out.println(e.getSource().toString());
                 // System.out.println(checkTreeManager.getSelectionModel().getSelectionPaths()

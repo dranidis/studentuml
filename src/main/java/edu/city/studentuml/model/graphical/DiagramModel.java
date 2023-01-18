@@ -8,17 +8,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.UMLProject;
-
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
@@ -43,7 +41,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     protected String diagramName;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;
-    protected Vector<GraphicalElement> selected;
+    protected List<GraphicalElement> selected;
 
     // every diagram has to have a reference to the central repository of UML
     // elements
@@ -61,7 +59,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         umlProject = umlp;
         repository = umlp.getCentralRepository();
         umlProject.addDiagram(this);
-        selected = new Vector<>();
+        selected = new ArrayList<>();
     }
 
     public void setFrame(DiagramInternalFrame diagramInternalFrame) {
@@ -181,7 +179,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         }
     }
 
-    public Vector<GraphicalElement> getSelectedGraphicalElements() {
+    public List<GraphicalElement> getSelectedGraphicalElements() {
         return selected;
     }
 

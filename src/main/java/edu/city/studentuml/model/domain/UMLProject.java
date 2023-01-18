@@ -158,7 +158,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     public void loadFromXML(String filename) throws IOException {
-        logger.finer(() -> "Loading from XML: " + filename);
+        logger.info(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
@@ -168,7 +168,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         streamer.streamFrom(e, this);
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.finer(() -> ".......end from XML: \n" + filename);
+        logger.info(() -> ".......end from XML: " + filename);
         setSaved(true);
     }
     // Embed4Auto

@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
-import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 

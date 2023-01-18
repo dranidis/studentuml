@@ -154,12 +154,10 @@ public abstract class LinkGR extends AbstractLinkGR {
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
     }
 
-    // TODO: make abstract after changes
     protected BasicStroke makeStroke() {
         return GraphicsHelper.makeSolidStroke();
     }
 
-    // TODO: make abstract after changes
     protected BasicStroke makeSelectedStroke() {
         return GraphicsHelper.makeSelectedSolidStroke();
     }

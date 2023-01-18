@@ -2,11 +2,12 @@ package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
 /**
  * @author Ramollari Ervin
@@ -119,8 +120,8 @@ public class Association implements Serializable, IXMLCustomStreamable {
         node.setAttribute("showArrow", String.valueOf(getShowArrow()));
         node.setAttribute("labelDirection", Integer.toString(getLabelDirection()));
 
-        streamer.streamObject(node, "rolea", roleA);
-        streamer.streamObject(node, "roleb", roleB);
+        streamer.streamObject(node, ObjectFactory.ROLEA, roleA);
+        streamer.streamObject(node, ObjectFactory.ROLEB, roleB);
     }
 
     public Association clone() {
