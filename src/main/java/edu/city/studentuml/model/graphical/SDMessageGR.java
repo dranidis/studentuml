@@ -64,10 +64,10 @@ public abstract class SDMessageGR extends GraphicalElement {
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setStroke(makeSelectedMessageStroke());
             g.setPaint(highlightColor);
         } else {
-            g.setStroke(originalStroke);
+            g.setStroke(makeMessageStroke());
             g.setPaint(outlineColor);
         }
 
@@ -86,12 +86,8 @@ public abstract class SDMessageGR extends GraphicalElement {
                     endingX += barWidth / 2;
             }
 
-            g.setStroke(makeMessageStroke());
             g.drawLine(startingX, getY(), endingX, getY());
             
-            // restore the original stroke
-            g.setStroke(originalStroke);
-
             // the arrowhead points to the right if the target role classifier
             // is further to the right (greater x)
 
@@ -123,8 +119,6 @@ public abstract class SDMessageGR extends GraphicalElement {
             }
         } else { // handle reflective message rendering 'ad-hoc'
         
-            g.setStroke(makeMessageStroke());
-
             GeneralPath path = new GeneralPath();
 
             if(this instanceof CallMessageGR)
@@ -137,8 +131,6 @@ public abstract class SDMessageGR extends GraphicalElement {
             path.lineTo(startingX, getY() + 15.0);
             g.draw(path);
 
-            // restore the original stroke
-            g.setStroke(originalStroke);
             drawMessageArrow(startingX, getY() + 15, false, g);
             g.setPaint(outlineColor);
 
@@ -148,9 +140,9 @@ public abstract class SDMessageGR extends GraphicalElement {
             String messageText = message.toString();
 
             g.drawString(messageText, startingX + 5, getY() - messageDY);
-
-
         }
+        // restore the original stroke
+        g.setStroke(originalStroke);
     }
 
     public boolean contains(Point2D point) {
@@ -189,6 +181,8 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     protected abstract Stroke makeMessageStroke();
 
+    protected abstract Stroke makeSelectedMessageStroke();
+
     public SDMessage getMessage() {
         return message;
     }
@@ -204,5 +198,7 @@ public abstract class SDMessageGR extends GraphicalElement {
     void setErrorMsg(String validatedStr) {
         errorMessage = validatedStr;
     }
+
+    public abstract boolean isReflective();
 
 }

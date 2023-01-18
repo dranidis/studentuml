@@ -1,13 +1,13 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.DestroyMessage;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.DestroyMessage;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  * 
@@ -22,7 +22,12 @@ public class DestroyMessageGR extends SDMessageGR {
 
     @Override
     protected Stroke makeMessageStroke() {
-        return new BasicStroke();
+        return GraphicsHelper.makeSolidStroke();
+    }
+
+    @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
     }
 
     @Override
@@ -66,4 +71,10 @@ public class DestroyMessageGR extends SDMessageGR {
         node.setAttribute("y", Integer.toString(getY()));
         streamer.streamObject(node, "message", getDestroyMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return false;
+    }
+    
 }

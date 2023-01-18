@@ -1,13 +1,13 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 public class CreateMessageGR extends CallMessageGR {
 
@@ -30,6 +30,11 @@ public class CreateMessageGR extends CallMessageGR {
     @Override
     protected Stroke makeMessageStroke() {
         return GraphicsHelper.makeDashedStroke();
+    }
+
+    @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     @Override
@@ -69,4 +74,10 @@ public class CreateMessageGR extends CallMessageGR {
         node.setAttribute("y", Integer.toString(getY()));
         streamer.streamObject(node, "message", getCreateMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return false;
+    }
+
 }

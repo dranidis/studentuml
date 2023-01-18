@@ -22,6 +22,7 @@ import edu.city.studentuml.model.domain.DecisionNode;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.FlowFinalNode;
 import edu.city.studentuml.model.domain.ForkNode;
@@ -33,6 +34,7 @@ import edu.city.studentuml.model.domain.MergeNode;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.Realization;
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
@@ -56,6 +58,7 @@ import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
+import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.FlowFinalNodeGR;
 import edu.city.studentuml.model.graphical.ForkNodeGR;
@@ -69,6 +72,9 @@ import edu.city.studentuml.model.graphical.MergeNodeGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemGR;
@@ -578,13 +584,32 @@ public class AddElementControllerFactory {
         case "SystemOperationGR":
             return new AddCallMessageController(model, frame);
         case "ReturnMessageGR":
-            return new AddReturnMessageController(model, frame);
+            return new AddSDLinkController(model, frame) {
+
+                @Override
+                protected SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y) {
+                    ReturnMessage message = new ReturnMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier(), "");
+                    return new ReturnMessageGR(roleA, roleB, message, y);
+                }
+
+            };
         case "CallMessageGR":
             return new AddCallMessageController(model, frame);
         case "CreateMessageGR":
             return new AddCreateMessageController((SDModel) model, frame);
         case "DestroyMessageGR":
-            return new AddDestroyMessageController((SDModel) model, frame);
+            return new AddSDLinkController(model, frame) {
+
+                @Override
+                protected SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y) {
+                    if (roleA == roleB) {
+                        return null;
+                    }
+                    DestroyMessage message = new DestroyMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier());
+                    return new DestroyMessageGR(roleA, roleB, message, y);                    
+                }
+
+            };
         case "ControlFlowGR":
             return new AddControlFlowController((ADModel) model, frame);
         case "ObjectFlowGR":
