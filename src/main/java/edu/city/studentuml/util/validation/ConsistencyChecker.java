@@ -120,10 +120,6 @@ public class ConsistencyChecker {
         classFacts.add(factObject);
     }
 
-    public Map<String, Vector<ConsistencyCheckerFact>> getFactTemplates() {
-        return factTemplates;
-    }
-
     public Rule getRule(String ruleName) {
 
         Optional<Rule> first = rules.stream().filter(rule -> rule.getName().equals(ruleName)).findFirst();
@@ -136,48 +132,58 @@ public class ConsistencyChecker {
 
    }
 
-    // must not throw exceptions!!
-    /**
-     * Creates new ruleBasedEngine (from prolog) asserts all the facts in to it
-     * (the facts are generated from the fact template explained above) and then
-     * for every rule that is defined in rules.txt, parsed and stored in the rules vector
-     * it executes those rules
-     *
-     */
+   /**
+    * Creates new ruleBasedEngine (from prolog) asserts all the facts in to it
+    * (the facts are generated from the fact template explained above) and then
+    * for every rule that is defined in rules.txt, parsed and stored in the rules
+    * vector
+    * it executes those rules
+    * 
+    * must not throw exceptions!!
+    *
+    * 
+    */
     public boolean checkState(Set<Object> objects, String executeRule, Set<String> messageTypes, CollectionTreeModel messages, CollectionTreeModel facts) {
         rbs = new RuleBasedEngine();
 
-        Vector<String> factsSet = new Vector<>();
+        Vector<String> factsList = new Vector<>();
 
-        objects.forEach(o -> rbsg.addRules(o, o.getClass(), factsSet, getFactTemplates()));
+        /*
+         * populates the facts in factsList using the factTemplates
+         */
+        objects.forEach(o -> rbsg.addRules(o, factsList, factTemplates));
 
-        // factsSet.forEach(f -> logger.finer("FACT: " + f));
+        factsList.forEach(f -> rbs.addClause(f));
 
-
-        factsSet.forEach(f -> rbs.addClause(f));
-
+        /*
+         * add only the facts in the tree, not the rules
+         */
         rbs.addClauseTableToFacts(facts);
 
         simplifications.forEach(f -> rbs.addClause("(" + f + ")"));
 
-        // rbs.addClauseTableToFacts(facts);
+        // rbs.addClauseTableToFacts(facts) // was here and was adding rules as well to the tree
 
         for (Rule rule : rules) {
 
-            String res = "all";
-            Hashtable rez = rbs.checkRule(rule.getexpression(), res.equals(rule.getresult()));
+            logger.finer("RULE: " + rule.getName());
 
+            String res = "all";
+            Hashtable<String, Hashtable<String, ?>> rez = (Hashtable<String,  Hashtable<String, ?>>) rbs.checkRule(rule.getexpression(), res.equals(rule.getresult()));
+            
             if (rez != null) {
+                logger.finer("Solutions: " + rez.keySet().size());
+
                 Iterator<String> solutionIterator = rez.keySet().iterator();
                 while (solutionIterator.hasNext()) {
                     String solutionName = solutionIterator.next();
 
                     messageTypes.add(rule.getSeverity());
                     messages.put(rule.getSeverity(), rule.getName());
-                    messages.put(rule.getName(), rule.getMessage((Hashtable) rez.get(solutionName)));
+                    messages.put(rule.getName(), rule.getMessage(rez.get(solutionName)));
 
                     if ((rule.getName().equals(executeRule) || "*".equals(executeRule))
-                            && rule.executeAction((Hashtable) rez.get(solutionName))) {
+                            && rule.executeAction(rez.get(solutionName))) {
                         return true;
                     }
 
@@ -186,6 +192,8 @@ public class ConsistencyChecker {
                 if (rule.getSeverity().equals("failure")) {
                     break;
                 }
+            } else {
+                logger.finer("Solutions: NULL");
             }
         }
 

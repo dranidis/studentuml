@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,1033,561" iconified="false" id="" internalid="dcdmodel0" maximized="true" name="DCD: dcd" scale="1.0" selected="true">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="144" y="41">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="249" y="162">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="B" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="B"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="411" y="109">
+        <object class="DesignClass" id="designclass" internalid="designclass8" name="C" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name="C"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+    </object>
+    <object class="SDModel" framex="0,0,1033,561" iconified="false" id="" internalid="sdmodel0" maximized="true" name="SD: sd" scale="1.0" selected="false">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="77">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="A" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="A"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="244">
+        <object class="SDObject" designclass="designclass1" id="sdobject" internalid="sdobject1" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass1" name="B" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass1" name="B"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr0" to="sdobjectgr1" y="69">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage0" iterative="false" name="m" returnType="void" returns="" to="sdobject1">
+          <object class="GenericOperation" id="operation" name="m"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter0" name="c" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="386">
+        <object class="SDObject" designclass="designclass8" id="sdobject" internalid="sdobject2" name="c">
+          <object class="DesignClass" id="designclass" internalid="designclass8" name="C" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name="C"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr1" id="" internalid="callmessagegr1" to="sdobjectgr2" y="96">
+        <object class="CallMessage" from="sdobject1" id="message" internalid="callmessage1" iterative="false" name="" returnType="" returns="" to="sdobject2">
+          <object class="GenericOperation" id="operation" name=""/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr0" to="sdobjectgr1" y="124">
+        <object class="ReturnMessage" from="sdobject2" id="message" internalid="returnmessage0" name="" to="sdobject1"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr1" to="sdobjectgr0" y="152">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage1" name="" to="sdobject0"/>
+      </object>
+    </object>
+  </object>
+</uml>

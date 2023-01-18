@@ -26,6 +26,7 @@ public class RuleBasedEngine {
     }
 
     public void addClause(String clause) {
+        logger.finer("Adding clause: " + clause);
 
         if (!clauseTable.containsKey(clause)) {
             modifyDatabase("assert", clause);
@@ -69,22 +70,32 @@ public class RuleBasedEngine {
         }
     }
 
-    // WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE
-    // IF A RULE FIRES FOR X,Y !!! THEN WE HAVE AN INVALD UML!!!
-    public synchronized Hashtable checkRule(String rule, boolean allSolutions) {
+
+    /**
+     * WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE
+     * IF A RULE FIRES FOR X,Y !!! THEN WE HAVE AN INVALD UML!!!
+     * 
+     * @param rule
+     * @param allSolutions
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized Hashtable<String,  Hashtable<String, ?>> checkRule(String rule, boolean allSolutions) {
         if (!rule.substring(rule.length() - 1).equals(".")) {
             rule = rule + ".";
         }
 
         try {
-            Hashtable ht = prolog.query(rule);
+            logger.finer("PROLOG Query: " + rule);
+            Hashtable<String,  Hashtable<String, ?>> ht = (Hashtable<String,  Hashtable<String, ?>>) prolog.query(rule);
             if (ht == null) {
                 return null;
             }
 
-            Hashtable results = new Hashtable();
+            Hashtable<String,  Hashtable<String, ?>> results = new Hashtable<>();
 
             int index = 0;
+
             while (ht != null) {
                 String solutionName = "solution" + index;
                 results.put(solutionName, ht);

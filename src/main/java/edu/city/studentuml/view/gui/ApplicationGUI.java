@@ -141,9 +141,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         umlProject.addObserver(this);
 
         setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
-
         showFactsTab(Settings.showFacts());
         showRuleEditorTab(Settings.showRules());
+
+        consistencyCheckTabbedPane.setSelectedIndex(0);
+
     }
 
     private void loadLookAndFeel() {
@@ -270,6 +272,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void createDiagramAndConsistencyArea() {
         consistencyCheckTabbedPane = new JTabbedPane();
+        consistencyCheckTabbedPane.setVisible(false);
+
         splitPane_1 = new JSplitPane();
         splitPane_1.setDividerSize(5);
         splitPane_1.setDividerLocation(450);
@@ -282,12 +286,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane_p);
 
+
         // scrollPane_f = new JScrollPane();
         // scrollPane_f.setViewportView(factsTree);
         consistencyCheckTabbedPane.addTab("Problems", null, panel, null);
         // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
         // null);
         // tabbedPane.addTab("Facts", null, scrollPane_f, null);
+
     }
 
     private void createFactsAndMessageTree() {
