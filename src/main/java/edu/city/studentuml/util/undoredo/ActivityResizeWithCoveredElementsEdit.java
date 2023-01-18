@@ -15,19 +15,19 @@ import java.util.List;
 public class ActivityResizeWithCoveredElementsEdit extends ResizeWithCoveredElementsEdit {
 
     public ActivityResizeWithCoveredElementsEdit(Resizable resizableElement,
-            SizeWithCoveredElements originalResize,
-            SizeWithCoveredElements newResize,
+            SizeWithCoveredElements<?> originalResize,
+            SizeWithCoveredElements<?> newResize,
             DiagramModel model) {
         super(resizableElement, originalResize, newResize, model);
     }
 
     @Override
-    protected void setContainingElements(Resizable resizable, SizeWithCoveredElements size) {
+    protected void setContainingElements(Resizable resizable, SizeWithCoveredElements<?> size) {
         if (resizable instanceof ActivityNodeGR) {
             ActivityNodeGR activityNode = (ActivityNodeGR) resizable;
             int finalSize = size.getContainingElements().size();
             int currentSize = activityNode.getNumberOfNodeComponents();
-            List finalNodes = size.getContainingElements();
+            List<?> finalNodes = size.getContainingElements();
 
             if (finalSize > currentSize) {
                 for (int i = 0; i < finalSize; i++) {

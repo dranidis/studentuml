@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="ADModel" framex="0,0,1033,899" iconified="false" id="" internalid="admodel0" maximized="true" name="AD: ad" scale="1.0" selected="true">
+      <object class="ActivityNodeGR" height="188" id="" internalid="activitynodegr0" uid="Desktop Application User" width="244" x="245" y="140">
+        <object class="ActivityNode" id="activitynode" internalid="activitynode0" name=""/>
+        <object id="nodes">
+          <object class="ActionNodeGR" id="" internalid="actionnodegr0" uid="Desktop Application User" x="318" y="191">
+            <object class="ActionNode" id="actionnode" internalid="actionnode0" name=""/>
+          </object>
+        </object>
+      </object>
+    </object>
+    <object class="UCDModel" framex="0,0,1033,899" iconified="false" id="" internalid="ucdmodel0" maximized="true" name="UCD: ucd" scale="1.0" selected="false">
+      <object class="SystemGR" height="180" id="" internalid="systemgr0" uid="Desktop Application User" width="298" x="316" y="165">
+        <object class="System" id="system" internalid="system0" name=""/>
+        <object id="ucdcomponents">
+          <object class="UseCaseGR" id="" internalid="usecasegr0" uid="Desktop Application User" x="385" y="218">
+            <object class="UseCase" id="useCase" internalid="usecase0" name=""/>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

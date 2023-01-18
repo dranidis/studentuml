@@ -8,19 +8,19 @@ import java.util.List;
  *
  * @author draganbisercic
  */
-public class SizeWithCoveredElements extends Size {
+public class SizeWithCoveredElements<E> extends Size {
 
-        List containingElements = new ArrayList<>();
+        List<E> containingElements = new ArrayList<>();
 
-        public void setContainingElements(List containingElements) {
+        public void setContainingElements(List<E> containingElements) {
             this.containingElements.clear();
-            Iterator i = containingElements.iterator();
+            Iterator<E> i = containingElements.iterator();
             while (i.hasNext()) {
                 this.containingElements.add(i.next());
             }
         }
 
-        public List getContainingElements() {
+        public List<E> getContainingElements() {
             return containingElements;
         }
     }

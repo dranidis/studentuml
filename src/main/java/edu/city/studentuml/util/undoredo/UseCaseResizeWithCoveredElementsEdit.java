@@ -15,19 +15,19 @@ import java.util.List;
 public class UseCaseResizeWithCoveredElementsEdit extends ResizeWithCoveredElementsEdit {
 
     public UseCaseResizeWithCoveredElementsEdit(Resizable resizableElement,
-            SizeWithCoveredElements originalResize,
-            SizeWithCoveredElements newResize,
+            SizeWithCoveredElements<?> originalResize,
+            SizeWithCoveredElements<?> newResize,
             DiagramModel model) {
         super(resizableElement, originalResize, newResize, model);
     }
 
     @Override
-    protected void setContainingElements(Resizable resizable, SizeWithCoveredElements size) {
+    protected void setContainingElements(Resizable resizable, SizeWithCoveredElements<?> size) {
         if (resizable instanceof SystemGR) {
             SystemGR systemGR = (SystemGR) resizable;
             int finalSize = size.getContainingElements().size();
             int currentSize = systemGR.getNumberOfElements();
-            List finalElements = size.getContainingElements();
+            List<?> finalElements = size.getContainingElements();
 
             if (finalSize > currentSize) {
                 for (int i = 0; i < finalSize; i++) {

@@ -27,7 +27,7 @@ public class ResizeWithCoveredElementsEditFactory {
         return ref;
     }
 
-    public AbstractUndoableEdit createResizeEdit(Resizable element, SizeWithCoveredElements undoSize, SizeWithCoveredElements redoSize, DiagramModel model) {
+    public AbstractUndoableEdit createResizeEdit(Resizable element, SizeWithCoveredElements<?> undoSize, SizeWithCoveredElements<?> redoSize, DiagramModel model) {
         if (model instanceof ADModel) {
             if (element instanceof ActivityNodeGR) {
                 return new ActivityResizeWithCoveredElementsEdit((ActivityNodeGR) element, undoSize, redoSize,(ADModel) model);
