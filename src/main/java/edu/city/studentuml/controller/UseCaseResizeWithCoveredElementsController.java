@@ -1,5 +1,8 @@
 package edu.city.studentuml.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.Resizable;
@@ -7,8 +10,6 @@ import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

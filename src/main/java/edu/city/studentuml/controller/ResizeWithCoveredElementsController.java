@@ -1,15 +1,5 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.util.SizeWithCoveredElements;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.Resizable;
-import edu.city.studentuml.model.graphical.ResizeHandle;
-import edu.city.studentuml.util.Size;
-import edu.city.studentuml.util.undoredo.CompoundResizeEdit;
-import edu.city.studentuml.util.undoredo.ResizeEdit;
-import edu.city.studentuml.util.undoredo.ResizeWithCoveredElementsEditFactory;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -23,6 +13,17 @@ import java.util.logging.Logger;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.Resizable;
+import edu.city.studentuml.model.graphical.ResizeHandle;
+import edu.city.studentuml.util.Size;
+import edu.city.studentuml.util.SizeWithCoveredElements;
+import edu.city.studentuml.util.undoredo.CompoundResizeEdit;
+import edu.city.studentuml.util.undoredo.ResizeEdit;
+import edu.city.studentuml.util.undoredo.ResizeWithCoveredElementsEditFactory;
+import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
  *
@@ -98,7 +99,7 @@ public abstract class ResizeWithCoveredElementsController {
             // disable selection controller
             selectionController.disable();
 
-            handle = resizableElement.getResizeHandle((int) p.x, (int) p.y);
+            handle = resizableElement.getResizeHandle(p.x, p.y);
 
             lastSize = new SizeWithCoveredElements();
             lastSize.setStartingPosition(resizableElement.getStartingPoint());

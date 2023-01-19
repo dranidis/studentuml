@@ -17,8 +17,7 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
  */
 public abstract class ResizeWithCoveredElementsEdit extends ResizeEdit {
 
-    // TODO: ? is for NodeComponentGR and UCDComponentGR but currently they are not related. No superclass
-    protected ResizeWithCoveredElementsEdit(Resizable resizableElement, SizeWithCoveredElements<?> originalResize, SizeWithCoveredElements<?> newResize, DiagramModel model) {
+    protected ResizeWithCoveredElementsEdit(Resizable resizableElement, SizeWithCoveredElements originalResize, SizeWithCoveredElements newResize, DiagramModel model) {
         super(resizableElement, originalResize, newResize, model);
     }
 
@@ -38,8 +37,8 @@ public abstract class ResizeWithCoveredElementsEdit extends ResizeEdit {
         resizable.setHeight((int) resize.getDimension().getHeight());
 
         // set the containing elements
-        if (resize instanceof SizeWithCoveredElements<?>) {
-             SizeWithCoveredElements<?> size = (SizeWithCoveredElements<?>) resize;
+        if (resize instanceof SizeWithCoveredElements) {
+             SizeWithCoveredElements size = (SizeWithCoveredElements) resize;
             setContainingElements(resizable, size);
         }
 
@@ -48,7 +47,5 @@ public abstract class ResizeWithCoveredElementsEdit extends ResizeEdit {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    protected void setContainingElements(Resizable resizable, SizeWithCoveredElements<?> size) {
-        // empty by default
-    }
+    protected abstract void setContainingElements(Resizable resizable, SizeWithCoveredElements size);
 }

@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.UCDComponent;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -9,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.UCDComponent;
+import edu.city.studentuml.util.Coverable;
+
 /**
  *
  * @author draganbisercic
  */
-public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR {
+public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR, Coverable {
 
     protected UCDComponent component;
     public static final UCDComponentGR DEFAULT_CONTEXT = null;

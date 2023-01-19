@@ -1,26 +1,22 @@
 package edu.city.studentuml.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  *
  * @author draganbisercic
  */
-public class SizeWithCoveredElements<E> extends Size {
+public class SizeWithCoveredElements extends Size {
 
-        List<E> containingElements = new ArrayList<>();
+        List<Coverable> containingElements = new ArrayList<>();
 
-        public void setContainingElements(List<E> containingElements) {
+        public void setContainingElements(List<? extends Coverable> containingElements) {
             this.containingElements.clear();
-            Iterator<E> i = containingElements.iterator();
-            while (i.hasNext()) {
-                this.containingElements.add(i.next());
-            }
+            this.containingElements.addAll(containingElements);
         }
 
-        public List<E> getContainingElements() {
+        public List<Coverable> getContainingElements() {
             return containingElements;
         }
     }

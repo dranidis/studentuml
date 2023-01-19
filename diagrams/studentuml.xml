@@ -1,278 +1,292 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <uml>
   <object class="UMLProject" id="project">
-    <object class="SDModel" framex="0,0,1032,899" iconified="false" id="" internalid="sdmodel6" maximized="true" name="SD: sd" scale="1.0" selected="true">
-      <object class="ActorInstanceGR" id="" internalid="actorinstancegr2" uid="Desktop Application User" x="39">
-        <object class="ActorInstance" id="actor" internalid="actorinstance2" name="">
-          <object class="Actor" id="actor" name=""/>
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel12" maximized="false" name="DCD: RESIZE" scale="0.9" selected="true">
+      <object class="ClassGR" id="" internalid="classgr123" uid="Desktop Application User" x="587" y="52">
+        <object class="DesignClass" id="designclass" internalid="designclass97" name="ResizeWithCoveredElementsController" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass100" name="ResizeWithCoveredElementsController"/>
+          <object id="attributes"/>
+          <object id="methods"/>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr33" uid="Desktop Application User" x="99">
-        <object class="SDObject" designclass="designclass5" id="sdobject" internalid="sdobject31" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass5" name="SystemWideObjectNamePool" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass5" name="SystemWideObjectNamePool"/>
-            <object id="attributes"/>
-            <object id="methods"/>
+      <object class="ClassGR" id="" internalid="classgr124" uid="Desktop Application User" x="511" y="277">
+        <object class="DesignClass" id="designclass" internalid="designclass101" name="UseCaseResizeWithCoveredElementsController" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass104" name="UseCaseResizeWithCoveredElementsController"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr124" class="GeneralizationGR" id="" internalid="generalizationgr63" super="classgr123">
+        <object base="designclass101" class="Generalization" id="generalization" internalid="generalization62" super="designclass97"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr125" uid="Desktop Application User" x="1045" y="648">
+        <object class="DesignClass" id="designclass" internalid="designclass102" name="Size" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass105" name="Size"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr126" uid="Desktop Application User" x="1206" y="663">
+        <object class="DesignClass" id="designclass" internalid="designclass103" name="Point" stereotype="java.awt">
+          <object class="GenericClass" id="generic" internalid="genericclass106" name="Point"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr127" uid="Desktop Application User" x="1206" y="746">
+        <object class="DesignClass" id="designclass" internalid="designclass104" name="Dimension" stereotype="java.awt">
+          <object class="GenericClass" id="generic" internalid="genericclass107" name="Dimension"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr125" classb="classgr126" id="" internalid="aggregationgr11">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation11" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass102" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass103" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr125" classb="classgr127" id="" internalid="aggregationgr12">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation12" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass102" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass104" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr128" uid="Desktop Application User" x="994" y="149">
+        <object class="DesignClass" id="designclass" internalid="designclass105" name="SizeWithCoveredElements" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass108" name="SizeWithCoveredElements"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr7" uid="Desktop Application User" x="333" y="691">
+        <object class="Interface" id="interface" internalid="interface4" name="Resizable">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr129" uid="Desktop Application User" x="115" y="389">
+        <object class="DesignClass" id="designclass" internalid="designclass38" name="SystemGR" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass38" name="SystemGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr129" id="" interfaceb="interfacegr7" internalid="realizationgr14">
+        <object a="designclass38" b="interface4" class="Realization" id="realization" internalid="realization14"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr130" uid="Desktop Application User" x="12" y="255">
+        <object class="DesignClass" id="designclass" internalid="designclass31" name="CompositeUCDElementGR" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass31" name="CompositeUCDElementGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr129" class="GeneralizationGR" id="" internalid="generalizationgr64" super="classgr130">
+        <object base="designclass38" class="Generalization" id="generalization" internalid="generalization63" super="designclass31"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr131" uid="Desktop Application User" x="290" y="480">
+        <object class="DesignClass" id="designclass" internalid="designclass106" name="ActivityNodeGR" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass109" name="ActivityNodeGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr131" id="" interfaceb="interfacegr7" internalid="realizationgr15">
+        <object a="designclass106" b="interface4" class="Realization" id="realization" internalid="realization15"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr132" uid="Desktop Application User" x="373" y="376">
+        <object class="DesignClass" id="designclass" internalid="designclass107" name="CompositeNodeGR" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass110" name="CompositeNodeGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr131" class="GeneralizationGR" id="" internalid="generalizationgr65" super="classgr132">
+        <object base="designclass106" class="Generalization" id="generalization" internalid="generalization63" super="designclass107"/>
+      </object>
+      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr15">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation15" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="lastSize"/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr16">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation16" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="undoSize"/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr17">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation17" labelDirection="3" name="" showArrow="false" strong="true">
+          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="redoSize"/>
+        </object>
+      </object>
+      <object base="classgr128" class="GeneralizationGR" id="" internalid="generalizationgr74" super="classgr125">
+        <object base="designclass105" class="Generalization" id="generalization" internalid="generalization71" super="designclass102"/>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr9" uid="Desktop Application User" x="1229" y="254">
+        <object class="Interface" id="interface" internalid="interface5" name="Coverable">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="AggregationGR" classa="classgr128" classb="interfacegr9" id="" internalid="aggregationgr18">
+        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation18" labelDirection="3" name="" showArrow="false" strong="false">
+          <object class="Role" classifier="designclass105" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="interface5" id="roleb" multiplicity="" name=""/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr141" uid="Desktop Application User" x="1289" y="468">
+        <object class="DesignClass" id="designclass" internalid="designclass108" name="NodeComponentGR" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass111" name="NodeComponentGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr141" id="" interfaceb="interfacegr9" internalid="realizationgr18">
+        <object a="designclass108" b="interface5" class="Realization" id="realization" internalid="realization16"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr142" uid="Desktop Application User" x="1136" y="379">
+        <object class="DesignClass" id="designclass" internalid="designclass32" name="UCDComponentGR" stereotype="abstract">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="UCDComponentGR"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr142" id="" interfaceb="interfacegr9" internalid="realizationgr19">
+        <object a="designclass32" b="interface5" class="Realization" id="realization" internalid="realization17"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr143" uid="Desktop Application User" x="613" y="378">
+        <object class="DesignClass" id="designclass" internalid="designclass115" name="ActivityResizeWithCoveredElementsController" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass117" name="ActivityResizeWithCoveredElementsController"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object base="classgr143" class="GeneralizationGR" id="" internalid="generalizationgr75" super="classgr123">
+        <object base="designclass115" class="Generalization" id="generalization" internalid="generalization72" super="designclass97"/>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr10" uid="Desktop Application User" x="310" y="23">
+        <object class="Interface" id="interface" internalid="interface6" name="Composite">
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="RealizationGR" classa="classgr130" id="" interfaceb="interfacegr10" internalid="realizationgr20">
+        <object a="designclass31" b="interface6" class="Realization" id="realization" internalid="realization18"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr12" textData="TOADD&#10;" to="interfacegr9" uid="Desktop Application User" x="1362" y="236"/>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr13" textData="TOADD" to="interfacegr10" uid="Desktop Application User" x="433" y="26"/>
+      <object class="RealizationGR" classa="classgr132" id="" interfaceb="interfacegr10" internalid="realizationgr21">
+        <object a="designclass107" b="interface6" class="Realization" id="realization" internalid="realization19"/>
+      </object>
+      <object class="InterfaceGR" id="" internalid="interfacegr11" uid="Desktop Application User" x="27" y="530">
+        <object class="Interface" id="interface" internalid="interface7" name="Covering">
+          <object id="methods">
+            <object class="Method" id="" internalid="method24" name="getContext" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+            <object class="Method" id="" internalid="method25" name="getNumberOfElements" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+            <object class="Method" id="" internalid="method26" name="getNumberOfElements" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
           </object>
         </object>
       </object>
-      <object class="CallMessageGR" from="actorinstancegr2" id="" internalid="callmessagegr55" to="sdobjectgr33" y="78">
-        <object class="CallMessage" from="actorinstance2" id="message" internalid="callmessage55" iterative="false" name="done" returnType="void" returns="" to="sdobject31">
-          <object class="GenericOperation" id="operation" name="done"/>
-          <object id="parameters"/>
+      <object class="AssociationGR" classa="classgr123" classb="interfacegr7" id="" internalid="associationgr42" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association42" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="interface4" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr64" to="actorinstancegr2" y="533">
-        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage64" name="" to="actorinstance2"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr56" to="sdobjectgr33" y="108">
-        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage56" iterative="false" name="regenarateRuleSet" returnType="void" returns="" to="sdobject31">
-          <object class="GenericOperation" id="operation" name="regenarateRuleSet"/>
-          <object id="parameters"/>
+      <object class="ClassGR" id="" internalid="classgr158" uid="Desktop Application User" x="652" y="785">
+        <object class="DesignClass" id="designclass" internalid="designclass122" name="ResizeWithCoveredElementsEdit" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass124" name="ResizeWithCoveredElementsEdit"/>
+          <object id="attributes"/>
+          <object id="methods"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr65" to="sdobjectgr33" y="508">
-        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage65" name="" to="sdobject31"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr57" to="sdobjectgr33" y="143">
-        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage57" iterative="false" name="generateRuleSet" returnType="void" returns="" to="sdobject31">
-          <object class="GenericOperation" id="operation" name="generateRuleSet"/>
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter38" name="objectMap" type=""/>
-          </object>
+      <object class="ClassGR" id="" internalid="classgr159" uid="Desktop Application User" x="661" y="655">
+        <object class="DesignClass" id="designclass" internalid="designclass123" name="ResizeEdit" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass125" name="ResizeEdit"/>
+          <object id="attributes"/>
+          <object id="methods"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr66" to="sdobjectgr33" y="483">
-        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage66" name="" to="sdobject31"/>
+      <object base="classgr158" class="GeneralizationGR" id="" internalid="generalizationgr87" super="classgr159">
+        <object base="designclass122" class="Generalization" id="generalization" internalid="generalization78" super="designclass123"/>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr34" uid="Desktop Application User" x="332">
-        <object class="SDObject" designclass="designclass129" id="sdobject" internalid="sdobject32" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass129" name="ConsistencyChecker" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass121" name="ConsistencyChecker"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
+      <object class="ClassGR" id="" internalid="classgr160" uid="Desktop Application User" x="617" y="523">
+        <object class="DesignClass" id="designclass" internalid="designclass85" name="AbstractUndoableEdit" stereotype="javax.swing.undo">
+          <object class="GenericClass" id="generic" internalid="genericclass78" name="AbstractUndoableEdit"/>
+          <object id="attributes"/>
+          <object id="methods"/>
         </object>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr58" to="sdobjectgr34" y="181">
-        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage58" iterative="false" name="checkState" returnType="void" returns="" to="sdobject32">
-          <object class="GenericOperation" id="operation" name="checkState"/>
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter44" name="objectMapmap.keySet()" type=""/>
-            <object class="MethodParameter" id="" internalid="methodparameter52" name="selectedRule" type=""/>
-            <object class="MethodParameter" id="" internalid="methodparameter57" name="messageTypes" type=""/>
-            <object class="MethodParameter" id="" internalid="methodparameter58" name="messages" type=""/>
-            <object class="MethodParameter" id="" internalid="methodparameter59" name="facts" type=""/>
-          </object>
+      <object base="classgr159" class="GeneralizationGR" id="" internalid="generalizationgr88" super="classgr160">
+        <object base="designclass123" class="Generalization" id="generalization" internalid="generalization79" super="designclass85"/>
+      </object>
+      <object class="AssociationGR" classa="classgr159" classb="interfacegr7" id="" internalid="associationgr45" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association45" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass123" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="interface4" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr34" id="" internalid="returnmessagegr67" to="sdobjectgr33" y="473">
-        <object class="ReturnMessage" from="sdobject32" id="message" internalid="returnmessage67" name="" to="sdobject31"/>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr35" uid="Desktop Application User" x="533">
-        <object class="SDObject" designclass="designclass130" id="sdobject" internalid="sdobject33" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass130" name="RuleBasedEngine" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass122" name="RuleBasedEngine"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
+      <object class="AssociationGR" classa="classgr159" classb="classgr125" id="" internalid="associationgr46" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association46" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass123" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass102" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr34" id="" internalid="createmessagegr9" to="sdobjectgr35" y="197">
-        <object class="CreateMessage" from="sdobject32" id="message" internalid="createmessage9" to="sdobject33">
-          <object id="parameters"/>
+      <object class="AssociationGR" classa="classgr159" classb="classgr125" id="" internalid="associationgr47" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association47" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass123" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="designclass102" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr35" id="" internalid="returnmessagegr68" to="sdobjectgr34" y="219">
-        <object class="ReturnMessage" from="sdobject33" id="message" internalid="returnmessage68" name="" to="sdobject32"/>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr36" uid="Desktop Application User" x="631">
-        <object class="SDObject" designclass="designclass133" id="sdobject" internalid="sdobject34" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass133" name="RuleBasedSystemGenerator" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass123" name="RuleBasedSystemGenerator"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
+      <object class="ClassGR" id="" internalid="classgr161" uid="Desktop Application User" x="489" y="625">
+        <object class="DesignClass" id="designclass" internalid="designclass6" name="DiagramModel" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass6" name="DiagramModel"/>
+          <object id="attributes"/>
+          <object id="methods"/>
         </object>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr34" id="" internalid="callmessagegr59" to="sdobjectgr36" y="422">
-        <object class="CallMessage" from="sdobject32" id="message" internalid="callmessage59" iterative="true" name="addRules" returnType="void" returns="" to="sdobject34">
-          <object class="GenericOperation" id="operation" name="addRules"/>
-          <object id="parameters"/>
+      <object class="AssociationGR" classa="classgr159" classb="classgr161" id="" internalid="associationgr48" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association48" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass123" id="rolea" multiplicity="" name=""/>
+          <object class="Role" classifier="" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr36" id="" internalid="returnmessagegr69" to="sdobjectgr34" y="450">
-        <object class="ReturnMessage" from="sdobject34" id="message" internalid="returnmessage69" name="" to="sdobject32"/>
+      <object class="ClassGR" id="" internalid="classgr162" uid="Desktop Application User" x="21" y="784">
+        <object class="DesignClass" id="designclass" internalid="designclass124" name="ResizeWithCoveredElementsEditFactory" stereotype="singleton">
+          <object class="GenericClass" id="generic" name="ResizeWithCoveredElementsEditFactory"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
       </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr16" textData="for each object in the keySet" to="callmessagegr59" uid="Desktop Application User" x="463" y="345"/>
+      <object class="ClassGR" id="" internalid="classgr163" uid="Desktop Application User" x="350" y="770">
+        <object class="DesignClass" id="designclass" internalid="designclass125" name="ActivityResizeWithCoveredElementsEdit" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass127" name="ActivityResizeWithCoveredElementsEdit"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr162" classb="classgr163" id="" internalid="dependencygr13">
+        <object class="Dependency" from="designclass124" id="dependency" internalid="dependency13" to="designclass125"/>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr164" uid="Desktop Application User" x="368" y="873">
+        <object class="DesignClass" id="designclass" internalid="designclass126" name="UseCaseResizeWithCoveredElementsEdit" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass128" name="UseCaseResizeWithCoveredElementsEdit"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr162" classb="classgr164" id="" internalid="dependencygr14">
+        <object class="Dependency" from="designclass124" id="dependency" internalid="dependency14" to="designclass126"/>
+      </object>
     </object>
-    <object class="SDModel" framex="0,0,1032,899" iconified="false" id="" internalid="sdmodel5" maximized="true" name="SD: sd" scale="1.0" selected="false">
-      <object class="SDObjectGR" id="" internalid="sdobjectgr28" uid="Desktop Application User" x="34">
-        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject23" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr30" uid="Desktop Application User" x="171">
-        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject28" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="CreateMessageGR" from="sdobjectgr28" id="" internalid="createmessagegr7" to="sdobjectgr30" y="88">
-        <object class="CreateMessage" from="sdobject23" id="message" internalid="createmessage7" to="sdobject28">
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter34" name="frame" type=""/>
-          </object>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr60" to="sdobjectgr28" y="424">
-        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage60" name="" to="sdobject23"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr51" to="sdobjectgr30" y="133">
-        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage51" iterative="false" name="initialize" returnType="void" returns="" to="sdobject28">
-          <object class="GenericOperation" id="operation" name="initialize"/>
-          <object id="parameters"/>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr59" to="sdobjectgr30" y="398">
-        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage59" name="" to="sdobject28"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr53" to="sdobjectgr30" y="167">
-        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage53" iterative="false" name="initializeRules" returnType="void" returns="" to="sdobject28">
-          <object class="GenericOperation" id="operation" name="initializeRules"/>
-          <object id="parameters"/>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr61" to="sdobjectgr30" y="352">
-        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage61" name="" to="sdobject28"/>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr31" uid="Desktop Application User" x="432">
-        <object class="SDObject" designclass="designclass5" id="sdobject" internalid="sdobject29" name="singleton">
-          <object class="DesignClass" id="designclass" internalid="designclass5" name="SystemWideObjectNamePool" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass5" name="SystemWideObjectNamePool"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr54" to="sdobjectgr31" y="207">
-        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage54" iterative="false" name="setRuleFileAndCreateConsistencyChecker" returnType="void" returns="" to="sdobject29">
-          <object class="GenericOperation" id="operation" name="setRuleFileAndCreateConsistencyChecker"/>
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter43" name="rulesFile" type=""/>
-          </object>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr31" id="" internalid="returnmessagegr62" to="sdobjectgr30" y="317">
-        <object class="ReturnMessage" from="sdobject29" id="message" internalid="returnmessage62" name="" to="sdobject28"/>
-      </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr15" textData="more code after init(rulesfile)" to="callmessagegr53" uid="Desktop Application User" x="288" y="224"/>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr32" uid="Desktop Application User" x="667">
-        <object class="SDObject" designclass="designclass129" id="sdobject" internalid="sdobject30" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass129" name="ConsistencyChecker" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass121" name="ConsistencyChecker"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="CreateMessageGR" from="sdobjectgr31" id="" internalid="createmessagegr8" to="sdobjectgr32" y="236">
-        <object class="CreateMessage" from="sdobject29" id="message" internalid="createmessage8" to="sdobject30">
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter39" name="rulesflile" type=""/>
-          </object>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr32" id="" internalid="returnmessagegr63" to="sdobjectgr31" y="291">
-        <object class="ReturnMessage" from="sdobject30" id="message" internalid="returnmessage63" name="" to="sdobject29"/>
-      </object>
-    </object>
-    <object class="SDModel" framex="35,51,756,429" iconified="false" id="" internalid="sdmodel4" maximized="false" name="SD: sd" scale="0.9" selected="false">
-      <object class="SDObjectGR" id="" internalid="sdobjectgr25" uid="Desktop Application User" x="19">
-        <object class="SDObject" designclass="designclass119" id="sdobject" internalid="sdobject24" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass119" name="" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass118" name=""/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr26" uid="Desktop Application User" x="132">
-        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject25" name="">
-          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr27" uid="Desktop Application User" x="276">
-        <object class="SDObject" designclass="designclass74" id="sdobject" internalid="sdobject26" name="frame">
-          <object class="DesignClass" id="designclass" internalid="designclass74" name="DCDInternalFrame" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass73" name="DCDInternalFrame"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="CreateMessageGR" from="sdobjectgr26" id="" internalid="createmessagegr6" to="sdobjectgr27" y="133">
-        <object class="CreateMessage" from="sdobject25" id="message" internalid="createmessage6" to="sdobject26">
-          <object id="parameters"/>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr27" id="" internalid="returnmessagegr55" to="sdobjectgr26" y="165">
-        <object class="ReturnMessage" from="sdobject26" id="message" internalid="returnmessage55" name="" to="sdobject25"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr25" id="" internalid="callmessagegr49" to="sdobjectgr26" y="60">
-        <object class="CallMessage" from="sdobject24" id="message" internalid="callmessage49" iterative="false" name="" returnType="" returns="" to="sdobject25">
-          <object class="GenericOperation" id="operation" name=""/>
-          <object id="parameters"/>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr26" id="" internalid="returnmessagegr56" to="sdobjectgr25" y="253">
-        <object class="ReturnMessage" from="sdobject25" id="message" internalid="returnmessage56" name="" to="sdobject24"/>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr26" id="" internalid="callmessagegr50" to="sdobjectgr26" y="99">
-        <object class="CallMessage" from="sdobject25" id="message" internalid="callmessage50" iterative="false" name="addInternalFrame" returnType="void" returns="" to="sdobject25">
-          <object class="GenericOperation" id="operation" name="addInternalFrame"/>
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter17" name="model" type="DiagramModel"/>
-            <object class="MethodParameter" id="" internalid="methodparameter31" name="rectangle" type=""/>
-          </object>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr26" id="" internalid="returnmessagegr57" to="sdobjectgr26" y="223">
-        <object class="ReturnMessage" from="sdobject25" id="message" internalid="returnmessage57" name="" to="sdobject25"/>
-      </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr29" uid="Desktop Application User" x="562">
-        <object class="SDObject" designclass="designclass128" id="sdobject" internalid="sdobject27" name="desktopPane">
-          <object class="DesignClass" id="designclass" internalid="designclass128" name="JDesktopPane" stereotype="">
-            <object class="GenericClass" id="generic" internalid="genericclass118" name="JDesktopPane"/>
-            <object id="attributes"/>
-            <object id="methods"/>
-          </object>
-        </object>
-      </object>
-      <object class="CallMessageGR" from="sdobjectgr26" id="" internalid="callmessagegr52" to="sdobjectgr29" y="185">
-        <object class="CallMessage" from="sdobject25" id="message" internalid="callmessage52" iterative="false" name="add" returnType="void" returns="" to="sdobject27">
-          <object class="GenericOperation" id="operation" name="add"/>
-          <object id="parameters">
-            <object class="MethodParameter" id="" internalid="methodparameter45" name="frame" type=""/>
-          </object>
-        </object>
-      </object>
-      <object class="ReturnMessageGR" from="sdobjectgr29" id="" internalid="returnmessagegr58" to="sdobjectgr26" y="210">
-        <object class="ReturnMessage" from="sdobject27" id="message" internalid="returnmessage58" name="" to="sdobject25"/>
-      </object>
-    </object>
-    <object class="DCDModel" framex="0,0,1032,899" iconified="false" id="" internalid="dcdmodel4" maximized="true" name="DCD: GraphicalElement" scale="0.75" selected="false">
+    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel4" maximized="true" name="DCD: GraphicalElement" scale="0.75" selected="false">
       <object class="ClassGR" id="" internalid="classgr47" uid="Desktop Application User" x="653" y="51">
         <object class="DesignClass" id="designclass" internalid="designclass26" name="GraphicalElement" stereotype="abstract">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="GraphicalElement"/>
@@ -694,7 +708,7 @@
       <object base="classgr145" class="GeneralizationGR" id="" internalid="generalizationgr76" super="classgr144">
         <object base="designclass25" class="Generalization" id="generalization" internalid="generalization0" super="designclass18"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr146" uid="Desktop Application User" x="136" y="337">
+      <object class="ClassGR" id="" internalid="classgr146" uid="Desktop Application User" x="130" y="322">
         <object class="DesignClass" id="designclass" internalid="designclass32" name="UCDComponentGR" stereotype="abstract">
           <object class="GenericClass" id="generic" internalid="genericclass17" name="UCDComponentGR"/>
           <object id="attributes"/>
@@ -704,7 +718,7 @@
       <object base="classgr146" class="GeneralizationGR" id="" internalid="generalizationgr77" super="classgr47">
         <object base="designclass32" class="Generalization" id="generalization" internalid="generalization73" super="designclass26"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr147" uid="Desktop Application User" x="54" y="455">
+      <object class="ClassGR" id="" internalid="classgr147" uid="Desktop Application User" x="18" y="456">
         <object class="DesignClass" id="designclass" internalid="designclass31" name="CompositeUCDElementGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass31" name="CompositeUCDElementGR"/>
           <object id="attributes"/>
@@ -714,7 +728,7 @@
       <object base="classgr147" class="GeneralizationGR" id="" internalid="generalizationgr79" super="classgr146">
         <object base="designclass31" class="Generalization" id="generalization" internalid="generalization1" super="designclass32"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr148" uid="Desktop Application User" x="130" y="569">
+      <object class="ClassGR" id="" internalid="classgr148" uid="Desktop Application User" x="71" y="569">
         <object class="DesignClass" id="designclass" internalid="designclass38" name="SystemGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass38" name="SystemGR"/>
           <object id="attributes"/>
@@ -724,7 +738,7 @@
       <object base="classgr148" class="GeneralizationGR" id="" internalid="generalizationgr80" super="classgr147">
         <object base="designclass38" class="Generalization" id="generalization" internalid="generalization2" super="designclass31"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr152" uid="Desktop Application User" x="293" y="457">
+      <object class="ClassGR" id="" internalid="classgr152" uid="Desktop Application User" x="217" y="454">
         <object class="DesignClass" id="designclass" internalid="designclass36" name="LeafUCDElementGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass36" name="LeafUCDElementGR"/>
           <object id="attributes"/>
@@ -734,7 +748,7 @@
       <object base="classgr152" class="GeneralizationGR" id="" internalid="generalizationgr81" super="classgr146">
         <object base="designclass36" class="Generalization" id="generalization" internalid="generalization3" super="designclass32"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr153" uid="Desktop Application User" x="264" y="567">
+      <object class="ClassGR" id="" internalid="classgr153" uid="Desktop Application User" x="176" y="567">
         <object class="DesignClass" id="designclass" internalid="designclass37" name="UCActorGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass37" name="UCActorGR"/>
           <object id="attributes"/>
@@ -744,7 +758,7 @@
       <object base="classgr153" class="GeneralizationGR" id="" internalid="generalizationgr82" super="classgr152">
         <object base="designclass37" class="Generalization" id="generalization" internalid="generalization4" super="designclass36"/>
       </object>
-      <object class="ClassGR" id="" internalid="classgr154" uid="Desktop Application User" x="351" y="567">
+      <object class="ClassGR" id="" internalid="classgr154" uid="Desktop Application User" x="217" y="648">
         <object class="DesignClass" id="designclass" internalid="designclass35" name="UseCaseGR" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass35" name="UseCaseGR"/>
           <object id="attributes"/>
@@ -798,6 +812,277 @@
       </object>
       <object class="RealizationGR" classa="classgr146" id="" interfaceb="interfacegr2" internalid="realizationgr23">
         <object a="designclass32" b="interface1" class="Realization" id="realization" internalid="realization21"/>
+      </object>
+    </object>
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel5" maximized="true" name="SD: sd" scale="1.0" selected="false">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr28" uid="Desktop Application User" x="34">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject23" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr30" uid="Desktop Application User" x="171">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject28" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr28" id="" internalid="createmessagegr7" to="sdobjectgr30" y="88">
+        <object class="CreateMessage" from="sdobject23" id="message" internalid="createmessage7" to="sdobject28">
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter34" name="frame" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr60" to="sdobjectgr28" y="424">
+        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage60" name="" to="sdobject23"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr51" to="sdobjectgr30" y="133">
+        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage51" iterative="false" name="initialize" returnType="void" returns="" to="sdobject28">
+          <object class="GenericOperation" id="operation" name="initialize"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr59" to="sdobjectgr30" y="398">
+        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage59" name="" to="sdobject28"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr53" to="sdobjectgr30" y="167">
+        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage53" iterative="false" name="initializeRules" returnType="void" returns="" to="sdobject28">
+          <object class="GenericOperation" id="operation" name="initializeRules"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr30" id="" internalid="returnmessagegr61" to="sdobjectgr30" y="352">
+        <object class="ReturnMessage" from="sdobject28" id="message" internalid="returnmessage61" name="" to="sdobject28"/>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr31" uid="Desktop Application User" x="432">
+        <object class="SDObject" designclass="designclass5" id="sdobject" internalid="sdobject29" name="singleton">
+          <object class="DesignClass" id="designclass" internalid="designclass5" name="SystemWideObjectNamePool" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass5" name="SystemWideObjectNamePool"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr30" id="" internalid="callmessagegr54" to="sdobjectgr31" y="207">
+        <object class="CallMessage" from="sdobject28" id="message" internalid="callmessage54" iterative="false" name="setRuleFileAndCreateConsistencyChecker" returnType="void" returns="" to="sdobject29">
+          <object class="GenericOperation" id="operation" name="setRuleFileAndCreateConsistencyChecker"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter43" name="rulesFile" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr31" id="" internalid="returnmessagegr62" to="sdobjectgr30" y="317">
+        <object class="ReturnMessage" from="sdobject29" id="message" internalid="returnmessage62" name="" to="sdobject28"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr15" textData="more code after init(rulesfile)" to="callmessagegr53" uid="Desktop Application User" x="288" y="224"/>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr32" uid="Desktop Application User" x="667">
+        <object class="SDObject" designclass="designclass129" id="sdobject" internalid="sdobject30" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass129" name="ConsistencyChecker" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass121" name="ConsistencyChecker"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr31" id="" internalid="createmessagegr8" to="sdobjectgr32" y="236">
+        <object class="CreateMessage" from="sdobject29" id="message" internalid="createmessage8" to="sdobject30">
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter39" name="rulesflile" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr32" id="" internalid="returnmessagegr63" to="sdobjectgr31" y="291">
+        <object class="ReturnMessage" from="sdobject30" id="message" internalid="returnmessage63" name="" to="sdobject29"/>
+      </object>
+    </object>
+    <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel6" maximized="true" name="SD: sd" scale="1.0" selected="false">
+      <object class="ActorInstanceGR" id="" internalid="actorinstancegr2" uid="Desktop Application User" x="39">
+        <object class="ActorInstance" id="actor" internalid="actorinstance2" name="">
+          <object class="Actor" id="actor" name=""/>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr33" uid="Desktop Application User" x="99">
+        <object class="SDObject" designclass="designclass5" id="sdobject" internalid="sdobject31" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass5" name="SystemWideObjectNamePool" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass5" name="SystemWideObjectNamePool"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="actorinstancegr2" id="" internalid="callmessagegr55" to="sdobjectgr33" y="78">
+        <object class="CallMessage" from="actorinstance2" id="message" internalid="callmessage55" iterative="false" name="done" returnType="void" returns="" to="sdobject31">
+          <object class="GenericOperation" id="operation" name="done"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr64" to="actorinstancegr2" y="533">
+        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage64" name="" to="actorinstance2"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr56" to="sdobjectgr33" y="108">
+        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage56" iterative="false" name="regenarateRuleSet" returnType="void" returns="" to="sdobject31">
+          <object class="GenericOperation" id="operation" name="regenarateRuleSet"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr65" to="sdobjectgr33" y="508">
+        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage65" name="" to="sdobject31"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr57" to="sdobjectgr33" y="143">
+        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage57" iterative="false" name="generateRuleSet" returnType="void" returns="" to="sdobject31">
+          <object class="GenericOperation" id="operation" name="generateRuleSet"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter38" name="objectMap" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr33" id="" internalid="returnmessagegr66" to="sdobjectgr33" y="483">
+        <object class="ReturnMessage" from="sdobject31" id="message" internalid="returnmessage66" name="" to="sdobject31"/>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr34" uid="Desktop Application User" x="332">
+        <object class="SDObject" designclass="designclass129" id="sdobject" internalid="sdobject32" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass129" name="ConsistencyChecker" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass121" name="ConsistencyChecker"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr33" id="" internalid="callmessagegr58" to="sdobjectgr34" y="181">
+        <object class="CallMessage" from="sdobject31" id="message" internalid="callmessage58" iterative="false" name="checkState" returnType="void" returns="" to="sdobject32">
+          <object class="GenericOperation" id="operation" name="checkState"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter44" name="objectMapmap.keySet()" type=""/>
+            <object class="MethodParameter" id="" internalid="methodparameter52" name="selectedRule" type=""/>
+            <object class="MethodParameter" id="" internalid="methodparameter57" name="messageTypes" type=""/>
+            <object class="MethodParameter" id="" internalid="methodparameter58" name="messages" type=""/>
+            <object class="MethodParameter" id="" internalid="methodparameter59" name="facts" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr34" id="" internalid="returnmessagegr67" to="sdobjectgr33" y="473">
+        <object class="ReturnMessage" from="sdobject32" id="message" internalid="returnmessage67" name="" to="sdobject31"/>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr35" uid="Desktop Application User" x="533">
+        <object class="SDObject" designclass="designclass130" id="sdobject" internalid="sdobject33" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass130" name="RuleBasedEngine" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass122" name="RuleBasedEngine"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr34" id="" internalid="createmessagegr9" to="sdobjectgr35" y="197">
+        <object class="CreateMessage" from="sdobject32" id="message" internalid="createmessage9" to="sdobject33">
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr35" id="" internalid="returnmessagegr68" to="sdobjectgr34" y="219">
+        <object class="ReturnMessage" from="sdobject33" id="message" internalid="returnmessage68" name="" to="sdobject32"/>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr36" uid="Desktop Application User" x="631">
+        <object class="SDObject" designclass="designclass133" id="sdobject" internalid="sdobject34" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass133" name="RuleBasedSystemGenerator" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass123" name="RuleBasedSystemGenerator"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr34" id="" internalid="callmessagegr59" to="sdobjectgr36" y="422">
+        <object class="CallMessage" from="sdobject32" id="message" internalid="callmessage59" iterative="true" name="addRules" returnType="void" returns="" to="sdobject34">
+          <object class="GenericOperation" id="operation" name="addRules"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr36" id="" internalid="returnmessagegr69" to="sdobjectgr34" y="450">
+        <object class="ReturnMessage" from="sdobject34" id="message" internalid="returnmessage69" name="" to="sdobject32"/>
+      </object>
+      <object class="UMLNoteGR" id="" internalid="umlnotegr16" textData="for each object in the keySet" to="callmessagegr59" uid="Desktop Application User" x="463" y="345"/>
+    </object>
+    <object class="SDModel" framex="35,51,756,429" iconified="false" id="" internalid="sdmodel4" maximized="false" name="SD: sd" scale="0.9" selected="false">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr25" uid="Desktop Application User" x="19">
+        <object class="SDObject" designclass="designclass119" id="sdobject" internalid="sdobject24" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass119" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass118" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr26" uid="Desktop Application User" x="132">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject25" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr27" uid="Desktop Application User" x="276">
+        <object class="SDObject" designclass="designclass74" id="sdobject" internalid="sdobject26" name="frame">
+          <object class="DesignClass" id="designclass" internalid="designclass74" name="DCDInternalFrame" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass73" name="DCDInternalFrame"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr26" id="" internalid="createmessagegr6" to="sdobjectgr27" y="133">
+        <object class="CreateMessage" from="sdobject25" id="message" internalid="createmessage6" to="sdobject26">
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr27" id="" internalid="returnmessagegr55" to="sdobjectgr26" y="165">
+        <object class="ReturnMessage" from="sdobject26" id="message" internalid="returnmessage55" name="" to="sdobject25"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr25" id="" internalid="callmessagegr49" to="sdobjectgr26" y="60">
+        <object class="CallMessage" from="sdobject24" id="message" internalid="callmessage49" iterative="false" name="" returnType="" returns="" to="sdobject25">
+          <object class="GenericOperation" id="operation" name=""/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr26" id="" internalid="returnmessagegr56" to="sdobjectgr25" y="253">
+        <object class="ReturnMessage" from="sdobject25" id="message" internalid="returnmessage56" name="" to="sdobject24"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr26" id="" internalid="callmessagegr50" to="sdobjectgr26" y="99">
+        <object class="CallMessage" from="sdobject25" id="message" internalid="callmessage50" iterative="false" name="addInternalFrame" returnType="void" returns="" to="sdobject25">
+          <object class="GenericOperation" id="operation" name="addInternalFrame"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter17" name="model" type="DiagramModel"/>
+            <object class="MethodParameter" id="" internalid="methodparameter31" name="rectangle" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr26" id="" internalid="returnmessagegr57" to="sdobjectgr26" y="223">
+        <object class="ReturnMessage" from="sdobject25" id="message" internalid="returnmessage57" name="" to="sdobject25"/>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr29" uid="Desktop Application User" x="562">
+        <object class="SDObject" designclass="designclass128" id="sdobject" internalid="sdobject27" name="desktopPane">
+          <object class="DesignClass" id="designclass" internalid="designclass128" name="JDesktopPane" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass118" name="JDesktopPane"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr26" id="" internalid="callmessagegr52" to="sdobjectgr29" y="185">
+        <object class="CallMessage" from="sdobject25" id="message" internalid="callmessage52" iterative="false" name="add" returnType="void" returns="" to="sdobject27">
+          <object class="GenericOperation" id="operation" name="add"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter45" name="frame" type=""/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr29" id="" internalid="returnmessagegr58" to="sdobjectgr26" y="210">
+        <object class="ReturnMessage" from="sdobject27" id="message" internalid="returnmessage58" name="" to="sdobject25"/>
       </object>
     </object>
     <object class="SDModel" framex="0,0,1475,885" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: addSDObject" scale="0.8" selected="false">
@@ -1071,7 +1356,7 @@
       <object class="MultiObjectGR" id="" internalid="multiobjectgr2" uid="Desktop Application User" x="753">
         <object class="MultiObject" designclass="designclass26" id="multiobject" internalid="multiobject2" name="">
           <object class="DesignClass" id="designclass" internalid="designclass26" name="GraphicalElement" stereotype="abstract">
-            <object class="GenericClass" id="generic" internalid="genericclass7" name="GraphicalElement"/>
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="GraphicalElement"/>
             <object id="attributes"/>
             <object id="methods"/>
           </object>
@@ -1196,206 +1481,6 @@
         <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation1" labelDirection="3" name="" showArrow="false" strong="false">
           <object class="Role" classifier="designclass6" id="rolea" multiplicity="" name=""/>
           <object class="Role" classifier="designclass26" id="roleb" multiplicity="*" name=""/>
-        </object>
-      </object>
-    </object>
-    <object class="DCDModel" framex="0,0,1475,885" iconified="false" id="" internalid="dcdmodel12" maximized="false" name="DCD: RESIZE" scale="0.9" selected="false">
-      <object class="ClassGR" id="" internalid="classgr123" uid="Desktop Application User" x="587" y="52">
-        <object class="DesignClass" id="designclass" internalid="designclass97" name="ResizeWithCoveredElementsController" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass100" name="ResizeWithCoveredElementsController"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr124" uid="Desktop Application User" x="511" y="277">
-        <object class="DesignClass" id="designclass" internalid="designclass101" name="UseCaseResizeWithCoveredElementsController" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass104" name="UseCaseResizeWithCoveredElementsController"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object base="classgr124" class="GeneralizationGR" id="" internalid="generalizationgr63" super="classgr123">
-        <object base="designclass101" class="Generalization" id="generalization" internalid="generalization62" super="designclass97"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr125" uid="Desktop Application User" x="1224" y="58">
-        <object class="DesignClass" id="designclass" internalid="designclass102" name="Size" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass105" name="Size"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr126" uid="Desktop Application User" x="1386" y="25">
-        <object class="DesignClass" id="designclass" internalid="designclass103" name="Point" stereotype="java.awt">
-          <object class="GenericClass" id="generic" internalid="genericclass106" name="Point"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr127" uid="Desktop Application User" x="1386" y="108">
-        <object class="DesignClass" id="designclass" internalid="designclass104" name="Dimension" stereotype="java.awt">
-          <object class="GenericClass" id="generic" internalid="genericclass107" name="Dimension"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="AggregationGR" classa="classgr125" classb="classgr126" id="" internalid="aggregationgr11">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation11" labelDirection="3" name="" showArrow="false" strong="true">
-          <object class="Role" classifier="designclass102" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="designclass103" id="roleb" multiplicity="" name=""/>
-        </object>
-      </object>
-      <object class="AggregationGR" classa="classgr125" classb="classgr127" id="" internalid="aggregationgr12">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation12" labelDirection="3" name="" showArrow="false" strong="true">
-          <object class="Role" classifier="designclass102" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="designclass104" id="roleb" multiplicity="" name=""/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr128" uid="Desktop Application User" x="980" y="57">
-        <object class="DesignClass" id="designclass" internalid="designclass105" name="SizeWithCoveredElements" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass108" name="SizeWithCoveredElements"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="InterfaceGR" id="" internalid="interfacegr7" uid="Desktop Application User" x="268" y="169">
-        <object class="Interface" id="interface" internalid="interface4" name="Resizable">
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr129" uid="Desktop Application User" x="115" y="389">
-        <object class="DesignClass" id="designclass" internalid="designclass38" name="SystemGR" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass38" name="SystemGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="RealizationGR" classa="classgr129" id="" interfaceb="interfacegr7" internalid="realizationgr14">
-        <object a="designclass38" b="interface4" class="Realization" id="realization" internalid="realization14"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr130" uid="Desktop Application User" x="12" y="255">
-        <object class="DesignClass" id="designclass" internalid="designclass31" name="CompositeUCDElementGR" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass31" name="CompositeUCDElementGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object base="classgr129" class="GeneralizationGR" id="" internalid="generalizationgr64" super="classgr130">
-        <object base="designclass38" class="Generalization" id="generalization" internalid="generalization63" super="designclass31"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr131" uid="Desktop Application User" x="290" y="480">
-        <object class="DesignClass" id="designclass" internalid="designclass106" name="ActivityNodeGR" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass109" name="ActivityNodeGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="RealizationGR" classa="classgr131" id="" interfaceb="interfacegr7" internalid="realizationgr15">
-        <object a="designclass106" b="interface4" class="Realization" id="realization" internalid="realization15"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr132" uid="Desktop Application User" x="373" y="376">
-        <object class="DesignClass" id="designclass" internalid="designclass107" name="CompositeNodeGR" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass110" name="CompositeNodeGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object base="classgr131" class="GeneralizationGR" id="" internalid="generalizationgr65" super="classgr132">
-        <object base="designclass106" class="Generalization" id="generalization" internalid="generalization63" super="designclass107"/>
-      </object>
-      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr15">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation15" labelDirection="3" name="" showArrow="false" strong="true">
-          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="lastSize"/>
-        </object>
-      </object>
-      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr16">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation16" labelDirection="3" name="" showArrow="false" strong="true">
-          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="undoSize"/>
-        </object>
-      </object>
-      <object class="AggregationGR" classa="classgr123" classb="classgr128" id="" internalid="aggregationgr17">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation17" labelDirection="3" name="" showArrow="false" strong="true">
-          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="designclass105" id="roleb" multiplicity="0..1" name="redoSize"/>
-        </object>
-      </object>
-      <object base="classgr128" class="GeneralizationGR" id="" internalid="generalizationgr74" super="classgr125">
-        <object base="designclass105" class="Generalization" id="generalization" internalid="generalization71" super="designclass102"/>
-      </object>
-      <object class="InterfaceGR" id="" internalid="interfacegr9" uid="Desktop Application User" x="1036" y="167">
-        <object class="Interface" id="interface" internalid="interface5" name="Coverable">
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="AggregationGR" classa="classgr128" classb="interfacegr9" id="" internalid="aggregationgr18">
-        <object class="Aggregation" direction="1" id="aggregation" internalid="aggregation18" labelDirection="3" name="" showArrow="false" strong="false">
-          <object class="Role" classifier="designclass105" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="interface5" id="roleb" multiplicity="" name=""/>
-        </object>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr141" uid="Desktop Application User" x="1106" y="380">
-        <object class="DesignClass" id="designclass" internalid="designclass108" name="NodeComponentGR" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass111" name="NodeComponentGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="RealizationGR" classa="classgr141" id="" interfaceb="interfacegr9" internalid="realizationgr18">
-        <object a="designclass108" b="interface5" class="Realization" id="realization" internalid="realization16"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr142" uid="Desktop Application User" x="949" y="287">
-        <object class="DesignClass" id="designclass" internalid="designclass32" name="UCDComponentGR" stereotype="abstract">
-          <object class="GenericClass" id="generic" internalid="genericclass1" name="UCDComponentGR"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="RealizationGR" classa="classgr142" id="" interfaceb="interfacegr9" internalid="realizationgr19">
-        <object a="designclass32" b="interface5" class="Realization" id="realization" internalid="realization17"/>
-      </object>
-      <object class="ClassGR" id="" internalid="classgr143" uid="Desktop Application User" x="613" y="378">
-        <object class="DesignClass" id="designclass" internalid="designclass115" name="ActivityResizeWithCoveredElementsController" stereotype="">
-          <object class="GenericClass" id="generic" internalid="genericclass117" name="ActivityResizeWithCoveredElementsController"/>
-          <object id="attributes"/>
-          <object id="methods"/>
-        </object>
-      </object>
-      <object base="classgr143" class="GeneralizationGR" id="" internalid="generalizationgr75" super="classgr123">
-        <object base="designclass115" class="Generalization" id="generalization" internalid="generalization72" super="designclass97"/>
-      </object>
-      <object class="InterfaceGR" id="" internalid="interfacegr10" uid="Desktop Application User" x="310" y="23">
-        <object class="Interface" id="interface" internalid="interface6" name="Composite">
-          <object id="methods"/>
-        </object>
-      </object>
-      <object class="RealizationGR" classa="classgr130" id="" interfaceb="interfacegr10" internalid="realizationgr20">
-        <object a="designclass31" b="interface6" class="Realization" id="realization" internalid="realization18"/>
-      </object>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr12" textData="TOADD&#10;" to="interfacegr9" uid="Desktop Application User" x="1158" y="149"/>
-      <object class="UMLNoteGR" id="" internalid="umlnotegr13" textData="TOADD" to="interfacegr10" uid="Desktop Application User" x="433" y="26"/>
-      <object class="RealizationGR" classa="classgr132" id="" interfaceb="interfacegr10" internalid="realizationgr21">
-        <object a="designclass107" b="interface6" class="Realization" id="realization" internalid="realization19"/>
-      </object>
-      <object class="InterfaceGR" id="" internalid="interfacegr11" uid="Desktop Application User" x="161" y="576">
-        <object class="Interface" id="interface" internalid="interface7" name="Covering">
-          <object id="methods">
-            <object class="Method" id="" internalid="method24" name="getContext" returntype="void" scope="1" visibility="2">
-              <object id="parameters"/>
-            </object>
-            <object class="Method" id="" internalid="method25" name="getNumberOfElements" returntype="void" scope="1" visibility="2">
-              <object id="parameters"/>
-            </object>
-            <object class="Method" id="" internalid="method26" name="getNumberOfElements" returntype="void" scope="1" visibility="2">
-              <object id="parameters"/>
-            </object>
-          </object>
-        </object>
-      </object>
-      <object class="AssociationGR" classa="classgr123" classb="interfacegr7" id="" internalid="associationgr42" uid="Desktop Application User">
-        <object class="Association" direction="1" id="association" internalid="association42" labelDirection="3" name="" showArrow="false">
-          <object class="Role" classifier="designclass97" id="rolea" multiplicity="" name=""/>
-          <object class="Role" classifier="interface4" id="roleb" multiplicity="" name=""/>
         </object>
       </object>
     </object>

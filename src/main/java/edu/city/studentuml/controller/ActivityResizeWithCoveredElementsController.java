@@ -33,8 +33,8 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
 
             // set undo containing elements
             List<NodeComponentGR> undoContainingElements = new ArrayList<>();
-            for (int i = 0; i < node.getNumberOfNodeComponents(); i++) {
-                undoContainingElements.add(node.getNodeComponent(i));
+            for (int i = 0; i < node.getNumberOfElements(); i++) {
+                undoContainingElements.add(node.getElement(i));
             }
             getUndoSize().setContainingElements(undoContainingElements);
 
@@ -47,8 +47,8 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
 
             // set redo containing elements
             List<NodeComponentGR > redoContainingElements = new ArrayList<>();
-            for (int i = 0; i < node.getNumberOfNodeComponents(); i++) {
-                redoContainingElements.add(node.getNodeComponent(i));
+            for (int i = 0; i < node.getNumberOfElements(); i++) {
+                redoContainingElements.add(node.getElement(i));
             }
             getRedoSize().setContainingElements(redoContainingElements);
         }
@@ -65,8 +65,8 @@ public class ActivityResizeWithCoveredElementsController extends ResizeWithCover
                 }
             }            
         } else {
-            for (int i = 0; i < context.getNumberOfNodeComponents(); i++) {
-                NodeComponentGR temp = context.getNodeComponent(i);
+            for (int i = 0; i < context.getNumberOfElements(); i++) {
+                NodeComponentGR temp = context.getElement(i);
                 if (temp != node && node.contains(temp)) {
                     coveredElements.add(temp);
                 }

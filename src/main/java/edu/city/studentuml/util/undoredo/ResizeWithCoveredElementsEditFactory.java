@@ -1,5 +1,7 @@
 package edu.city.studentuml.util.undoredo;
 
+import javax.swing.undo.AbstractUndoableEdit;
+
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -7,7 +9,6 @@ import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.util.SizeWithCoveredElements;
-import javax.swing.undo.AbstractUndoableEdit;
 
 /**
  *
@@ -27,16 +28,16 @@ public class ResizeWithCoveredElementsEditFactory {
         return ref;
     }
 
-    public AbstractUndoableEdit createResizeEdit(Resizable element, SizeWithCoveredElements<?> undoSize, SizeWithCoveredElements<?> redoSize, DiagramModel model) {
+    public AbstractUndoableEdit createResizeEdit(Resizable element, SizeWithCoveredElements undoSize, SizeWithCoveredElements redoSize, DiagramModel model) {
         if (model instanceof ADModel) {
             if (element instanceof ActivityNodeGR) {
-                return new ActivityResizeWithCoveredElementsEdit((ActivityNodeGR) element, undoSize, redoSize,(ADModel) model);
+                return new ActivityResizeWithCoveredElementsEdit(element, undoSize, redoSize,model);
             } else {
                 throw new UnsupportedOperationException("Error in creating resize edit");
             }
         } else if (model instanceof UCDModel) {
             if (element instanceof SystemGR) {
-                return new UseCaseResizeWithCoveredElementsEdit((SystemGR) element, undoSize, redoSize, (UCDModel) model);
+                return new UseCaseResizeWithCoveredElementsEdit(element, undoSize, redoSize, model);
             } else {
                 throw new UnsupportedOperationException("Error in creating resize edit");
             }

@@ -1,11 +1,11 @@
 package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.graphical.AbstractSDModel;
-import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
@@ -67,9 +67,9 @@ public class CompositeDeleteEditLoader {
 
     private static void loadNodeComponentCompositeDeleteEdit(NodeComponentGR c, CompositeDeleteEdit edit,
             DiagramModel model) {
-                int index = c.getNumberOfNodeComponents() - 1;
+                int index = c.getNumberOfElements() - 1;
                 while (index >= 0) {
-                    NodeComponentGR n = c.getNodeComponent(index);
+                    NodeComponentGR n = c.getElement(index);
                     loadNodeComponentCompositeDeleteEdit(n, edit, model);
                     // update index
                     index--;

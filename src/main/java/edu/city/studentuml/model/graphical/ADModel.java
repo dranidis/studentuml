@@ -1,11 +1,12 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.logging.Logger;
+
+import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
  *
@@ -93,12 +94,12 @@ public class ADModel extends DiagramModel {
 
     private void removeNodeComponent(NodeComponentGR nodeComponentGR) {
         // remove containing elements
-        int index = nodeComponentGR.getNumberOfNodeComponents() - 1;
+        int index = nodeComponentGR.getNumberOfElements() - 1;
         while (index >= 0) {
-            NodeComponentGR node = nodeComponentGR.getNodeComponent(index);
+            NodeComponentGR node = nodeComponentGR.getElement(index);
             removeNodeComponent(node);
             // update index
-            index = nodeComponentGR.getNumberOfNodeComponents() - 1;
+            index = nodeComponentGR.getNumberOfElements() - 1;
         }
 
         // remove all the edges to the node
