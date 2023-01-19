@@ -41,6 +41,13 @@ public class ApplicationFrame extends ApplicationGUI {
         createXMLFileChooser();
 
         umlProject.setUser(Constants.DESKTOP_USER);
+
+        /*
+         * when the window opens a New Project appears but it should be considered saved
+         * if the user does nothing.
+         */
+        umlProject.setSaved(true);
+        updateFrameTitle();
     }
 
     private JFileChooser createXMLFileChooser() {
