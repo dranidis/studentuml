@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -128,6 +129,21 @@ public class ApplicationFrame extends ApplicationGUI {
                     JOptionPane.ERROR_MESSAGE);
             RecentFiles.getInstance().removeRecentFile(fileName);
             menuBar.loadRecentFilesInMenu();
+            return;
+        } catch (NotStreamable e) {
+
+            logger.finer("File cannot be read (NotStreamable): " + e.getMessage());
+            
+            umlProject.setSaved(true);
+            closeProject();
+
+            JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be read.", "XML file error",
+                    JOptionPane.ERROR_MESSAGE);
+            RecentFiles.getInstance().removeRecentFile(fileName);
+            menuBar.loadRecentFilesInMenu();
+
+            umlProject.setSaved(true);
+
             return;
         }
 

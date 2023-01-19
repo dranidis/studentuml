@@ -1,8 +1,11 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.XMLStreamer;
 import java.util.Iterator;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -18,9 +21,9 @@ public class ConceptualClass extends AbstractClass {
         super(new GenericClass(name));
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

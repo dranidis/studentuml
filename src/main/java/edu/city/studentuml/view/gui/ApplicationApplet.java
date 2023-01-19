@@ -20,6 +20,7 @@ import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
@@ -110,7 +111,12 @@ public class ApplicationApplet extends ApplicationGUI {
 
             umlProject.clear();
 
-            umlProject.loadFromXMLString(solution);
+            try {
+                umlProject.loadFromXMLString(solution);
+            } catch (NotStreamable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             umlProject.setUser(applet.getUsername());
             umlProject.setExid(exerciseid);
@@ -291,7 +297,12 @@ public class ApplicationApplet extends ApplicationGUI {
 
                 umlProject.clear();
 
-                umlProject.loadFromXMLString(solution);
+                try {
+                    umlProject.loadFromXMLString(solution);
+                } catch (NotStreamable e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 umlProject.addObserver(this);
                 umlProject.projectChanged();

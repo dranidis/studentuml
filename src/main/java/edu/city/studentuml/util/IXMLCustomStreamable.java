@@ -6,5 +6,5 @@ public interface IXMLCustomStreamable {
 
     public void streamToXML(Element node, XMLStreamer streamer);
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance);
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable;
 }

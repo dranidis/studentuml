@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
@@ -136,7 +137,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
 
         clear();
         setName(node.getAttribute("name"));

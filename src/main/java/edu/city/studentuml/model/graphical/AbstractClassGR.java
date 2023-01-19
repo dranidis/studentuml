@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -266,7 +267,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

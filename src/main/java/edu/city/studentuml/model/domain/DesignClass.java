@@ -5,11 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
-import org.w3c.dom.Element;
-
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -87,13 +88,15 @@ public class DesignClass extends AbstractClass {
         methods.clear();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setStereotype(node.getAttribute("stereotype"));
         clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
         node.setAttribute("stereotype", getStereotype());

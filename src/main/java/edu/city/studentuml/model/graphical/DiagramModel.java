@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -305,7 +306,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         streamer.streamObjects(node, graphicalElements.iterator());
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setDiagramName(node.getAttribute("name"));
 
         graphicalElements.clear();

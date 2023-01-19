@@ -35,6 +35,7 @@ import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 public class IgnoreJSONTest {
@@ -503,6 +504,8 @@ public class IgnoreJSONTest {
             umlProject.loadFromXML(filename);
         } catch (IOException e1) {
             e1.printStackTrace();
+        } catch (NotStreamable e) {
+            e.printStackTrace();
         }
 
         String jsonString = "";
@@ -517,8 +520,6 @@ public class IgnoreJSONTest {
 
     @Test
     public void readStudentXML() {
-        ObjectMapper mapper = new ObjectMapper();
-        // String filename = "diagrams" + File.separator + "studentuml.xml";
         String filename = "diagrams" + File.separator + "studentuml.xml";
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
@@ -531,17 +532,11 @@ public class IgnoreJSONTest {
         } catch (IOException e1) {
             e1.printStackTrace();
             fail();
+        } catch (NotStreamable e) {
+            e.printStackTrace();
         }
 
         assertTrue(true);
-        // String jsonString = "";
-        // try {
-        //     jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        // } catch (JsonProcessingException e) {
-        //     e.printStackTrace();
-        // }
-        // System.out.println(jsonString);
-        // assertTrue(jsonString.contains("diagramModels"));
     }
 
 }

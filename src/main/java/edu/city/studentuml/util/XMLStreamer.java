@@ -186,7 +186,7 @@ public class XMLStreamer {
         }
     }
 
-    public void streamFrom(Element e, Object instance) {
+    public void streamFrom(Element e, Object instance) throws NotStreamable {
         if (instance instanceof IXMLCustomStreamable) {
             ((IXMLCustomStreamable) instance).streamFromXML(e, this, instance);
         }
@@ -199,7 +199,7 @@ public class XMLStreamer {
         }
     }
 
-    public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) {
+    public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) throws NotStreamable {
         Element child = getNodeById(node, id);
         if (child != null) {
             IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance((child).getAttribute(CLASS), parent,
@@ -213,7 +213,7 @@ public class XMLStreamer {
     }
 
     // Streams objects from node to vector v using instance
-    public void streamObjectsFrom(Element node, Vector vector, Object instance) {
+    public void streamObjectsFrom(Element node, Vector vector, Object instance) throws NotStreamable {
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {

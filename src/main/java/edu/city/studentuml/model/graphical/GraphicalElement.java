@@ -9,16 +9,17 @@ import java.io.Serializable;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -141,7 +142,8 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return minx > x && miny > y && maxx < toX && maxy < toY;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         String uid = node.getAttribute("uid");
 
         if ((uid != null) && (uid.equals(""))) {

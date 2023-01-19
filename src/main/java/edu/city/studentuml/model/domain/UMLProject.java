@@ -29,6 +29,7 @@ import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -157,7 +158,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
-    public void loadFromXML(String filename) throws IOException {
+    public void loadFromXML(String filename) throws IOException, NotStreamable {
         logger.info(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
@@ -173,7 +174,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
     // Embed4Auto
 
-    public void loadFromURL(String url) {
+    public void loadFromURL(String url) throws NotStreamable {
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadURL(url);
@@ -188,7 +189,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     // for undo/redo
-    public void loadFromXMLString(String xmlString) {
+    public void loadFromXMLString(String xmlString) throws NotStreamable {
 
         SystemWideObjectNamePool.getInstance().loading();
         XMLStreamer streamer = new XMLStreamer();
@@ -229,7 +230,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         return streamer.streamToString();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         diagramModels.clear();
         streamer.streamObjectsFrom(node, diagramModels, instance);
     }

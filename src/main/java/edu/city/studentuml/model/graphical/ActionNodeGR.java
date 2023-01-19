@@ -14,6 +14,7 @@ import java.awt.geom.RoundRectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ActionNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -119,7 +120,7 @@ public class ActionNodeGR extends LeafNodeGR  {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

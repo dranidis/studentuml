@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -124,7 +125,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
         return copyNode;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         String thistype = node.getAttribute("type");
         String typeinstance = node.getAttribute(TYPEINSTANCE);
         String typeid = node.getAttribute(TYPEID);

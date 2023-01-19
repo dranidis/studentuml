@@ -903,11 +903,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return this.getClass().getResource(path).toString();
     }
 
-    /*
-     * closes the current project while prompting the user to save changes if
-     * necessary
+    /**
+     * Closes the current project while prompting the user to save changes if necessary
+     * 
+     * @return true if project was closed AND false if closing was cancelled or if saving was cancellled in an unsaved project. 
      */
-    public boolean closeProject() {
+     public boolean closeProject() {
         boolean runtimeChecking = isRuntimeChecking();
         setRuntimeChecking(false);
 

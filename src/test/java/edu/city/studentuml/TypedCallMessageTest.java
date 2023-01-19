@@ -25,6 +25,7 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
@@ -97,6 +98,9 @@ public class TypedCallMessageTest {
         try {
             umlProject.loadFromXML(fullpath);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NotStreamable e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

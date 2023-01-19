@@ -53,7 +53,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.city.studentuml.model.domain.UMLProject;
-
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -64,6 +63,7 @@ import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
@@ -459,7 +459,12 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             umlProject.clear();
 
-            umlProject.loadFromXMLString(solution);
+            try {
+                umlProject.loadFromXMLString(solution);
+            } catch (NotStreamable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             umlProject.setUser(username);
             umlProject.setExid(exerciseid);
@@ -1410,7 +1415,12 @@ public class Application extends JApplet implements Observer, KeyListener {
 
                 umlProject.clear();
 
-                umlProject.loadFromXMLString(solution);
+                try {
+                    umlProject.loadFromXMLString(solution);
+                } catch (NotStreamable e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 setSaved(true);
                 umlProject.addObserver(this);
