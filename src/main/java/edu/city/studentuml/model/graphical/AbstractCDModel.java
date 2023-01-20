@@ -56,7 +56,7 @@ public abstract class AbstractCDModel extends DiagramModel {
         // Check if the underlying generalization already exists in the repository
         Generalization generalization = g.getGeneralization();
         // if get fails there is an existing generalization
-        if (repository.addGeneralization(generalization) == false) {
+        if (!repository.addGeneralization(generalization)) {
             // link to the already existing generalization
             g.setGeneralization(
                     repository.getGeneralization(generalization.getSuperClass(), generalization.getBaseClass()));

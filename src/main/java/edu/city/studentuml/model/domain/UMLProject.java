@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
@@ -158,7 +159,15 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         projectChanged();
     }
 
-    public void loadFromXML(String filename) throws IOException, NotStreamable {
+    /**
+     * Loads an XML document from the filename.
+     * 
+     * @param filename
+     * @return a list of the errors (strings) collected during loading the file
+     * @throws IOException
+     * @throws NotStreamable
+     */
+    public List<String> loadFromXML(String filename) throws IOException, NotStreamable {
         logger.info(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
@@ -171,7 +180,10 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         logger.info(() -> ".......end from XML: " + filename);
         setSaved(true);
+
+        return streamer.getErrorStrings();
     }
+    
     // Embed4Auto
 
     public void loadFromURL(String url) throws NotStreamable {

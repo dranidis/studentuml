@@ -293,7 +293,7 @@ public class Rule {
 
         String objectInstanceName = t.nextToken();
         String methodName = t.nextToken();
-        Vector<String> arguments = new Vector<String>();
+        Vector<String> arguments = new Vector<>();
         while (t.hasMoreTokens()) {
             arguments.add(unEscape((String) results.get(t.nextToken())));
         }
@@ -305,7 +305,7 @@ public class Rule {
 
         Object objectInstance = null;
 
-        Vector<Object> objectArguments = new Vector<Object>();
+        Vector<Object> objectArguments = new Vector<>();
 
         synchronized (SystemWideObjectNamePool.getInstance()) {
             objectInstance = SystemWideObjectNamePool.getInstance().getObjectByName(objectInstanceName);
@@ -330,12 +330,6 @@ public class Rule {
 
         Object[] methodParameters = objectArguments.toArray();
 
-        //FIXME: we don't need this??
-        Class[] classArray = new Class[objectArguments.size()];
-        for (int i = 0; i < methodParameters.length; i++) {
-            classArray[i] = methodParameters[i].getClass();
-        }
-
         try {
             Method[] methods = objectInstance.getClass().getMethods();
             Method m = null;
@@ -346,10 +340,9 @@ public class Rule {
                 }
             }
             if (m == null) {
-                logger.severe("Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
+                logger.severe(() -> "Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
                 return 0;
             }
-            //Method m = objectInstance.getClass().getMethod(methodName, classArray);
             m.invoke(objectInstance, methodParameters);
             return 1;
         } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {

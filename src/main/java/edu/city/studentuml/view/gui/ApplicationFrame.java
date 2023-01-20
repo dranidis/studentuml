@@ -2,6 +2,8 @@ package edu.city.studentuml.view.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,8 +123,9 @@ public class ApplicationFrame extends ApplicationGUI {
 
         closingOrLoading = true;
 
+        List<String> errors = new ArrayList<>();
         try {
-            umlProject.loadFromXML(fileName);
+            errors = umlProject.loadFromXML(fileName);
         } catch (IOException e) {
             logger.finer(e::getMessage);
             JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be found.", "IO Error",
@@ -131,20 +134,19 @@ public class ApplicationFrame extends ApplicationGUI {
             menuBar.loadRecentFilesInMenu();
             return;
         } catch (NotStreamable e) {
-
             logger.finer("File cannot be read (NotStreamable): " + e.getMessage());
-            
-            umlProject.setSaved(true);
-            closeProject();
-
-            JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be read.", "XML file error",
+            JOptionPane.showMessageDialog(null, "Encountered some problems while reading the file " + fileName + ". \nContents might not fully loaded.", "XML file error",
                     JOptionPane.ERROR_MESSAGE);
-            RecentFiles.getInstance().removeRecentFile(fileName);
-            menuBar.loadRecentFilesInMenu();
+        }
 
-            umlProject.setSaved(true);
-
-            return;
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            errors.forEach(e -> sb.append(e + "\n"));
+            logger.finer(() ->"File cannot be read (NotStreamable): " + sb.toString());
+            JOptionPane.showMessageDialog(null,
+                    "Encountered some problems while reading the file " + fileName
+                            + ". \nContents might not fully loaded.\nElements with errors:\n" + sb.toString(),
+                    "XML file error", JOptionPane.ERROR_MESSAGE);
         }
 
         repositoryTreeView.expandDiagrams();

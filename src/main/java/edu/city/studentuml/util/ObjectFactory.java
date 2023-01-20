@@ -2,6 +2,8 @@ package edu.city.studentuml.util;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Observable;
@@ -117,6 +119,7 @@ public final class ObjectFactory extends Observable {
 
     private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
+    public static final String INTERNALID = "internalid";
     public static final String CLASSA = "classa";
     public static final String CLASSB = "classb";
     public static final String MESSAGE = "message";
@@ -159,11 +162,14 @@ public final class ObjectFactory extends Observable {
                 return newInstance(m, parent, stream, streamer);
             } catch (ClassNotFoundException e) {
                 // try the next package
+            } catch (NotStreamable e) {
+                logger.severe("Not streamable: " + className);
+                throw e;
             }
         }
 
         logger.severe("ERROR in ObjectFactory in newInstance(className, parent, stream, streamer)");
-        logger.severe("Class not Found in the packages: " + className);
+        logger.severe(() -> "Class not Found in the packages: " + className);
         throw new NotStreamable();
     }
 
@@ -174,9 +180,8 @@ public final class ObjectFactory extends Observable {
         Object result;
         String methodName = "new" + c.getSimpleName().toLowerCase();
         try {
-            Method m = ObjectFactory.class.getMethod(methodName,
-                    new Class[] { Object.class, Element.class, XMLStreamer.class });
-            result = m.invoke(this, new Object[] { parent, stream, streamer });
+            Method m = ObjectFactory.class.getMethod(methodName, Object.class, Element.class, XMLStreamer.class );
+            result = m.invoke(this, parent, stream, streamer);
 
         } catch (SecurityException|IllegalArgumentException | IllegalAccessException e) {
             return null;
@@ -186,25 +191,33 @@ public final class ObjectFactory extends Observable {
         } 
         catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof NotStreamable) {
+                e.getTargetException().printStackTrace();
                 throw (NotStreamable) e.getTargetException();
             }
 
-            logger.severe("---> " + methodName);
-            logger.severe("internalid:" + stream.getAttribute("internalid") + " class: " + c.getSimpleName() + "Parent:"
-                    + parent + " stream: " + stream + " XMLStreamer: " + streamer);
+            logger.severe(() -> "---> " + methodName);
+            logger.severe(() -> "internalid:" + stream.getAttribute(INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
+                    + parent + ", stream: \n" + streamer.elementToString(stream) + "\n XMLStreamer: " + streamer);
             logger.severe(" TargetExceptionStackTrace");
-            e.getTargetException().printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.getTargetException().printStackTrace(pw);
+            logger.finer(sw.toString());
             return null;
         }
 
         if (result instanceof IXMLCustomStreamable) {
 
-            String thisID = stream.getAttribute("internalid");
+            String thisID = stream.getAttribute(INTERNALID);
             if (thisID != null && !thisID.equals("")) {
                 SystemWideObjectNamePool.getInstance().renameObject(result, thisID);
             } 
             return (IXMLCustomStreamable) result;
         } else {
+            logger.severe(() -> "---> " + methodName);
+            logger.severe(() -> "internalid:" + stream.getAttribute(INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
+                    + parent + ", stream: \n" + streamer.elementToString(stream) + "\n XMLStreamer: " + streamer);
+
             throw new NotStreamable();
         }
 
@@ -779,7 +792,7 @@ public final class ObjectFactory extends Observable {
                 .getObjectByName(stream.getAttribute("interfaceb"));
 
         if (classA == null || classB == null) {
-            logger.severe("Realization problem: " + realization.toString());
+            logger.severe(() -> "Realization problem: " + realization.toString());
             return null;
         } else {
             RealizationGR g = new RealizationGR(classA, classB, realization);
@@ -793,7 +806,7 @@ public final class ObjectFactory extends Observable {
         Generalization generalization = (Generalization) streamer.readObjectByID(stream, "generalization", null);
         ClassifierGR base = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("base"));
-                ClassifierGR superclass = (ClassifierGR) SystemWideObjectNamePool.getInstance()
+        ClassifierGR superclass = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("super"));
 
         GeneralizationGR g = null;
@@ -823,6 +836,8 @@ public final class ObjectFactory extends Observable {
                 || (base instanceof DesignClass && superclass instanceof DesignClass)
                 || (base instanceof Interface && superclass instanceof Interface)) {
             g = new Generalization(superclass, base);
+        } else {
+            logger.severe(() -> "base: " + stream.getAttribute("base") + " : " + base + " superclass: " + stream.getAttribute("super") + " : " + superclass);
         }
 
         return g;

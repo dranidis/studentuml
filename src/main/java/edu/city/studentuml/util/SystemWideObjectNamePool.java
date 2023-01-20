@@ -210,7 +210,7 @@ public class SystemWideObjectNamePool extends Observable {
             objectCountChanged();
             logger.finer(() -> "ADDED in objectMap :" + o.getClass() + " named: " + name + " toString: " + o.toString());
         } else {
-            logger.finer(() -> 
+            logger.finest(() -> 
                     "ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: " + o.toString());
         }
     }
