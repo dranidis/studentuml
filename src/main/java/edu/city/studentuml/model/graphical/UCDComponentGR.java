@@ -32,14 +32,10 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     }
 
     // composite pattern
-    public void add(UCDComponentGR component) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void add(UCDComponentGR component);
 
-    public void remove(UCDComponentGR component) {
-        throw new UnsupportedOperationException();
-    }
-
+    public abstract void remove(UCDComponentGR component);
+    
     public UCDComponentGR getContext() {
         return context;
     }

@@ -15,6 +15,16 @@ public abstract class LeafUCDElementGR extends UCDComponentGR {
         super(leafElement, x, y);
     }
 
+    @Override
+    public void add(UCDComponentGR component) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void remove(UCDComponentGR component) {
+        throw new UnsupportedOperationException();
+    }
+    
     /*
      * Returns the number of ucd components contained
      */
