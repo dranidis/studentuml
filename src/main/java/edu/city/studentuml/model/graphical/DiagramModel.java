@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -310,7 +311,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         setDiagramName(node.getAttribute("name"));
 
         graphicalElements.clear();
-        streamer.streamObjectsFrom(node, graphicalElements, instance);
+        streamer.streamChildrenFrom(node, instance);
     }
 
     public UMLProject getUmlProject() {

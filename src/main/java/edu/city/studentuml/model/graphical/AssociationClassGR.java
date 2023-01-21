@@ -16,11 +16,11 @@ import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Ray;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
@@ -177,8 +177,8 @@ public class AssociationClassGR extends LinkGR {
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
-        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
-        node.setAttribute(ObjectFactory.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
+        node.setAttribute(XMLSyntax.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(XMLSyntax.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "associationclass", getAssociationClass());
     }

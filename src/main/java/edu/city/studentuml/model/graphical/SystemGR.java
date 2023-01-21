@@ -301,7 +301,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         height = Integer.parseInt(node.getAttribute("height"));
 
         try {
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector<>(components), this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "ucdcomponents"), this);
         } catch (NotStreamable e) {
             logger.severe("Not streamable");
             e.printStackTrace();

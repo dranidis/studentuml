@@ -78,7 +78,7 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         methods.clear();
         setName(node.getAttribute("name"));
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
 
     }
 

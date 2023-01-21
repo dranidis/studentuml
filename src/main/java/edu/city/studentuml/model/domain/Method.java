@@ -208,7 +208,7 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         String thistype = node.getAttribute("returntype");
         returnType = new DataType(thistype);
         parameters.clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

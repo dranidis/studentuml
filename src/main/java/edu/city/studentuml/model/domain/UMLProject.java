@@ -34,6 +34,7 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
@@ -41,8 +42,6 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
 
     private static final Logger logger = Logger.getLogger(UMLProject.class.getName());
-
-    private static final String PROJECT = "project";
 
     private static UMLProject instance = null;
     private NotifierVector<DiagramModel> diagramModels;
@@ -171,11 +170,13 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         logger.info(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
+
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFile(filename);
 
-        Element e = streamer.getNodeById(null, PROJECT);
-        streamer.streamFrom(e, this);
+        Element e = streamer.getNodeById(null, XMLSyntax.PROJECT);
+        streamFromXML(e, streamer, this);
+        
         SystemWideObjectNamePool.getInstance().done();
 
         logger.info(() -> ".......end from XML: " + filename);
@@ -191,24 +192,33 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadURL(url);
 
-        Element e = streamer.getNodeById(null, PROJECT);
+        Element e = streamer.getNodeById(null, XMLSyntax.PROJECT);
 
-        streamer.streamFrom(e, this);
+        streamFromXML(e, streamer, this);
         SystemWideObjectNamePool.getInstance().done();
 
         logger.fine(() -> "Loading from URL: " + url);
         projectChanged();
     }
 
-    // for undo/redo
+    /**
+     * Only used by applet
+     * 
+     * for undo/redo
+     * 
+     * @param xmlString
+     * @throws NotStreamable
+     */
     public void loadFromXMLString(String xmlString) throws NotStreamable {
 
         SystemWideObjectNamePool.getInstance().loading();
+
         XMLStreamer streamer = new XMLStreamer();
         streamer.loadFromString(xmlString);
 
-        Element e = streamer.getNodeById(null, PROJECT);
-        streamer.streamFrom(e, this);
+        Element e = streamer.getNodeById(null, XMLSyntax.PROJECT);
+        streamFromXML(e, streamer, this);
+
         SystemWideObjectNamePool.getInstance().done();
 
         logger.finer(() -> "Loading from XMLString: " + xmlString);
@@ -226,7 +236,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void streamToXML(String path) {
         XMLStreamer streamer = new XMLStreamer();
-        streamer.streamObject(null, PROJECT, this);
+        streamer.streamObject(null, XMLSyntax.PROJECT, this);
 
         if (ApplicationGUI.isApplet()) {
             streamer.saveToURL(path);
@@ -235,18 +245,26 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         }
     }
 
-    // for undo/redo
+    /**
+     * Only used by applet
+     * 
+     * for undo/redo
+     * 
+     * @return
+     */
     public String streamToXMLString() {
         XMLStreamer streamer = new XMLStreamer();
-        streamer.streamObject(null, PROJECT, this);
+        streamer.streamObject(null, XMLSyntax.PROJECT, this);
         return streamer.streamToString();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
+    @Override
+    public void streamFromXML(Element element, XMLStreamer streamer, Object instance) throws NotStreamable {
         diagramModels.clear();
-        streamer.streamObjectsFrom(node, diagramModels, instance);
+        streamer.streamChildrenFrom(element, instance);
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         streamer.streamObjects(node, getDiagramsByZOrderOfFrames().iterator());
     }

@@ -115,19 +115,12 @@ import edu.city.studentuml.model.graphical.UCIncludeGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
 
+/**
+ * A singleton class responsible for creating all the objects read from an XML file.
+ */
 public final class ObjectFactory extends Observable {
 
     private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
-
-    public static final String INTERNALID = "internalid";
-    public static final String CLASSA = "classa";
-    public static final String CLASSB = "classb";
-    public static final String MESSAGE = "message";
-    public static final String DESIGNCLASS = "designclass";
-    public static final String ROLEA = "rolea";
-    public static final String ROLEB = "roleb";
-    public static final String SOURCE = "source";
-    public static final String TARGET = "target";
     
     private static ObjectFactory instance = new ObjectFactory();
 
@@ -144,7 +137,7 @@ public final class ObjectFactory extends Observable {
         super.addObserver(o);
     }
 
-    public IXMLCustomStreamable newInstance(String className, Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
+    public IXMLCustomStreamable newInstance(String className, Object parent, Element child, XMLStreamer streamer) throws NotStreamable {
         String modelGraphicalPackageName = "edu.city.studentuml.model.graphical.";
         String modelDomainPackageName = "edu.city.studentuml.model.domain.";
         String viewPackageName = "edu.city.studentuml.view.";
@@ -159,7 +152,7 @@ public final class ObjectFactory extends Observable {
             Class<?> m;
             try {
                 m = Class.forName(packageName + className);
-                return newInstance(m, parent, stream, streamer);
+                return newInstance(m, parent, child, streamer);
             } catch (ClassNotFoundException e) {
                 // try the next package
             } catch (NotStreamable e) {
@@ -196,7 +189,7 @@ public final class ObjectFactory extends Observable {
             }
 
             logger.severe(() -> "---> " + methodName);
-            logger.severe(() -> "internalid:" + stream.getAttribute(INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
+            logger.severe(() -> "internalid:" + stream.getAttribute(XMLSyntax.INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
                     + parent + ", stream: \n" + streamer.elementToString(stream) + "\n XMLStreamer: " + streamer);
             logger.severe(" TargetExceptionStackTrace");
             StringWriter sw = new StringWriter();
@@ -208,14 +201,14 @@ public final class ObjectFactory extends Observable {
 
         if (result instanceof IXMLCustomStreamable) {
 
-            String thisID = stream.getAttribute(INTERNALID);
+            String thisID = stream.getAttribute(XMLSyntax.INTERNALID);
             if (thisID != null && !thisID.equals("")) {
                 SystemWideObjectNamePool.getInstance().renameObject(result, thisID);
             } 
             return (IXMLCustomStreamable) result;
         } else {
             logger.severe(() -> "---> " + methodName);
-            logger.severe(() -> "internalid:" + stream.getAttribute(INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
+            logger.severe(() -> "internalid:" + stream.getAttribute(XMLSyntax.INTERNALID) + " class: " + c.getSimpleName() + ", Parent:"
                     + parent + ", stream: \n" + streamer.elementToString(stream) + "\n XMLStreamer: " + streamer);
 
             throw new NotStreamable();
@@ -235,21 +228,21 @@ public final class ObjectFactory extends Observable {
         return null;
     }
 
-    private void notifyApplicationGUI(DiagramModel model, Element stream) {
-        Rectangle rectangle = readRect(stream.getAttribute("framex"));
-        boolean selected = Boolean.parseBoolean(stream.getAttribute("selected"));
-        boolean iconified = Boolean.parseBoolean(stream.getAttribute("iconified"));
+    private void notifyApplicationGUI(DiagramModel model, Element element) {
+        Rectangle rectangle = readRect(element.getAttribute("framex"));
+        boolean selected = Boolean.parseBoolean(element.getAttribute("selected"));
+        boolean iconified = Boolean.parseBoolean(element.getAttribute("iconified"));
         double scale;
         boolean isMaximum;
         try {
-            scale = Double.parseDouble(stream.getAttribute("scale"));
+            scale = Double.parseDouble(element.getAttribute("scale"));
         } catch (Exception e) {
             logger.severe("scale attribute not existing or cannot be converted to double. Setting scale to 1.0.");
             scale = 1.0;
         }
 
         try {
-            isMaximum = Boolean.parseBoolean(stream.getAttribute("maximized"));
+            isMaximum = Boolean.parseBoolean(element.getAttribute("maximized"));
         } catch (Exception e) {
             logger.severe("maximized attribute not existing or cannot be converted to double. Setting to false");
             isMaximum = false;
@@ -330,7 +323,7 @@ public final class ObjectFactory extends Observable {
         UCActorGR actorGR = new UCActorGR(actor, x, y);
 
         if (parent instanceof UCDModel) {
-            ((UCDModel) parent).addGraphicalElement(actorGR);
+            ((DiagramModel) parent).addGraphicalElement(actorGR);
         } else if (parent instanceof UCDComponentGR) {
             UCDComponentGR element = (UCDComponentGR) parent;
             element.add(actorGR);
@@ -348,7 +341,7 @@ public final class ObjectFactory extends Observable {
         SystemGR systemGR = new SystemGR(s, x, y);
 
         if (parent instanceof UCDModel) {
-            ((UCDModel) parent).addGraphicalElement(systemGR);
+            ((DiagramModel) parent).addGraphicalElement(systemGR);
         } else if (parent instanceof UCDComponentGR) {
             UCDComponentGR element = (UCDComponentGR) parent;
             element.add(systemGR);
@@ -366,7 +359,7 @@ public final class ObjectFactory extends Observable {
         UseCaseGR useCaseGR = new UseCaseGR(uc, x, y);
 
         if (parent instanceof UCDModel) {
-            ((UCDModel) parent).addGraphicalElement(useCaseGR);
+            ((DiagramModel) parent).addGraphicalElement(useCaseGR);
         } else if (parent instanceof UCDComponentGR) {
             UCDComponentGR element = (UCDComponentGR) parent;
             element.add(useCaseGR);
@@ -390,7 +383,7 @@ public final class ObjectFactory extends Observable {
 
         UCAssociationGR g = new UCAssociationGR(actor, useCase, association);
 
-        ((UCDModel) parent).addGraphicalElement(g);
+        ((DiagramModel) parent).addGraphicalElement(g);
 
         return g;
     }
@@ -410,7 +403,7 @@ public final class ObjectFactory extends Observable {
 
         UCIncludeGR g = new UCIncludeGR(from, to, include);
 
-        ((UCDModel) parent).addGraphicalElement(g);
+        ((DiagramModel) parent).addGraphicalElement(g);
 
         return g;
     }
@@ -436,7 +429,7 @@ public final class ObjectFactory extends Observable {
             generalizationGR = new UCGeneralizationGR((UCActorGR) from, (UCActorGR) to, generalization);
         }
 
-        ((UCDModel) parent).addGraphicalElement(generalizationGR);
+        ((DiagramModel) parent).addGraphicalElement(generalizationGR);
 
         return generalizationGR;
     }
@@ -463,7 +456,7 @@ public final class ObjectFactory extends Observable {
 
         UCExtendGR g = new UCExtendGR(from, to, extend);
 
-        ((UCDModel) parent).addGraphicalElement(g);
+        ((DiagramModel) parent).addGraphicalElement(g);
 
         return g;
     }
@@ -490,7 +483,7 @@ public final class ObjectFactory extends Observable {
         SDObject sd = (SDObject) streamer.readObjectByID(stream, "sdobject", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         SDObjectGR sdObjectGR = new SDObjectGR(sd, x);
-        ((SDModel) parent).addGraphicalElement(sdObjectGR);
+        ((DiagramModel) parent).addGraphicalElement(sdObjectGR);
         return sdObjectGR;
     }
 
@@ -500,9 +493,9 @@ public final class ObjectFactory extends Observable {
         ActorInstanceGR actorGR = new ActorInstanceGR(sd, x);
 
         if (parent instanceof SDModel) {
-            ((SDModel) parent).addGraphicalElement(actorGR);
+            ((DiagramModel) parent).addGraphicalElement(actorGR);
         } else if (parent instanceof SSDModel) {
-            ((SSDModel) parent).addGraphicalElement(actorGR);
+            ((DiagramModel) parent).addGraphicalElement(actorGR);
         }
         return actorGR;
     }
@@ -512,7 +505,7 @@ public final class ObjectFactory extends Observable {
         int x = Integer.parseInt(stream.getAttribute("x"));
         SystemInstanceGR systemGR = new SystemInstanceGR(sd, x);
 
-        ((SSDModel) parent).addGraphicalElement(systemGR);
+        ((DiagramModel) parent).addGraphicalElement(systemGR);
         return systemGR;
     }
 
@@ -520,12 +513,12 @@ public final class ObjectFactory extends Observable {
         MultiObject sd = (MultiObject) streamer.readObjectByID(stream, "multiobject", null);
         int x = Integer.parseInt(stream.getAttribute("x"));
         MultiObjectGR multiObjectGR = new MultiObjectGR(sd, x);
-        ((SDModel) parent).addGraphicalElement(multiObjectGR);
+        ((DiagramModel) parent).addGraphicalElement(multiObjectGR);
         return multiObjectGR;
     }
 
     public IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        CallMessage sd = (CallMessage) streamer.readObjectByID(stream, MESSAGE, null);
+        CallMessage sd = (CallMessage) streamer.readObjectByID(stream, XMLSyntax.MESSAGE, null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("from"));
@@ -537,16 +530,16 @@ public final class ObjectFactory extends Observable {
         CallMessageGR cg = new CallMessageGR(from, to, sd, y);
 
         if (parent instanceof SDModel) {
-            ((SDModel) parent).addGraphicalElement(cg);
+            ((DiagramModel) parent).addGraphicalElement(cg);
         } else if (parent instanceof SSDModel) {
-            ((SSDModel) parent).addGraphicalElement(cg);
+            ((DiagramModel) parent).addGraphicalElement(cg);
         }
 
         return cg;
     }
 
     public IXMLCustomStreamable newreturnmessagegr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        ReturnMessage sd = (ReturnMessage) streamer.readObjectByID(stream, MESSAGE, null);
+        ReturnMessage sd = (ReturnMessage) streamer.readObjectByID(stream, XMLSyntax.MESSAGE, null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("from"));
@@ -558,16 +551,16 @@ public final class ObjectFactory extends Observable {
         ReturnMessageGR cg = new ReturnMessageGR(from, to, sd, y);
 
         if (parent instanceof SDModel) {
-            ((SDModel) parent).addGraphicalElement(cg);
+            ((DiagramModel) parent).addGraphicalElement(cg);
         } else if (parent instanceof SSDModel) {
-            ((SSDModel) parent).addGraphicalElement(cg);
+            ((DiagramModel) parent).addGraphicalElement(cg);
         }
 
         return cg;
     }
 
     public IXMLCustomStreamable newcreatemessagegr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        CreateMessage sd = (CreateMessage) streamer.readObjectByID(stream, MESSAGE, null);
+        CreateMessage sd = (CreateMessage) streamer.readObjectByID(stream, XMLSyntax.MESSAGE, null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("from"));
@@ -577,13 +570,13 @@ public final class ObjectFactory extends Observable {
         int y = Integer.parseInt(stream.getAttribute("y"));
 
         CreateMessageGR cg = new CreateMessageGR(from, to, sd, y);
-        ((SDModel) parent).addGraphicalElement(cg);
+        ((DiagramModel) parent).addGraphicalElement(cg);
 
         return cg;
     }
 
     public IXMLCustomStreamable newdestroymessagegr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        DestroyMessage sd = (DestroyMessage) streamer.readObjectByID(stream, MESSAGE, null);
+        DestroyMessage sd = (DestroyMessage) streamer.readObjectByID(stream, XMLSyntax.MESSAGE, null);
 
         RoleClassifierGR from = (RoleClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("from"));
@@ -593,7 +586,7 @@ public final class ObjectFactory extends Observable {
         int y = Integer.parseInt(stream.getAttribute("y"));
 
         DestroyMessageGR cg = new DestroyMessageGR(from, to, sd, y);
-        ((SDModel) parent).addGraphicalElement(cg);
+        ((DiagramModel) parent).addGraphicalElement(cg);
 
         return cg;
     }
@@ -660,9 +653,9 @@ public final class ObjectFactory extends Observable {
 
     public IXMLCustomStreamable newsdobject(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
         DesignClass base = (DesignClass) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(DESIGNCLASS));
+                .getObjectByName(stream.getAttribute(XMLSyntax.DESIGNCLASS));
         if (base == null) {
-            base = (DesignClass) streamer.readObjectByID(stream, DESIGNCLASS, null);
+            base = (DesignClass) streamer.readObjectByID(stream, XMLSyntax.DESIGNCLASS, null);
             UMLProject.getInstance().getCentralRepository().addClass(base);
         }
         return new SDObject(stream.getAttribute("name"), base);
@@ -670,9 +663,9 @@ public final class ObjectFactory extends Observable {
 
     public IXMLCustomStreamable newmultiobject(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
         DesignClass base = (DesignClass) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(DESIGNCLASS));
+                .getObjectByName(stream.getAttribute(XMLSyntax.DESIGNCLASS));
         if (base == null) {
-            base = (DesignClass) streamer.readObjectByID(stream, DESIGNCLASS, null);
+            base = (DesignClass) streamer.readObjectByID(stream, XMLSyntax.DESIGNCLASS, null);
             UMLProject.getInstance().getCentralRepository().addClass(base);
         }
         return new MultiObject(stream.getAttribute("name"), base);
@@ -683,15 +676,15 @@ public final class ObjectFactory extends Observable {
         Interface interfaceObject = (Interface) streamer.readObjectByID(stream, "interface", null);
         Point p = new Point(10, 10);
         InterfaceGR interfaceq = new InterfaceGR(interfaceObject, p);
-        ((DCDModel) parent).addGraphicalElement(interfaceq);
+        ((DiagramModel) parent).addGraphicalElement(interfaceq);
         return interfaceq;
     }
 
     public IXMLCustomStreamable newclassgr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        DesignClass dc = (DesignClass) streamer.readObjectByID(stream, DESIGNCLASS, null);
+        DesignClass dc = (DesignClass) streamer.readObjectByID(stream, XMLSyntax.DESIGNCLASS, null);
         Point p = new Point(10, 10);
         ClassGR classg = new ClassGR(dc, p);
-        ((DCDModel) parent).addGraphicalElement(classg);
+        ((DiagramModel) parent).addGraphicalElement(classg);
         return classg;
     }
 
@@ -699,7 +692,7 @@ public final class ObjectFactory extends Observable {
         ConceptualClass cc = (ConceptualClass) streamer.readObjectByID(stream, "conceptualclass", null);
         Point p = new Point(10, 10);
         ConceptualClassGR classg = new ConceptualClassGR(cc, p);
-        ((CCDModel) parent).addGraphicalElement(classg);
+        ((DiagramModel) parent).addGraphicalElement(classg);
         return classg;
     }
 
@@ -717,29 +710,29 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newdependencygr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
         Dependency dependency = (Dependency) streamer.readObjectByID(stream, "dependency", null);
         ClassGR classA = (ClassGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSA));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
         ClassGR classB = (ClassGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSB));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSB));
 
         DependencyGR g = new DependencyGR(classA, classB, dependency);
 
-        ((DCDModel) parent).addGraphicalElement(g);
+        ((DiagramModel) parent).addGraphicalElement(g);
         return g;
     }
 
     public IXMLCustomStreamable newassociationgr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
         Association association = (Association) streamer.readObjectByID(stream, "association", null);
         ClassifierGR classA = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSA));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
         ClassifierGR classB = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSB));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSB));
 
         AssociationGR g = new AssociationGR(classA, classB, association);
 
         if (parent instanceof CCDModel) {
-            ((CCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         } else if (parent instanceof DCDModel) {
-            ((DCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         }
 
         return g;
@@ -750,16 +743,16 @@ public final class ObjectFactory extends Observable {
                 "associationclass", null);
 
         ClassifierGR classA = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSA));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
         ClassifierGR classB = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSB));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSB));
 
         AssociationClassGR g = new AssociationClassGR(classA, classB, associationClass);
 
         if (parent instanceof CCDModel) {
-            ((CCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         } else if (parent instanceof DCDModel) {
-            ((DCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         }
 
         return g;
@@ -768,16 +761,16 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newaggregationgr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
         Aggregation aggregation = (Aggregation) streamer.readObjectByID(stream, "aggregation", null);
         ClassifierGR whole = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSA));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
         ClassifierGR part = (ClassifierGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSB));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSB));
 
         AggregationGR g = new AggregationGR(whole, part, aggregation);
 
         if (parent instanceof CCDModel) {
-            ((CCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         } else if (parent instanceof DCDModel) {
-            ((DCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         }
 
         return g;
@@ -787,7 +780,7 @@ public final class ObjectFactory extends Observable {
         Realization realization = (Realization) streamer.readObjectByID(stream, "realization", null);
 
         ClassGR classA = (ClassGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(CLASSA));
+                .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
         InterfaceGR classB = (InterfaceGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("interfaceb"));
 
@@ -797,7 +790,7 @@ public final class ObjectFactory extends Observable {
         } else {
             RealizationGR g = new RealizationGR(classA, classB, realization);
 
-            ((DCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
             return g;
         }
     }
@@ -817,9 +810,9 @@ public final class ObjectFactory extends Observable {
         }
 
         if (parent instanceof CCDModel) {
-            ((CCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         } else if (parent instanceof DCDModel) {
-            ((DCDModel) parent).addGraphicalElement(g);
+            ((DiagramModel) parent).addGraphicalElement(g);
         }
 
         return g;
@@ -844,29 +837,29 @@ public final class ObjectFactory extends Observable {
     }
 
     public IXMLCustomStreamable newaggregation(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        Role whole = (Role) streamer.readObjectByID(stream, ROLEA, null);
-        Role part = (Role) streamer.readObjectByID(stream, ROLEB, null);
+        Role whole = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEA, null);
+        Role part = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEB, null);
 
         return new Aggregation(whole, part, Boolean.parseBoolean(stream.getAttribute("strong")));
     }
 
     public IXMLCustomStreamable newassociation(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        Role roleA = (Role) streamer.readObjectByID(stream, ROLEA, null);
-        Role roleB = (Role) streamer.readObjectByID(stream, ROLEB, null);
+        Role roleA = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEA, null);
+        Role roleB = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEB, null);
 
         return new Association(roleA, roleB);
     }
 
     public IXMLCustomStreamable newdesignassociationclass(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable {
-        Role roleA = (Role) streamer.readObjectByID(stream, ROLEA, null);
-        Role roleB = (Role) streamer.readObjectByID(stream, ROLEB, null);
+        Role roleA = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEA, null);
+        Role roleB = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEB, null);
 
         return new DesignAssociationClass(roleA, roleB);
     }
 
     public IXMLCustomStreamable newconceptualassociationclass(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable  {
-        Role roleA = (Role) streamer.readObjectByID(stream, ROLEA, null);
-        Role roleB = (Role) streamer.readObjectByID(stream, ROLEB, null);
+        Role roleA = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEA, null);
+        Role roleB = (Role) streamer.readObjectByID(stream, XMLSyntax.ROLEB, null);
 
         return new ConceptualAssociationClass(roleA, roleB);
     }
@@ -929,7 +922,7 @@ public final class ObjectFactory extends Observable {
 
     public IXMLCustomStreamable newmethod(Object parent, Element stream, XMLStreamer streamer) {
         edu.city.studentuml.model.domain.Method m = new edu.city.studentuml.model.domain.Method(
-                stream.getAttribute("name"));// FIXME: PACKAGE
+                stream.getAttribute("name"));
         if (parent instanceof Interface) {
             ((Interface) parent).addMethod(m);
         } else if (parent instanceof DesignClass) {
@@ -968,7 +961,7 @@ public final class ObjectFactory extends Observable {
         InitialNodeGR initialNodeGR = new InitialNodeGR(initialNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(initialNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(initialNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(initialNodeGR);
@@ -990,7 +983,7 @@ public final class ObjectFactory extends Observable {
         ActivityFinalNodeGR activityFinalNodeGR = new ActivityFinalNodeGR(activityFinalNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(activityFinalNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(activityFinalNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(activityFinalNodeGR);
@@ -1011,7 +1004,7 @@ public final class ObjectFactory extends Observable {
         FlowFinalNodeGR flowFinalNodeGR = new FlowFinalNodeGR(flowFinalNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(flowFinalNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(flowFinalNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(flowFinalNodeGR);
@@ -1032,7 +1025,7 @@ public final class ObjectFactory extends Observable {
         ActionNodeGR actionNodeGR = new ActionNodeGR(actionNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(actionNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(actionNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(actionNodeGR);
@@ -1053,7 +1046,7 @@ public final class ObjectFactory extends Observable {
         MergeNodeGR mergeNodeGR = new MergeNodeGR(mergeNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(mergeNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(mergeNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(mergeNodeGR);
@@ -1074,7 +1067,7 @@ public final class ObjectFactory extends Observable {
         DecisionNodeGR decisionNodeGR = new DecisionNodeGR(decisionNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(decisionNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(decisionNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(decisionNodeGR);
@@ -1095,7 +1088,7 @@ public final class ObjectFactory extends Observable {
         ForkNodeGR forkNodeGR = new ForkNodeGR(forkNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(forkNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(forkNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(forkNodeGR);
@@ -1116,7 +1109,7 @@ public final class ObjectFactory extends Observable {
         JoinNodeGR joinNodeGR = new JoinNodeGR(joinNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(joinNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(joinNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(joinNodeGR);
@@ -1137,7 +1130,7 @@ public final class ObjectFactory extends Observable {
         ObjectNodeGR objectNodeGR = new ObjectNodeGR(objectNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(objectNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(objectNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(objectNodeGR);
@@ -1169,7 +1162,7 @@ public final class ObjectFactory extends Observable {
         ActivityNodeGR activityNodeGR = new ActivityNodeGR(activityNode, x, y);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(activityNodeGR);
+            ((DiagramModel) parent).addGraphicalElement(activityNodeGR);
         } else if (parent instanceof NodeComponentGR) {
             NodeComponentGR node = (NodeComponentGR) parent;
             node.add(activityNodeGR);
@@ -1188,22 +1181,22 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newcontrolflowgr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable  {
         ControlFlow controlFlow = (ControlFlow) streamer.readObjectByID(stream, "controlflow", null);
         NodeComponentGR source = (NodeComponentGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(SOURCE));
+                .getObjectByName(stream.getAttribute(XMLSyntax.SOURCE));
         NodeComponentGR target = (NodeComponentGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(TARGET));
+                .getObjectByName(stream.getAttribute(XMLSyntax.TARGET));
 
         ControlFlowGR controlFlowGR = new ControlFlowGR(source, target, controlFlow);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(controlFlowGR);
+            ((DiagramModel) parent).addGraphicalElement(controlFlowGR);
         }
 
         return controlFlowGR;
     }
 
     public IXMLCustomStreamable newcontrolflow(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable  {
-        NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, SOURCE, null);
-        NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, TARGET, null);
+        NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, XMLSyntax.SOURCE, null);
+        NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, XMLSyntax.TARGET, null);
 
         return new ControlFlow(source, target);
     }
@@ -1211,22 +1204,22 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newobjectflowgr(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable  {
         ObjectFlow objectFlow = (ObjectFlow) streamer.readObjectByID(stream, "objectflow", null);
         NodeComponentGR source = (NodeComponentGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(SOURCE));
+                .getObjectByName(stream.getAttribute(XMLSyntax.SOURCE));
         NodeComponentGR target = (NodeComponentGR) SystemWideObjectNamePool.getInstance()
-                .getObjectByName(stream.getAttribute(TARGET));
+                .getObjectByName(stream.getAttribute(XMLSyntax.TARGET));
 
         ObjectFlowGR objectFlowGR = new ObjectFlowGR(source, target, objectFlow);
 
         if (parent instanceof ADModel) {
-            ((ADModel) parent).addGraphicalElement(objectFlowGR);
+            ((DiagramModel) parent).addGraphicalElement(objectFlowGR);
         }
 
         return objectFlowGR;
     }
 
     public IXMLCustomStreamable newobjectflow(Object parent, Element stream, XMLStreamer streamer) throws NotStreamable  {
-        NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, SOURCE, null);
-        NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, TARGET, null);
+        NodeComponent source = (NodeComponent) streamer.readObjectByID(stream, XMLSyntax.SOURCE, null);
+        NodeComponent target = (NodeComponent) streamer.readObjectByID(stream, XMLSyntax.TARGET, null);
 
         return new ObjectFlow(source, target);
     }

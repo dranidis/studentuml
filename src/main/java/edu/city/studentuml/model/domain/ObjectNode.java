@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
@@ -135,7 +134,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
         } else {
             if (typeinstance.equals("datatype")) {
                 setType(new DataType(thistype));
-            } else if (typeinstance.equals(ObjectFactory.DESIGNCLASS)) {
+            } else if (typeinstance.equals(XMLSyntax.DESIGNCLASS)) {
                 if (!typeid.equals("")) {
                     DesignClass dc = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(typeid);
                     if (dc != null) {
@@ -160,7 +159,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             }
         }
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "states"), new Vector<>(states), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "states"), this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
@@ -173,7 +172,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             if (t instanceof DataType) {
                 typeinstance = "datatype";
             } else if (t instanceof DesignClass) {
-                typeinstance = ObjectFactory.DESIGNCLASS;
+                typeinstance = XMLSyntax.DESIGNCLASS;
                 DesignClass dc = (DesignClass) t;
                 node.setAttribute(TYPEID, SystemWideObjectNamePool.getInstance().getNameForObject(dc));
             } else if (t instanceof Interface) {

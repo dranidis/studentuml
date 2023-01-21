@@ -14,7 +14,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 import org.w3c.dom.Element;
 
@@ -298,7 +297,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "nodes"), new Vector<>(components), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "nodes"), this);
     }
 
     @Override

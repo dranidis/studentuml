@@ -6,9 +6,9 @@ import java.awt.Stroke;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.CallMessage;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * @author Ervin Ramollari
@@ -54,7 +54,7 @@ public class CallMessageGR extends SDMessageGR {
 
         node.setAttribute("y", Integer.toString(getY()));
 
-        streamer.streamObject(node, ObjectFactory.MESSAGE, getCallMessage());
+        streamer.streamObject(node, XMLSyntax.MESSAGE, getCallMessage());
     }
 
     @Override

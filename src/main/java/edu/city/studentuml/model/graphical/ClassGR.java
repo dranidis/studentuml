@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 @JsonIncludeProperties({ "class", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
@@ -165,7 +165,7 @@ public class ClassGR extends AbstractClassGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, ObjectFactory.DESIGNCLASS, getDesignClass());
+        streamer.streamObject(node, XMLSyntax.DESIGNCLASS, getDesignClass());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -3,9 +3,9 @@ package edu.city.studentuml.model.domain;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * Used to model flow of objects in an activity.
@@ -96,15 +96,15 @@ public class ObjectFlow extends Edge implements IXMLCustomStreamable {
         setGuard(node.getAttribute("guard"));
         setWeight(node.getAttribute("weight"));
 
-        source = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(ObjectFactory.SOURCE));
-        target = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(ObjectFactory.TARGET));
+        source = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(XMLSyntax.SOURCE));
+        target = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(XMLSyntax.TARGET));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("guard", getGuard());
         node.setAttribute("weight", getWeight());
 
-        node.setAttribute(ObjectFactory.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
-        node.setAttribute(ObjectFactory.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
+        node.setAttribute(XMLSyntax.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
+        node.setAttribute(XMLSyntax.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
     }
 }

@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.Dependency;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * @author Ervin Ramollari
@@ -72,8 +72,8 @@ public class DependencyGR extends LinkGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
-        node.setAttribute(ObjectFactory.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
+        node.setAttribute(XMLSyntax.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(XMLSyntax.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "dependency", dependency);
     }
