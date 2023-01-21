@@ -3,15 +3,11 @@ package edu.city.studentuml.model.domain;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
-
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
 
 import org.w3c.dom.Element;
 
@@ -36,7 +32,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 import edu.city.studentuml.view.gui.ApplicationGUI;
-import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 @JsonIncludeProperties({ "diagramModels" })
 public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
@@ -266,7 +261,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        streamer.streamObjects(node, getDiagramsByZOrderOfFrames().iterator());
+        streamer.streamObjects(node, diagramModels.iterator());
     }
 
     /**
@@ -461,32 +456,6 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         SystemWideObjectNamePool.getInstance().reload();
         setSaved(true);
         setName("New Project");
-    }
-
-    public Vector<DiagramModel> getDiagramsByZOrderOfFrames() {
-        Vector<DiagramModel> orderedDiagrams = new Vector<>();
-
-        if (diagramModels.isEmpty()) {
-            return orderedDiagrams;
-        }
-
-        DiagramInternalFrame diagramInternalFrame = diagramModels.get(0).getFrame();
-        if (diagramInternalFrame == null) {
-            logger.severe(
-                    "There is no internal frame for the diagram model. Probably running in tests... returning diagrams unordered");
-            return diagramModels;
-        }
-
-        JDesktopPane desktopPane = (JDesktopPane) diagramInternalFrame.getParent();
-        JInternalFrame[] allFrames = desktopPane.getAllFrames();
-
-        // sort the frames by their z-order (back to front)
-        Arrays.sort(allFrames, (f1, f2) -> desktopPane.getComponentZOrder(f1) - desktopPane.getComponentZOrder(f2));
-
-        for (JInternalFrame internalFrame : allFrames) {
-            orderedDiagrams.add(((DiagramInternalFrame) internalFrame).getModel());
-        }
-        return orderedDiagrams;
     }
 
 }

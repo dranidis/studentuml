@@ -248,7 +248,15 @@ public final class ObjectFactory extends Observable {
             isMaximum = false;
         }
 
-        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum);
+        int zOrder;
+        try {
+            zOrder = Integer.parseInt(element.getAttribute("zorder"));
+        } catch (Exception e) {
+            logger.severe("zorder attribute not existing. Setting to 0");
+            zOrder = 0;
+        }
+
+        FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum, zOrder);
         logger.fine(() -> "Notifying observers: " + this.countObservers());
         setChanged();
         notifyObservers(frameProperties);

@@ -8,6 +8,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.util.logging.Logger;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -59,6 +62,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     // Undo/Redo
     protected UndoManager undoManager;
     protected transient UndoableEditSupport undoSupport;
+
+    private int zOrder;
 
 
     /**
@@ -137,6 +142,19 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, elementClass));
 
         createHelpMenubar();
+
+        /*
+         * necessary when a file is loaded with a frame at the back maximised
+         * clicking on the frame does not bring it to the front!!?
+         */
+        final JInternalFrame iframe = this;
+        view.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                logger.finest("clicked");
+                iframe.toFront();
+            }
+        });
 
         setSize(new Dimension(650, 550));
 
@@ -395,11 +413,17 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 setMaximum(frameProperties.maximized);
                 setIcon(frameProperties.iconified);
                 getView().setScale(frameProperties.scale);
+
+                zOrder = frameProperties.zOrder;
             }
 
         } catch (PropertyVetoException vetoException) {
             vetoException.printStackTrace();
         }
+    }
+
+    public int getzOrder() {
+        return zOrder;
     }
     
 }
