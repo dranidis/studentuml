@@ -1,25 +1,29 @@
 package edu.city.studentuml.view.gui;
 
+import java.beans.PropertyVetoException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import edu.city.studentuml.applet.APICallException;
 import edu.city.studentuml.applet.AuthenticationFailedException;
 import edu.city.studentuml.applet.Browser;
 import edu.city.studentuml.applet.SolutionInputPanel;
 import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
-import java.beans.PropertyVetoException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.JOptionPane;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -107,7 +111,12 @@ public class ApplicationApplet extends ApplicationGUI {
 
             umlProject.clear();
 
-            umlProject.loadFromXMLString(solution);
+            try {
+                umlProject.loadFromXMLString(solution);
+            } catch (NotStreamable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             umlProject.setUser(applet.getUsername());
             umlProject.setExid(exerciseid);
@@ -288,7 +297,12 @@ public class ApplicationApplet extends ApplicationGUI {
 
                 umlProject.clear();
 
-                umlProject.loadFromXMLString(solution);
+                try {
+                    umlProject.loadFromXMLString(solution);
+                } catch (NotStreamable e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 umlProject.addObserver(this);
                 umlProject.projectChanged();

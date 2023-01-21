@@ -6,16 +6,17 @@ import java.util.Iterator;
  *
  * @author Biser
  */
-public class NullIterator implements Iterator {
+public class NullIterator<E> implements Iterator<E> {
 
     public boolean hasNext() {
         return false;
     }
 
-    public Object next() {
+    public E next() {
         return null;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

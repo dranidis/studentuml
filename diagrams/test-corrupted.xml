@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,1033,899" iconified="false" id="" internalid="dcdmodel0" maximized="true" name="DCD: dcd" scale="1.0" selected="true">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="34" y="71">
+        <object class="DesignClass1" id="designclass" internalid="designclass0" name="" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name=""/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

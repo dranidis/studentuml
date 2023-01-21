@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.Realization;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -27,14 +28,17 @@ public class RealizationGR extends LinkGR {
         realization = real;
     }
 
+    @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         drawRealizationArrowHead(bX, bY, rotationAngle, g);
     }
 
+    @Override
     protected BasicStroke makeStroke() {
         return GraphicsHelper.makeDashedStroke();
     }
 
+    @Override
     protected BasicStroke makeSelectedStroke() {
         return GraphicsHelper.makeSelectedDashedStroke();
     }
@@ -70,7 +74,7 @@ public class RealizationGR extends LinkGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
 
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
         node.setAttribute("interfaceb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "realization", realization);

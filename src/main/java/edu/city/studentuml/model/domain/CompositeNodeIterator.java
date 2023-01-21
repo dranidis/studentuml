@@ -6,15 +6,15 @@ import java.util.Iterator;
  *
  * @author Biser
  */
-public class CompositeNodeIterator extends CompositeIterator {
+public class CompositeNodeIterator extends CompositeIterator<NodeComponent> {
 
-    public CompositeNodeIterator(Iterator iterator) {
+    public CompositeNodeIterator(Iterator<NodeComponent> iterator) {
         super(iterator);
     }
 
-    protected Object getNextObject() {
-        Iterator iterator = (Iterator) stack.peek(); // get iterator
-        NodeComponent nodeComponent = (NodeComponent) iterator.next(); // get the next component
+    protected NodeComponent getNextObject() {
+        Iterator<NodeComponent> iterator = stack.peek(); // get iterator
+        NodeComponent nodeComponent = iterator.next(); // get the next component
 
         // TESTED (works)
         if (iterator instanceof CompositeNodeIterator) {

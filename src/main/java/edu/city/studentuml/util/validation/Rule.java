@@ -183,13 +183,13 @@ public class Rule {
      * Class designclass0 has no methods
      *
      */
-    private String getVariableTokenValue(String variableName, Hashtable solutions) {
+    private String getVariableTokenValue(String variableName, Hashtable<String, ?> solutions) {
         variableName = variableName.substring(1);
         Object o = solutions.get(variableName);
 
         if (o instanceof Vector) {
             String vectorString = "";
-            Vector v = (Vector) o;
+            Vector<?> v = (Vector<?>) o;
 
             for (int i = 0; i < v.size(); i++) {
                 vectorString = vectorString + v.get(i).toString();
@@ -214,7 +214,7 @@ public class Rule {
 
     }
 
-    public String messageToString(String message, Hashtable solutions) {
+    public String messageToString(String message, Hashtable<String, ?> solutions) {
         StringTokenizer st = new StringTokenizer(message);
         String resultString = "";
         while (st.hasMoreTokens()) {
@@ -229,7 +229,7 @@ public class Rule {
         return resultString.trim();
     }
 
-    public String getMessage(Hashtable result) {
+    public String getMessage(Hashtable<String, ?> result) {
         if (message != null) {
             return messageToString(message, result);
         } else {
@@ -287,13 +287,13 @@ public class Rule {
      *  using RTTI
      *
      */
-    private int runAction(String actionName, Hashtable results) {
+    private int runAction(String actionName, Hashtable<String, ?> results) {
 
         StringTokenizer t = new StringTokenizer(actionName, "().,");
 
         String objectInstanceName = t.nextToken();
         String methodName = t.nextToken();
-        Vector<String> arguments = new Vector<String>();
+        Vector<String> arguments = new Vector<>();
         while (t.hasMoreTokens()) {
             arguments.add(unEscape((String) results.get(t.nextToken())));
         }
@@ -305,12 +305,12 @@ public class Rule {
 
         Object objectInstance = null;
 
-        Vector<Object> objectArguments = new Vector<Object>();
+        Vector<Object> objectArguments = new Vector<>();
 
         synchronized (SystemWideObjectNamePool.getInstance()) {
             objectInstance = SystemWideObjectNamePool.getInstance().getObjectByName(objectInstanceName);
             for (int i = 0; i < arguments.size(); i++) {
-                System.out.println(arguments.get(i));
+                logger.finer(arguments.get(i));
                 Object fromPool = SystemWideObjectNamePool.getInstance().getObjectByName(arguments.get(i));
                 if (fromPool == null) {
                     fromPool = arguments.get(i);
@@ -330,12 +330,6 @@ public class Rule {
 
         Object[] methodParameters = objectArguments.toArray();
 
-        //FIXME: we don't need this??
-        Class[] classArray = new Class[objectArguments.size()];
-        for (int i = 0; i < methodParameters.length; i++) {
-            classArray[i] = methodParameters[i].getClass();
-        }
-
         try {
             Method[] methods = objectInstance.getClass().getMethods();
             Method m = null;
@@ -346,25 +340,15 @@ public class Rule {
                 }
             }
             if (m == null) {
-                System.out.println("Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
+                logger.severe(() -> "Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
                 return 0;
             }
-            //Method m = objectInstance.getClass().getMethod(methodName, classArray);
             m.invoke(objectInstance, methodParameters);
             return 1;
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return 0;
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return 0;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return 0;
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        } 
     }
 
     /**
@@ -374,7 +358,7 @@ public class Rule {
      * runs runAction(action1),runAction(action2).....
      *
      */
-    public boolean executeAction(Hashtable results) {
+    public boolean executeAction(Hashtable<String, ?> results) {
         //FIXME:TO HANDLE AT HIGHEST LEVEL BUT WITHOUT EXCEPTION
         if (action.equals("") || action == null) {
             JOptionPane.showMessageDialog(null, "No repair action defined for rule: " + ruleName, "", JOptionPane.INFORMATION_MESSAGE);
@@ -389,10 +373,5 @@ public class Rule {
 
         return rezCount > 0;
     }
-    
-//    public Hashtable check() {
-//    	String res = "all";
-//    	Hashtable rez = owner.rbs.checkRule(prologExpression,res.equals(result));
-//        return rez ;
-//    }
+
 }

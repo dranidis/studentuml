@@ -11,7 +11,6 @@ import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCExtendGR;

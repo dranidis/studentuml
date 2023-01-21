@@ -1,12 +1,14 @@
 package edu.city.studentuml.util.undoredo;
 
+import java.util.List;
+
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
+import edu.city.studentuml.util.Coverable;
 import edu.city.studentuml.util.SizeWithCoveredElements;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.List;
 
 /**
  *
@@ -24,17 +26,17 @@ public class UseCaseResizeWithCoveredElementsEdit extends ResizeWithCoveredEleme
     @Override
     protected void setContainingElements(Resizable resizable, SizeWithCoveredElements size) {
         if (resizable instanceof SystemGR) {
-            SystemGR systemGR = (SystemGR) resizable;
+            SystemGR compositeGR = (SystemGR) resizable;
             int finalSize = size.getContainingElements().size();
-            int currentSize = systemGR.getNumberOfElements();
-            List finalElements = size.getContainingElements();
+            int currentSize = compositeGR.getNumberOfElements();
+            List<Coverable> finalElements = size.getContainingElements();
 
             if (finalSize > currentSize) {
                 for (int i = 0; i < finalSize; i++) {
                     UCDComponentGR element = (UCDComponentGR) finalElements.get(i);
                     boolean add = true;
-                    for (int j = 0; j < systemGR.getNumberOfElements(); j++) {
-                        if (element == systemGR.getElement(j)) {
+                    for (int j = 0; j < compositeGR.getNumberOfElements(); j++) {
+                        if (element == compositeGR.getElement(j)) {
                             add = false;
                             break;
                         }
@@ -50,14 +52,14 @@ public class UseCaseResizeWithCoveredElementsEdit extends ResizeWithCoveredEleme
                             context.remove(element);
                         }
 
-                        systemGR.add(element);
-                        element.setContext(systemGR);
+                        compositeGR.add(element);
+                        element.setContext(compositeGR);
                         SystemWideObjectNamePool.getInstance().objectAdded(element);
                     }
                 }
             } else {
-                for (int i = 0; i < systemGR.getNumberOfElements(); i++) {
-                    UCDComponentGR element = systemGR.getElement(i);
+                for (int i = 0; i < compositeGR.getNumberOfElements(); i++) {
+                    UCDComponentGR element = compositeGR.getElement(i);
                     boolean remove = true;
                     for (int j = 0; j < finalSize; j++) {
                         UCDComponentGR temp = (UCDComponentGR) finalElements.get(j);
@@ -69,8 +71,8 @@ public class UseCaseResizeWithCoveredElementsEdit extends ResizeWithCoveredEleme
 
                     if (remove) {
                         // remove element from system and add it to its context
-                        systemGR.remove(element);
-                        addToContext(systemGR, element);
+                        compositeGR.remove(element);
+                        addToContext(compositeGR, element);
 
                         i--;
                     }

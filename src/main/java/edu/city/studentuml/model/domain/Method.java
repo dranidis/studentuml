@@ -1,21 +1,23 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.Settings;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.view.gui.components.Copyable;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.Vector;
+
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.w3c.dom.Element;
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.Settings;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 /**
  * @author Ervin Ramollari
@@ -183,9 +185,8 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
     @JsonIgnore
     private String getParametersString() {
         StringJoiner sj = new StringJoiner(", ", "(", ")");
-        for (MethodParameter par : parameters) {
-            sj.add(par.toStringShowTypes());
-        }
+        parameters.forEach(par -> sj.add(par.toStringShowTypes()));
+
         return sj.toString();
     }
 
@@ -199,7 +200,7 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         return returnType.getName();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setName(node.getAttribute("name"));
         setVisibility(Integer.parseInt(node.getAttribute("visibility")));
         setScope(Integer.parseInt(node.getAttribute("scope")));

@@ -6,15 +6,15 @@ import java.util.Iterator;
  *
  * @author Biser
  */
-public class CompositeUCDIterator extends CompositeIterator {
+public class CompositeUCDIterator extends CompositeIterator<UCDComponent> {
 
-    public CompositeUCDIterator(Iterator iterator) {
+    public CompositeUCDIterator(Iterator<UCDComponent> iterator) {
         super(iterator);
     }
 
-    protected Object getNextObject() {
-        Iterator iterator = (Iterator) stack.peek(); // get iterator
-        UCDComponent ucdComponent = (UCDComponent) iterator.next(); // get the next component
+    protected UCDComponent getNextObject() {
+        Iterator<UCDComponent> iterator = stack.peek(); // get iterator
+        UCDComponent ucdComponent = iterator.next(); // get the next component
 
         // TESTED (works)
         if (iterator instanceof CompositeUCDIterator) {

@@ -1,12 +1,14 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.util.SizeWithCoveredElements;
+import java.util.List;
+
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.Resizable;
+import edu.city.studentuml.util.Coverable;
+import edu.city.studentuml.util.SizeWithCoveredElements;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.List;
 
 /**
  *
@@ -24,17 +26,17 @@ public class ActivityResizeWithCoveredElementsEdit extends ResizeWithCoveredElem
     @Override
     protected void setContainingElements(Resizable resizable, SizeWithCoveredElements size) {
         if (resizable instanceof ActivityNodeGR) {
-            ActivityNodeGR activityNode = (ActivityNodeGR) resizable;
+            ActivityNodeGR compositeGR = (ActivityNodeGR) resizable;
             int finalSize = size.getContainingElements().size();
-            int currentSize = activityNode.getNumberOfNodeComponents();
-            List finalNodes = size.getContainingElements();
+            int currentSize = compositeGR.getNumberOfElements();
+            List<Coverable> finalElements = size.getContainingElements();
 
             if (finalSize > currentSize) {
                 for (int i = 0; i < finalSize; i++) {
-                    NodeComponentGR node = (NodeComponentGR) finalNodes.get(i);
+                    NodeComponentGR element = (NodeComponentGR) finalElements.get(i);
                     boolean add = true;
-                    for (int j = 0; j < activityNode.getNumberOfNodeComponents(); j++) {
-                        if (node == activityNode.getNodeComponent(j)) {
+                    for (int j = 0; j < compositeGR.getNumberOfElements(); j++) {
+                        if (element == compositeGR.getElement(j)) {
                             add = false;
                             break;
                         }
@@ -42,26 +44,26 @@ public class ActivityResizeWithCoveredElementsEdit extends ResizeWithCoveredElem
 
                     if (add) {
                         // add node to activity node
-                        NodeComponentGR context = node.getContext();
+                        NodeComponentGR context = element.getContext();
 
                         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
-                            getModel().getGraphicalElements().remove(node);
+                            getModel().getGraphicalElements().remove(element);
                         } else {
-                            context.remove(node);
+                            context.remove(element);
                         }
 
-                        activityNode.add(node);
-                        node.setContext(activityNode);
-                        SystemWideObjectNamePool.getInstance().objectAdded(node);
+                        compositeGR.add(element);
+                        element.setContext(compositeGR);
+                        SystemWideObjectNamePool.getInstance().objectAdded(element);
                     }
                 }
             } else {
-                for (int i = 0; i < activityNode.getNumberOfNodeComponents(); i++) {
-                    NodeComponentGR node = activityNode.getNodeComponent(i);
+                for (int i = 0; i < compositeGR.getNumberOfElements(); i++) {
+                    NodeComponentGR element = compositeGR.getElement(i);
                     boolean remove = true;
                     for (int j = 0; j < finalSize; j++) {
-                        NodeComponentGR temp = (NodeComponentGR) finalNodes.get(j);
-                        if (node == temp) {
+                        NodeComponentGR temp = (NodeComponentGR) finalElements.get(j);
+                        if (element == temp) {
                             remove = false;
                             break;
                         }
@@ -69,8 +71,8 @@ public class ActivityResizeWithCoveredElementsEdit extends ResizeWithCoveredElem
 
                     if (remove) {
                         // remove node from activity node and add it to its context
-                        activityNode.remove(node);
-                        addToContext(activityNode, node);
+                        compositeGR.remove(element);
+                        addToContext(compositeGR, element);
 
                         i--;
                     }
@@ -79,20 +81,20 @@ public class ActivityResizeWithCoveredElementsEdit extends ResizeWithCoveredElem
         }
     }
 
-    private void addToContext(NodeComponentGR oldContext, NodeComponentGR removeNode) {
+    private void addToContext(NodeComponentGR oldContext, NodeComponentGR removeElement) {
         NodeComponentGR newContext = oldContext.getContext();
         
         if (newContext == NodeComponentGR.DEFAULT_CONTEXT) {
-            getModel().getGraphicalElements().insertElementAt(removeNode, 0);
-            removeNode.setContext(newContext);
-            SystemWideObjectNamePool.getInstance().objectAdded(removeNode);
+            getModel().getGraphicalElements().insertElementAt(removeElement, 0);
+            removeElement.setContext(newContext);
+            SystemWideObjectNamePool.getInstance().objectAdded(removeElement);
         } else {
-            if (newContext.contains(removeNode)){
-                newContext.add(removeNode);
-                removeNode.setContext(newContext);
-                SystemWideObjectNamePool.getInstance().objectAdded(removeNode);
+            if (newContext.contains(removeElement)){
+                newContext.add(removeElement);
+                removeElement.setContext(newContext);
+                SystemWideObjectNamePool.getInstance().objectAdded(removeElement);
             } else {
-                addToContext(newContext, removeNode);
+                addToContext(newContext, removeElement);
             }
         }
     }

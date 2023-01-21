@@ -12,7 +12,7 @@ public abstract class NodeComponent {
 
     public static final NodeComponent DEFAULT_CONTEXT = null;
     protected String name;
-    protected NodeComponent context;    //containing activity;
+    protected NodeComponent context;    //containing activity
     protected List<Edge> incomingEdges;
     protected List<Edge> outgoingEdges;
 
@@ -31,7 +31,7 @@ public abstract class NodeComponent {
         throw new UnsupportedOperationException("remove() not supported");
     }
 
-    public abstract Iterator createIterator();
+    public abstract Iterator<NodeComponent> createIterator();
 
     public String getName() {
         throw new UnsupportedOperationException("getName() not supported");

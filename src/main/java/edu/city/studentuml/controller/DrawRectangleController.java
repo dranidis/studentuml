@@ -1,18 +1,16 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.PositiveRectangle;
-import edu.city.studentuml.view.DiagramView;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Logger;
+
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.util.PositiveRectangle;
+import edu.city.studentuml.view.DiagramView;
 
 public class DrawRectangleController { 
-
-    private static final Logger logger = Logger.getLogger(DrawRectangleController.class.getName());
 
     private boolean selectionMode = false;
     private DiagramView diagramView;

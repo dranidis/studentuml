@@ -1,7 +1,6 @@
 package edu.city.studentuml.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -10,17 +9,14 @@ import java.util.List;
  */
 public class SizeWithCoveredElements extends Size {
 
-        List containingElements = new ArrayList();
+        List<Coverable> containingElements = new ArrayList<>();
 
-        public void setContainingElements(List containingElements) {
+        public void setContainingElements(List<? extends Coverable> containingElements) {
             this.containingElements.clear();
-            Iterator i = containingElements.iterator();
-            while (i.hasNext()) {
-                this.containingElements.add(i.next());
-            }
+            this.containingElements.addAll(containingElements);
         }
 
-        public List getContainingElements() {
+        public List<Coverable> getContainingElements() {
             return containingElements;
         }
     }

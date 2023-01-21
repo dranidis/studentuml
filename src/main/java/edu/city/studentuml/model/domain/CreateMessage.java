@@ -43,33 +43,33 @@ public class CreateMessage extends CallMessage {
 
     }
 
-    public Vector getSDMethodParameters() {
-        Iterator iterator = parameters.iterator();
-        MessageParameter param;
-        Vector methodParameters = new Vector<MethodParameter>();
+    public Vector<MethodParameter> getSDMethodParameters() {
+        Iterator<MethodParameter> iterator = parameters.iterator();
+        Vector<MethodParameter> methodParameters = new Vector<>();
 
         while (iterator.hasNext()) {
-            param = (MessageParameter) iterator.next();
+            MethodParameter param = iterator.next();
             String[] parameterStr = param.getName().split("\\s+");
             try {
                 Type parameterType = new DataType(parameterStr[0]);
                 String parameter = parameterStr[1];
                 methodParameters.add(new MethodParameter(parameter, parameterType));
             } catch (ArrayIndexOutOfBoundsException e) {
-                logger.severe("Wrong Parameter");
+                logger.severe("Wrong Parameter: " + "STRING: " + parameterStr + " " + getName() + source.getName() + " -> " + target.getName());
                 e.printStackTrace();
             }
         }
         return methodParameters;
     }
 
+    @Override
     public CreateMessage clone() {
         CreateMessage copyCreateMessage = new CreateMessage(getSource(), getTarget());
 
-        Iterator iterator = parameters.iterator();
+        Iterator<MethodParameter> iterator = parameters.iterator();
         MethodParameter parameter;
         while (iterator.hasNext()) {
-            parameter = (MethodParameter) iterator.next();
+            parameter = iterator.next();
             copyCreateMessage.addParameter(parameter.clone());
         }
 

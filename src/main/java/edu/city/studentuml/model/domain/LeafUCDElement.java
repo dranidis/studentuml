@@ -12,8 +12,8 @@ public abstract class LeafUCDElement extends UCDComponent {
         super(name);
     }
 
-    public Iterator createIterator() {
-        return new NullIterator();
+    public Iterator<UCDComponent> createIterator() {
+        return new NullIterator<>();
     }
 
     public int getNumberOfElements() {

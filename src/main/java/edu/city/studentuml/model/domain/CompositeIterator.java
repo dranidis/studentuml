@@ -1,22 +1,23 @@
 package edu.city.studentuml.model.domain;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.Stack;
 
 /**
  *
  * @author Biser
  */
-public abstract class CompositeIterator implements Iterator {
+public abstract class CompositeIterator<E> implements Iterator<E> {
 
-    protected Stack stack;
+    protected Deque<Iterator<E>> stack;
 
-    public CompositeIterator(Iterator iterator) {
-        stack = new Stack();
+    protected CompositeIterator(Iterator<E> iterator) {
+        stack = new ArrayDeque<>();
         stack.push(iterator);
     }
 
-    public Object next() {
+    public E next() {
         if (hasNext()) {
             return getNextObject();
         } else {
@@ -28,7 +29,7 @@ public abstract class CompositeIterator implements Iterator {
         if (stack.isEmpty()) {
             return false;
         } else {
-            Iterator iterator = (Iterator) stack.peek(); // get iterator
+            Iterator<E> iterator = stack.peek(); // get iterator
             if (!iterator.hasNext()) {
                 // if no more elements
                 stack.pop();
@@ -39,9 +40,10 @@ public abstract class CompositeIterator implements Iterator {
         }
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
-    protected abstract Object getNextObject();
+    protected abstract E getNextObject();
 }

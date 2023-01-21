@@ -2,9 +2,11 @@ package edu.city.studentuml.model.domain;
 
 import java.util.StringJoiner;
 import java.util.Vector;
+
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -126,11 +128,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         return sj.toString();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setName(node.getAttribute("name"));
         setIterative(Boolean.parseBoolean(node.getAttribute("iterative")));
         parameters.clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
 
         String rv = node.getAttribute("returns");
         if (rv != null) {

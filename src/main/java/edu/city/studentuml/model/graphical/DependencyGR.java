@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -26,14 +27,17 @@ public class DependencyGR extends LinkGR {
         dependency = dep;
     }
 
+    @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         drawDependencyArrowHead(bX, bY, rotationAngle, g);
     }
 
+    @Override
     protected BasicStroke makeStroke() {
         return GraphicsHelper.makeDashedStroke();
     }
 
+    @Override
     protected BasicStroke makeSelectedStroke() {
         return GraphicsHelper.makeSelectedDashedStroke();
     }
@@ -68,8 +72,8 @@ public class DependencyGR extends LinkGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(a));
-        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
+        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(ObjectFactory.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "dependency", dependency);
     }

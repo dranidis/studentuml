@@ -13,6 +13,10 @@ public class RuleBasedSystemGenerator {
     private static final Logger logger = Logger.getLogger(RuleBasedSystemGenerator.class.getName());
 
     /**
+     * 
+     * Incrementally poplulates the factList.
+     * <p>
+     * 
      * Tries to create facts from the fact template list (stored in the template HashMap)
      * the templateHashMap is of the following structure:
      *
@@ -46,11 +50,16 @@ public class RuleBasedSystemGenerator {
      *
       * 
       * @param object is a instance for which we will check whether there are fact templates
-      * @param templateClass is the class for which we will check whether there is a fact template
       * @param factList
       * @param template
       */
-    public void addRules(Object object, Class templateClass, Vector<String> factList, Map<String, Vector<ConsistencyCheckerFact>> template) {
+    public void addRules(Object object, Vector<String> factList, Map<String, Vector<ConsistencyCheckerFact>> template) {
+        logger.finer("Adding rule for: " + object.getClass().getSimpleName() + ":" + SystemWideObjectNamePool.getInstance().getNameForObject(object));
+        addRulesRecursive(object, object.getClass(), factList, template);
+    }
+
+    private void addRulesRecursive(Object object, Class<?> templateClass, Vector<String> factList, Map<String, Vector<ConsistencyCheckerFact>> template) {
+        logger.finer("Recursive Adding rule for class: " + templateClass.getSimpleName());
 
         String className = templateClass.getSimpleName();
         Vector<ConsistencyCheckerFact> factsforClass = template.get(className);
@@ -59,8 +68,8 @@ public class RuleBasedSystemGenerator {
             // no fact for this class, check the parents....
             // TODO : stop executing after inheritance in classes in this package...
             if (templateClass.getSuperclass() != null) {
-                Class parentClass = templateClass.getSuperclass();
-                addRules(object, parentClass, factList, template);
+                Class<?> parentClass = templateClass.getSuperclass();
+                addRulesRecursive(object, parentClass, factList, template);
             }
             return;
         }
@@ -68,8 +77,8 @@ public class RuleBasedSystemGenerator {
         for (int i = 0; i < factsforClass.size(); i++) {
             ConsistencyCheckerFact fact = factsforClass.get(i);
             addFromVector(object, fact.getFunctionName(), factList, fact.getArguments());
-            Class parentClass = templateClass.getSuperclass();
-            addRules(object, parentClass, factList, template);
+            Class<?> parentClass = templateClass.getSuperclass();
+            addRulesRecursive(object, parentClass, factList, template);
         }
     }
 
@@ -117,7 +126,7 @@ public class RuleBasedSystemGenerator {
      *                     "getGraphicalElements.this"
      */
     private void addFromVector(Object object, String functionName, Vector<String> factList, Vector<String> arguments) {
-        Vector objects = new Vector<>();
+        Vector<Object> objects = new Vector<>();
         for (int i = 0; i < arguments.size(); i++) {
             if ((arguments.get(i)).split("[.]").length == 2) {
 
@@ -125,11 +134,11 @@ public class RuleBasedSystemGenerator {
                 String vectorName = nameArray[0];
                 String objectName = nameArray[1];
 
-                Vector v = (Vector) getter(object, vectorName);
+                Vector<?> v = (Vector<?>) getter(object, vectorName);
 
                 if (v != null) {
                     for (int j = 0; j < v.size(); j++) {
-                        Vector newArguments = new Vector<>();
+                        Vector<Object> newArguments = new Vector<>();
                         for (int z = 0; z < arguments.size(); z++) {
                             if (z == i) {
                                 newArguments.add(getter(v.get(j), objectName));
@@ -199,7 +208,7 @@ public class RuleBasedSystemGenerator {
      * name is the name of the fact i.e. "belongsTo"
      *
      */
-    private void add(String name, Vector output, Object[] objects) {
+    private void add(String name, Vector<String> output, Object[] objects) {
         String result = name + "(";
         boolean invalid = false;
         for (int i = 0; i < objects.length; i++) {

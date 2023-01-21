@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -14,11 +13,13 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.System;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -26,6 +27,8 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author draganbisercic
  */
 public class SystemGR extends CompositeUCDElementGR implements Resizable {
+
+    private static final Logger logger = Logger.getLogger(SystemGR.class.getName());
 
     private static int systemNameXOffset = 10;
     private static int systemNameYOffset = 5;
@@ -290,14 +293,19 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector<>(components), this);
+        try {
+            streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector<>(components), this);
+        } catch (NotStreamable e) {
+            logger.severe("Not streamable");
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,13 +1,5 @@
 package edu.city.studentuml.controller;
 
-import edu.city.studentuml.model.graphical.ADModel;
-import edu.city.studentuml.model.graphical.EdgeGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.AbstractPointGR;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.PointGR;
-import edu.city.studentuml.util.undoredo.MoveEdgeEdit;
-import edu.city.studentuml.view.gui.ADInternalFrame;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,9 +7,18 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.model.graphical.ADModel;
+import edu.city.studentuml.model.graphical.AbstractPointGR;
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.EdgeGR;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.PointGR;
+import edu.city.studentuml.util.undoredo.MoveEdgeEdit;
+import edu.city.studentuml.view.gui.ADInternalFrame;
 
 /**
  *
@@ -54,16 +55,13 @@ public class EdgeController {
 
                 GraphicalElement e = model.getContainingGraphicalElement(p);
 
-                if ((e != null) && (e instanceof EdgeGR)) {
+                if (e instanceof EdgeGR) {
                     edgeGR = (EdgeGR) e;
 
                     // for move edit
-                    undoPoints = new ArrayList<AbstractPointGR>();
-                    Iterator it = edgeGR.getPoints();
-                    while (it.hasNext()) {
-                        AbstractPointGR undoPoint = (AbstractPointGR) it.next();
-                        undoPoints.add(undoPoint.clone());
-                    }
+                    undoPoints = new ArrayList<>();
+
+                    edgeGR.getPoints().forEach(undoPoint -> undoPoints.add(undoPoint.clone()));
 
                     if (!isPointSelected(p)) {
                         // add new point between two nearest points,
@@ -117,12 +115,9 @@ public class EdgeController {
                     }
 
                     // redo points
-                    redoPoints = new ArrayList<AbstractPointGR>();
-                    Iterator it = edgeGR.getPoints();
-                    while (it.hasNext()) {
-                        AbstractPointGR redoPoint = (AbstractPointGR) it.next();
-                        redoPoints.add(redoPoint.clone());
-                    }
+                    redoPoints = new ArrayList<>();
+
+                    edgeGR.getPoints().forEach(redoPoint -> redoPoints.add(redoPoint.clone()));
 
                     // make editable only if undo and redo points are not the same
                     if (moveHappened()) {
@@ -170,27 +165,29 @@ public class EdgeController {
         return (int) (number / diagramInternalFrame.getView().getScale());
     }
 
+    /**
+     * check if there is a point that contains (x, y)
+     * 
+     * @param p
+     * @return
+     */
     private boolean isPointSelected(Point p) {
-        // check if there is a point that contains (x, y)
-        Iterator it = edgeGR.getPoints();
-        while (it.hasNext()) {
-            AbstractPointGR point = (AbstractPointGR) it.next();
-            if (point.contains(p) && (point instanceof PointGR)) {
-                return true;
-            }
-        }
-        return false;
+        return edgeGR.getPoints().stream().anyMatch(point -> point.contains(p) && (point instanceof PointGR));
     }
 
+    /**
+     * return a point that contains the (x, y)
+     * 
+     * @param p
+     * @return
+     */
     private AbstractPointGR getSelectedPoint(Point p) {
-        // return a point that contains the (x, y)
-        Iterator it = edgeGR.getPoints();
-        while (it.hasNext()) {
-            AbstractPointGR point = (AbstractPointGR) it.next();
+        for (AbstractPointGR point : edgeGR.getPoints()) {
             if (point.contains(p)) {
                 return point;
-            }
+            }            
         }
+
         return null;
     }
 

@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -43,6 +45,12 @@ public class XMLStreamer {
 
     private Document doc = null;
 
+    private List<String> errorStrings = new ArrayList<>();
+
+    public List<String> getErrorStrings() {
+        return errorStrings;
+    }
+
     public XMLStreamer() {
         try {
             DocumentBuilder builder = getDocumentBuilder();
@@ -72,7 +80,7 @@ public class XMLStreamer {
             // Get the response
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
-            StringBuffer xmlResponse = new StringBuffer();
+            StringBuilder xmlResponse = new StringBuilder();
 
             while ((line = rd.readLine()) != null) {
                 xmlResponse.append(line);
@@ -178,15 +186,15 @@ public class XMLStreamer {
             child.setAttribute("id", id);
             String internalID = SystemWideObjectNamePool.getInstance().getNameForObject(o);
             if (internalID != null) {
-                child.setAttribute("internalid", internalID);
+                child.setAttribute(ObjectFactory.INTERNALID, internalID);
             } else {
-                logger.severe("Null internalid for " + o.getClass().getName() + " : " + o.toString());
+                logger.severe(() -> "Null internalid for " + o.getClass().getName() + " : " + o.toString());
             }
             ((IXMLCustomStreamable) o).streamToXML(child, this);
         }
     }
 
-    public void streamFrom(Element e, Object instance) {
+    public void streamFrom(Element e, Object instance) throws NotStreamable {
         if (instance instanceof IXMLCustomStreamable) {
             ((IXMLCustomStreamable) instance).streamFromXML(e, this, instance);
         }
@@ -199,11 +207,17 @@ public class XMLStreamer {
         }
     }
 
-    public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) {
+    public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) throws NotStreamable {
         Element child = getNodeById(node, id);
         if (child != null) {
-            IXMLCustomStreamable object = ObjectFactory.getInstance().newInstance((child).getAttribute(CLASS), parent,
-                    child, this);
+            IXMLCustomStreamable object = null;
+            try {
+                object = ObjectFactory.getInstance().newInstance((child).getAttribute(CLASS), parent, child, this);
+            } catch (NotStreamable e) {
+                logger.severe("node: \n" + elementToString(node) + "\nchild: \n" + elementToString(child)
+                        + ", internalid: " + child.getAttribute(ObjectFactory.INTERNALID) + ", id: " + id);
+                errorStrings.add(elementToString(child));
+            }
             if (object != null) {
                 object.streamFromXML(child, this, object);
                 return object;
@@ -212,8 +226,24 @@ public class XMLStreamer {
         return null;
     }
 
+    public String elementToString(Element node) {
+        StringWriter buffer = new StringWriter();
+        try {
+            getTransformer().transform(new DOMSource(node), new StreamResult(buffer));
+        } catch (TransformerException | TransformerFactoryConfigurationError e1) {
+            e1.printStackTrace();
+        }
+        /*
+         * remove the first part <?xml .....>
+         */
+        String xml = buffer.toString();
+        int firstIndex = xml.indexOf("<");
+
+        return xml.substring(xml.indexOf("<", firstIndex + 1));
+    }
+
     // Streams objects from node to vector v using instance
-    public void streamObjectsFrom(Element node, Vector vector, Object instance) {
+    public void streamObjectsFrom(Element node, Vector vector, Object instance) throws NotStreamable {
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node child = node.getChildNodes().item(i);
             if (child instanceof Element) {

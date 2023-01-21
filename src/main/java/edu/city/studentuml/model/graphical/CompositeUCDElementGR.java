@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.CompositeUCDElement;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -8,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
+
+import edu.city.studentuml.model.domain.CompositeUCDElement;
 
 /**
  *
@@ -40,13 +41,15 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
         component.remove(componentGR.getComponent());
     }
 
-    /*
+    /**
      * Returns the number of ucd components contained
      */
+    @Override
     public int getNumberOfElements() {
         return components.size();
     }
 
+    @Override
     public UCDComponentGR getElement(int index) {
         return components.get(index);
     }
@@ -67,6 +70,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
                 .forEach(comp -> comp.move(comp.getStartingPoint().x + deltaX, comp.getStartingPoint().y + deltaY));
     }
 
+    @Override
     public boolean contains(UCDComponentGR otherUCDComponentGR) {
         // starting point
         Point s = new Point(otherUCDComponentGR.getStartingPoint().x,

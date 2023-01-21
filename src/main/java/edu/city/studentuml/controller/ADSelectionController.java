@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
@@ -20,9 +19,6 @@ import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.EdgeGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -47,8 +43,8 @@ import edu.city.studentuml.view.gui.ObjectNodeEditor;
  */
 public class ADSelectionController extends SelectionController {
 
-    private static final Logger logger = Logger.getLogger(ADSelectionController.class.getName());
-    
+    private static final String OBJECT_FLOW_ERROR_STRING = "Object Flow Error";
+
     public ADSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
         editElementMapper.put(ControlFlowGR.class, el -> editControlFlow((ControlFlowGR) el));
@@ -128,7 +124,7 @@ public class ADSelectionController extends SelectionController {
         if (sourceNode instanceof DecisionNode && guard.isEmpty()) {
             JOptionPane.showMessageDialog(parentComponent,
                     "The guard must be specified for the flow going out from the decision node!",
-                    "Object Flow Error",
+                    OBJECT_FLOW_ERROR_STRING,
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -141,7 +137,7 @@ public class ADSelectionController extends SelectionController {
                 if (s.equals(guard) && !s.isEmpty()) {
                     JOptionPane.showMessageDialog(parentComponent,
                             "Multiple outgoing edges with the same guard are not allowed!",
-                            "Object Flow Error",
+                            OBJECT_FLOW_ERROR_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -153,7 +149,7 @@ public class ADSelectionController extends SelectionController {
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(parentComponent,
                     e.getMessage(),
-                    "Object Flow Error",
+                    OBJECT_FLOW_ERROR_STRING,
                     JOptionPane.ERROR_MESSAGE);
             return;
         }

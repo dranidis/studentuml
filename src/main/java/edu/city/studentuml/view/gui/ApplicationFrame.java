@@ -2,6 +2,8 @@ package edu.city.studentuml.view.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +16,7 @@ import javax.swing.JOptionPane;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -41,6 +44,13 @@ public class ApplicationFrame extends ApplicationGUI {
         createXMLFileChooser();
 
         umlProject.setUser(Constants.DESKTOP_USER);
+
+        /*
+         * when the window opens a New Project appears but it should be considered saved
+         * if the user does nothing.
+         */
+        umlProject.setSaved(true);
+        updateFrameTitle();
     }
 
     private JFileChooser createXMLFileChooser() {
@@ -113,8 +123,9 @@ public class ApplicationFrame extends ApplicationGUI {
 
         closingOrLoading = true;
 
+        List<String> errors = new ArrayList<>();
         try {
-            umlProject.loadFromXML(fileName);
+            errors = umlProject.loadFromXML(fileName);
         } catch (IOException e) {
             logger.finer(e::getMessage);
             JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be found.", "IO Error",
@@ -122,6 +133,20 @@ public class ApplicationFrame extends ApplicationGUI {
             RecentFiles.getInstance().removeRecentFile(fileName);
             menuBar.loadRecentFilesInMenu();
             return;
+        } catch (NotStreamable e) {
+            logger.finer("File cannot be read (NotStreamable): " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Encountered some problems while reading the file " + fileName + ". \nContents might not fully loaded.", "XML file error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            errors.forEach(e -> sb.append(e + "\n"));
+            logger.finer(() ->"File cannot be read (NotStreamable): " + sb.toString());
+            JOptionPane.showMessageDialog(null,
+                    "Encountered some problems while reading the file " + fileName
+                            + ". \nContents might not fully loaded.\nElements with errors:\n" + sb.toString(),
+                    "XML file error", JOptionPane.ERROR_MESSAGE);
         }
 
         repositoryTreeView.expandDiagrams();
