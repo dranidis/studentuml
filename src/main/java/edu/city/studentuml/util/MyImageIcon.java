@@ -1,14 +1,11 @@
 package edu.city.studentuml.util;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.net.URL;
 import java.awt.image.BufferedImage;
-
+import java.net.URL;
 
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
 
 /**
  * Loads an image icon from resources.

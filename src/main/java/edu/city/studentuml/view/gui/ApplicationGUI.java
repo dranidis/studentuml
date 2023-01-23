@@ -1071,14 +1071,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         splitPane.setDividerLocation(splitLocation);
 
         String expansionState = repositoryTreeView.getExpansionState(0);
+        logger.finer(() -> "EXP state: " + expansionState);
+
         repositoryTreeView = newRepositoryTreeView;
         treePane = newTreePane;
 
         splitPane.revalidate();
         splitPane.repaint();
         
-        repositoryTreeView.restoreExpansionState(0, expansionState);
         repositoryTreeView.updateTree();
+        repositoryTreeView.restoreExpansionState(0, expansionState);
 
 
         repositoryTreeView.revalidate();

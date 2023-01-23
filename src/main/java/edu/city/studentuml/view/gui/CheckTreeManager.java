@@ -468,10 +468,6 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             public void setArmed(boolean b) {
             }
 
-            public boolean isFocusTraversable() {
-                return isEnabled();
-            }
-
             /** We disable focusing on the component when it is not
              * enabled. */
             public void setEnabled(boolean b) {

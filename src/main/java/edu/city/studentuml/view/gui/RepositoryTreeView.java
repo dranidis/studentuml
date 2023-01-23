@@ -555,6 +555,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         StringTokenizer stok = new StringTokenizer(expansionState, ",");
         while (stok.hasMoreTokens()) {
             int token = row + Integer.parseInt(stok.nextToken());
+            logger.finer(() -> "Expanding token " + token);
             tree.expandRow(token);
         }
     }

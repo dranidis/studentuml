@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -36,8 +35,6 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     protected int height;
     protected String myUid;
     public static final Color DESKTOP_USER_COLOR = new Color(220, 170, 100);
-
-    private Random r = new Random();
 
     @JsonIgnore
     public Rectangle2D getBounds() {
