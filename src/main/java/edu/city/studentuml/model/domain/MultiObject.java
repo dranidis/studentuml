@@ -3,9 +3,9 @@ package edu.city.studentuml.model.domain;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * 
@@ -31,8 +31,8 @@ public class MultiObject extends RoleClassifier implements IXMLCustomStreamable 
 
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
-        streamer.streamObject(node, ObjectFactory.DESIGNCLASS, getDesignClass());
-        node.setAttribute(ObjectFactory.DESIGNCLASS, SystemWideObjectNamePool.getInstance().getNameForObject(getDesignClass()));
+        streamer.streamObject(node, XMLSyntax.DESIGNCLASS, getDesignClass());
+        node.setAttribute(XMLSyntax.DESIGNCLASS, SystemWideObjectNamePool.getInstance().getNameForObject(getDesignClass()));
     }
 
     // for Undo/Redo

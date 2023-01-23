@@ -7,8 +7,8 @@ import org.w3c.dom.Element;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 /**
  * @author Ramollari Ervin
  */
@@ -120,8 +120,8 @@ public class Association implements Serializable, IXMLCustomStreamable {
         node.setAttribute("showArrow", String.valueOf(getShowArrow()));
         node.setAttribute("labelDirection", Integer.toString(getLabelDirection()));
 
-        streamer.streamObject(node, ObjectFactory.ROLEA, roleA);
-        streamer.streamObject(node, ObjectFactory.ROLEB, roleB);
+        streamer.streamObject(node, XMLSyntax.ROLEA, roleA);
+        streamer.streamObject(node, XMLSyntax.ROLEB, roleB);
     }
 
     public Association clone() {

@@ -159,6 +159,14 @@ public class ApplicationFrame extends ApplicationGUI {
             SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
         }
 
+        /*
+         * set the Zorder of internalframes according to the XML file ZOrder property
+         */
+        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+            DiagramInternalFrame iframe = (DiagramInternalFrame) frame;
+            desktopPane.setComponentZOrder(iframe, iframe.getzOrder());
+        }
+
         umlProject.setSaved(true);
         closingOrLoading = false;
         updateFrameTitle();

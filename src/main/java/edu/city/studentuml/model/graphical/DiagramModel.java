@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -291,26 +292,32 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         }
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getDiagramName());
         if (frame != null) {
-            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + ","
-                    + frame.getBounds().height;
+            /*
+             * save dimensions of frame when restored (even when maximised)
+             */
+            Rectangle bounds = frame.getNormalBounds();
+            String values = bounds.x + "," + bounds.y + "," + bounds.width + "," + bounds.height;
             node.setAttribute("framex", values);
             node.setAttribute("selected", Boolean.toString(frame.isSelected()));
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
             node.setAttribute("scale", Double.toString(frame.getView().getScale()));
             node.setAttribute("maximized", Boolean.toString(frame.isMaximum()));
+            node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
 
         }
         streamer.streamObjects(node, graphicalElements.iterator());
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setDiagramName(node.getAttribute("name"));
 
         graphicalElements.clear();
-        streamer.streamObjectsFrom(node, graphicalElements, instance);
+        streamer.streamChildrenFrom(node, instance);
     }
 
     public UMLProject getUmlProject() {

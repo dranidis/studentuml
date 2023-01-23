@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="SDModel" framex="535,63,398,427" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd" scale="1.0" selected="false" zorder="2"/>
+    <object class="DCDModel" framex="613,299,721,575" iconified="false" id="" internalid="dcdmodel0" maximized="false" name="DCD: dcd" scale="1.0" selected="false" zorder="3"/>
+    <object class="SSDModel" framex="73,34,391,563" iconified="false" id="" internalid="ssdmodel0" maximized="true" name="SSD: ssd" scale="1.0" selected="true" zorder="1">
+      <object class="SystemInstanceGR" id="" internalid="systeminstancegr0" uid="Desktop Application User" x="159">
+        <object class="SystemInstance" id="systeminstance" internalid="systeminstance0" name="">
+          <object class="System" id="system" name=""/>
+        </object>
+      </object>
+    </object>
+  </object>
+</uml>

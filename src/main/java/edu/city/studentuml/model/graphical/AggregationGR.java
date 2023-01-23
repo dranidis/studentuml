@@ -8,9 +8,9 @@ import java.awt.geom.GeneralPath;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Aggregation;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 public class AggregationGR extends AssociationGR {
 
@@ -76,8 +76,8 @@ public class AggregationGR extends AssociationGR {
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute(ObjectFactory.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(getWhole()));
-        node.setAttribute(ObjectFactory.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(getPart()));
+        node.setAttribute(XMLSyntax.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(getWhole()));
+        node.setAttribute(XMLSyntax.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(getPart()));
 
         streamer.streamObject(node, "aggregation", getAggregation());
     }

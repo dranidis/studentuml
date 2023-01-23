@@ -1,16 +1,15 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Point;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
@@ -32,7 +31,7 @@ public class ControlFlowGR extends EdgeGR {
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         try {
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "points"), new Vector<>(points), this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "points"), this);
         } catch (NotStreamable e) {
             logger.severe("Not streamable");
             e.printStackTrace();
@@ -43,8 +42,8 @@ public class ControlFlowGR extends EdgeGR {
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
 
-        node.setAttribute(ObjectFactory.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(source));
-        node.setAttribute(ObjectFactory.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(target));
+        node.setAttribute(XMLSyntax.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(source));
+        node.setAttribute(XMLSyntax.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(target));
 
         streamer.streamObjects(streamer.addChild(node, "points"), getPoints().iterator());
 

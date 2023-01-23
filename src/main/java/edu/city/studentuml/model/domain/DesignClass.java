@@ -92,8 +92,8 @@ public class DesignClass extends AbstractClass {
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setStereotype(node.getAttribute("stereotype"));
         clear();
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
     }
 
     @Override

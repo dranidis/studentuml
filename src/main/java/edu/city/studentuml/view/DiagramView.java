@@ -17,12 +17,10 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import edu.city.studentuml.model.graphical.ConstantsGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.util.ScaleRound;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 public abstract class DiagramView extends JPanel implements Observer {
 

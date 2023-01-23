@@ -41,8 +41,6 @@ public class XMLStreamer {
 
     private static final Logger logger = Logger.getLogger(XMLStreamer.class.getName());
 
-    private static final String CLASS = "class";
-
     private Document doc = null;
 
     private List<String> errorStrings = new ArrayList<>();
@@ -151,6 +149,14 @@ public class XMLStreamer {
         }
     }
 
+    /**
+     * Returns the first child of parent that matches the id.
+     * If called with a null parent the parent is set to the doc top element
+     * 
+     * @param parent
+     * @param id
+     * @return
+     */
     public Element getNodeById(Element parent, String id) {
         if (parent == null) {
             parent = doc.getDocumentElement();
@@ -182,46 +188,43 @@ public class XMLStreamer {
 
         if (o instanceof IXMLCustomStreamable) {
             Element child = addChild(node, id);
-            child.setAttribute(CLASS, o.getClass().getSimpleName());
+            child.setAttribute(XMLSyntax.CLASS, o.getClass().getSimpleName());
             child.setAttribute("id", id);
             String internalID = SystemWideObjectNamePool.getInstance().getNameForObject(o);
             if (internalID != null) {
-                child.setAttribute(ObjectFactory.INTERNALID, internalID);
+                child.setAttribute(XMLSyntax.INTERNALID, internalID);
             } else {
-                logger.severe(() -> "Null internalid for " + o.getClass().getName() + " : " + o.toString());
+                logger.finer(() -> "Null internalid for " + o.getClass().getName() + " : " + o.toString());
             }
             ((IXMLCustomStreamable) o).streamToXML(child, this);
         }
     }
 
-    public void streamFrom(Element e, Object instance) throws NotStreamable {
-        if (instance instanceof IXMLCustomStreamable) {
-            ((IXMLCustomStreamable) instance).streamFromXML(e, this, instance);
-        }
-    }
-
-    public void streamObjects(Element parent, Iterator i) {
-        while (i.hasNext()) {
-            Object o = i.next();
-            streamObject(parent, "", o);
-        }
+    public void streamObjects(Element parent, Iterator<?> i) {
+        i.forEachRemaining(o -> streamObject(parent, "", o));
     }
 
     public IXMLCustomStreamable readObjectByID(Element node, String id, Object parent) throws NotStreamable {
         Element child = getNodeById(node, id);
         if (child != null) {
-            IXMLCustomStreamable object = null;
-            try {
-                object = ObjectFactory.getInstance().newInstance((child).getAttribute(CLASS), parent, child, this);
-            } catch (NotStreamable e) {
-                logger.severe("node: \n" + elementToString(node) + "\nchild: \n" + elementToString(child)
-                        + ", internalid: " + child.getAttribute(ObjectFactory.INTERNALID) + ", id: " + id);
-                errorStrings.add(elementToString(child));
-            }
-            if (object != null) {
-                object.streamFromXML(child, this, object);
-                return object;
-            }
+            return createAndReadObject(child, parent);
+        }
+        return null;
+    }
+
+    private IXMLCustomStreamable createAndReadObject(Element child, Object parent) throws NotStreamable {
+        IXMLCustomStreamable object = null;
+
+        try {
+            object = ObjectFactory.getInstance().newInstance(child.getAttribute(XMLSyntax.CLASS), parent, child, this);
+        } catch (NotStreamable e) {
+            logger.severe("child: \n" + elementToString(child)
+                    + ", internalid: " + child.getAttribute(XMLSyntax.INTERNALID));
+            errorStrings.add(elementToString(child));
+        }
+        if (object != null) {
+            object.streamFromXML(child, this, object);
+            return object;
         }
         return null;
     }
@@ -242,16 +245,19 @@ public class XMLStreamer {
         return xml.substring(xml.indexOf("<", firstIndex + 1));
     }
 
-    // Streams objects from node to vector v using instance
-    public void streamObjectsFrom(Element node, Vector vector, Object instance) throws NotStreamable {
-        for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-            Node child = node.getChildNodes().item(i);
+    /**
+     * Called with an element which has many children.
+     * It creates and reads all the children of the element.
+     * 
+     * @param element
+     * @param parent
+     * @throws NotStreamable
+     */
+    public void streamChildrenFrom(Element element, Object parent) throws NotStreamable {
+        for (int i = 0; i < element.getChildNodes().getLength(); i++) {
+            Node child = element.getChildNodes().item(i);
             if (child instanceof Element) {
-                IXMLCustomStreamable object = ObjectFactory.getInstance()
-                        .newInstance(((Element) child).getAttribute(CLASS), instance, (Element) child, this);
-                if (object != null) {
-                    object.streamFromXML((Element) child, this, object);
-                }
+                createAndReadObject((Element) child, parent);
             }
         }
     }

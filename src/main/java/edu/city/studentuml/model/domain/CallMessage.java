@@ -132,7 +132,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         setName(node.getAttribute("name"));
         setIterative(Boolean.parseBoolean(node.getAttribute("iterative")));
         parameters.clear();
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
 
         String rv = node.getAttribute("returns");
         if (rv != null) {

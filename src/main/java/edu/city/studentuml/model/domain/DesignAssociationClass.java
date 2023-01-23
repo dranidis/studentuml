@@ -58,7 +58,7 @@ public class DesignAssociationClass extends AbstractAssociationClass {
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), getMethods(), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
     }
 
     @Override

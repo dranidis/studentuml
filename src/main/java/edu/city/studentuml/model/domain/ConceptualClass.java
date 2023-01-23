@@ -23,7 +23,7 @@ public class ConceptualClass extends AbstractClass {
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         clear();
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

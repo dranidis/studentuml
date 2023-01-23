@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
@@ -143,7 +143,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
         setName(node.getAttribute("name"));
         setDirection(Integer.parseInt(node.getAttribute("direction")));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), getAttributes(), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
     }
 
     @Override
@@ -152,8 +152,8 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
         node.setAttribute("name", getName());
         node.setAttribute("direction", Integer.toString(association.getDirection()));
 
-        streamer.streamObject(node, ObjectFactory.ROLEA, getRoleA());
-        streamer.streamObject(node, ObjectFactory.ROLEB, getRoleB());
+        streamer.streamObject(node, XMLSyntax.ROLEA, getRoleA());
+        streamer.streamObject(node, XMLSyntax.ROLEB, getRoleB());
 
         streamer.streamObjects(streamer.addChild(node, "attributes"), getAttributes().iterator());
     }

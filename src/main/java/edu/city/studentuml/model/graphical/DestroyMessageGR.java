@@ -6,9 +6,9 @@ import java.awt.Stroke;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.DestroyMessage;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * 
@@ -71,7 +71,7 @@ public class DestroyMessageGR extends SDMessageGR {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         node.setAttribute("y", Integer.toString(getY()));
-        streamer.streamObject(node, ObjectFactory.MESSAGE, getDestroyMessage());
+        streamer.streamObject(node, XMLSyntax.MESSAGE, getDestroyMessage());
     }
 
     @Override

@@ -6,9 +6,9 @@ import java.awt.Stroke;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 public class CreateMessageGR extends CallMessageGR {
 
@@ -74,7 +74,7 @@ public class CreateMessageGR extends CallMessageGR {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         node.setAttribute("y", Integer.toString(getY()));
-        streamer.streamObject(node, ObjectFactory.MESSAGE, getCreateMessage());
+        streamer.streamObject(node, XMLSyntax.MESSAGE, getCreateMessage());
     }
 
     @Override

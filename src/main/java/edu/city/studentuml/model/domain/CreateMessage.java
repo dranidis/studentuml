@@ -27,7 +27,7 @@ public class CreateMessage extends CallMessage {
             Object instance) {
         parameters.clear();
         try {
-            streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
         } catch (Exception e) {
             logger.severe("No parameters");
             e.printStackTrace();
