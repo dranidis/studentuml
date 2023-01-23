@@ -29,7 +29,7 @@ public class DependencyGR extends LinkGR {
 
     @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
-        drawDependencyArrowHead(bX, bY, rotationAngle, g);
+        GraphicsHelper.drawSimpleArrowHead(bX, bY, rotationAngle, g);
     }
 
     @Override
@@ -42,11 +42,8 @@ public class DependencyGR extends LinkGR {
         return GraphicsHelper.makeSelectedDashedStroke();
     }
 
-    public void drawDependencyArrowHead(int x, int y, double angle, Graphics2D g) {
-        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
-    }
-
     // dependency cannot be reflective
+    @Override
     public boolean isReflective() {
         return false;
     }

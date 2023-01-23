@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JColorChooser;
 import javax.swing.UIManager;
-import javax.swing.plaf.ColorUIResource;
 
 public class Colors {
 
@@ -42,18 +41,16 @@ public class Colors {
     }
 
     public static Color getBackgroundColor() {
-        return UIManager.getColor("TextArea.background");
+
+        return getColorForKey("TextArea.background");
     }
 
     public static Color getOutlineColor() {
-        return UIManager.getColor("TextArea.foreground");
+        return getColorForKey("TextArea.foreground");
     }
 
     public static Color getHighlightColor() {
-        Color c = UIManager.getColor("TextArea.selectionBackground");
-        if (c == null) {
-            c = UIManager.getColor("Tree.selectionBackground");
-        }
+        Color c = getColorForKey("TextArea.selectionBackground", "Tree.selectionBackground");
         if (c == null) {
             c = new Color(36, 121, 255);
         }
@@ -86,5 +83,18 @@ public class Colors {
         darkFillColor = color;
     }
 
-
+    private static Color getColorForKey(String... keys) {
+        StringBuilder sb = new StringBuilder();
+        for (String key : keys) {
+            Color c = UIManager.getColor(key);
+            if (c == null) {
+                sb.append(key + " ");
+                logger.finer(() -> "Key not found in UIManager: " + key);
+            } else {
+                return c;
+            }
+        }
+        logger.severe(() -> "None of the Keys were found in UIManager: )" + sb.toString());
+        return null;
+    }
 }

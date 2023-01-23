@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -35,6 +34,8 @@ public class UMLNoteGR extends GraphicalElement {
     private static final int MINWIDTH = 50;
     private static final Font nameFont = new Font("SansSerif", Font.PLAIN, 10);
 
+    private static final int ENVELOPE_DISTANCE = 8;
+
     public UMLNoteGR(String textualContent, GraphicalElement connectedTo, Point start) {
         if (connectedTo == null) {
             logger.severe(() -> "Note: " + textualContent + " at Point: " + start.getX() + ", " + start.getY() + " not connected to an element!");
@@ -65,21 +66,21 @@ public class UMLNoteGR extends GraphicalElement {
 
         // Draw connecting line
         
-        g.setStroke(new BasicStroke(0.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
+        g.setStroke(GraphicsHelper.makeDashedStroke());
         g.drawLine(getX() + getWidth() / 2, getY() + getHeight() / 2, (int) toBounds.getCenterX(), (int) toBounds.getCenterY());
 
         // Draw note shape
         GeneralPath shape = new GeneralPath();
         shape.moveTo(getX(), getY());
-        shape.lineTo(getX() + getWidth() - 15.0, getY());
-        shape.lineTo(getX() + getWidth() + 0.0, getY() + 15.0);
+        shape.lineTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY());
+        shape.lineTo(getX() + getWidth() + 0.0, getY() + ENVELOPE_DISTANCE);
         shape.lineTo(getX() + getWidth() + 0.0, getY() + getHeight() + 0.0);
         shape.lineTo(getX(), getY() + getHeight() + 0.0);
         shape.closePath();
 
-        shape.moveTo(getX() + getWidth() - 15.0, getY());
-        shape.lineTo(getX() + getWidth() - 15.0, getY() + 15.0);
-        shape.lineTo(getX() + getWidth() + 0.0, getY() + 15.0);
+        shape.moveTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY());
+        shape.lineTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY() + ENVELOPE_DISTANCE);
+        shape.lineTo(getX() + getWidth() + 0.0, getY() + ENVELOPE_DISTANCE);
 
         g.setPaint(getFillColor());
         g.fill(shape);

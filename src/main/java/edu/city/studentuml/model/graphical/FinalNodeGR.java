@@ -1,15 +1,11 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.FinalNode;
-import edu.city.studentuml.util.Colors;
 
 /**
  *
@@ -42,13 +38,11 @@ public abstract class FinalNodeGR extends ControlNodeGR {
         g.setPaint(getBackgroundColor());
         g.fillOval(startingX, startingY, width, height);
 
-        g.setStroke(new BasicStroke(2f));
-        Stroke originalStroke = g.getStroke();
         if (isSelected()) {
             g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
             g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
             g.setPaint(getOutlineColor());
         }
         // draw outer circle of the final node

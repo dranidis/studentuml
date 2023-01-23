@@ -1,7 +1,6 @@
 package edu.city.studentuml.view;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -20,6 +19,7 @@ import javax.swing.JPanel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.ScaleRound;
 import edu.city.studentuml.util.Theme;
@@ -183,9 +183,13 @@ public abstract class DiagramView extends JPanel implements Observer {
                 .filter(LinkGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
+        model.getGraphicalElements().stream()
+                .filter(UMLNoteGR.class::isInstance)
+                .forEach(ge -> ge.draw(g));
+
         // .. and then everything else
         model.getGraphicalElements().stream()
-                .filter(ge -> ! (ge instanceof LinkGR))
+                .filter(ge -> !(ge instanceof LinkGR) && !(ge instanceof UMLNoteGR))
                 .forEach(ge -> ge.draw(g));
         
         // ... finally draw the dragline and rectangle
