@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -47,7 +46,6 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         width = minimumWidth;
         height = minimumHeight;
 
-        fillColor = lighter(myColor());
         activityNameFont = new Font("SansSerif", Font.BOLD, 12);
 
         // resize handles
@@ -72,18 +70,18 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         int startingY = getY();
 
         // paint activity node
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new RoundRectangle2D.Double(startingX, startingY, width, height, 20, 20);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the activity node
         g.draw(shape);
@@ -94,7 +92,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         }
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw acticity node name

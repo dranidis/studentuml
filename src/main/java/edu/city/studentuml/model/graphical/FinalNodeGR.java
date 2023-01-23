@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.FinalNode;
+import edu.city.studentuml.util.Colors;
 
 /**
  *
@@ -24,9 +25,6 @@ public abstract class FinalNodeGR extends ControlNodeGR {
 
         width = 2 * RADIUS;
         height = width;
-
-
-        fillColor = Color.white;
     }
 
     @Override
@@ -41,17 +39,17 @@ public abstract class FinalNodeGR extends ControlNodeGR {
         logger.finest(() -> "starting:X,Y: " + startingX + ", " + startingY);
 
         // paint outer circle of the final node
-        g.setPaint(fillColor);
+        g.setPaint(getBackgroundColor());
         g.fillOval(startingX, startingY, width, height);
 
         g.setStroke(new BasicStroke(2f));
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw outer circle of the final node
         g.drawOval(startingX, startingY, width, height);

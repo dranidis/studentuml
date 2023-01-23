@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -34,8 +32,6 @@ public class ActorInstanceGR extends RoleClassifierGR {
         width = stickFigureWidth;
         height = stickFigureHeight;
         actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
-        fillColor = Color.orange;
-
     }
 
     public boolean contains(Point2D point) {
@@ -50,11 +46,8 @@ public class ActorInstanceGR extends RoleClassifierGR {
         return (rectangle1.contains(point) || rectangle2.contains(point));
     }
 
+    @Override
     public void draw(Graphics2D g) {
-
-        if (fillColor == null) {
-            fillColor = GraphicalElement.lighter(this.myColor());
-        }
 
         calculateWidth(g);
         calculateHeight(g);
@@ -63,19 +56,20 @@ public class ActorInstanceGR extends RoleClassifierGR {
         int startingY = getY();
 
         Stroke originalStroke = g.getStroke();
+
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         // draw the actor stick figure
         drawStickFigure(startingX + (width / 2), startingY, g);
 
         // draw the actor description under the stick figure
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         String actorText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
@@ -100,14 +94,14 @@ public class ActorInstanceGR extends RoleClassifierGR {
 
         // draw the dashed lifeline below the name box
         if (isSelected()) {
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
+        g.setStroke(GraphicsHelper.makeDashedStroke());
         g.drawLine(startingX + width / 2, startingY + height + 4, startingX + width / 2, endingY);
 
         // restore the original stroke
@@ -117,13 +111,13 @@ public class ActorInstanceGR extends RoleClassifierGR {
     public void drawStickFigure(int x, int y, Graphics2D g) {
         Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
 
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(head);
 
         if (isSelected()) {
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(head);

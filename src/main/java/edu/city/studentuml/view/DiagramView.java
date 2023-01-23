@@ -20,7 +20,9 @@ import javax.swing.JPanel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.ScaleRound;
+import edu.city.studentuml.util.Theme;
 
 public abstract class DiagramView extends JPanel implements Observer {
 
@@ -50,7 +52,6 @@ public abstract class DiagramView extends JPanel implements Observer {
             m.addObserver(this);
         }
 
-        setBackground(Color.white);
         setDoubleBuffered(true);
    }
 
@@ -152,11 +153,21 @@ public abstract class DiagramView extends JPanel implements Observer {
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setBackground(Color.white);
+
+        /*
+         * set the background color before clearing
+         */
+        if (Theme.isDark()) {
+            g.setBackground(Colors.BLACK);
+        } else {
+            g.setBackground(Colors.WHITE);
+        }
+
         g.clearRect(0, 0, imageWidth, imageHeight);
 
         // maintain aspect ratio by using the same scale for x and y
         g.scale(scalex, scaley);
+
 
         // call method drawDiagram to draw the uml elements on the image
         drawDiagram(g);
@@ -204,7 +215,6 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     protected void drawLineAndRectangle(Graphics2D g) {
-        g.setPaint(Color.GRAY);
         g.draw(dragLine);
 
         float[] rectangularDashes = { 2 };

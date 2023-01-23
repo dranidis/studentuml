@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -15,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Observable;
@@ -24,9 +21,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
@@ -36,7 +31,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -45,14 +39,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
-import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -64,6 +56,7 @@ import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.NewversionChecker;
@@ -71,6 +64,7 @@ import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
@@ -99,6 +93,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JTree messageTree;
     protected CheckTreeManager checkTreeManager;
     protected JTabbedPane consistencyCheckTabbedPane;
+    protected JSplitPane splitPane;
     protected JSplitPane splitPane_1;
     protected JScrollPane scrollPane_p;
     protected JScrollPane scrollPane_f;
@@ -120,6 +115,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected ApplicationGUI(StudentUMLFrame frame) {
 
         loadLookAndFeel();
+
+                Colors.prinUIManagerColorResources();
 
         isApplet = false;
         this.frame = frame;
@@ -161,6 +158,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } catch (Exception e) {
             logger.severe("Look and feel:  " + preferredLF + " not available. Using default.");
         }
+
+        /*
+         * uncomment if you want to examine the color resources
+         */
+        // Colors.prinUIManagerColorResources();
 
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
@@ -244,8 +246,15 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createToolBar() {
-        toolbar = new ProjectToolBar();
+        toolbar = new ProjectToolBar(this);
+        BorderLayout bl = (BorderLayout) this.getLayout();
+        ProjectToolBar c = (ProjectToolBar) bl.getLayoutComponent(BorderLayout.NORTH);
+        if (c != null) {
+            remove(c);
+        } 
         add(toolbar, BorderLayout.NORTH);
+        revalidate();
+        repaint();
     }
 
     private void createDesktopPane() {
@@ -253,14 +262,15 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         desktopPane.setBorder(new LineBorder(UIManager.getColor("Tree.hash"), 1, false));
         desktopPane.setBackground(UIManager.getColor("Tree.background"));
         desktopPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
-        desktopPane.setBackground(UIManager.getColor("blue"));
     }
 
     private void createCentralRepositoryTreeView() {
         centralRepository = umlProject.getCentralRepository();
+
         repositoryTreeView = new RepositoryTreeView();
         treePane = new JScrollPane(repositoryTreeView);
-        JSplitPane splitPane = new JSplitPane();
+
+        splitPane = new JSplitPane();
         splitPane.setDividerSize(5);
         splitPane.setDividerLocation(200);
         splitPane.setResizeWeight(0);
@@ -434,7 +444,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBorder(
-                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                        new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
             }
 
             @Override
@@ -706,6 +716,17 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             }
         });
+
+        // diagramInternalFrame.addFocusListener(new FocusListener() {
+        //     public void focusGained(FocusEvent e) {
+        //         logger.fine("Focus gained " + internal.getName());
+        //         internal.getToolbar().actionPerfomedOnSelection();
+        //     }
+        
+        //     public void focusLost(FocusEvent e) {
+        //         // Perform action here if needed
+        //     }
+        // });
 
         desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
@@ -1017,153 +1038,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     // Inner class ProjectToolBar implements the main toolbar of the application
-    private class ProjectToolBar extends JToolBar {
 
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        private JButton newButton;
-        private JButton openButton;
-        private JButton saveButton;
-        private JButton saveAsButton;
-        private JButton exportButton;
-        private JButton useCaseButton;
-        private JButton ssdButton;
-        private JButton ccdButton;
-        private JButton sdButton;
-        private JButton dcdButton;
-        private JButton adButton;
-        private JButton forwardEngineerButton;
-        private JButton helpButton;
-        JButton reloadRulesButton;
-        // private JButton validateSD_DCDButton;
-
-        private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
-            ImageIcon newIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + iconFileName));
-            JButton button = new JButton(newIcon);
-            button.setBorder(new EmptyBorder(5, 5, 5, 5));
-            button.setToolTipText(toolTipText);
-            addBorderListener(button);
-            button.addActionListener(listener);
-            return button;
-        }
-
-        public ProjectToolBar() {
-            setFloatable(false);
-
-            newButton = createToolBarButton("new.gif", "New Project", e -> newProject());
-            openButton = createToolBarButton("open.gif", "Open Project", e -> openProject());
-            saveButton = createToolBarButton("save.gif", "Save Project", e -> saveProject());
-            saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> saveProjectAs());
-            exportButton = createToolBarButton("export.gif", "Export to image", e -> exportImage());
-
-            if (!isApplet) { // applet version does not allow creation of new project
-                add(newButton);
-            }
-            add(openButton);
-            add(saveButton);
-            if (!isApplet) {
-                add(saveAsButton);
-                add(exportButton);
-                addSeparator();
-            }
-
-            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram",
-                    e -> createNewInternalFrame(DiagramType.UCD));
-            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram",
-                    e -> createNewInternalFrame(DiagramType.SSD));
-            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram",
-                    e -> createNewInternalFrame(DiagramType.CCD));
-            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram",
-                    e -> createNewInternalFrame(DiagramType.SD));
-            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram",
-                    e -> createNewInternalFrame(DiagramType.DCD));
-            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram",
-                    e -> createNewInternalFrame(DiagramType.AD));
-
-            add(adButton);
-            add(useCaseButton);
-            add(ccdButton);
-            add(ssdButton);
-            add(sdButton);
-            add(dcdButton);
-
-            // Icon validateSD_DCDIcon = new
-            // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
-            // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
-            // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
-            // validateSD_DCDButton.addActionListener(this);
-            // addSeparator();
-
-            reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
-
-            /**
-             * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
-             */
-
-            // addSeparator();
-
-            ImageIcon forwardEngineerIcon = new ImageIcon(
-                    this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
-            Image img2 = forwardEngineerIcon.getImage();
-            Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-            forwardEngineerIcon.setImage(imgScaled2);
-            forwardEngineerButton = new JButton(forwardEngineerIcon);
-            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            forwardEngineerButton.setToolTipText("Generate Code");
-            addBorderListener(forwardEngineerButton);
-
-            forwardEngineerButton.addActionListener(e -> {
-                JCheckBox checkBox = new JCheckBox("Update Current Files", false);
-                String message = "Do you Want to Generate Code? \n"
-                        + "Make Sure You Have Created and Saved the Approrpiate\n"
-                        + "Design (first) and Sequence Diagrams!";
-                Object[] params = { message, checkBox };
-                // 0 for yes and 1 for no
-                int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
-                        JOptionPane.YES_NO_OPTION);
-                if (codeGenerationConfirm == 0) {
-                    CodePreparation codePreparation = new CodePreparation();
-                    int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
-                    if (genFilesCount > 0) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
-                                        + umlProject.getFilepath().replace(".xml", File.separator),
-                                "Code Generator", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            });
-
-            /**
-             * TODO: REMOVE THE BUTTON TILL code generation is completed! //
-             * add(forwardEngineerButton);
-             */
-
-            // addSeparator();
-
-            ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
-            Image img = helpIcon.getImage();
-            Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-            helpIcon.setImage(imgScaled);
-            helpButton = new JButton(helpIcon);
-            helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            helpButton.setToolTipText("Get help on using StudentUML");
-            addBorderListener(helpButton);
-
-            helpButton.addActionListener(e -> help());
-
-            /**
-             * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED // add(helpButton);
-             */
-
-            setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        }
-
-    }
 
     public void changeLookAndFeel(String className) {
         try {
@@ -1176,11 +1051,53 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         SwingUtilities.updateComponentTreeUI(frame);
 
-        toolbar.repaint();
-        for (JInternalFrame frame : desktopPane.getAllFrames()) {
-            frame.repaint();
-        }
+        createToolBar();
+
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            ((DiagramInternalFrame) f).recreateInternalFrame();
+            f.revalidate();
+            f.repaint();
+        }   
+
+        /*
+         * create again the repositoryTreeView
+         */
+        umlProject.deleteObserver(repositoryTreeView);
+        RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
+        JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
+        
+        int splitLocation = splitPane.getDividerLocation();
+        splitPane.setLeftComponent(newTreePane);
+        splitPane.setDividerLocation(splitLocation);
+
+        String expansionState = repositoryTreeView.getExpansionState(0);
+        repositoryTreeView = newRepositoryTreeView;
+        treePane = newTreePane;
+
+        splitPane.revalidate();
+        splitPane.repaint();
+        
+        repositoryTreeView.restoreExpansionState(0, expansionState);
+        repositoryTreeView.updateTree();
+
+
+        repositoryTreeView.revalidate();
+        repositoryTreeView.repaint();
+        treePane.revalidate();
         treePane.repaint();
+
+        this.repaint();
+        this.revalidate();
     }
+
+    private void repaintInternalFrames() {
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            f.repaint();
+        }
+    }
+
+    public void changeFillColor() {
+        Colors.chooseFillColor();
+        repaintInternalFrames();    }
 
 }

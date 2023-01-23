@@ -271,11 +271,11 @@ public abstract class EdgeGR extends GraphicalElement {
         AbstractPointGR end;
 
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         setStartPoint();
@@ -302,7 +302,7 @@ public abstract class EdgeGR extends GraphicalElement {
 
         // draw string for guard and weight
         g.setStroke(new BasicStroke(1));
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         a = getStartPoint().getMyPoint();
         b = getPointAt(1).getMyPoint();
         int x = (a.x + b.x) / 2;

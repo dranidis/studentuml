@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
@@ -53,7 +52,7 @@ public class AssociationGR extends LinkGR {
 
         drawArrowHeadsReflective(g);
 
-        g.setPaint(Color.black);
+        g.setPaint(getOutlineColor());
 
         // draw the association name string
         g.setFont(nameFont);

@@ -26,8 +26,6 @@ public class InitialNodeGR extends ControlNodeGR {
         width = 2 * RADIUS;
         height = width;
 
-
-        fillColor = myColor();
     }
 
     @Override
@@ -40,17 +38,17 @@ public class InitialNodeGR extends ControlNodeGR {
         int startingY = getY();
 
         // paint initial node
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.fillOval(startingX, startingY, width, height);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the initial node
         g.drawOval(startingX, startingY, width, height);

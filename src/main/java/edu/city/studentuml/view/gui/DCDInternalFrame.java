@@ -14,7 +14,7 @@ public class DCDInternalFrame extends DiagramInternalFrame {
     private boolean advancedMode;
 
     public DCDInternalFrame(DCDModel model, boolean advancedMode) {
-        super(model.getDiagramName(), model);
+        super(model.getName(), model);
 
         this.advancedMode = advancedMode;
     }

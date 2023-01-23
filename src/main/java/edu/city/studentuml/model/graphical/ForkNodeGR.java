@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ForkNode;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -32,7 +33,6 @@ public class ForkNodeGR extends ControlNodeGR {
         width = FORK_WIDTH;
         height = FORK_HEIGHT;
 
-        fillColor = Color.black;
         forkFont = new Font("SansSerif", Font.ITALIC, 10);
     }
 
@@ -46,23 +46,23 @@ public class ForkNodeGR extends ControlNodeGR {
         int startingY = getY();
 
         // paint fork node
-        g.setPaint(fillColor);
+        g.setPaint(getOutlineColor());
         g.fillRect(startingX, startingY, width, height);
 
         // draw fork node
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         g.drawRect(startingX, startingY, width, height);
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw fork node string
         if (!component.toString().equals("")) {

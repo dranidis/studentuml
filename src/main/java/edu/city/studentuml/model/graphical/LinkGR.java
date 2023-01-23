@@ -101,10 +101,10 @@ public abstract class LinkGR extends AbstractLinkGR {
         // the pattern of dashes for drawing the line
         if (isSelected()) {
             g.setStroke(makeSelectedStroke());
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(makeStroke());
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         if (!isReflective()) {

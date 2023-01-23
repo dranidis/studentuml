@@ -1,5 +1,14 @@
 # StudentUML Changelog
 
+### Added
+
+- Support for Dark and Light themes
+- Choosing a personal color for diagram fills (for both dark and light themes)
+
+### Fixed
+
+- Changing theme is fixed
+
 ## 1.2.2 - 2023-01-12
 
 ### Fixed

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -30,17 +30,12 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     private static final Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
-    @JsonIgnore
-    protected Color fillColor;
-    @JsonIgnore
-    protected Color highlightColor = Color.blue;
-    @JsonIgnore
-    protected Color outlineColor = Color.black;
+
     protected Point startingPoint;
     protected int width;
     protected int height;
     protected String myUid;
-    public static final Color DESKTOP_USER_COLOR = Color.yellow;
+    public static final Color DESKTOP_USER_COLOR = new Color(220, 170, 100);
 
     private Random r = new Random();
 
@@ -59,22 +54,6 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     @JsonGetter("internalid")
     public String getInternalid() {
         return SystemWideObjectNamePool.getInstance().getNameForObject(this);
-    }
-
-    public Color myColor() {
-        
-        if (getMyUid() == null) {
-            logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
-            return new Color(0, 0, 0);
-        }
-        if (SystemWideObjectNamePool.getInstance().getUserColorMap().containsKey(getMyUid())) {
-            return SystemWideObjectNamePool.getInstance().getUserColorMap().get(getMyUid());
-        }
-        logger.fine("============= UID: " + getMyUid());
-        SystemWideObjectNamePool.getInstance().getUserColorMap().put(getMyUid(),
-                getMyUid().equals(Constants.DESKTOP_USER) ? DESKTOP_USER_COLOR
-                        : new Color(r.nextInt(128) + 128, r.nextInt(128) + 128, r.nextInt(128) + 128));
-        return this.myColor();
     }
 
     public static Color lighter(Color sourceColor) {
@@ -108,15 +87,23 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     public Color getFillColor() {
-        return myColor();
+        return Colors.getFillColor();
+    }
+
+    public Color getBackgroundColor() {
+        return Colors.getBackgroundColor();
     }
 
     public Color getOutlineColor() {
-        return outlineColor;
+        return Colors.getOutlineColor();
     }
 
     public Color getHighlightColor() {
-        return highlightColor;
+        return Colors.getHighlightColor();
+    }
+
+    public Color getErrorColor() {
+        return Colors.getErrorColor();
     }
 
     public void setSelected(boolean sel) {

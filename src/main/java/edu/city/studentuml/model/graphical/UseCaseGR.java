@@ -43,9 +43,6 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         width = MIN.width;
         height = MIN.height;
-
-
-        fillColor = myColor();
     }
 
     @Override
@@ -58,24 +55,24 @@ public class UseCaseGR extends LeafUCDElementGR {
         int startingY = getY();
 
         // paint use case
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fillOval(startingX, startingY, width, height);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the use case
         g.drawOval(startingX, startingY, width, height);
 
         if (getNumberOfExtensionPoints() == 0) {
             // draw use case name
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
             String useCaseName = getComponent().getName();
             if (useCaseName == null || useCaseName.length() == 0) {
                 useCaseName = " ";
@@ -108,7 +105,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private void drawUseCaseNameAndExtensionPoints(Graphics2D g) {
         // draw line
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.drawLine(getX(), getY() + height / 2, getX() + width, getY() + height / 2);
 
         // draw use case name

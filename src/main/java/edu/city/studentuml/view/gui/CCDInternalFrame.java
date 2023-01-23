@@ -12,7 +12,7 @@ import edu.city.studentuml.view.DiagramView;
 public class CCDInternalFrame extends DiagramInternalFrame {
 
     public CCDInternalFrame(CCDModel model) {
-        super(model.getDiagramName(), model);
+        super(model.getName(), model);
     }
 
     @Override

@@ -14,8 +14,10 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
@@ -38,7 +40,10 @@ public class ApplicationFrame extends ApplicationGUI {
 
         logger.fine(() -> "Path: " + Settings.getDefaultPath());
 
-        ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
+        Colors.setFillColor(Settings.getFillColor());
+        Colors.setDarkFillColor(Settings.getDarkFillColor());
+
+        ImageIcon icon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         logger.finer(() -> "ICON: " + icon);
         frame.setIconImage(icon.getImage());
         createXMLFileChooser();

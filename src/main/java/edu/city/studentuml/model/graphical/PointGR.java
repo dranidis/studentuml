@@ -37,7 +37,7 @@ public class PointGR extends AbstractPointGR {
     public void draw(Graphics2D g) {
 
         g.setStroke(new BasicStroke(1));
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         Shape circle = new Ellipse2D.Double(getStartingPoint().x, getStartingPoint().y, width, height);
         g.fill(circle);

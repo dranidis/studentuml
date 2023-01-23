@@ -24,7 +24,7 @@ public class ActivityFinalNodeGR extends FinalNodeGR {
 
         // paint the inner circle of the activity final node
         int delta = 6;
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.fillOval(getX() + delta, getY() + delta, width - 2 * delta, height - 2 * delta);
     }
 

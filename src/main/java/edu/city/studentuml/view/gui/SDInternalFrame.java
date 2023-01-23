@@ -12,7 +12,7 @@ import edu.city.studentuml.view.SDView;
 public class SDInternalFrame extends DiagramInternalFrame {
 
     public SDInternalFrame(SDModel model) {
-        super(model.getDiagramName(), model);
+        super(model.getName(), model);
     }
 
     @Override

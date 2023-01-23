@@ -10,7 +10,8 @@ import java.beans.PropertyVetoException;
 import java.util.logging.Logger;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -56,8 +57,10 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected boolean isIconified = false;
 
     protected AbsractToolbar toolbar;
+
     protected JMenuBar menuBar = new JMenuBar();
     private JScrollPane drawingAreaScrollPane;
+    private JScrollPane toolbarScrollPane;
 
     // Undo/Redo
     protected UndoManager undoManager;
@@ -99,7 +102,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         drawingAreaScrollPane = new JScrollPane(view);
 
         getContentPane().add(drawingAreaScrollPane, BorderLayout.CENTER);
-        JScrollPane toolbarScrollPane = new JScrollPane(toolbar);
+        toolbarScrollPane = new JScrollPane(toolbar);
         toolbarScrollPane.setPreferredSize(new Dimension(55, 400));
         getContentPane().add(toolbarScrollPane, BorderLayout.WEST);
 
@@ -154,6 +157,22 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 logger.finest("clicked");
                 iframe.toFront();
             }
+        });
+
+        view.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (!e.isControlDown()) {
+                    e.getComponent().getParent().dispatchEvent(e);
+                } else {
+                    if (e.getWheelRotation() < 0) {
+                        view.zoomIn();
+                    } else {
+                        view.zoomOut();
+                    }
+                }
+            }
+
         });
 
         setSize(new Dimension(650, 550));
@@ -259,9 +278,9 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     private void renameDiagram() {
-        String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:", model.getDiagramName());
+        String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:", model.getName());
         if (newName != null && !newName.equals("")) {
-            newName = model.getDiagramName().substring(0, model.getDiagramName().indexOf(":")) + ": " + newName;
+            newName = model.getName().substring(0, model.getName().indexOf(":")) + ": " + newName;
             model.setName(newName);
             setTitle(newName);
         }
@@ -425,5 +444,29 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     public int getzOrder() {
         return zOrder;
     }
+
+    public void recreateInternalFrame() {
+
+        AbsractToolbar newToolbar = makeToolbar(this);
+
+        getContentPane().remove(toolbarScrollPane);
+
+        toolbar = newToolbar;
+
+        JScrollPane newToolbarScrollPane = new JScrollPane(toolbar);
+        toolbarScrollPane = newToolbarScrollPane;
+
+        newToolbarScrollPane.setPreferredSize(new Dimension(55, 400));
+        getContentPane().add(newToolbarScrollPane, BorderLayout.WEST);
+
+        getContentPane().revalidate();
+        getContentPane().repaint();
+
+        this.toFront();
+        newToolbar.actionPerfomedOnSelection();
+    }
     
+    public AbsractToolbar getToolbar() {
+        return toolbar;
+    }
 }

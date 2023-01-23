@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,6 +26,8 @@ public abstract class SDMessageGR extends GraphicalElement {
     protected RoleClassifierGR source;
     protected RoleClassifierGR target;
     private String errorMessage;
+
+    private Color outlineColor;
 
     /**
      * of the x and y coordinates, only y is significant, since the x coordinate is
@@ -65,10 +68,10 @@ public abstract class SDMessageGR extends GraphicalElement {
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
             g.setStroke(makeSelectedMessageStroke());
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(makeMessageStroke());
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         int startingX = getStartingX();
@@ -99,7 +102,7 @@ public abstract class SDMessageGR extends GraphicalElement {
                 g.drawLine(endingX - 15, getY() + 20, endingX + 15, getY() - 20);
             }
 
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
 
             // draw the message string by calling the polymorphic method toString()
             g.setFont(messageFont);
@@ -132,7 +135,7 @@ public abstract class SDMessageGR extends GraphicalElement {
             g.draw(path);
 
             drawMessageArrow(startingX, getY() + 15, false, g);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
 
             // draw the message string by calling the polymorphic method toString()
             g.setFont(messageFont);
@@ -200,5 +203,14 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public abstract boolean isReflective();
+
+    public void setOutlineColor(Color outlineColor) {
+        this.outlineColor = outlineColor;
+    }
+
+    @Override
+    public Color getOutlineColor() {
+        return this.outlineColor;
+    }
 
 }

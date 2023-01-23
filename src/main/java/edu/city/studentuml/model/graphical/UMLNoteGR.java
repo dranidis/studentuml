@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
-import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -46,8 +45,6 @@ public class UMLNoteGR extends GraphicalElement {
 
         width = MAXWIDTH;
         height = 50;
-        fillColor = null;
-
 
         paddingHorizontal = 10;
         paddingVertical = 15;
@@ -56,10 +53,6 @@ public class UMLNoteGR extends GraphicalElement {
     @Override
     public void draw(Graphics2D g) {
 
-        if (fillColor == null) {
-            fillColor = GraphicalElement.lighter(this.myColor());
-        }
-
         // refresh dimensions; first calculate width and then height based on width
         this.width = calculateWidth(g);
         this.height = calculateHeight(g);
@@ -67,11 +60,7 @@ public class UMLNoteGR extends GraphicalElement {
         // REPLACE super.draw(g) because only UMLNoteGR should show user
         g.setFont(new Font("SansSerif", Font.PLAIN, 8));
         
-        if (!this.myUid.equals(Constants.DESKTOP_USER)) {
-            g.drawString("user: " + this.myUid, getX(), getY() - 5);
-        }
-
-        g.setStroke(new BasicStroke(0.3f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Rectangle2D toBounds = to.getBounds();
 
         // Draw connecting line
@@ -92,27 +81,27 @@ public class UMLNoteGR extends GraphicalElement {
         shape.lineTo(getX() + getWidth() - 15.0, getY() + 15.0);
         shape.lineTo(getX() + getWidth() + 0.0, getY() + 15.0);
 
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // Draw the text
         Point pen = new Point(getX(), getY() + paddingVertical);
-        g.setColor(outlineColor);
+        g.setColor(getOutlineColor());
         
         String noteText = getNoteText();
         String[] lines = noteText.split("\\R");

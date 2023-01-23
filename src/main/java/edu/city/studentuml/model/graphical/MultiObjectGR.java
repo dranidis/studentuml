@@ -31,7 +31,6 @@ public class MultiObjectGR extends AbstractSDObjectGR {
         width = minimumNameBoxWidth;
         height = nameBoxHeight;
         nameFont = new Font("SansSerif", Font.BOLD + Font.ITALIC, 12);
-        fillColor = null;
 
     }
 
@@ -51,9 +50,6 @@ public class MultiObjectGR extends AbstractSDObjectGR {
 
     @Override
     public void draw(Graphics2D g) {
-        if (fillColor == null) {
-            fillColor = this.myColor();
-        }
 
         super.draw(g);
         calculateWidth(g);
@@ -67,32 +63,32 @@ public class MultiObjectGR extends AbstractSDObjectGR {
         Shape backBox = new Rectangle2D.Double(startingX + 10.0, startingY - 8.0, width, height);
 
         // draw the back box
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(backBox);
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(backBox);
 
         // draw the front box later to cover the stacked box
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(frontBox);
 
         if (isSelected()) {
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(frontBox);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw the object text within the box
         String nameBoxText = roleClassifier.toString();

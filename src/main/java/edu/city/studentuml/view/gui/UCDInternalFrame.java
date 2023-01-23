@@ -14,7 +14,7 @@ import edu.city.studentuml.view.UCDView;
 public class UCDInternalFrame extends DiagramInternalFrame {
 
     public UCDInternalFrame(DiagramModel model) {
-        super(model.getDiagramName(), model);
+        super(model.getName(), model);
     }
 
     @Override

@@ -60,9 +60,11 @@ import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.validation.Rule;
@@ -1059,7 +1061,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    openButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1073,13 +1075,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             openButton.addActionListener(this);
             add(openButton);
 
-            ImageIcon saveIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "save.gif"));
+            ImageIcon saveIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "save.gif"));
             saveButton = new JButton(saveIcon);
             saveButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    saveButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1094,13 +1096,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             add(saveButton);
 
             // SSD
-            ImageIcon ssdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
+            ImageIcon ssdIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
             ssdButton = new JButton(ssdIcon);
             ssdButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    ssdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1116,13 +1118,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             add(ssdButton);
 
             // CCD
-            ImageIcon ccdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "ccd.gif"));
+            ImageIcon ccdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "ccd.gif"));
             ccdButton = new JButton(ccdIcon);
             ccdButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    ccdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1137,13 +1139,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             addSeparator();
             add(ccdButton);
 
-            ImageIcon sdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd.gif"));
+            ImageIcon sdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd.gif"));
             sdButton = new JButton(sdIcon);
             sdButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    sdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1157,13 +1159,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             sdButton.addActionListener(this);
             add(sdButton);
 
-            ImageIcon dcdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "dcd.gif"));
+            ImageIcon dcdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "dcd.gif"));
             dcdButton = new JButton(dcdIcon);
             dcdButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    dcdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1184,7 +1186,7 @@ public class Application extends JApplet implements Observer, KeyListener {
              * exportButton = new JButton(exportIcon); exportButton.addMouseListener(new
              * MouseAdapter() { public void mouseEntered(MouseEvent e) {
              * exportButton.setBorder(new CompoundBorder(new
-             * LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4))); }
+             * LineBorder(Colors.getHighlightColor(), 1),new EmptyBorder(4, 4, 4, 4))); }
              * public void mouseExited(MouseEvent e) { exportButton.setBorder(new
              * EmptyBorder(5, 5, 5, 5)); } }); exportButton.setBorder(new EmptyBorder(5, 5,
              * 5, 5)); exportButton.setToolTipText("Export to image");
@@ -1192,14 +1194,14 @@ public class Application extends JApplet implements Observer, KeyListener {
              * 
              * add(exportButton);
              */
-            ImageIcon resizeIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
+            ImageIcon resizeIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
 
             resizeButton = new JButton(resizeIcon);
             resizeButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    resizeButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1214,20 +1216,20 @@ public class Application extends JApplet implements Observer, KeyListener {
             addSeparator();
             add(resizeButton);
 
-            Icon validateSD_DCDIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd_dcd.gif"));
+            Icon validateSD_DCDIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd_dcd.gif"));
             validateSD_DCDButton = new JButton(validateSD_DCDIcon);
             validateSD_DCDButton.setToolTipText("Validate SD against DCD");
             validateSD_DCDButton.addActionListener(this);
             addSeparator();
 
-            ImageIcon reloadIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "reload.gif"));
+            ImageIcon reloadIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "reload.gif"));
 
             reloadRulesButton = new JButton(reloadIcon);
             reloadRulesButton.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1243,7 +1245,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             addSeparator();
 
-            ImageIcon forwardEngineerIcon = new ImageIcon(
+            ImageIcon forwardEngineerIcon = new MyImageIcon(
                     Application.class.getResource(Constants.IMAGES_DIR + "code.gif"));
             Image img2 = forwardEngineerIcon.getImage();
             Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
@@ -1255,7 +1257,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
@@ -1274,7 +1276,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             addSeparator();
 
-            ImageIcon helpIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "help.gif"));
+            ImageIcon helpIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
             Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             helpIcon.setImage(imgScaled);
@@ -1285,7 +1287,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    helpButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 

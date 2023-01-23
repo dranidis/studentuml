@@ -25,7 +25,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
         // draw the inner part of the flow final node
         int lineWidth = 2;
 
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.translate(getX() + width / 2, getY() + height / 2);
 
         g.rotate((45 * java.lang.Math.PI) / 180);

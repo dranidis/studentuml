@@ -62,6 +62,13 @@
       <version>20220924</version>
     </dependency>
 
+    <!-- local repo -->
+    <dependency>
+      <groupId>com.bulenkov</groupId>
+      <artifactId>darcula</artifactId>
+      <version>2018.2</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -133,7 +140,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
-    </plugin>
+      </plugin>
 
     </plugins>
   </build>
