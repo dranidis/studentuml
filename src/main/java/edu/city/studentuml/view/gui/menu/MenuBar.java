@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JInternalFrame;
@@ -16,13 +17,15 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import com.bulenkov.darcula.DarculaLaf;
+import com.lipstikLF.LipstikLookAndFeel;
+
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 /**
- *
  * @author dimitris
  */
 public class MenuBar {
@@ -78,7 +81,8 @@ public class MenuBar {
 
         JMenuItem saveProjectAsMenuItem = new JMenuItem();
         saveProjectAsMenuItem.setText("Save As...");
-        saveProjectAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        saveProjectAsMenuItem.setAccelerator(
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         saveProjectAsMenuItem.addActionListener(e -> app.saveProjectAs());
         fileMenu.add(saveProjectAsMenuItem);
 
@@ -113,7 +117,7 @@ public class MenuBar {
 
     public void loadRecentFilesInMenu() {
         recentFilesMenu.removeAll();
-        
+
         List<String> recentFiles = RecentFiles.getInstance().getRecentFiles();
         for (String fileName : recentFiles) {
 
@@ -145,18 +149,19 @@ public class MenuBar {
 
         JCheckBoxMenuItem showTypesInSDCheckBoxMenuItem = new JCheckBoxMenuItem();
         showTypesInSDCheckBoxMenuItem.setText("Show types in methods");
-        showTypesInSDCheckBoxMenuItem.setToolTipText("Show types in methods in class diagrams and in sequence diagrams");
+        showTypesInSDCheckBoxMenuItem
+                .setToolTipText("Show types in methods in class diagrams and in sequence diagrams");
         showTypesInSDCheckBoxMenuItem.addActionListener(e -> {
             Settings.setShowTypes(showTypesInSDCheckBoxMenuItem.isSelected());
             repaintSDandSSDDiagrams();
 
         });
-        
+
         showTypesInSDCheckBoxMenuItem.setSelected(Settings.showTypes());
         preferencesMenu.add(showTypesInSDCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();
-                
+
         JCheckBoxMenuItem showReturnsSDCheckBoxMenuItem = new JCheckBoxMenuItem();
         showReturnsSDCheckBoxMenuItem.setText("Show return arrows in Sequence Diagrams");
         showReturnsSDCheckBoxMenuItem.setToolTipText("");
@@ -164,21 +169,20 @@ public class MenuBar {
             Settings.setShowReturnArrows(showReturnsSDCheckBoxMenuItem.isSelected());
             repaintSDandSSDDiagrams();
         });
-        
+
         showReturnsSDCheckBoxMenuItem.setSelected(Settings.showReturnArrows());
         preferencesMenu.add(showReturnsSDCheckBoxMenuItem);
-        
+
         preferencesMenu.addSeparator();
-                
+
         JCheckBoxMenuItem enableRuntimeConsistencyCheckBoxMenuItem = new JCheckBoxMenuItem();
         enableRuntimeConsistencyCheckBoxMenuItem.setText("Enable Runtime Consistency Checking");
-        enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText("<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
-        enableRuntimeConsistencyCheckBoxMenuItem.addActionListener(
-                e -> {
-                    Settings.setEnableConsistencyCheck(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
-                    app.setRunTimeConsistencyCheckAndShowTabbedPane(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
-                }
-              );
+        enableRuntimeConsistencyCheckBoxMenuItem.setToolTipText(
+                "<html>Displays the message tab containing feedback and advisory information<br/> gained from the performed consistency checks. Also enables the user<br/> to perform automated repair operations</html>");
+        enableRuntimeConsistencyCheckBoxMenuItem.addActionListener(e -> {
+            Settings.setEnableConsistencyCheck(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
+            app.setRunTimeConsistencyCheckAndShowTabbedPane(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
+        });
         enableRuntimeConsistencyCheckBoxMenuItem.setSelected(Settings.isConsistencyCheckEnabled());
         preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
 
@@ -196,23 +200,24 @@ public class MenuBar {
         JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
         showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
         showFactsTabCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the fact's tab</html>");
-        showFactsTabCheckBoxMenuItem.addActionListener(
-                e -> {
-                    Settings.setShowFacts(showFactsTabCheckBoxMenuItem.isSelected());
-                    app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected());
-                });
+        showFactsTabCheckBoxMenuItem.addActionListener(e -> {
+            Settings.setShowFacts(showFactsTabCheckBoxMenuItem.isSelected());
+            app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected());
+        });
         showFactsTabCheckBoxMenuItem.setSelected(Settings.showFacts());
         preferencesMenu.add(showFactsTabCheckBoxMenuItem);
 
         preferencesMenu.addSeparator();
 
         JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
-        simpleModeRadioButtonMenuItem.setToolTipText("<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
+        simpleModeRadioButtonMenuItem.setToolTipText(
+                "<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
         simpleModeRadioButtonMenuItem.addActionListener(e -> app.simpleMode());
         preferencesMenu.add(simpleModeRadioButtonMenuItem);
 
         JRadioButtonMenuItem advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
-        advancedModeRadioButtonMenuItem.setToolTipText("<html>Enables <b>dependency relationship</b> in DCD's and takes<br/> in consideration <b>object visibility</b> in consistency checks.</html>");
+        advancedModeRadioButtonMenuItem.setToolTipText(
+                "<html>Enables <b>dependency relationship</b> in DCD's and takes<br/> in consideration <b>object visibility</b> in consistency checks.</html>");
         advancedModeRadioButtonMenuItem.addActionListener(e -> app.advancedMode());
         preferencesMenu.add(advancedModeRadioButtonMenuItem);
 
@@ -222,42 +227,68 @@ public class MenuBar {
 
         preferencesMenu.addSeparator();
 
-        ButtonGroup lfgroup = new ButtonGroup();
+        ButtonGroup lookAndFeelGroup = new ButtonGroup();
 
         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem(info.getName(), UIManager.getLookAndFeel().getClass().getName().equals(info.getClassName()));
+            JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem(info.getName(),
+                    UIManager.getLookAndFeel().getClass().getName().equals(info.getClassName()));
             gtkLFRadioButtonMenuItem.setToolTipText("");
             gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel(info.getClassName()));
-            preferencesMenu.add(gtkLFRadioButtonMenuItem);        
-            lfgroup.add(gtkLFRadioButtonMenuItem);
-        }       
+            preferencesMenu.add(gtkLFRadioButtonMenuItem);
+            lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
+        }
 
-    }    
+        /*
+         * Add option for Darcula theme
+         */
+        JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem("Darcula",
+                UIManager.getLookAndFeel() instanceof DarculaLaf);
+        gtkLFRadioButtonMenuItem.setToolTipText("");
+        gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel("com.bulenkov.darcula.DarculaLaf"));
+        preferencesMenu.add(gtkLFRadioButtonMenuItem);
+        lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
+
+        JRadioButtonMenuItem gtkLFRadioButtonMenuItem1 = new JRadioButtonMenuItem("Lipstik",
+                UIManager.getLookAndFeel() instanceof LipstikLookAndFeel);
+        gtkLFRadioButtonMenuItem1.setToolTipText("");
+        gtkLFRadioButtonMenuItem1.addActionListener(e -> app.changeLookAndFeel("com.lipstikLF.LipstikLookAndFeel"));
+        preferencesMenu.add(gtkLFRadioButtonMenuItem1);
+        lookAndFeelGroup.add(gtkLFRadioButtonMenuItem1);
+
+        preferencesMenu.addSeparator();
+
+        JMenuItem chooseFillColorMenuItem = new JMenuItem();
+        chooseFillColorMenuItem.setText("Choose fill color");
+        chooseFillColorMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
+
+        chooseFillColorMenuItem.addActionListener(e -> app.changeFillColor());
+        preferencesMenu.add(chooseFillColorMenuItem);
+
+    }
 
     private void repaintSDandSSDDiagrams() {
         final String REPAINT = "REPAINT : ";
 
-        Vector<JInternalFrame> sdFrames = app.getInternalFramesOfType(DiagramType.SD);
-        for (JInternalFrame sdFrame : sdFrames) {
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.SD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        sdFrames = app.getInternalFramesOfType(DiagramType.SSD);
-        for (JInternalFrame sdFrame : sdFrames) {
-            logger.finer(REPAINT);
-            sdFrame.repaint();
-        }        
-        Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramType.DCD);
-        for (JInternalFrame sdFrame : cdFrames) {
-            logger.finer(REPAINT);
-            sdFrame.repaint();
-        }    
-        cdFrames = app.getInternalFramesOfType(DiagramType.CCD);
-        for (JInternalFrame sdFrame : cdFrames) {
+        
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.SSD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-    }    
+        
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.DCD)) {
+            logger.finer(REPAINT);
+            sdFrame.repaint();
+        }
+
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.CCD)) {
+            logger.finer(REPAINT);
+            sdFrame.repaint();
+        }
+    }
 
     private void createCreateMenu() {
         JMenu createMenu = new JMenu();

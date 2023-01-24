@@ -40,7 +40,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     @JsonProperty("name")
-    protected String diagramName;
+    protected String name;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;
     protected List<GraphicalElement> selected;
@@ -56,7 +56,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     protected DiagramModel(String name, UMLProject umlp) {
-        diagramName = name;
+        this.name = name;
         graphicalElements = new NotifierVector<>();
         umlProject = umlp;
         repository = umlp.getCentralRepository();
@@ -193,12 +193,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return repository;
     }
 
-    public String getDiagramName() {
-        return diagramName;
-    }
-
-    public void setDiagramName(String name) {
-        diagramName = name;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -262,14 +258,14 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public void setName(String name) {
-        diagramName = name;
+        this.name = name;
         modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
 
     // method that prints the diagram's name
     public String toString() {
-        return diagramName;
+        return name;
     }
 
     @Override
@@ -294,7 +290,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("name", getDiagramName());
+        node.setAttribute("name", getName());
         if (frame != null) {
             /*
              * save dimensions of frame when restored (even when maximised)
@@ -306,7 +302,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
             node.setAttribute("scale", Double.toString(frame.getView().getScale()));
             node.setAttribute("maximized", Boolean.toString(frame.isMaximum()));
-            node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
+            if (frame.getParent() != null)
+                node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
 
         }
         streamer.streamObjects(node, graphicalElements.iterator());
@@ -314,7 +311,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
-        setDiagramName(node.getAttribute("name"));
+        setName(node.getAttribute("name"));
 
         graphicalElements.clear();
         streamer.streamChildrenFrom(node, instance);

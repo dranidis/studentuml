@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -29,7 +28,6 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         width = minimumNameBoxWidth;
         height = nameBoxHeight;
         nameFont = new Font("SansSerif", Font.BOLD, 12);
-        fillColor = null;
 
     }
 
@@ -48,9 +46,6 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     @Override
     public void draw(Graphics2D g) {
-        if (fillColor == null) {
-            fillColor = this.myColor();
-        }
 
         refreshDimensions(g);
 
@@ -61,20 +56,21 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         // name box
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
 
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(shape);
 
         Stroke originalStroke = g.getStroke();
+        
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw the object text within the box
         String nameBoxText = roleClassifier.toString();
@@ -100,14 +96,14 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
         // draw the dashed lifeline below the name box
         if (isSelected()) {
-            g.setPaint(highlightColor);
+            g.setPaint(getHighlightColor());
         } else {
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
             // the pattern of dashes for drawing the realization line
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
+        g.setStroke(GraphicsHelper.makeDashedStroke());
         g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
 
         // restore the original stroke
@@ -184,10 +180,10 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
             g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);

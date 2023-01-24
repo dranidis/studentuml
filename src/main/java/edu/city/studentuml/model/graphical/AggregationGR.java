@@ -1,9 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;
 
@@ -20,41 +17,14 @@ public class AggregationGR extends AssociationGR {
 
     @Override
     protected void drawArrowHeads(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
-        drawAggregationArrowHead(aX, aY, getAggregation().isStrong(), angleB, g);
+        GraphicsHelper.drawAggregationArrowHead(aX, aY, getAggregation().isStrong(), angleB, g);
         super.drawArrowHeads(aX, aY, bX, bY, angleA, angleB, g);
     }
 
     @Override
     public void drawArrowHeadsReflective(Graphics2D g) {
-        drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), Math.PI / 2, g);
+        GraphicsHelper.drawAggregationArrowHead(getXA(), getYA(), getAggregation().isStrong(), Math.PI / 2, g);
         super.drawArrowHeadsReflective(g);
-    }
-
-    public void drawAggregationArrowHead(int x, int y, boolean isStrong, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-
-        GeneralPath diamond = new GeneralPath();
-
-        diamond.moveTo(0, 0);
-        diamond.lineTo(-8, -4);
-        diamond.lineTo(-16, 0);
-        diamond.lineTo(-8, 4);
-        diamond.closePath();
-
-        Paint originalPaint = g.getPaint();
-
-        if (!isStrong) {
-            g.setPaint(Color.white);
-        } else {
-            g.setPaint(originalPaint);
-        }
-
-        g.fill(diamond);
-        g.setPaint(originalPaint);
-        g.draw(diamond);
-        g.rotate(-angle);
-        g.translate(-x, -y);
     }
 
     public Aggregation getAggregation() {

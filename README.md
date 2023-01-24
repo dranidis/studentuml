@@ -21,6 +21,8 @@ mvn deploy:deploy-file -DgroupId=ubc.cs -DartifactId=jlogic -Dversion=1.0 -Durl=
 mvn deploy:deploy-file -DgroupId=ubc.cs -DartifactId=builtinsLib -Dversion=1.0 -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=libs/builtinsLib.jar
 
 mvn deploy:deploy-file -DgroupId=com.lipstikLF -DartifactId=lipstikLF -Dversion=1.0 -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=libs/lipstikLF-RC2.jar
+
+mvn deploy:deploy-file -DgroupId=com.bulenkov -DartifactId=darcula -Dversion=2018.2 -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=libs/darcula.jar
 ```
 
 

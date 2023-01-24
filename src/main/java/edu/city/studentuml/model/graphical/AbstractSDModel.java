@@ -1,11 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.MoveEdit;
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +11,13 @@ import java.util.stream.Collectors;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.model.domain.ActorInstance;
+import edu.city.studentuml.model.domain.UMLProject;
+import edu.city.studentuml.util.Colors;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.MoveEdit;
 
 /**
  *
@@ -167,7 +168,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // called whenever messages change, by resorting the list and putting ranks,
     // and updating the lifeline lengths
-    private final void sortUpdateRankAndLifeLengthsAndValidateInOutMessages() {
+    public final void sortUpdateRankAndLifeLengthsAndValidateInOutMessages() {
         sortMessagesAndUpdateRanks();
         updateLifelineLengths();
         
@@ -366,7 +367,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
         
         for(SDMessageGR message:messages) {
-            message.outlineColor = Color.BLACK;
+            message.setOutlineColor(Colors.getOutlineColor());
             message.setErrorMsg("");
             logger.finer(() -> message.message + ": " + message.source + " -> " + message.target);
             String validatedStr = "";
@@ -374,14 +375,14 @@ public abstract class AbstractSDModel extends DiagramModel {
                 validatedStr += message.source.validateOut(message.target);
                 validatedStr += message.target.validateIn(message.source);
                 if (validatedStr.length() > 0) {
-                    message.outlineColor = Color.RED;
+                    message.setOutlineColor(Colors.getErrorColor());
                     message.setErrorMsg(validatedStr);
                 }
             } else if (message instanceof ReturnMessageGR) {
                 validatedStr += message.source.validateOutReturn(message.target);
                 validatedStr += message.target.validateInReturn(message.source);
                 if (validatedStr.length() > 0) {
-                    message.outlineColor = Color.RED;
+                    message.setOutlineColor(Colors.getErrorColor());
                     message.setErrorMsg(validatedStr);
                 }
             }

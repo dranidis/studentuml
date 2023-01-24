@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -9,6 +8,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+
+import edu.city.studentuml.util.Colors;
 
 public class GraphicsHelper {
 
@@ -51,7 +52,7 @@ public class GraphicsHelper {
     }
 
     public static BasicStroke makeSelectedSolidStroke() {
-        return new BasicStroke(2);
+        return new BasicStroke(3);
     }
 
     public static BasicStroke makeDashedStroke() {
@@ -59,7 +60,7 @@ public class GraphicsHelper {
     }
 
     public static BasicStroke makeSelectedDashedStroke() {
-        return new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
+        return new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0);
     }
 
     public static void drawSimpleArrowHead(int x, int y, double angle, Graphics2D g) {
@@ -72,11 +73,11 @@ public class GraphicsHelper {
     }
 
     public static void drawWhiteArrowHead(int x, int y, double angle, Graphics2D g) {
-        drawFilledArrowHead(x, y, angle, Color.WHITE, g);
+        drawFilledArrowHead(x, y, angle, Colors.getBackgroundColor(), g);
     }
 
     public static void drawBlackArrowHead(int x, int y, double angle, Graphics2D g) {
-        drawFilledArrowHead(x, y, angle, Color.BLACK, g);
+        drawFilledArrowHead(x, y, angle, Colors.getOutlineColor(), g);
     }
 
     private static void drawFilledArrowHead(int x, int y, double angle, Paint color, Graphics2D g) {
@@ -128,6 +129,34 @@ public class GraphicsHelper {
             g.rotate(-angle);
             g.translate(-x, -y);
         }
+    }
+
+    public static void drawAggregationArrowHead(int x, int y, boolean isStrong, double angle, Graphics2D g) {
+        g.translate(x, y);
+        g.rotate(angle);
+
+        GeneralPath diamond = new GeneralPath();
+
+        diamond.moveTo(0, 0);
+        diamond.lineTo(-8, -4);
+        diamond.lineTo(-16, 0);
+        diamond.lineTo(-8, 4);
+        diamond.closePath();
+
+        Paint originalPaint = g.getPaint();
+
+        if (!isStrong) {
+            g.setPaint(Colors.getBackgroundColor());
+        } else {
+            g.setPaint(originalPaint);
+        }
+
+        g.fill(diamond);
+        
+        g.setPaint(originalPaint);
+        g.draw(diamond);
+        g.rotate(-angle);
+        g.translate(-x, -y);
     }
 
 }

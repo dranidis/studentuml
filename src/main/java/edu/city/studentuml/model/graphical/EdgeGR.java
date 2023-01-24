@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -271,11 +270,11 @@ public abstract class EdgeGR extends GraphicalElement {
         AbstractPointGR end;
 
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         setStartPoint();
@@ -301,8 +300,8 @@ public abstract class EdgeGR extends GraphicalElement {
         drawEdgeArrowHead(b.x, b.y, angle, g);
 
         // draw string for guard and weight
-        g.setStroke(new BasicStroke(1));
-        g.setPaint(outlineColor);
+        g.setStroke(GraphicsHelper.makeSolidStroke());
+        g.setPaint(getOutlineColor());
         a = getStartPoint().getMyPoint();
         b = getPointAt(1).getMyPoint();
         int x = (a.x + b.x) / 2;

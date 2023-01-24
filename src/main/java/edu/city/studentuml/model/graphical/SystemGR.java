@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -12,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -50,9 +48,6 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         systemNameFont = new Font("Sans Serif", Font.BOLD, 12);
 
-
-        fillColor = lighter(myColor());
-
         // resize handles
         up = new UpResizeHandle(this);
         down = new DownResizeHandle(this);
@@ -74,14 +69,14 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         int startingX = getX();
         int startingY = getY();
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         // draw the system edges
@@ -93,7 +88,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         }
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw system name

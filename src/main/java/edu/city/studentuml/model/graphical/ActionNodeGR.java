@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -36,7 +35,6 @@ public class ActionNodeGR extends LeafNodeGR  {
         width = minimumWidth;
         height = minimumHeight;
 
-        fillColor = myColor();
         actionNameFont = new Font("SansSerif", Font.PLAIN, 14);
     }
 
@@ -50,25 +48,26 @@ public class ActionNodeGR extends LeafNodeGR  {
         int startingY = getY();
 
         // paint action node
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new RoundRectangle2D.Double(startingX, startingY, width, height, 10, 10);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
+
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
         // draw the action node
         g.draw(shape);
 
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw action node name

@@ -14,8 +14,10 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
@@ -23,11 +25,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 
 public class ApplicationFrame extends ApplicationGUI {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
@@ -38,7 +35,10 @@ public class ApplicationFrame extends ApplicationGUI {
 
         logger.fine(() -> "Path: " + Settings.getDefaultPath());
 
-        ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
+        Colors.setFillColor(Settings.getFillColor());
+        Colors.setDarkFillColor(Settings.getDarkFillColor());
+
+        ImageIcon icon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
         logger.finer(() -> "ICON: " + icon);
         frame.setIconImage(icon.getImage());
         createXMLFileChooser();
@@ -159,13 +159,7 @@ public class ApplicationFrame extends ApplicationGUI {
             SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
         }
 
-        /*
-         * set the Zorder of internalframes according to the XML file ZOrder property
-         */
-        for (JInternalFrame frame : desktopPane.getAllFrames()) {
-            DiagramInternalFrame iframe = (DiagramInternalFrame) frame;
-            desktopPane.setComponentZOrder(iframe, iframe.getzOrder());
-        }
+        setZOrderOfInternalFrames();
 
         umlProject.setSaved(true);
         closingOrLoading = false;

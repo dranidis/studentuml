@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -134,11 +133,11 @@ public class AssociationClassGR extends LinkGR {
 
         
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedDashedStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, ConstantsGR.DASHES, 0));
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeDashedStroke());
+            g.setPaint(getOutlineColor());
         }
 
         g.drawLine(x1, y1, x2, y2);

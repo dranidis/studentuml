@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -50,7 +49,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         width = MINIMUMWIDTH;
         height = MINIMUMNAMEFIELDHEIGHT + MINIMUMATTRIBUTEFIELDHEIGHT + MINIMUMMETHODFIELDHEIGHT;
 
-        fillColor = null;
         nameFont = new Font("SansSerif", Font.BOLD, 14);
         attributeFont = new Font("SansSerif", Font.PLAIN, 12);
     }
@@ -61,10 +59,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     // this is default drawing for conceptual class
     @Override
     public final void draw(Graphics2D g) {
-        if (fillColor == null) {
-            fillColor = this.myColor();
-        }
-
         // refresh the width and height attributes
         refreshDimensions(g);
 
@@ -74,23 +68,22 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         int startingY = getY();
 
         // determine the outline of the rectangle representing the class
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw the inner lines
         g.drawLine(startingX, startingY + nameFieldHeight, startingX + width, startingY + nameFieldHeight);

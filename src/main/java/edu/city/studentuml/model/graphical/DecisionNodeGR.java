@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -34,7 +32,6 @@ public class DecisionNodeGR extends ControlNodeGR {
         width = DECISION_WIDTH;
         height = DECISION_HEIGHT;
 
-        fillColor = Color.white;
         decisionFont = new Font("SansSerif", Font.ITALIC, 10);
     }
 
@@ -52,23 +49,23 @@ public class DecisionNodeGR extends ControlNodeGR {
         int[] yArray = {startingY + height / 2, startingY, startingY + height / 2, startingY + height};
 
         // paint decision node
-        g.setPaint(fillColor);
+        g.setPaint(getBackgroundColor());
         g.fillPolygon(xArray, yArray, 4);
         
         // draw decision node
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         g.drawPolygon(xArray, yArray, 4);
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw decision node string

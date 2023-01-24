@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -47,17 +46,12 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         width = minimumWidth;
         height = minimumNameFieldHeight + minimumMethodFieldHeight;
 
-        fillColor = null;
-
         nameFont = new Font("SansSerif", Font.BOLD, 14);
         methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
     @Override
     public void draw(Graphics2D g) {
-        if (fillColor == null) {
-            fillColor = GraphicalElement.lighter(this.myColor());
-        }
 
         // refresh the width and height attributes
         refreshDimensions(g);
@@ -69,25 +63,25 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         // determine the outline of the rectangle representing the class
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
 
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(shape);
 
         Stroke originalStroke;
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
 
         originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw the inner line
         g.drawLine(startingX, startingY + nameFieldHeight, startingX + width, startingY + nameFieldHeight);

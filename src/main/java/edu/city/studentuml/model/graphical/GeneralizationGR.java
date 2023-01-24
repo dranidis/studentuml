@@ -53,6 +53,7 @@ public class GeneralizationGR extends LinkGR {
     }
 
     // generalizations cannot be reflective
+    @Override
     public boolean isReflective() {
         return false;
     }

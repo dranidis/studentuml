@@ -1,5 +1,6 @@
 package edu.city.studentuml.util;
 
+import java.awt.Color;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -23,6 +24,10 @@ public class Settings {
 
     private static final String TRUE = "TRUE";
     private static final String FALSE = "FALSE";
+
+    private static final String FILL_COLOR = "FILL_COLOR";
+
+    private static final String DARK_FILL_COLOR = "FILL_COLOR_DARK";
 
     private static Preferences pref = Preferences.userNodeForPackage(Settings.class);
 
@@ -92,5 +97,21 @@ public class Settings {
 
     public static void setLookAndFeel(String className) {
         pref.put(LOOK_AND_FEEL, className);
+    }
+
+    public static void setFillColor(Color fillColor) {
+        pref.put(FILL_COLOR, "" + fillColor.getRGB());
+    }
+
+    public static Color getFillColor() {
+        return new Color(Integer.parseInt(pref.get(FILL_COLOR, Colors.DEFAULT_FILL_COLOR_STRING)));
+    }
+
+    public static void setDarkFillColor(Color darkFillColor) {
+        pref.put(DARK_FILL_COLOR, "" + darkFillColor.getRGB());
+    }
+
+    public static Color getDarkFillColor() {
+        return new Color(Integer.parseInt(pref.get(DARK_FILL_COLOR, Colors.DEFAULT_DARK_FILL_COLOR_STRING)));
     }
 }

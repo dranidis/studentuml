@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -15,18 +13,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
@@ -36,7 +33,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -45,14 +41,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
 
 import edu.city.studentuml.applet.StudentUMLApplet;
-import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -64,21 +58,19 @@ import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
 import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
@@ -91,7 +83,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected String simpleRulesFile;
     protected String advancedRulesFile;
     protected String currentRuleFile;
-    private ProjectToolBar toolbar;
     protected JDesktopPane desktopPane; // holds internal frames
     protected RepositoryTreeView repositoryTreeView;
     protected JScrollPane treePane;
@@ -99,9 +90,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JTree messageTree;
     protected CheckTreeManager checkTreeManager;
     protected JTabbedPane consistencyCheckTabbedPane;
-    protected JSplitPane splitPane_1;
-    protected JScrollPane scrollPane_p;
-    protected JScrollPane scrollPane_f;
+    protected JSplitPane mainSplitPane;
+    protected JSplitPane viewSplitPane;
+    protected JScrollPane treeScrollPane;
+    protected JScrollPane factsScrollPane;
     protected JPanel panel;
     protected int ruleEditorTabPlacement = -1;
     protected int factsTreeTabPlacement = -1;
@@ -162,6 +154,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             logger.severe("Look and feel:  " + preferredLF + " not available. Using default.");
         }
 
+        /*
+         * uncomment if you want to examine the color resources
+         */
+        // Colors.prinUIManagerColorResources();
+
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
@@ -212,13 +209,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createLookAndFeel() {
-        // System.setProperty("lipstikLF.theme", "LightGrayTheme");
-        //
-        // try {
-        // UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
+
     }
 
     private void createInterface() {
@@ -244,8 +235,15 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createToolBar() {
-        toolbar = new ProjectToolBar();
+        ProjectToolBar toolbar = new ProjectToolBar(this);
+        BorderLayout bl = (BorderLayout) this.getLayout();
+        ProjectToolBar c = (ProjectToolBar) bl.getLayoutComponent(BorderLayout.NORTH);
+        if (c != null) {
+            remove(c);
+        } 
         add(toolbar, BorderLayout.NORTH);
+        revalidate();
+        repaint();
     }
 
     private void createDesktopPane() {
@@ -253,47 +251,41 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         desktopPane.setBorder(new LineBorder(UIManager.getColor("Tree.hash"), 1, false));
         desktopPane.setBackground(UIManager.getColor("Tree.background"));
         desktopPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
-        desktopPane.setBackground(UIManager.getColor("blue"));
     }
 
     private void createCentralRepositoryTreeView() {
         centralRepository = umlProject.getCentralRepository();
+
         repositoryTreeView = new RepositoryTreeView();
         treePane = new JScrollPane(repositoryTreeView);
-        JSplitPane splitPane = new JSplitPane();
-        splitPane.setDividerSize(5);
-        splitPane.setDividerLocation(200);
-        splitPane.setResizeWeight(0);
-        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setRightComponent(splitPane_1);
-        splitPane.setLeftComponent(treePane);
-        add(splitPane, BorderLayout.CENTER);
+
+        mainSplitPane = new JSplitPane();
+        mainSplitPane.setDividerSize(5);
+        mainSplitPane.setDividerLocation(200);
+        mainSplitPane.setResizeWeight(0);
+        mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        mainSplitPane.setRightComponent(viewSplitPane);
+        mainSplitPane.setLeftComponent(treePane);
+        add(mainSplitPane, BorderLayout.CENTER);
     }
 
     private void createDiagramAndConsistencyArea() {
         consistencyCheckTabbedPane = new JTabbedPane();
         consistencyCheckTabbedPane.setVisible(false);
 
-        splitPane_1 = new JSplitPane();
-        splitPane_1.setDividerSize(5);
-        splitPane_1.setDividerLocation(450);
-        splitPane_1.setResizeWeight(1);
-        splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPane_1.setLeftComponent(desktopPane);
-        splitPane_1.setRightComponent(consistencyCheckTabbedPane);
+        viewSplitPane = new JSplitPane();
+        viewSplitPane.setDividerSize(5);
+        viewSplitPane.setDividerLocation(450);
+        viewSplitPane.setResizeWeight(1);
+        viewSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        viewSplitPane.setLeftComponent(desktopPane);
+        viewSplitPane.setRightComponent(consistencyCheckTabbedPane);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.add(scrollPane_p);
+        panel.add(treeScrollPane);
 
-
-        // scrollPane_f = new JScrollPane();
-        // scrollPane_f.setViewportView(factsTree);
         consistencyCheckTabbedPane.addTab("Problems", null, panel, null);
-        // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
-        // null);
-        // tabbedPane.addTab("Facts", null, scrollPane_f, null);
-
     }
 
     private void createFactsAndMessageTree() {
@@ -304,11 +296,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         checkTreeManager = new CheckTreeManager(messageTree, false, path -> path.getPathCount() == 3);
 
-        scrollPane_f = new JScrollPane();
-        scrollPane_f.setViewportView(factsTree);
+        factsScrollPane = new JScrollPane();
+        factsScrollPane.setViewportView(factsTree);
 
-        scrollPane_p = new JScrollPane();
-        scrollPane_p.setViewportView(messageTree);
+        treeScrollPane = new JScrollPane();
+        treeScrollPane.setViewportView(messageTree);
     }
 
     private void createRepairPopupMenu() {
@@ -318,10 +310,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         popupRepair.setText("Repair");
         popupRepair.addActionListener(e -> {
             String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-            // SystemWideObjectNamePool.getInstance().loading();
             SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-            // SystemWideObjectNamePool.getInstance().done();
-            //// SystemWideObjectNamePool.getInstance().reloadRules();
             SystemWideObjectNamePool.getInstance().reload();
             SystemWideObjectNamePool.getInstance().setSelectedRule(null);
 
@@ -404,8 +393,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairButton.addActionListener(e -> {
             TreePath[] checkedPaths = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-            // String rulename =
-            // messageTree.getSelectionPath().getLastPathComponent().toString();
             if (checkedPaths != null) {
                 for (int i = 0; i < checkedPaths.length; i++) {
                     SystemWideObjectNamePool.getInstance()
@@ -434,7 +421,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBorder(
-                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                        new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
             }
 
             @Override
@@ -484,17 +471,17 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
             CollectionTreeModel facts = SystemWideObjectNamePool.getInstance().getFacts();
 
-            String messTreeState = null;
+            String messTreeState = "";
 
             if (messageTree.getModel() instanceof CollectionTreeModel) {
-                messTreeState = getExpansionState(messageTree, 0);
+                messTreeState = TreeExpansionState.getExpansionState(messageTree, 0);
                 checkTreeManager.getSelectionModel().clearSelection();
                 repairButton.setEnabled(false);
             }
 
             messageTree.setModel(messages);
             if (messTreeState != null) {
-                restoreExpanstionState(messageTree, 0, messTreeState);
+                TreeExpansionState.restoreExpansionState(messageTree, 0, messTreeState);
             }
 
             if (repairPanel != null && messages != null && messages.size() > 0 && isRepairMode()) {
@@ -585,7 +572,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 initialName = "ad";
                 break;
             default:
-                throw new RuntimeException("Unknown diagram (int) type: " + type);
+                throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
         }
         // modelName
         return JOptionPane.showInputDialog(dialogText, initialName);
@@ -730,60 +717,36 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * returns a list of internal frames having a particular diagram type
      */
-    public Vector<JInternalFrame> getInternalFramesOfType(int type) {
-        Vector<JInternalFrame> ucdFrames = new Vector<>();
-        Vector<JInternalFrame> ssdFrames = new Vector<>();
-        Vector<JInternalFrame> sdFrames = new Vector<>();
-        Vector<JInternalFrame> ccdFrames = new Vector<>();
-        Vector<JInternalFrame> dcdFrames = new Vector<>();
-        Vector<JInternalFrame> adFrames = new Vector<>();
-        JInternalFrame[] frames = desktopPane.getAllFrames();
-        JInternalFrame f;
+    public List<JInternalFrame> getInternalFramesOfType(int type) {
+        List<JInternalFrame> frames = Arrays.asList(desktopPane.getAllFrames());
 
-        for (int i = 0; i < frames.length; i++) {
-            f = frames[i];
-
-            if (f instanceof UCDInternalFrame) {
-                ucdFrames.add(f);
-            } else if (f instanceof SSDInternalFrame) {
-                ssdFrames.add(f);
-            } else if (f instanceof CCDInternalFrame) {
-                ccdFrames.add(f);
-            } else if (f instanceof SDInternalFrame) {
-                sdFrames.add(f);
-            } else if (f instanceof DCDInternalFrame) {
-                dcdFrames.add(f);
-            } else if (f instanceof ADInternalFrame) {
-                adFrames.add(f);
-            }
+        switch (type) {
+        case DiagramType.UCD:
+            return frames.stream().filter(UCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.SSD:
+            return frames.stream().filter(SSDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.CCD:
+            return frames.stream().filter(CCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.SD:
+            return frames.stream().filter(SDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.DCD:
+            return frames.stream().filter(DCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.AD:
+            return frames.stream().filter(ADInternalFrame.class::isInstance).collect(Collectors.toList());
+        default:
         }
-
-        if (type == DiagramType.UCD) {
-            return ucdFrames;
-        } else if (type == DiagramType.SSD) {
-            return ssdFrames;
-        } else if (type == DiagramType.CCD) {
-            return ccdFrames;
-        } else if (type == DiagramType.SD) {
-            return sdFrames;
-        } else if (type == DiagramType.DCD) {
-            return dcdFrames;
-        } else if (type == DiagramType.AD) {
-            return adFrames;
-        }
-
-        return new Vector<>();
+        return new ArrayList<>();
     }
 
     public void setRunTimeConsistencyCheckAndShowTabbedPane(boolean b) {
         setRuntimeChecking(b);
         consistencyCheckTabbedPane.setVisible(b);
         if (b) {
-            splitPane_1.setDividerSize(5);
-            splitPane_1.setDividerLocation(getHeight() * 360 / 600);
+            viewSplitPane.setDividerSize(5);
+            viewSplitPane.setDividerLocation(getHeight() * 360 / 600);
             reloadRules();
         } else {
-            splitPane_1.setDividerSize(0);
+            viewSplitPane.setDividerSize(0);
         }
     }
 
@@ -806,7 +769,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
             factsTreeTabPlacement = consistencyCheckTabbedPane.getTabCount();
-            consistencyCheckTabbedPane.insertTab("Facts", null, scrollPane_f, null,
+            consistencyCheckTabbedPane.insertTab("Facts", null, factsScrollPane, null,
                     consistencyCheckTabbedPane.getTabCount());
             consistencyCheckTabbedPane.setSelectedIndex(factsTreeTabPlacement);
         } else if (factsTreeTabPlacement != -1) {
@@ -978,194 +941,31 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * messageTree is path1 descendant of path2
      */
 
-    public static boolean isDescendant(TreePath path1, TreePath path2) {
-        int count1 = path1.getPathCount();
-        int count2 = path2.getPathCount();
-        if (count1 <= count2) {
-            return false;
-        }
-        while (count1 != count2) {
-            path1 = path1.getParentPath();
-            count1--;
-        }
-        return path1.equals(path2);
-    }
+    // public static boolean isDescendant(TreePath path1, TreePath path2) {
+    //     int count1 = path1.getPathCount();
+    //     int count2 = path2.getPathCount();
+    //     if (count1 <= count2) {
+    //         return false;
+    //     }
+    //     while (count1 != count2) {
+    //         path1 = path1.getParentPath();
+    //         count1--;
+    //     }
+    //     return path1.equals(path2);
+    // }
 
-    public static String getExpansionState(JTree tree, int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuilder buf = new StringBuilder();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + (i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
-    }
 
-    public static void restoreExpanstionState(JTree tree, int row, String expansionState) {
-        StringTokenizer stok = new StringTokenizer(expansionState, ",");
-        while (stok.hasMoreTokens()) {
-            int token = row + Integer.parseInt(stok.nextToken());
-            tree.expandRow(token);
-        }
-    }
 
     // Inner class ProjectToolBar implements the main toolbar of the application
-    private class ProjectToolBar extends JToolBar {
 
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        private JButton newButton;
-        private JButton openButton;
-        private JButton saveButton;
-        private JButton saveAsButton;
-        private JButton exportButton;
-        private JButton useCaseButton;
-        private JButton ssdButton;
-        private JButton ccdButton;
-        private JButton sdButton;
-        private JButton dcdButton;
-        private JButton adButton;
-        private JButton forwardEngineerButton;
-        private JButton helpButton;
-        JButton reloadRulesButton;
-        // private JButton validateSD_DCDButton;
-
-        private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
-            ImageIcon newIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + iconFileName));
-            JButton button = new JButton(newIcon);
-            button.setBorder(new EmptyBorder(5, 5, 5, 5));
-            button.setToolTipText(toolTipText);
-            addBorderListener(button);
-            button.addActionListener(listener);
-            return button;
-        }
-
-        public ProjectToolBar() {
-            setFloatable(false);
-
-            newButton = createToolBarButton("new.gif", "New Project", e -> newProject());
-            openButton = createToolBarButton("open.gif", "Open Project", e -> openProject());
-            saveButton = createToolBarButton("save.gif", "Save Project", e -> saveProject());
-            saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> saveProjectAs());
-            exportButton = createToolBarButton("export.gif", "Export to image", e -> exportImage());
-
-            if (!isApplet) { // applet version does not allow creation of new project
-                add(newButton);
-            }
-            add(openButton);
-            add(saveButton);
-            if (!isApplet) {
-                add(saveAsButton);
-                add(exportButton);
-                addSeparator();
-            }
-
-            useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram",
-                    e -> createNewInternalFrame(DiagramType.UCD));
-            ssdButton = createToolBarButton("ssd.gif", "New System Sequence Diagram",
-                    e -> createNewInternalFrame(DiagramType.SSD));
-            ccdButton = createToolBarButton("ccd.gif", "New Conceptual Class Diagram",
-                    e -> createNewInternalFrame(DiagramType.CCD));
-            sdButton = createToolBarButton("sd.gif", "New Sequence Diagram",
-                    e -> createNewInternalFrame(DiagramType.SD));
-            dcdButton = createToolBarButton("dcd.gif", "New Design Class Diagram",
-                    e -> createNewInternalFrame(DiagramType.DCD));
-            adButton = createToolBarButton("activityDiagram.gif", "New Activity Diagram",
-                    e -> createNewInternalFrame(DiagramType.AD));
-
-            add(adButton);
-            add(useCaseButton);
-            add(ccdButton);
-            add(ssdButton);
-            add(sdButton);
-            add(dcdButton);
-
-            // Icon validateSD_DCDIcon = new
-            // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
-            // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
-            // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
-            // validateSD_DCDButton.addActionListener(this);
-            // addSeparator();
-
-            reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
-
-            /**
-             * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
-             */
-
-            // addSeparator();
-
-            ImageIcon forwardEngineerIcon = new ImageIcon(
-                    this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
-            Image img2 = forwardEngineerIcon.getImage();
-            Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-            forwardEngineerIcon.setImage(imgScaled2);
-            forwardEngineerButton = new JButton(forwardEngineerIcon);
-            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            forwardEngineerButton.setToolTipText("Generate Code");
-            addBorderListener(forwardEngineerButton);
-
-            forwardEngineerButton.addActionListener(e -> {
-                JCheckBox checkBox = new JCheckBox("Update Current Files", false);
-                String message = "Do you Want to Generate Code? \n"
-                        + "Make Sure You Have Created and Saved the Approrpiate\n"
-                        + "Design (first) and Sequence Diagrams!";
-                Object[] params = { message, checkBox };
-                // 0 for yes and 1 for no
-                int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
-                        JOptionPane.YES_NO_OPTION);
-                if (codeGenerationConfirm == 0) {
-                    CodePreparation codePreparation = new CodePreparation();
-                    int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
-                    if (genFilesCount > 0) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
-                                        + umlProject.getFilepath().replace(".xml", File.separator),
-                                "Code Generator", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            });
-
-            /**
-             * TODO: REMOVE THE BUTTON TILL code generation is completed! //
-             * add(forwardEngineerButton);
-             */
-
-            // addSeparator();
-
-            ImageIcon helpIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
-            Image img = helpIcon.getImage();
-            Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-            helpIcon.setImage(imgScaled);
-            helpButton = new JButton(helpIcon);
-            helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-            helpButton.setToolTipText("Get help on using StudentUML");
-            addBorderListener(helpButton);
-
-            helpButton.addActionListener(e -> help());
-
-            /**
-             * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED // add(helpButton);
-             */
-
-            setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        }
-
-    }
 
     public void changeLookAndFeel(String className) {
+
+        for (JInternalFrame f: desktopPane.getAllFrames()) {
+            DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
+            iFrame.setzOrder(desktopPane.getComponentZOrder(iFrame));
+        }
+
         try {
             UIManager.setLookAndFeel(className);
             Settings.setLookAndFeel(className);
@@ -1176,11 +976,80 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         SwingUtilities.updateComponentTreeUI(frame);
 
-        toolbar.repaint();
-        for (JInternalFrame frame : desktopPane.getAllFrames()) {
-            frame.repaint();
-        }
+        createMenuBar();
+
+        createToolBar();
+
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
+            iFrame.recreateInternalFrame();
+        }   
+
+        setZOrderOfInternalFrames();
+
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            f.revalidate();
+            f.repaint();
+        }   
+
+        /*
+         * create again the repositoryTreeView
+         */
+        umlProject.deleteObserver(repositoryTreeView);
+        RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
+        JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
+        
+        int splitLocation = mainSplitPane.getDividerLocation();
+        mainSplitPane.setLeftComponent(newTreePane);
+        mainSplitPane.setDividerLocation(splitLocation);
+
+        String expansionState = repositoryTreeView.getExpansionState(0);
+        logger.finer(() -> "EXP state: " + expansionState);
+
+        repositoryTreeView = newRepositoryTreeView;
+        treePane = newTreePane;
+
+        mainSplitPane.revalidate();
+        mainSplitPane.repaint();
+        
+        repositoryTreeView.updateTree();
+        repositoryTreeView.restoreExpansionState(0, expansionState);
+
+        repositoryTreeView.revalidate();
+        repositoryTreeView.repaint();
+        treePane.revalidate();
         treePane.repaint();
+
+        this.repaint();
+        this.revalidate();
     }
+
+    private void repaintInternalFrames() {
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            f.repaint();
+        }
+    }
+
+    public void changeFillColor() {
+        Colors.chooseFillColor();
+        repaintInternalFrames();    
+    }
+
+    protected void setZOrderOfInternalFrames() {
+        /*
+         * set the Zorder of internalframes according to the XML file ZOrder property
+         */
+        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+            DiagramInternalFrame iframe = (DiagramInternalFrame) frame;
+            if (iframe.getzOrder() >= 0 && iframe.getzOrder() < desktopPane.getAllFrames().length) {
+                logger.finer(() -> "Restore: " + iframe.getModel().getName() + " at zorder " + iframe.getzOrder());
+                desktopPane.setComponentZOrder(iframe, iframe.getzOrder());
+            } else {
+                logger.finer(() -> "ZOrder for frame: " + iframe.getModel().getName() + " not set: " + iframe.getzOrder());
+            }
+        }
+    }
+
+
 
 }
