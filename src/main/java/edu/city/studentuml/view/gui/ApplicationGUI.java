@@ -66,6 +66,7 @@ import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
@@ -474,14 +475,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             String messTreeState = "";
 
             if (messageTree.getModel() instanceof CollectionTreeModel) {
-                messTreeState = getExpansionState(messageTree, 0);
+                messTreeState = TreeExpansionState.getExpansionState(messageTree, 0);
                 checkTreeManager.getSelectionModel().clearSelection();
                 repairButton.setEnabled(false);
             }
 
             messageTree.setModel(messages);
             if (messTreeState != null) {
-                restoreExpansionState(messageTree, 0, messTreeState);
+                TreeExpansionState.restoreExpansionState(messageTree, 0, messTreeState);
             }
 
             if (repairPanel != null && messages != null && messages.size() > 0 && isRepairMode()) {
@@ -954,29 +955,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     //     return path1.equals(path2);
     // }
 
-    private static String getExpansionState(JTree tree, int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuilder buf = new StringBuilder();
-        for (int i = row; i < tree.getRowCount(); i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || path.isDescendant(rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + (i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
-    }
 
-    private static void restoreExpansionState(JTree tree, int row, String expansionState) {
-        StringTokenizer stok = new StringTokenizer(expansionState, ",");
-        while (stok.hasMoreTokens()) {
-            int token = row + Integer.parseInt(stok.nextToken());
-            tree.expandRow(token);
-        }
-    }
 
     // Inner class ProjectToolBar implements the main toolbar of the application
 
@@ -1003,8 +982,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         for (JInternalFrame f : desktopPane.getAllFrames()) {
             DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
             iFrame.recreateInternalFrame();
-            desktopPane.setComponentZOrder(iFrame, iFrame.getzOrder());
         }   
+
+        setZOrderOfInternalFrames();
 
         for (JInternalFrame f : desktopPane.getAllFrames()) {
             f.revalidate();
@@ -1053,5 +1033,22 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         Colors.chooseFillColor();
         repaintInternalFrames();    
     }
+
+    protected void setZOrderOfInternalFrames() {
+        /*
+         * set the Zorder of internalframes according to the XML file ZOrder property
+         */
+        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+            DiagramInternalFrame iframe = (DiagramInternalFrame) frame;
+            if (iframe.getzOrder() >= 0 && iframe.getzOrder() < desktopPane.getAllFrames().length) {
+                logger.finer(() -> "Restore: " + iframe.getModel().getName() + " at zorder " + iframe.getzOrder());
+                desktopPane.setComponentZOrder(iframe, iframe.getzOrder());
+            } else {
+                logger.finer(() -> "ZOrder for frame: " + iframe.getModel().getName() + " not set: " + iframe.getzOrder());
+            }
+        }
+    }
+
+
 
 }

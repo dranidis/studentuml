@@ -252,8 +252,8 @@ public final class ObjectFactory extends Observable {
         try {
             zOrder = Integer.parseInt(element.getAttribute("zorder"));
         } catch (Exception e) {
-            logger.severe("zorder attribute not existing. Setting to 0");
-            zOrder = 0;
+            logger.severe("zorder attribute not existing. Setting to -1");
+            zOrder = -1;
         }
 
         FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum, zOrder);

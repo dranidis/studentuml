@@ -67,6 +67,7 @@ import edu.city.studentuml.util.Mode;
 import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.gui.CCDInternalFrame;
@@ -753,7 +754,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             String messTreeState = null;
 
             if ((messageTree.getModel() != null) && (messageTree.getModel() instanceof CollectionTreeModel)) {
-                messTreeState = getExpansionState(messageTree, 0);
+                messTreeState = TreeExpansionState.getExpansionState(messageTree, 0);
                 checkTreeManager.getSelectionModel().clearSelection();
                 repairButton.setEnabled(false);
             }
@@ -1610,23 +1611,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             count1--;
         }
         return path1.equals(path2);
-    }
-
-    public static String getExpansionState(JTree tree, int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuffer buf = new StringBuffer();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + String.valueOf(i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
     }
 
     public static void restoreExpanstionState(JTree tree, int row, String expansionState) {

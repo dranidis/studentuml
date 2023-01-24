@@ -446,6 +446,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     public void setzOrder(int zOrder) {
+        logger.finer("" + zOrder);
         this.zOrder = zOrder;
     }
 

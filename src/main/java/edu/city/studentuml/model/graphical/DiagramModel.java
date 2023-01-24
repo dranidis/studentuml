@@ -302,7 +302,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
             node.setAttribute("scale", Double.toString(frame.getView().getScale()));
             node.setAttribute("maximized", Boolean.toString(frame.isMaximum()));
-            node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
+            if (frame.getParent() != null)
+                node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
 
         }
         streamer.streamObjects(node, graphicalElements.iterator());

@@ -68,6 +68,7 @@ import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.MyImageIcon;
+import edu.city.studentuml.util.TreeExpansionState;
 
 public class RepositoryTreeView extends JPanel implements Observer {
 
@@ -520,44 +521,13 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     // Below methods are used for remembering the tree expansion state for the Tree
     //
-    // is path1 descendant of path2
-    public static boolean isDescendant(TreePath path1, TreePath path2) {
-        int count1 = path1.getPathCount();
-        int count2 = path2.getPathCount();
-        if (count1 <= count2) {
-            return false;
-        }
-        while (count1 != count2) {
-            path1 = path1.getParentPath();
-            count1--;
-        }
-        return path1.equals(path2);
-    }
 
     public String getExpansionState(int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuilder buf = new StringBuilder();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + (i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
+        return TreeExpansionState.getExpansionState(tree, row);
     }
 
     public void restoreExpansionState(int row, String expansionState) {
-        StringTokenizer stok = new StringTokenizer(expansionState, ",");
-        while (stok.hasMoreTokens()) {
-            int token = row + Integer.parseInt(stok.nextToken());
-            logger.finer(() -> "Expanding token " + token);
-            tree.expandRow(token);
-        }
+        TreeExpansionState.restoreExpansionState(tree, row, expansionState);
     }
 
     private class RepositoryTreeSelectionListener implements TreeSelectionListener {
