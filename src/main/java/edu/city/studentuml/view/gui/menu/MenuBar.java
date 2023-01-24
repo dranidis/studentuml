@@ -18,6 +18,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.bulenkov.darcula.DarculaLaf;
+import com.lipstikLF.LipstikLookAndFeel;
 
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.util.RecentFiles;
@@ -247,6 +248,13 @@ public class MenuBar {
         preferencesMenu.add(gtkLFRadioButtonMenuItem);
         lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
 
+        JRadioButtonMenuItem gtkLFRadioButtonMenuItem1 = new JRadioButtonMenuItem("Lipstik",
+                UIManager.getLookAndFeel() instanceof LipstikLookAndFeel);
+        gtkLFRadioButtonMenuItem1.setToolTipText("");
+        gtkLFRadioButtonMenuItem1.addActionListener(e -> app.changeLookAndFeel("com.lipstikLF.LipstikLookAndFeel"));
+        preferencesMenu.add(gtkLFRadioButtonMenuItem1);
+        lookAndFeelGroup.add(gtkLFRadioButtonMenuItem1);
+
         preferencesMenu.addSeparator();
 
         JMenuItem chooseFillColorMenuItem = new JMenuItem();
@@ -261,23 +269,22 @@ public class MenuBar {
     private void repaintSDandSSDDiagrams() {
         final String REPAINT = "REPAINT : ";
 
-        Vector<JInternalFrame> sdFrames = app.getInternalFramesOfType(DiagramType.SD);
-        for (JInternalFrame sdFrame : sdFrames) {
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.SD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        sdFrames = app.getInternalFramesOfType(DiagramType.SSD);
-        for (JInternalFrame sdFrame : sdFrames) {
+        
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.SSD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        Vector<JInternalFrame> cdFrames = app.getInternalFramesOfType(DiagramType.DCD);
-        for (JInternalFrame sdFrame : cdFrames) {
+        
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.DCD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        cdFrames = app.getInternalFramesOfType(DiagramType.CCD);
-        for (JInternalFrame sdFrame : cdFrames) {
+
+        for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.CCD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }

@@ -26,11 +26,6 @@ import edu.city.studentuml.view.DiagramView;
 
 public class ApplicationFrame extends ApplicationGUI {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
     public static final String APPLICATION_NAME = "StudentUML";

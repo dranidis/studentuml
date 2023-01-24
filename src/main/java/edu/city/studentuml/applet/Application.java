@@ -91,10 +91,6 @@ import edu.city.studentuml.view.gui.SSDInternalFrame;
  */
 public class Application extends JApplet implements Observer, KeyListener {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private static Application instance;
 
     private JButton repairButton;

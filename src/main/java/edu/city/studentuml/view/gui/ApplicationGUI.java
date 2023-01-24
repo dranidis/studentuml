@@ -15,11 +15,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
@@ -69,11 +73,6 @@ import edu.city.studentuml.view.gui.menu.MenuBar;
 
 public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
     public static boolean isApplet = false;
@@ -85,7 +84,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected String simpleRulesFile;
     protected String advancedRulesFile;
     protected String currentRuleFile;
-    private ProjectToolBar toolbar;
     protected JDesktopPane desktopPane; // holds internal frames
     protected RepositoryTreeView repositoryTreeView;
     protected JScrollPane treePane;
@@ -93,10 +91,10 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected JTree messageTree;
     protected CheckTreeManager checkTreeManager;
     protected JTabbedPane consistencyCheckTabbedPane;
-    protected JSplitPane splitPane;
-    protected JSplitPane splitPane_1;
-    protected JScrollPane scrollPane_p;
-    protected JScrollPane scrollPane_f;
+    protected JSplitPane mainSplitPane;
+    protected JSplitPane viewSplitPane;
+    protected JScrollPane treeScrollPane;
+    protected JScrollPane factsScrollPane;
     protected JPanel panel;
     protected int ruleEditorTabPlacement = -1;
     protected int factsTreeTabPlacement = -1;
@@ -115,8 +113,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected ApplicationGUI(StudentUMLFrame frame) {
 
         loadLookAndFeel();
-
-                Colors.prinUIManagerColorResources();
 
         isApplet = false;
         this.frame = frame;
@@ -214,13 +210,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createLookAndFeel() {
-        // System.setProperty("lipstikLF.theme", "LightGrayTheme");
-        //
-        // try {
-        // UIManager.setLookAndFeel(new com.lipstikLF.LipstikLookAndFeel());
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
+
     }
 
     private void createInterface() {
@@ -246,7 +236,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createToolBar() {
-        toolbar = new ProjectToolBar(this);
+        ProjectToolBar toolbar = new ProjectToolBar(this);
         BorderLayout bl = (BorderLayout) this.getLayout();
         ProjectToolBar c = (ProjectToolBar) bl.getLayoutComponent(BorderLayout.NORTH);
         if (c != null) {
@@ -270,40 +260,33 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repositoryTreeView = new RepositoryTreeView();
         treePane = new JScrollPane(repositoryTreeView);
 
-        splitPane = new JSplitPane();
-        splitPane.setDividerSize(5);
-        splitPane.setDividerLocation(200);
-        splitPane.setResizeWeight(0);
-        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setRightComponent(splitPane_1);
-        splitPane.setLeftComponent(treePane);
-        add(splitPane, BorderLayout.CENTER);
+        mainSplitPane = new JSplitPane();
+        mainSplitPane.setDividerSize(5);
+        mainSplitPane.setDividerLocation(200);
+        mainSplitPane.setResizeWeight(0);
+        mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        mainSplitPane.setRightComponent(viewSplitPane);
+        mainSplitPane.setLeftComponent(treePane);
+        add(mainSplitPane, BorderLayout.CENTER);
     }
 
     private void createDiagramAndConsistencyArea() {
         consistencyCheckTabbedPane = new JTabbedPane();
         consistencyCheckTabbedPane.setVisible(false);
 
-        splitPane_1 = new JSplitPane();
-        splitPane_1.setDividerSize(5);
-        splitPane_1.setDividerLocation(450);
-        splitPane_1.setResizeWeight(1);
-        splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPane_1.setLeftComponent(desktopPane);
-        splitPane_1.setRightComponent(consistencyCheckTabbedPane);
+        viewSplitPane = new JSplitPane();
+        viewSplitPane.setDividerSize(5);
+        viewSplitPane.setDividerLocation(450);
+        viewSplitPane.setResizeWeight(1);
+        viewSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        viewSplitPane.setLeftComponent(desktopPane);
+        viewSplitPane.setRightComponent(consistencyCheckTabbedPane);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.add(scrollPane_p);
+        panel.add(treeScrollPane);
 
-
-        // scrollPane_f = new JScrollPane();
-        // scrollPane_f.setViewportView(factsTree);
         consistencyCheckTabbedPane.addTab("Problems", null, panel, null);
-        // tabbedPane.addTab("Rule Editor", null, new RuleEditor(currentRuleFile),
-        // null);
-        // tabbedPane.addTab("Facts", null, scrollPane_f, null);
-
     }
 
     private void createFactsAndMessageTree() {
@@ -314,11 +297,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         checkTreeManager = new CheckTreeManager(messageTree, false, path -> path.getPathCount() == 3);
 
-        scrollPane_f = new JScrollPane();
-        scrollPane_f.setViewportView(factsTree);
+        factsScrollPane = new JScrollPane();
+        factsScrollPane.setViewportView(factsTree);
 
-        scrollPane_p = new JScrollPane();
-        scrollPane_p.setViewportView(messageTree);
+        treeScrollPane = new JScrollPane();
+        treeScrollPane.setViewportView(messageTree);
     }
 
     private void createRepairPopupMenu() {
@@ -328,10 +311,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         popupRepair.setText("Repair");
         popupRepair.addActionListener(e -> {
             String rulename = messageTree.getSelectionPath().getLastPathComponent().toString();
-            // SystemWideObjectNamePool.getInstance().loading();
             SystemWideObjectNamePool.getInstance().setSelectedRule(rulename);
-            // SystemWideObjectNamePool.getInstance().done();
-            //// SystemWideObjectNamePool.getInstance().reloadRules();
             SystemWideObjectNamePool.getInstance().reload();
             SystemWideObjectNamePool.getInstance().setSelectedRule(null);
 
@@ -414,8 +394,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repairButton.addActionListener(e -> {
             TreePath[] checkedPaths = checkTreeManager.getSelectionModel().getSelectionPaths();
 
-            // String rulename =
-            // messageTree.getSelectionPath().getLastPathComponent().toString();
             if (checkedPaths != null) {
                 for (int i = 0; i < checkedPaths.length; i++) {
                     SystemWideObjectNamePool.getInstance()
@@ -595,7 +573,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 initialName = "ad";
                 break;
             default:
-                throw new RuntimeException("Unknown diagram (int) type: " + type);
+                throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
         }
         // modelName
         return JOptionPane.showInputDialog(dialogText, initialName);
@@ -717,17 +695,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
         });
 
-        // diagramInternalFrame.addFocusListener(new FocusListener() {
-        //     public void focusGained(FocusEvent e) {
-        //         logger.fine("Focus gained " + internal.getName());
-        //         internal.getToolbar().actionPerfomedOnSelection();
-        //     }
-        
-        //     public void focusLost(FocusEvent e) {
-        //         // Perform action here if needed
-        //     }
-        // });
-
         desktopPane.add(diagramInternalFrame);
         openFrameCounter++;
 
@@ -751,60 +718,36 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     /*
      * returns a list of internal frames having a particular diagram type
      */
-    public Vector<JInternalFrame> getInternalFramesOfType(int type) {
-        Vector<JInternalFrame> ucdFrames = new Vector<>();
-        Vector<JInternalFrame> ssdFrames = new Vector<>();
-        Vector<JInternalFrame> sdFrames = new Vector<>();
-        Vector<JInternalFrame> ccdFrames = new Vector<>();
-        Vector<JInternalFrame> dcdFrames = new Vector<>();
-        Vector<JInternalFrame> adFrames = new Vector<>();
-        JInternalFrame[] frames = desktopPane.getAllFrames();
-        JInternalFrame f;
+    public List<JInternalFrame> getInternalFramesOfType(int type) {
+        List<JInternalFrame> frames = Arrays.asList(desktopPane.getAllFrames());
 
-        for (int i = 0; i < frames.length; i++) {
-            f = frames[i];
-
-            if (f instanceof UCDInternalFrame) {
-                ucdFrames.add(f);
-            } else if (f instanceof SSDInternalFrame) {
-                ssdFrames.add(f);
-            } else if (f instanceof CCDInternalFrame) {
-                ccdFrames.add(f);
-            } else if (f instanceof SDInternalFrame) {
-                sdFrames.add(f);
-            } else if (f instanceof DCDInternalFrame) {
-                dcdFrames.add(f);
-            } else if (f instanceof ADInternalFrame) {
-                adFrames.add(f);
-            }
+        switch (type) {
+        case DiagramType.UCD:
+            return frames.stream().filter(UCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.SSD:
+            return frames.stream().filter(SSDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.CCD:
+            return frames.stream().filter(CCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.SD:
+            return frames.stream().filter(SDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.DCD:
+            return frames.stream().filter(DCDInternalFrame.class::isInstance).collect(Collectors.toList());
+        case DiagramType.AD:
+            return frames.stream().filter(ADInternalFrame.class::isInstance).collect(Collectors.toList());
+        default:
         }
-
-        if (type == DiagramType.UCD) {
-            return ucdFrames;
-        } else if (type == DiagramType.SSD) {
-            return ssdFrames;
-        } else if (type == DiagramType.CCD) {
-            return ccdFrames;
-        } else if (type == DiagramType.SD) {
-            return sdFrames;
-        } else if (type == DiagramType.DCD) {
-            return dcdFrames;
-        } else if (type == DiagramType.AD) {
-            return adFrames;
-        }
-
-        return new Vector<>();
+        return new ArrayList<>();
     }
 
     public void setRunTimeConsistencyCheckAndShowTabbedPane(boolean b) {
         setRuntimeChecking(b);
         consistencyCheckTabbedPane.setVisible(b);
         if (b) {
-            splitPane_1.setDividerSize(5);
-            splitPane_1.setDividerLocation(getHeight() * 360 / 600);
+            viewSplitPane.setDividerSize(5);
+            viewSplitPane.setDividerLocation(getHeight() * 360 / 600);
             reloadRules();
         } else {
-            splitPane_1.setDividerSize(0);
+            viewSplitPane.setDividerSize(0);
         }
     }
 
@@ -827,7 +770,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     public void showFactsTab(boolean selected) {
         if (selected && factsTreeTabPlacement == -1) {
             factsTreeTabPlacement = consistencyCheckTabbedPane.getTabCount();
-            consistencyCheckTabbedPane.insertTab("Facts", null, scrollPane_f, null,
+            consistencyCheckTabbedPane.insertTab("Facts", null, factsScrollPane, null,
                     consistencyCheckTabbedPane.getTabCount());
             consistencyCheckTabbedPane.setSelectedIndex(factsTreeTabPlacement);
         } else if (factsTreeTabPlacement != -1) {
@@ -1041,6 +984,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
 
     public void changeLookAndFeel(String className) {
+
+        for (JInternalFrame f: desktopPane.getAllFrames()) {
+            DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
+            iFrame.setzOrder(desktopPane.getComponentZOrder(iFrame));
+        }
+
         try {
             UIManager.setLookAndFeel(className);
             Settings.setLookAndFeel(className);
@@ -1054,7 +1003,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createToolBar();
 
         for (JInternalFrame f : desktopPane.getAllFrames()) {
-            ((DiagramInternalFrame) f).recreateInternalFrame();
+            DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
+            iFrame.recreateInternalFrame();
+            desktopPane.setComponentZOrder(iFrame, iFrame.getzOrder());
             f.revalidate();
             f.repaint();
         }   
@@ -1066,9 +1017,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
         JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
         
-        int splitLocation = splitPane.getDividerLocation();
-        splitPane.setLeftComponent(newTreePane);
-        splitPane.setDividerLocation(splitLocation);
+        int splitLocation = mainSplitPane.getDividerLocation();
+        mainSplitPane.setLeftComponent(newTreePane);
+        mainSplitPane.setDividerLocation(splitLocation);
 
         String expansionState = repositoryTreeView.getExpansionState(0);
         logger.finer(() -> "EXP state: " + expansionState);
@@ -1076,12 +1027,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         repositoryTreeView = newRepositoryTreeView;
         treePane = newTreePane;
 
-        splitPane.revalidate();
-        splitPane.repaint();
+        mainSplitPane.revalidate();
+        mainSplitPane.repaint();
         
         repositoryTreeView.updateTree();
         repositoryTreeView.restoreExpansionState(0, expansionState);
-
 
         repositoryTreeView.revalidate();
         repositoryTreeView.repaint();
@@ -1100,6 +1050,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void changeFillColor() {
         Colors.chooseFillColor();
-        repaintInternalFrames();    }
+        repaintInternalFrames();    
+    }
 
 }

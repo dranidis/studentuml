@@ -5,15 +5,13 @@ package edu.city.studentuml.applet;
  */
 public class APICallException extends Exception {
 
-    /** */
-    private static final long serialVersionUID = 1L;
-
-    private String message;
+    private final String message;
 
     public APICallException(String message) {
         this.message = message;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }

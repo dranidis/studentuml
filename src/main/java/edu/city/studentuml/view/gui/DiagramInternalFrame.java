@@ -445,6 +445,10 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         return zOrder;
     }
 
+    public void setzOrder(int zOrder) {
+        this.zOrder = zOrder;
+    }
+
     public void recreateInternalFrame() {
 
         AbsractToolbar newToolbar = makeToolbar(this);

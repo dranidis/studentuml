@@ -69,6 +69,12 @@
       <version>2018.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.lipstikLF</groupId>
+      <artifactId>lipstikLF</artifactId>
+      <version>1.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>

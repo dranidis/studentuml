@@ -24,8 +24,6 @@ import java.awt.event.FocusListener;
  */
 public class AutocompleteJComboBox extends JComboBox<String> {
 
-    static final long serialVersionUID = 4321421L;
-
     private final transient Searchable<String, String> searchable;
 
     /**
