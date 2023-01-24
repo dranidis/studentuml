@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JColorChooser;
 import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
 
 public class Colors {
 
@@ -27,7 +28,7 @@ public class Colors {
 
     public static void prinUIManagerColorResources() {
         for (Entry<Object, Object> entry : UIManager.getDefaults().entrySet()) {
-            // if (entry.getValue() instanceof ColorUIResource)
+            if (entry.getValue() instanceof ColorUIResource)
                 logger.info(() -> entry.getKey() + "              " + entry.getValue().toString());
         }
     }
@@ -83,7 +84,7 @@ public class Colors {
         darkFillColor = color;
     }
 
-    private static Color getColorForKey(String... keys) {
+    static Color getColorForKey(String... keys) {
         StringBuilder sb = new StringBuilder();
         for (String key : keys) {
             Color c = UIManager.getColor(key);

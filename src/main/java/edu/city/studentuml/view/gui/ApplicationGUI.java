@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -472,7 +471,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
             CollectionTreeModel facts = SystemWideObjectNamePool.getInstance().getFacts();
 
-            String messTreeState = null;
+            String messTreeState = "";
 
             if (messageTree.getModel() instanceof CollectionTreeModel) {
                 messTreeState = getExpansionState(messageTree, 0);
@@ -482,7 +481,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             messageTree.setModel(messages);
             if (messTreeState != null) {
-                restoreExpanstionState(messageTree, 0, messTreeState);
+                restoreExpansionState(messageTree, 0, messTreeState);
             }
 
             if (repairPanel != null && messages != null && messages.size() > 0 && isRepairMode()) {
@@ -942,26 +941,25 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * messageTree is path1 descendant of path2
      */
 
-    public static boolean isDescendant(TreePath path1, TreePath path2) {
-        int count1 = path1.getPathCount();
-        int count2 = path2.getPathCount();
-        if (count1 <= count2) {
-            return false;
-        }
-        while (count1 != count2) {
-            path1 = path1.getParentPath();
-            count1--;
-        }
-        return path1.equals(path2);
-    }
+    // public static boolean isDescendant(TreePath path1, TreePath path2) {
+    //     int count1 = path1.getPathCount();
+    //     int count2 = path2.getPathCount();
+    //     if (count1 <= count2) {
+    //         return false;
+    //     }
+    //     while (count1 != count2) {
+    //         path1 = path1.getParentPath();
+    //         count1--;
+    //     }
+    //     return path1.equals(path2);
+    // }
 
-    public static String getExpansionState(JTree tree, int row) {
+    private static String getExpansionState(JTree tree, int row) {
         TreePath rowPath = tree.getPathForRow(row);
         StringBuilder buf = new StringBuilder();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
+        for (int i = row; i < tree.getRowCount(); i++) {
             TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
+            if (i == row || path.isDescendant(rowPath)) {
                 if (tree.isExpanded(path)) {
                     buf.append("," + (i - row));
                 }
@@ -972,7 +970,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return buf.toString();
     }
 
-    public static void restoreExpanstionState(JTree tree, int row, String expansionState) {
+    private static void restoreExpansionState(JTree tree, int row, String expansionState) {
         StringTokenizer stok = new StringTokenizer(expansionState, ",");
         while (stok.hasMoreTokens()) {
             int token = row + Integer.parseInt(stok.nextToken());
@@ -1006,6 +1004,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
             iFrame.recreateInternalFrame();
             desktopPane.setComponentZOrder(iFrame, iFrame.getzOrder());
+        }   
+
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
             f.revalidate();
             f.repaint();
         }   
