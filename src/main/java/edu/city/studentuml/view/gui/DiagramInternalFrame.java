@@ -58,7 +58,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     protected AbsractToolbar toolbar;
 
-    protected JMenuBar menuBar = new JMenuBar();
+    protected JMenuBar menuBar;
+    
     private JScrollPane drawingAreaScrollPane;
     private JScrollPane toolbarScrollPane;
 
@@ -144,8 +145,6 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         String elementClass = makeElementClassString();
         setAddElementController(addElementControllerFactory.newAddElementController(model, this, elementClass));
 
-        createHelpMenubar();
-
         /*
          * necessary when a file is loaded with a frame at the back maximised
          * clicking on the frame does not bring it to the front!!?
@@ -215,6 +214,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected abstract String makeElementClassString();
 
     private void createMenuBar() {
+        menuBar = new JMenuBar();
+
         this.setJMenuBar(menuBar);
 
         JMenu editMenu = new JMenu();
@@ -261,6 +262,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         resetScale.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK));
         resetScale.addActionListener(e -> view.setScale(1.0));
         editMenu.add(resetScale);        
+
+        createHelpMenubar();
     }
 
     private void redo() {
@@ -451,6 +454,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     public void recreateInternalFrame() {
+
+        createMenuBar();
 
         AbsractToolbar newToolbar = makeToolbar(this);
 

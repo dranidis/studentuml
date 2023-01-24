@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -976,6 +975,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         }
 
         SwingUtilities.updateComponentTreeUI(frame);
+
+        createMenuBar();
 
         createToolBar();
 
