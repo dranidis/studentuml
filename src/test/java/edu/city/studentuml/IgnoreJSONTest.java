@@ -514,7 +514,7 @@ public class IgnoreJSONTest {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertTrue(jsonString.contains("diagramModels"));
     }
 

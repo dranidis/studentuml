@@ -95,8 +95,8 @@ public class DCDSelectionControllerTest {
         h.addGeneralization(a, b);
         h.addAssociationClass(a, f);
 
-        System.out.println("BEFORE");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("BEFORE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
 
         /**
@@ -109,17 +109,15 @@ public class DCDSelectionControllerTest {
                 && ((ClassGR) ge).getAbstractClass().getName().equals("A")));
         assertEquals(0, h.countRelationshipsWithClassNamed("A"));
 
-        System.out.println("DELETED A");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("DELETED A");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         /**
          * UNDO
          */
         internalFrame.getUndoManager().undo();
-        System.out.println("UNDONE");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("UNDONE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
@@ -135,8 +133,9 @@ public class DCDSelectionControllerTest {
         h.addAssociation(a, b);
         h.addAssociation(a, b);
 
-        System.out.println("BEFORE");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("BEFORE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
+
         assertEquals(4, model.getGraphicalElements().size());
 
         /**
@@ -146,26 +145,26 @@ public class DCDSelectionControllerTest {
         selectionController.deleteSelected();
 
 
-        System.out.println("DELETE ALL");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("DELETE ALL");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
 
         /**
          * UNDO
          */
         internalFrame.getUndoManager().undo();
-        System.out.println("UNDO");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("UNDO");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
+        
         assertEquals(4, model.getGraphicalElements().size());
 
                 /**
          * REDO
          */
         internalFrame.getUndoManager().redo();
-        System.out.println("REDO");
+        // System.out.println("REDO");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
     }  
 
@@ -186,8 +185,8 @@ public class DCDSelectionControllerTest {
 
         int countAll = 8;
 
-        System.out.println("BEFORE");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("BEFORE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(countAll, model.getGraphicalElements().size());
 
         /**
@@ -197,26 +196,24 @@ public class DCDSelectionControllerTest {
         selectionController.deleteSelected();
 
 
-        System.out.println("DELETE ALL");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("DELETE ALL");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
 
         /**
          * UNDO
          */
         internalFrame.getUndoManager().undo();
-        System.out.println("UNDO");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("UNDO");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(countAll, model.getGraphicalElements().size());
 
                 /**
          * REDO
          */
         internalFrame.getUndoManager().redo();
-        System.out.println("REDO");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("REDO");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
     }  
 

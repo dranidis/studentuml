@@ -49,16 +49,16 @@ public class UCDSelectionControllerTest {
         
         selectionController.addElementToSelection(a);
 
-        System.out.println("DELETE");
+        // System.out.println("DELETE");
         selectionController.deleteSelected();
 
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(1, model.getGraphicalElements().size());
 
-        System.out.println("UNDO");
+        // System.out.println("UNDO");
         internalFrame.getUndoManager().undo();
         
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(3, model.getGraphicalElements().size());
     }
 
@@ -73,22 +73,22 @@ public class UCDSelectionControllerTest {
         uc.setContext(s);
 
         model.getGraphicalElements().forEach(e -> System.out.println(e));
-        System.out.println(s.getNumberOfElements());
+        // System.out.println(s.getNumberOfElements());
         
         s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         selectionController.addElementToSelection(s);
 
-        System.out.println("DELETE and UNDO");
+        // System.out.println("DELETE and UNDO");
         selectionController.deleteSelected();
         assertEquals(0, model.getGraphicalElements().size());
 
         internalFrame.getUndoManager().undo();
 
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         System.out.println(s.getNumberOfElements());
 
-        s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
+        // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((SystemGR) model.getGraphicalElements().get(0)).getNumberOfElements());
@@ -106,17 +106,17 @@ public class UCDSelectionControllerTest {
         s1.add(s2);
         s2.setContext(s1);
 
-        s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
+        // s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, s1.getNumberOfElements());
 
         selectionController.addElementToSelection(s2);
 
-        System.out.println("DELETE");
+        // System.out.println("DELETE");
         selectionController.deleteSelected();
 
-        s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
+        // s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, s1.getNumberOfElements());
@@ -139,7 +139,7 @@ public class UCDSelectionControllerTest {
         s2.add(s3);
         s3.setContext(s2);
 
-        s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
+        // s1.createIterator().forEachRemaining(e -> System.out.println("IN s1: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, s1.getNumberOfElements());
@@ -147,7 +147,7 @@ public class UCDSelectionControllerTest {
 
         selectionController.addElementToSelection(s3);
 
-        System.out.println("DELETE");
+        // System.out.println("DELETE");
         selectionController.deleteSelected();
 
         assertEquals(1, model.getGraphicalElements().size());
