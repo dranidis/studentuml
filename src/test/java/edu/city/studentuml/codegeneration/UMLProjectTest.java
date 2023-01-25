@@ -1,12 +1,15 @@
 package edu.city.studentuml.codegeneration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import edu.city.studentuml.model.domain.Association;
@@ -31,15 +34,14 @@ import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
+import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.ApplicationFrame;
-import org.junit.Before;
 
 public class UMLProjectTest {
     String projectName = "test";
@@ -616,7 +618,7 @@ public class UMLProjectTest {
         Role dc2Role = new Role(dc2);
         dc2Role.setName("sd2");
         Association AtoB = new Association(dc1Role, dc2Role);
-        AtoB.setDirection(1);
+        AtoB.setDirection(Association.AB);
         AtoB.setShowArrow(true);
         currDiagram.addGraphicalElement(new AssociationGR(dc1GR, dc2GR, AtoB));
         int generatedFiles = codePreparation.generateCode(false);

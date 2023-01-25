@@ -1,10 +1,8 @@
 package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotifierVector;
@@ -58,18 +56,12 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
         return attributes;
     }
 
-    public Attribute getAttributeByName(String n) {
-        Attribute attrib;
-        Iterator<Attribute> iterator = attributes.iterator();
-
-        while (iterator.hasNext()) {
-            attrib = iterator.next();
-
+    Attribute getAttributeByName(String n) {
+        for (Attribute attrib : attributes) {
             if (attrib.getName().equals(n)) {
                 return attrib;
-            }
+            }  
         }
-
         return null;
     }
 
