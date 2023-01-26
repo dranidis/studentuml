@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Paths;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
@@ -58,12 +58,9 @@ public class CodeGenerator {
 
 		// now decide whether file exist and need an update or is to be
 		// newly generated
-		BufferedWriter fos = null;
 		File f = new File(pathname);
 
 		Map<Integer, String> oldLines = new HashMap<>();
-
-		String line = null;
 
         if (!f.isDirectory() && !f.exists() && !Paths.get(path).toFile().isDirectory() && !f.getParentFile().mkdir()) {
             logger.severe(" could not make directory " + path);
@@ -77,9 +74,46 @@ public class CodeGenerator {
 		logger.fine(() -> "Generating " + f.getPath());
 		String header = generateHeader();
 		String src = generateClassifier(classObject);
+
+		writeToFile(f, header + src);
+
+		if (isUpdate) {
+			List<String> updatedLines = new ArrayList<>();
+			try {
+				FileReader fr2 = new FileReader(f);
+				BufferedReader br2 = new BufferedReader(fr2);
+				int currLine = 0;
+				String line;
+				while ((line = br2.readLine()) != null) {
+					for (Map.Entry<Integer, String> oldLine : oldLines.entrySet()) {
+						if (currLine == (oldLine.getKey())) {
+							if (line.trim().isEmpty()) {
+								line = line.replace(line, oldLine.getValue());
+							} else {
+								updatedLines.add(oldLine.getValue());
+							}
+						}
+					}
+					updatedLines.add(line);
+					currLine++;
+				}
+				br2.close();
+				fr2.close();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			writeToFile(f, String.join(LINE_SEPARATOR, updatedLines));
+		}
+
+		return pathname;
+	}
+
+	private void writeToFile(File f, String src) {
+		BufferedWriter fos = null;
 		try {
 			fos = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
-			fos.write(header);
 			fos.write(src);
 		} catch (IOException exp) {
 			logger.severe("IO Exception: " + exp + ", for file: " + f.getPath());
@@ -92,39 +126,6 @@ public class CodeGenerator {
 				logger.severe("FAILED: " + f.getPath());
 			}
 		}
-		if (isUpdate) {
-			try {
-				FileReader fr2 = new FileReader(f);
-				BufferedReader br2 = new BufferedReader(fr2);
-				int currLine = 0;
-				List<String> lines = new ArrayList<>();
-				while ((line = br2.readLine()) != null) {
-					for (Map.Entry<Integer, String> oldLine : oldLines.entrySet()) {
-						if (currLine == (oldLine.getKey())) {
-							if (line.trim().isEmpty()) {
-								line = line.replace(line, oldLine.getValue());
-							} else {
-								lines.add(oldLine.getValue());
-							}
-						}
-					}
-					lines.add(line);
-					currLine++;
-				}
-				br2.close();
-				fr2.close();
-				BufferedWriter fos2 = new BufferedWriter(new FileWriter(f));
-				for (String s : lines) {
-					fos2.write(s);
-					fos2.write(LINE_SEPARATOR);
-				}
-				fos2.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return pathname;
 	}
 
 	private boolean updateCode(Classifier classObject, boolean isUpdate, File f, Map<Integer, String> oldLines) {
@@ -149,48 +150,9 @@ public class CodeGenerator {
 
 			int lineNumber = 0;
 			for (String line = br.readLine(); line != null; line = br.readLine()) {
-				doesNotExist = true;
-				if (line.contains(" class ") || line.contains(" interface ") || line.contains("//")
-						|| line.trim().isEmpty() || line.contains("}") || line.contains("{")
-						|| line.contains("return") || line.contains("import") || line.contains("this.")) {
-					doesNotExist = false;
-				}
-				if (cls != null && line.contains(cls.getName())) {
-						doesNotExist = false;
-				}
-				for (int i = 0; i < classAttributes.size(); i++) {
-					Attribute classAttribute = classAttributes.get(i);
-					if (line.contains(classAttribute.getName() + ";")) {
-						doesNotExist = false;
-					}
-				}
-				for (int i = 0; i < methods.size(); i++) {
-					Method method = (Method) methods.get(i);
-					if (line.contains(method.getName() + "(")) {
-						doesNotExist = false;
-					}
-				}
-				for (int i = 0; i < sdMethods.size(); i++) {
-					Method sdMethod = (Method) sdMethods.get(i);
-					if (line.contains(sdMethod.getName() + "(")) {
-						doesNotExist = false;
-					}
-				}
-				for (int i = 0; i < sdMethods.size(); i++) {
-					Method sdMethod = (Method) sdMethods.get(i);
-					List<String> calledMethodsInMethod = sdMethod.getCCMethod().getCalledMethods();
-					for (int y = 0; y < calledMethodsInMethod.size(); y++) {
-						String calledMethodInMethod = calledMethodsInMethod.get(y);
-						if (calledMethodInMethod.contains(".")) {
-							calledMethodInMethod = calledMethodInMethod.substring(
-									calledMethodInMethod.lastIndexOf(".") + 1,
-									calledMethodInMethod.lastIndexOf("("));
-						}
-						if (line.contains(calledMethodInMethod)) {
-							doesNotExist = false;
-						}
-					}
-				}
+
+				doesNotExist = examineCode(cls, classAttributes, methods, sdMethods, line);
+				
 				if (doesNotExist) {
 					isUpdate = true; // set true to enable updating
 					oldLines.put(lineNumber, line);
@@ -204,6 +166,53 @@ public class CodeGenerator {
 			ex.printStackTrace();
 		}
 		return isUpdate;
+	}
+
+	private boolean examineCode(DesignClass cls, List<Attribute> classAttributes, Vector<Method> methods,
+			Vector<Method> sdMethods, String line) {
+		boolean doesNotExist = true;
+		if (line.contains(" class ") || line.contains(" interface ") || line.contains("//")
+				|| line.trim().isEmpty() || line.contains("}") || line.contains("{")
+				|| line.contains("return") || line.contains("import") || line.contains("this.")) {
+			doesNotExist = false;
+		}
+		if (cls != null && line.contains(cls.getName())) {
+				doesNotExist = false;
+		}
+		for (int i = 0; i < classAttributes.size(); i++) {
+			Attribute classAttribute = classAttributes.get(i);
+			if (line.contains(classAttribute.getName() + ";")) {
+				doesNotExist = false;
+			}
+		}
+		for (int i = 0; i < methods.size(); i++) {
+			Method method = (Method) methods.get(i);
+			if (line.contains(method.getName() + "(")) {
+				doesNotExist = false;
+			}
+		}
+		for (int i = 0; i < sdMethods.size(); i++) {
+			Method sdMethod = (Method) sdMethods.get(i);
+			if (line.contains(sdMethod.getName() + "(")) {
+				doesNotExist = false;
+			}
+		}
+		for (int i = 0; i < sdMethods.size(); i++) {
+			Method sdMethod = (Method) sdMethods.get(i);
+			List<String> calledMethodsInMethod = sdMethod.getCCMethod().getCalledMethods();
+			for (int y = 0; y < calledMethodsInMethod.size(); y++) {
+				String calledMethodInMethod = calledMethodsInMethod.get(y);
+				if (calledMethodInMethod.contains(".")) {
+					calledMethodInMethod = calledMethodInMethod.substring(
+							calledMethodInMethod.lastIndexOf(".") + 1,
+							calledMethodInMethod.lastIndexOf("("));
+				}
+				if (line.contains(calledMethodInMethod)) {
+					doesNotExist = false;
+				}
+			}
+		}
+		return doesNotExist;
 	}
 
 	private String generateHeader() {
@@ -392,21 +401,9 @@ public class CodeGenerator {
 		}
 
 		// name and params
-		Vector params = op.getParameters();
+		List<String> params = op.getParameters().stream().map(p -> generateParameter(p)).collect(Collectors.toList());
 
-		sb.append(nameStr).append('(');
-
-		if (params != null) {
-			for (int i = 0; i < params.size(); i++) {
-				if (i > 0) {
-					sb.append(", ");
-				}
-				MethodParameter param = (MethodParameter) params.get(i);
-				sb.append(generateParameter(param));
-			}
-		}
-
-		sb.append(')');
+		sb.append(nameStr).append('(').append(String.join(", ", params)).append(')');
 
 		return sb.toString();
 	}

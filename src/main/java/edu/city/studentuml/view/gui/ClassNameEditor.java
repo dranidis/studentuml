@@ -1,14 +1,12 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.model.graphical.ClassGR;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -19,6 +17,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.repository.CentralRepository;
 
 /**
  *
@@ -35,11 +37,9 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
     private JPanel bottomPanel;
     private JButton okButton;
     private JButton cancelButton;
-    private CentralRepository repository;
 
     public ClassNameEditor(ClassGR cl, CentralRepository cr) {
         classGR = cl;
-        repository = cr;
 
         setLayout(new BorderLayout());
         nameLabel = new JLabel("Class Name: ");

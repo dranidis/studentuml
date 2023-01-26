@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
@@ -48,8 +47,6 @@ import edu.city.studentuml.model.graphical.SDObjectGR;
  * @author dimitris
  */
 public class CodePreparation {
-
-    private static final Logger logger = Logger.getLogger(CodePreparation.class.getName());
 
     private UMLProject umlProject = UMLProject.getInstance();
     private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");

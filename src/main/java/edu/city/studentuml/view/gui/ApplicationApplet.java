@@ -114,7 +114,6 @@ public class ApplicationApplet extends ApplicationGUI {
             try {
                 umlProject.loadFromXMLString(solution);
             } catch (NotStreamable e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

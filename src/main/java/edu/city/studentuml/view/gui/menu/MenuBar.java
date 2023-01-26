@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui.menu;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;

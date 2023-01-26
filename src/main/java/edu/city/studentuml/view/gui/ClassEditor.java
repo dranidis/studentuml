@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -31,7 +30,6 @@ import edu.city.studentuml.view.gui.components.MethodsPanel;
  * @author Dimitris Dranidis
  */
 public class ClassEditor extends ClassifierEditor implements ClassEditorI {
-    private static final Logger logger = Logger.getLogger(ClassEditor.class.getName());
 
     private List<Attribute> attributesFromConceptualClass;
     private AttributesPanel attributesPanel;
