@@ -4,19 +4,15 @@ import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
-import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
@@ -28,8 +24,17 @@ public class ProjectToolBar extends JToolBar {
     // private JButton validateSD_DCDButton;
 
     private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
+        final int MAX_HEIGHT = 20;
         ImageIcon newIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + iconFileName));
+
+        if (newIcon.getIconHeight() > MAX_HEIGHT) {
+            Image img2 = newIcon.getImage();
+            Image imgScaled2 = img2.getScaledInstance(-1, MAX_HEIGHT, Image.SCALE_SMOOTH);
+            newIcon.setImage(imgScaled2);
+        }
+
         JButton button = new JButton(newIcon);
+
         button.setBorder(new EmptyBorder(5, 5, 5, 5));
         button.setToolTipText(toolTipText);
         addBorderListener(button);
@@ -40,22 +45,30 @@ public class ProjectToolBar extends JToolBar {
     public ProjectToolBar(ApplicationGUI applicationGUI) {
         setFloatable(false);
 
-        JButton newButton = createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject());
         JButton openButton = createToolBarButton("open.gif", "Open Project", e -> applicationGUI.openProject());
         JButton saveButton = createToolBarButton("save.gif", "Save Project", e -> applicationGUI.saveProject());
         JButton saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> applicationGUI.saveProjectAs());
         JButton exportButton = createToolBarButton("export.gif", "Export to image", e -> applicationGUI.exportImage());
+        JButton codeGenerateButton = createToolBarButton("code.gif", "Generate Code", e -> applicationGUI.forwardEngineer());
 
         if (!ApplicationGUI.isApplet()) { // applet version does not allow creation of new project
-            add(newButton);
+            add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
         }
         add(openButton);
         add(saveButton);
         if (!ApplicationGUI.isApplet()) {
             add(saveAsButton);
             add(exportButton);
-            addSeparator();
         }
+
+        /*
+         * set to true to show button
+         */
+        boolean codeGenerationEnabled = false;
+        if (codeGenerationEnabled) 
+            add(codeGenerateButton);
+
+        addSeparator();
 
         JButton useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram",
                 e -> applicationGUI.createNewInternalFrame(DiagramType.UCD));
@@ -90,26 +103,7 @@ public class ProjectToolBar extends JToolBar {
          * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
          */
 
-        addSeparator();
 
-        ImageIcon forwardEngineerIcon = new MyImageIcon(
-                this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
-        Image img2 = forwardEngineerIcon.getImage();
-        Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-        forwardEngineerIcon.setImage(imgScaled2);
-        JButton forwardEngineerButton = new JButton(forwardEngineerIcon);
-        forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-        forwardEngineerButton.setToolTipText("Generate Code");
-        addBorderListener(forwardEngineerButton);
-
-        forwardEngineerButton.addActionListener(e -> applicationGUI.forwardEngineer());
-
-        /**
-         * TODO: REMOVE THE BUTTON TILL code generation is completed! //
-         * add(forwardEngineerButton);
-         */
-
-         add(forwardEngineerButton);
 
 
         // ImageIcon helpIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
