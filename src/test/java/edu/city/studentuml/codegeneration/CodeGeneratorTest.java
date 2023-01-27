@@ -222,8 +222,8 @@ public class CodeGeneratorTest {
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         dc.addMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
@@ -255,8 +255,8 @@ public class CodeGeneratorTest {
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         dc.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
@@ -286,7 +286,7 @@ public class CodeGeneratorTest {
     public void testGenerateCoreAttribute() {
         Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
-        dc.addAttribute(new Attribute("attr1", new DataType("String")));
+        dc.addAttribute(new Attribute("attr1", DataType.STRING));
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -320,8 +320,8 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);
         dc2.getCcDesignClass().addSDMethod(mtd1);
@@ -336,6 +336,7 @@ public class CodeGeneratorTest {
                 FileReader fr = new FileReader(f);
                 BufferedReader br = new BufferedReader(fr);
                 while ((line = br.readLine()) != null) {
+                    System.out.println(line);
                     if (line.contains("x = sd2.mtd1(x)")) {
                         calledBranchedMethodExists = true;
                     }
@@ -357,8 +358,8 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("void"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.VOID);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);
         dc2.getCcDesignClass().addSDMethod(mtd1);
@@ -394,8 +395,8 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new MultiObject("sd2Array", dc2), false);
         dc.addMethod(headMethod);
         dc2.getCcDesignClass().addSDMethod(mtd1);
@@ -430,8 +431,8 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc, new SDObject("sd1", dc), true);
         dc.addMethod(headMethod);
         dc.getCcDesignClass().addSDMethod(mtd1);
@@ -467,8 +468,8 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         mtd1.getCCMethod().setIterative(true);
         headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);

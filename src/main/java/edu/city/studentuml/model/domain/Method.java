@@ -37,16 +37,12 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
     private int visibility; // 1 = private, 2 = public, 3 = protected
     private Type returnType;
     private NotifierVector<MethodParameter> parameters;
-    @JsonIgnore
-    private int priority = 0;
-    @JsonIgnore
-    private String returnParameter = "x";
 
     /*
      * CODE GEN
      */
     @JsonIgnore
-    private final CCMethod ccMethod= new CCMethod();
+    private final CCMethod ccMethod= new CCMethod(this);
 
     @JsonIgnore
     public CCMethod getCCMethod() {
@@ -244,30 +240,7 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         return copyMethod;
     }
 
-    // used by code generation: TODO: Refactor
-    @JsonIgnore
-    public String getParametersAsString() {
-        StringJoiner sj = new StringJoiner(", ");
-        parameters.forEach(par -> sj.add(par.getName()));
 
-        return sj.toString();
-    }
-
-    public void setPriority(int mtdPriority) {
-        this.priority = mtdPriority;
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public void setReturnParameter(String newParameter) {
-        this.returnParameter = newParameter;
-    }
-
-    public String getReturnParameter() {
-        return this.returnParameter;
-    }
 
     @Override
     public Method copyOf(Method a) {

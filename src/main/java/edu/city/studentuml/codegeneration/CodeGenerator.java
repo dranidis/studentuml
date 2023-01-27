@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
@@ -25,8 +26,11 @@ import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.domain.UMLProject;
 
-//@author Spyros Maniopoulos
 
+
+/**
+ * @author Spyros Maniopoulos
+ */
 public class CodeGenerator {
 
 	private static final Logger logger = Logger.getLogger(CodeGenerator.class.getName());
@@ -133,7 +137,7 @@ public class CodeGenerator {
 			DesignClass cls = null;
 			List<Attribute> classAttributes = new ArrayList<>();
 			Vector<Method> methods = new Vector<>();
-			Vector<Method> sdMethods = new Vector<>();
+			List<Method> sdMethods = new Vector<>();
 			boolean doesNotExist = true;
 			if (classObject instanceof DesignClass) {
 				cls = (DesignClass) classObject;
@@ -168,8 +172,8 @@ public class CodeGenerator {
 		return isUpdate;
 	}
 
-	private boolean examineCode(DesignClass cls, List<Attribute> classAttributes, Vector<Method> methods,
-			Vector<Method> sdMethods, String line) {
+	private boolean examineCode(DesignClass cls, List<Attribute> classAttributes, List<Method> methods,
+			List<Method> sdMethods, String line) {
 		boolean doesNotExist = true;
 		if (line.contains(" class ") || line.contains(" interface ") || line.contains("//")
 				|| line.trim().isEmpty() || line.contains("}") || line.contains("{")
@@ -308,7 +312,8 @@ public class CodeGenerator {
 
         if (obj instanceof DesignClass) {
 			DesignClass cls = (DesignClass) obj;
-            List<Attribute> classAttributes = cls.getAttributes();
+            List<Attribute> classAttributes = new ArrayList<>();
+            classAttributes.addAll(cls.getAttributes());
 			classAttributes.addAll(cls.getCcDesignClass().getAttributes());
 
 			if (!classAttributes.isEmpty()) {
@@ -392,7 +397,7 @@ public class CodeGenerator {
 		sb.append(op.getVisibilityAsString()).append(' ');
 
 		// return type
-		if (op.getReturnTypeAsString() == "VOID" && !nameStr.equals(className)) {
+		if (op.getReturnTypeAsString().equals(DataType.VOID) && !nameStr.equals(className)) {
 			sb.append("void ");
 		} else if (nameStr.equals(className)) {
 			// constructor

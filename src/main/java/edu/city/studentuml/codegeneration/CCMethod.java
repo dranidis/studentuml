@@ -2,6 +2,7 @@ package edu.city.studentuml.codegeneration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignClass;
@@ -18,6 +19,16 @@ public class CCMethod {
     private boolean iterative = false;
 
     private List<String> calledMethods = new ArrayList<>(); // used by codegeneration; refactor
+
+    private int priority;
+
+    private String returnParameter = "x"; // why x?
+
+    private Method method;
+
+    public CCMethod(Method method) {
+        this.method = method;
+    }
 
     public void addCalledMethod(DesignClass homeClass, Method m, DesignClass calledClass, RoleClassifier object,
             boolean isReflective) {
@@ -42,7 +53,7 @@ public class CCMethod {
             }
             if (object instanceof SDObject) {
                 sb.append(object.getName()).append(" = ");
-                sb.append("new ").append(calledClass.getName() + "(" + m.getParametersAsString() + ")" + ";");
+                sb.append("new ").append(calledClass.getName() + "(" + m.getCCMethod().getParametersAsString() + ")" + ";");
             } else if (object instanceof MultiObject) {
                 sb.append(object.getName() + " = new ArrayList<" + calledClass.getName() + ">();");
             }
@@ -62,14 +73,14 @@ public class CCMethod {
                 parameterExists = false;
                 for (int i = 0; i < attributes.size(); i++) {
                     attribute = attributes.get(i);
-                    if (attribute.getName().equalsIgnoreCase(m.getReturnParameter())) {
+                    if (attribute.getName().equalsIgnoreCase(m.getCCMethod().getReturnParameter())) {
                         parameterExists = true;
                     }
                 }
                 if (!parameterExists) {
                     sb.append(m.getReturnTypeAsString() + " ");
                 }
-                sb.append(m.getReturnParameter() + " = ");
+                sb.append(m.getCCMethod().getReturnParameter() + " = ");
             }
             if (isReflective && object instanceof SDObject) {
                 sb.append("this").append(".");
@@ -81,7 +92,7 @@ public class CCMethod {
                 sb.append(object.getName() + ".");
             }
             sb.append(m.getName()).append("(");
-            sb.append(m.getParametersAsString());
+            sb.append(m.getCCMethod().getParametersAsString());
             sb.append(");");
             if (m.getCCMethod().isIterative()) {
                 sb.append(LINE_SEPARATOR).append(" ");
@@ -112,5 +123,27 @@ public class CCMethod {
         iterative = i;
     }
 
+    public String getParametersAsString() {
+        StringJoiner sj = new StringJoiner(", ");
+        method.getParameters().forEach(par -> sj.add(par.getName()));
+
+        return sj.toString();
+    }
+
+    public void setPriority(int mtdPriority) {
+        this.priority = mtdPriority;
+    }
+
+    public int getPriority() {
+        return this.priority;
+    }
+
+    public void setReturnParameter(String newParameter) {
+        this.returnParameter = newParameter;
+    }
+
+    public String getReturnParameter() {
+        return this.returnParameter;
+    }
 
 }

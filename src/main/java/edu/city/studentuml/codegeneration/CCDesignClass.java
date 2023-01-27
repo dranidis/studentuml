@@ -2,7 +2,6 @@ package edu.city.studentuml.codegeneration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
@@ -13,7 +12,7 @@ public class CCDesignClass {
 
     private Classifier extendClass; 
     private List<Interface> implementInterfaces = new ArrayList<>(); 
-    private Vector<Method> sdMethods = new Vector<>();
+    private List<Method> sdMethods = new ArrayList<>();
     private List<Attribute> attributes = new ArrayList<>();
     
 
@@ -41,7 +40,7 @@ public class CCDesignClass {
         this.sdMethods.add(m);
     }
 
-    public Vector<Method> getSDMethods() {
+    public List<Method> getSDMethods() {
         return this.sdMethods;
     }
 

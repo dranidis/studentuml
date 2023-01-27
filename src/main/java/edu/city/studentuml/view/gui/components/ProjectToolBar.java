@@ -1,17 +1,22 @@
 package edu.city.studentuml.view.gui.components;
 
+import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
+import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
@@ -85,46 +90,27 @@ public class ProjectToolBar extends JToolBar {
          * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
          */
 
-        // addSeparator();
+        addSeparator();
 
-        // ImageIcon forwardEngineerIcon = new MyImageIcon(
-        //         this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
-        // Image img2 = forwardEngineerIcon.getImage();
-        // Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-        // forwardEngineerIcon.setImage(imgScaled2);
-        // JButton forwardEngineerButton = new JButton(forwardEngineerIcon);
-        // forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-        // forwardEngineerButton.setToolTipText("Generate Code");
-        // addBorderListener(forwardEngineerButton);
+        ImageIcon forwardEngineerIcon = new MyImageIcon(
+                this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
+        Image img2 = forwardEngineerIcon.getImage();
+        Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
+        forwardEngineerIcon.setImage(imgScaled2);
+        JButton forwardEngineerButton = new JButton(forwardEngineerIcon);
+        forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+        forwardEngineerButton.setToolTipText("Generate Code");
+        addBorderListener(forwardEngineerButton);
 
-        // forwardEngineerButton.addActionListener(e -> {
-        //     JCheckBox checkBox = new JCheckBox("Update Current Files", false);
-        //     String message = "Do you Want to Generate Code? \n"
-        //             + "Make Sure You Have Created and Saved the Approrpiate\n"
-        //             + "Design (first) and Sequence Diagrams!";
-        //     Object[] params = { message, checkBox };
-        //     // 0 for yes and 1 for no
-        //     int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
-        //             JOptionPane.YES_NO_OPTION);
-        //     if (codeGenerationConfirm == 0) {
-        //         CodePreparation codePreparation = new CodePreparation();
-        //         int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
-        //         if (genFilesCount > 0) {
-        //             JOptionPane.showMessageDialog(frame,
-        //                     "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
-        //                             + umlProject.getFilepath().replace(".xml", File.separator),
-        //                     "Code Generator", JOptionPane.INFORMATION_MESSAGE);
-        //         } else {
-        //             JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
-        //                     JOptionPane.INFORMATION_MESSAGE);
-        //         }
-        //     }
-        // });
+        forwardEngineerButton.addActionListener(e -> applicationGUI.forwardEngineer());
 
         /**
          * TODO: REMOVE THE BUTTON TILL code generation is completed! //
          * add(forwardEngineerButton);
          */
+
+         add(forwardEngineerButton);
+
 
         // ImageIcon helpIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
         // Image img = helpIcon.getImage();
