@@ -55,7 +55,7 @@ public class CreateMessage extends CallMessage {
                 String parameter = parameterStr[1];
                 methodParameters.add(new MethodParameter(parameter, parameterType));
             } catch (ArrayIndexOutOfBoundsException e) {
-                logger.severe("Wrong Parameter: " + "STRING: " + parameterStr + " " + getName() + source.getName() + " -> " + target.getName());
+                logger.severe("Wrong Parameter: " + "STRING: " + parameterStr + " " + getName() + ": " + source.getName() + " -> " + target.getName());
                 e.printStackTrace();
             }
         }

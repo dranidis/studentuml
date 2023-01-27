@@ -49,24 +49,24 @@ public class ADSelectionControllerTest {
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
 
         // SELECT the initial node
         selectionController.addElementToSelection(i);
 
         // DELETE it
-        System.out.println("DELETE");
+        // System.out.println("DELETE");
         selectionController.deleteSelected();
 
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
         // UNDO
-        System.out.println("UNDO");
+        // System.out.println("UNDO");
         internalFrame.getUndoManager().undo();
 
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
@@ -74,7 +74,7 @@ public class ADSelectionControllerTest {
         System.out.println("REDO");
         internalFrame.getUndoManager().redo();
 
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
    }
@@ -87,35 +87,35 @@ public class ADSelectionControllerTest {
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
-        model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
 
         // SELECT the activity node
         selectionController.addElementToSelection(an);
 
         // DELETE it
-        System.out.println("DELETE");
+        // System.out.println("DELETE");
         selectionController.deleteSelected();
 
-        model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(0, model.getGraphicalElements().size());
 
         // UNDO
-        System.out.println("UNDO");
+        // System.out.println("UNDO");
         internalFrame.getUndoManager().undo();
 
-        model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
         // REDO
-        System.out.println("REDO");
+        // System.out.println("REDO");
         internalFrame.getUndoManager().redo();
 
-        model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
-        an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
+        // model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
+        // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(0, model.getGraphicalElements().size());
              
     }

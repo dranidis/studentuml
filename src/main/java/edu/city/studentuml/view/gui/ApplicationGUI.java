@@ -514,6 +514,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public abstract void exportImage();
 
+    public abstract void forwardEngineer();
+
     /*
      * creates a new empty diagram within the appropriate internal frame, depending
      * on the type integer

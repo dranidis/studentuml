@@ -40,9 +40,9 @@ public class MoveEdgeEdit extends AbstractUndoableEdit {
 
     private void move(List<AbstractPointGR> points) {
         edge.clearPoints();
-        Iterator it = points.iterator();
+        Iterator<AbstractPointGR> it = points.iterator();
         while (it.hasNext()) {
-            edge.addPoint((AbstractPointGR) it.next());
+            edge.addPoint(it.next());
         }
 
         // set observable model to changed in order to notify its views

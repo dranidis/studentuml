@@ -114,7 +114,6 @@ public class ApplicationApplet extends ApplicationGUI {
             try {
                 umlProject.loadFromXMLString(solution);
             } catch (NotStreamable e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -534,6 +533,12 @@ public class ApplicationApplet extends ApplicationGUI {
 
     @Override
     public void openProjectFile(String fileName) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void forwardEngineer() {
         // TODO Auto-generated method stub
         
     }

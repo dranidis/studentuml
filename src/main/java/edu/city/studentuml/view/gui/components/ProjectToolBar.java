@@ -1,5 +1,6 @@
 package edu.city.studentuml.view.gui.components;
 
+import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,8 +24,17 @@ public class ProjectToolBar extends JToolBar {
     // private JButton validateSD_DCDButton;
 
     private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
+        final int MAX_HEIGHT = 20;
         ImageIcon newIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + iconFileName));
+
+        if (newIcon.getIconHeight() > MAX_HEIGHT) {
+            Image img2 = newIcon.getImage();
+            Image imgScaled2 = img2.getScaledInstance(-1, MAX_HEIGHT, Image.SCALE_SMOOTH);
+            newIcon.setImage(imgScaled2);
+        }
+
         JButton button = new JButton(newIcon);
+
         button.setBorder(new EmptyBorder(5, 5, 5, 5));
         button.setToolTipText(toolTipText);
         addBorderListener(button);
@@ -35,22 +45,30 @@ public class ProjectToolBar extends JToolBar {
     public ProjectToolBar(ApplicationGUI applicationGUI) {
         setFloatable(false);
 
-        JButton newButton = createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject());
         JButton openButton = createToolBarButton("open.gif", "Open Project", e -> applicationGUI.openProject());
         JButton saveButton = createToolBarButton("save.gif", "Save Project", e -> applicationGUI.saveProject());
         JButton saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> applicationGUI.saveProjectAs());
         JButton exportButton = createToolBarButton("export.gif", "Export to image", e -> applicationGUI.exportImage());
+        JButton codeGenerateButton = createToolBarButton("code.gif", "Generate Code", e -> applicationGUI.forwardEngineer());
 
         if (!ApplicationGUI.isApplet()) { // applet version does not allow creation of new project
-            add(newButton);
+            add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
         }
         add(openButton);
         add(saveButton);
         if (!ApplicationGUI.isApplet()) {
             add(saveAsButton);
             add(exportButton);
-            addSeparator();
         }
+
+        /*
+         * set to true to show button
+         */
+        boolean codeGenerationEnabled = false;
+        if (codeGenerationEnabled) 
+            add(codeGenerateButton);
+
+        addSeparator();
 
         JButton useCaseButton = createToolBarButton("useCaseDiagram.gif", "New Use Case Diagram",
                 e -> applicationGUI.createNewInternalFrame(DiagramType.UCD));
@@ -85,46 +103,8 @@ public class ProjectToolBar extends JToolBar {
          * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
          */
 
-        // addSeparator();
 
-        // ImageIcon forwardEngineerIcon = new MyImageIcon(
-        //         this.getClass().getResource(Constants.IMAGES_DIR + "code.gif"));
-        // Image img2 = forwardEngineerIcon.getImage();
-        // Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-        // forwardEngineerIcon.setImage(imgScaled2);
-        // JButton forwardEngineerButton = new JButton(forwardEngineerIcon);
-        // forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-        // forwardEngineerButton.setToolTipText("Generate Code");
-        // addBorderListener(forwardEngineerButton);
 
-        // forwardEngineerButton.addActionListener(e -> {
-        //     JCheckBox checkBox = new JCheckBox("Update Current Files", false);
-        //     String message = "Do you Want to Generate Code? \n"
-        //             + "Make Sure You Have Created and Saved the Approrpiate\n"
-        //             + "Design (first) and Sequence Diagrams!";
-        //     Object[] params = { message, checkBox };
-        //     // 0 for yes and 1 for no
-        //     int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
-        //             JOptionPane.YES_NO_OPTION);
-        //     if (codeGenerationConfirm == 0) {
-        //         CodePreparation codePreparation = new CodePreparation();
-        //         int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
-        //         if (genFilesCount > 0) {
-        //             JOptionPane.showMessageDialog(frame,
-        //                     "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
-        //                             + umlProject.getFilepath().replace(".xml", File.separator),
-        //                     "Code Generator", JOptionPane.INFORMATION_MESSAGE);
-        //         } else {
-        //             JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
-        //                     JOptionPane.INFORMATION_MESSAGE);
-        //         }
-        //     }
-        // });
-
-        /**
-         * TODO: REMOVE THE BUTTON TILL code generation is completed! //
-         * add(forwardEngineerButton);
-         */
 
         // ImageIcon helpIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
         // Image img = helpIcon.getImage();
