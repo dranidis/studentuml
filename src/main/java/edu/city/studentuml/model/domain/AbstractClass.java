@@ -43,6 +43,11 @@ public abstract class AbstractClass implements Serializable, Type, Classifier, I
         genericClass.setName(n);
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         return genericClass.getName();
     }

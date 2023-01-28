@@ -3,17 +3,33 @@
 # Use :- to define a fact template
 # Use $ to define a simplification
 
+#
 # FACT TEMPLATES
+#
+# are used to create the facts in prolog
+# 
 
+#
+# The following template generates many facts, one for each element returned
+# by the this.getGraphicalElements() method
+#
 :- DiagramModel belongsTo(this,getGraphicalElements.this)
-:- ADModel diagram(this,'getDiagramName',"ad")
-:- UCDModel diagram(this,'getDiagramName',"ucd")
-:- CCDModel diagram(this,'getDiagramName',"ccd")
-:- SDModel diagram(this,'getDiagramName',"sd")
-:- DCDModel diagram(this,'getDiagramName',"dcd")
+
+# The template     :- UCDModel diagram(this,'getName',"ucd") 
+# creates a fact   diagram(ucdmodel0, 'UCD: ucd', ucd)  
+#
+#  getName executes by reflection the getName() method of this which is
+#  a UCDModel, i.e. in this case is "UCD: ucd" (double quotes are removed)
+#  "ucd" becomes ucd (without the quotes).
+#
+:- UCDModel diagram(this,'getName',"ucd")
+:- ADModel diagram(this,'getName',"ad")
+:- CCDModel diagram(this,'getName',"ccd")
+:- SDModel diagram(this,'getName',"sd")
+:- DCDModel diagram(this,'getName',"dcd")
 
 :- UCDComponent ucdComponent(this,'getName')
-:- UCDComponentGR responsibleFor(getUCDComponent,this)
+:- UCDComponentGR responsibleFor(getComponent,this)
 
 :- NodeComponent node(this,'getName')
 :- NodeComponentGR responsibleFor(getNodeComponent,this)

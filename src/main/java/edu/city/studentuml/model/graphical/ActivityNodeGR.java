@@ -72,7 +72,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // paint activity node
         g.setPaint(getFillColor());
         Shape shape = new RoundRectangle2D.Double(startingX, startingY, width, height, 20, 20);
-        g.fill(shape);
+        // g.fill(shape);
 
         g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();

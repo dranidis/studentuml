@@ -131,6 +131,11 @@ public class MultiObjectGR extends AbstractSDObjectGR {
         return width;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public MultiObject getMultiObject() {
         return (MultiObject) roleClassifier;
     }

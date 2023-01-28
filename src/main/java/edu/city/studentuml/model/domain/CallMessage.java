@@ -30,6 +30,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         parameters = new NotifierVector<>();
     }
 
+    @Override
     public String getName() {
         return genericOperation.getName();
     }
@@ -54,6 +55,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         parameters.remove(p);
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Vector<MethodParameter> getParameters() {
         return parameters;
     }
@@ -112,6 +118,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         return text;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */        
     public String getReturnValueAsString() {
         if (returnValue != null && !returnValue.getName().equals("")) {
             return returnValue.getName();

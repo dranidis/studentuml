@@ -32,7 +32,12 @@ public abstract class UCDComponent implements Classifier {
     }
 
     public abstract Iterator<UCDComponent> createIterator();
-
+    
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         throw new UnsupportedOperationException("getName() not supported");
     }

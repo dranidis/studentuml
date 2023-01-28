@@ -90,7 +90,7 @@ public class Colors {
             Color c = UIManager.getColor(key);
             if (c == null) {
                 sb.append(key + " ");
-                logger.finer(() -> "Key not found in UIManager: " + key);
+                logger.finest(() -> "Key not found in UIManager: " + key);
             } else {
                 return c;
             }

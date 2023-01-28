@@ -92,6 +92,11 @@ public class Attribute implements Serializable, IXMLCustomStreamable, Copyable<A
         return genericAttribute;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Type getType() {
         return type;
     }
@@ -121,6 +126,11 @@ public class Attribute implements Serializable, IXMLCustomStreamable, Copyable<A
         return getVisibilityString() + getNameString() + getTypeString();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     @JsonIgnore
     public String getVisibilityName() {
         if (visibility == PRIVATE) {

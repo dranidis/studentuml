@@ -12,6 +12,11 @@ public class SDObjectGR extends AbstractSDObjectGR {
         super(obj, x);
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public SDObject getSDObject() {
         return (SDObject) roleClassifier;
     }

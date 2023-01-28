@@ -94,6 +94,11 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract Iterator<UCDComponentGR> createIterator();
 
+    /*
+    * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+    *
+    * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+    */
     public UCDComponent getComponent() {
         return component;
     }

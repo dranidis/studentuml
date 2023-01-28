@@ -17,6 +17,11 @@ public class SDObject extends RoleClassifier implements IXMLCustomStreamable {
         super(name, dc);
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public DesignClass getDesignClass() {
         return (DesignClass) classifier;
     }

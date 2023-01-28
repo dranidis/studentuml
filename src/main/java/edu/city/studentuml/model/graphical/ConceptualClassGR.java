@@ -22,6 +22,11 @@ public class ConceptualClassGR extends AbstractClassGR {
         abstractClass = cl;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public ConceptualClass getConceptualClass() {
         return (ConceptualClass) abstractClass;
     }

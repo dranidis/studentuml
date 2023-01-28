@@ -185,6 +185,11 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return selected;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+     */    
     public NotifierVector<GraphicalElement> getGraphicalElements() {
         return graphicalElements;
     }
@@ -193,6 +198,11 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return repository;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         return name;
     }

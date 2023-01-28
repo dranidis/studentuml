@@ -48,6 +48,11 @@ public class DependencyGR extends LinkGR {
         return false;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Dependency getDependency() {
         return dependency;
     }

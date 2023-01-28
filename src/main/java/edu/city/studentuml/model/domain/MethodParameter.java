@@ -45,7 +45,11 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable, Copy
         type = new DataType(n);
     }
 
-    // 'get' methods
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         return name;
     }
@@ -54,6 +58,11 @@ public class MethodParameter implements Serializable, IXMLCustomStreamable, Copy
         return type;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     @JsonIgnore
     public String getTypeAsString() {
         if (type == null) {

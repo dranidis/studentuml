@@ -26,7 +26,7 @@ public class RuleBasedEngine {
     }
 
     public void addClause(String clause) {
-        logger.finer("Adding clause: " + clause);
+        logger.finer(() -> "Adding clause: " + clause);
 
         if (!clauseTable.containsKey(clause)) {
             modifyDatabase("assert", clause);
@@ -42,7 +42,13 @@ public class RuleBasedEngine {
     }
 
     private void modifyDatabase(String action, String clause) {
-        prolog.query(action + "(" + clause + ").");
+        String queryString = action + "(" + clause + ").";
+        // try {
+            prolog.query(queryString);
+        // } catch (Exception e) {
+        //     logger.severe("clause");
+        //     e.printStackTrace();
+        // }
     }
 
     public void addClauseTableToFacts(CollectionTreeModel facts) {
@@ -52,7 +58,7 @@ public class RuleBasedEngine {
         }
     }
 
-    public void printSolution(HashMap<String, Map<String, String>> result) {
+    public void printSolution(Map<String, Map<String, String>> result) {
         if (result != null) {
             Iterator<String> i = result.keySet().iterator();
             logger.finest(() -> "Rule has (" + result.size() + ") solution: ");

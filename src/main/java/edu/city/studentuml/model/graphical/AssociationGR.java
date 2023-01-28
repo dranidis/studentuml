@@ -170,6 +170,11 @@ public class AssociationGR extends LinkGR {
         return association.isReflective();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Association getAssociation() {
         return association;
     }

@@ -157,6 +157,11 @@ public class ClassGR extends AbstractClassGR {
         abstractClass = cl;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public DesignClass getDesignClass() {
         return (DesignClass) abstractClass;
     }

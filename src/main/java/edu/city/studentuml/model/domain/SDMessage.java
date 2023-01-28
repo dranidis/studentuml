@@ -14,19 +14,34 @@ public abstract class SDMessage implements Serializable {
     protected RoleClassifier target;    // message directed to this object
     private String returnParameter = "x";
 
-    public SDMessage(RoleClassifier from, RoleClassifier to) {
+    protected SDMessage(RoleClassifier from, RoleClassifier to) {
         source = from;
         target = to;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public RoleClassifier getSource() {
         return source;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public RoleClassifier getTarget() {
         return target;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */        
     public int getRank() {
         return rank;
     }
@@ -47,6 +62,13 @@ public abstract class SDMessage implements Serializable {
     public String getReturnParameter () {
     	return this.returnParameter;
     }
+
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */        
+    public abstract String getName();
 
     // the sd message subclasses should define a toString() method
     public abstract String toString();

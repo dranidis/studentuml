@@ -23,6 +23,11 @@ public class GeneralizationGR extends LinkGR {
         generalization = gener;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Generalization getGeneralization() {
         return generalization;
     }

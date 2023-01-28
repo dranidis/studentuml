@@ -56,6 +56,11 @@ public abstract class EdgeGR extends GraphicalElement {
 
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+     */        
     public Edge getEdge() {
         return edge;
     }

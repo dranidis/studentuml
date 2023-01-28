@@ -69,12 +69,22 @@ public class Association implements Serializable, IXMLCustomStreamable {
         showArrow = show;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         if (name == null)
             return "";
         return name.trim();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public int getDirection() {
         return direction;
     }
@@ -95,10 +105,20 @@ public class Association implements Serializable, IXMLCustomStreamable {
         return roleB;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getClassA() {
         return roleA.getReferredClass();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getClassB() {
         return roleB.getReferredClass();
     }

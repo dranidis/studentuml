@@ -33,6 +33,11 @@ public abstract class NodeComponent {
 
     public abstract Iterator<NodeComponent> createIterator();
 
+    /*
+    * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+    *
+    * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+    */    
     public String getName() {
         throw new UnsupportedOperationException("getName() not supported");
     }
@@ -86,6 +91,11 @@ public abstract class NodeComponent {
      */
     public abstract int getNumberOfNodeComponents();
 
+    /*
+    * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+    *
+    * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+    */
     public abstract NodeComponent getNodeComponent(int index);
 
     @Override
@@ -101,6 +111,22 @@ public abstract class NodeComponent {
     @Override
     public NodeComponent clone() {
         throw new UnsupportedOperationException("The clone() is not supported!");
+    }
+
+    /*
+     * This method is used in the persistency module
+     */
+    /*
+    * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+    *
+    * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+    */  
+    public String getContextHash() {
+        if (context == DEFAULT_CONTEXT) {
+            return "HashNULL";
+        } else {
+            return "Hash" + context.hashCode();
+        }
     }
 
 }

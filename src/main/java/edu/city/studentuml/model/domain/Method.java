@@ -106,6 +106,11 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         return genericOperation;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public String getName() {
         return genericOperation.getName();
     }
@@ -122,6 +127,11 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         return returnType;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Vector<MethodParameter> getParameters() {
         return parameters;
     }
@@ -197,6 +207,11 @@ public class Method implements Serializable, IXMLCustomStreamable, Copyable<Meth
         return " : " + returnType.getName();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     @JsonIgnore
     public String getReturnTypeAsString() {
         return returnType.getName();

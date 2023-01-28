@@ -16,6 +16,11 @@ public abstract class RoleClassifier implements Serializable {
         classifier = c;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public String getName() {
         return name;
     }

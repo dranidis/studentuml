@@ -26,4 +26,10 @@ public class DestroyMessage extends SDMessage implements IXMLCustomStreamable {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
     }
+
+    @Override
+    public String getName() {
+        
+        return "destroy";
+    }
 }

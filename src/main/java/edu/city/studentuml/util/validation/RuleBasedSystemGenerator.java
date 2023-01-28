@@ -59,7 +59,7 @@ public class RuleBasedSystemGenerator {
     }
 
     private void addRulesRecursive(Object object, Class<?> templateClass, Vector<String> factList, Map<String, Vector<ConsistencyCheckerFact>> template) {
-        logger.finer("Recursive Adding rule for class: " + templateClass.getSimpleName());
+        logger.finest("Recursive Adding rule for class: " + templateClass.getSimpleName());
 
         String className = templateClass.getSimpleName();
         Vector<ConsistencyCheckerFact> factsforClass = template.get(className);
