@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,13 @@ import java.util.logging.Logger;
 import edu.city.studentuml.view.gui.CollectionTreeModel;
 
 public class ConsistencyChecker {
+
+    private boolean useMockAPI = false;
     
+    public void setPrologAPI(boolean useMockAPI) {
+        this.useMockAPI = useMockAPI;
+    }
+
     private static final String SIMPLIFICATION_STR = "$";
     private static final String FACT_STR = ":-";
     private static final char COMMENT_CHAR = '#';
@@ -28,7 +33,19 @@ public class ConsistencyChecker {
     private static final Logger logger = Logger.getLogger(ConsistencyChecker.class.getName());
 
     private RuleBasedSystemGenerator rbsg = new RuleBasedSystemGenerator();
-    protected RuleBasedEngine rbs = new RuleBasedEngine();
+    protected RuleBasedEngine rbs = new RuleBasedEngine(makePrologAPI());
+    private PrologAPI prologAPI;
+
+    private PrologAPI makePrologAPI() {
+         
+        if (useMockAPI) {
+            this.prologAPI = new PrologAPIMock();
+        } else {
+            this.prologAPI = new JLogPrologAPIAdapter();
+        }
+        return this.prologAPI;           
+    }
+
     protected Map<String, Vector<ConsistencyCheckerFact>> factTemplates = new HashMap<>();
     protected Vector<String> simplifications = new Vector<>();
     protected List<Rule> rules = new ArrayList<>();
@@ -144,7 +161,7 @@ public class ConsistencyChecker {
     * 
     */
     public boolean checkState(Set<Object> objects, String executeRule, Set<String> messageTypes, CollectionTreeModel messages, CollectionTreeModel facts) {
-        rbs = new RuleBasedEngine();
+        rbs = new RuleBasedEngine(makePrologAPI());
 
         Vector<String> factsList = new Vector<>();
 
@@ -169,10 +186,10 @@ public class ConsistencyChecker {
             logger.finer("RULE: " + rule.getName());
 
             String res = "all";
-            Hashtable<String, Hashtable<String, ?>> rez = (Hashtable<String,  Hashtable<String, ?>>) rbs.checkRule(rule.getexpression(), res.equals(rule.getresult()));
+            Map<String, Map<String, ?>> rez = rbs.checkRule(rule.getexpression(), res.equals(rule.getresult()));
             
             if (rez != null) {
-                logger.finer("Solutions: " + rez.keySet().size());
+                logger.finer(() ->"Solutions: " + rez.keySet().size());
 
                 Iterator<String> solutionIterator = rez.keySet().iterator();
                 while (solutionIterator.hasNext()) {
@@ -199,4 +216,8 @@ public class ConsistencyChecker {
 
         return false;
     }
+
+public String getAllQueriesString() {
+    return prologAPI.getAllQueriesString();
+}
 }
