@@ -1,24 +1,18 @@
 package edu.city.studentuml.util;
 
-import java.awt.Desktop;
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.event.HyperlinkEvent;
 import org.json.JSONObject;
 
 import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.view.gui.components.HTMLEditorPane;
 
 public class NewversionChecker {
     private static final Logger logger = Logger.getLogger(NewversionChecker.class.getName());
@@ -34,8 +28,11 @@ public class NewversionChecker {
     public static void checkForNewVersion(StudentUMLFrame frame) {
         if (thereIsANewVersion() && !currentVersionIsSnapShot()) {
             showNewVersionDialog(frame);
+        } else {
+            showOKVersionDialog(frame);
         }
     }
+
 
     public static boolean thereIsANewVersion() {
         logger.info(() -> "CURRENT VERSION: " + CURRENT_VERSION);
@@ -56,7 +53,7 @@ public class NewversionChecker {
      * 
      * @return
      */
-    private static String getCurrentVersion() {
+    public static String getCurrentVersion() {
         InputStream inputStream = NewversionChecker.class.getClassLoader().getResourceAsStream("my.properties");
         Properties properties = new Properties();
         try {
@@ -98,7 +95,7 @@ public class NewversionChecker {
         URL url;
         HttpURLConnection con;
         int status;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
 
         try {
             url = new URL(JSON_URL);
@@ -125,34 +122,13 @@ public class NewversionChecker {
     }
 
     private static void showNewVersionDialog(StudentUMLFrame frame) {
-        // for copying style
-        JLabel label = new JLabel();
-        Font font = label.getFont();
-
-        // create some css from the label's font
-        StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
-        style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
-        style.append("font-size:" + font.getSize() + "pt;");
-
-        // html content
-        JEditorPane editorPane = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
-                + "A new version is available for download at <a href=\"" + DOWNLOAD_URL + "\">" + DOWNLOAD_URL + "</a>" //
+        HTMLEditorPane.showHTMLbody(frame, "A new version is available for download at <a href=\"" + DOWNLOAD_URL + "\">" + DOWNLOAD_URL + "</a>" //
                 + "</body></html>");
-
-        // handle link events
-        editorPane.addHyperlinkListener(e -> {
-            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-                try {
-                    Desktop.getDesktop().browse(e.getURL().toURI());
-                } catch (IOException | URISyntaxException e1) {
-                    e1.printStackTrace();
-                }
-
-        });
-        editorPane.setEditable(false);
-        editorPane.setBackground(label.getBackground());
-
-        JOptionPane.showMessageDialog(frame, editorPane);
     }
+
+    private static void showOKVersionDialog(StudentUMLFrame frame) {
+        HTMLEditorPane.showHTMLbody(frame, "You are already using the latest version.");
+    }
+
 
 }

@@ -31,6 +31,8 @@ public class MenuBar {
 
     private static final Logger logger = Logger.getLogger(MenuBar.class.getName());
 
+    private static final boolean SHOW_CONSISTENCY_CHECKING_MENU = false;
+
     ApplicationGUI app;
     JMenuBar jMenuBar;
 
@@ -42,6 +44,7 @@ public class MenuBar {
         this.app = app;
         createFileMenu();
         createCreateMenu();
+        jMenuBar.add(createHelpMenu());
     }
 
     public JMenuBar getjMenuBar() {
@@ -183,7 +186,6 @@ public class MenuBar {
             app.setRunTimeConsistencyCheckAndShowTabbedPane(enableRuntimeConsistencyCheckBoxMenuItem.isSelected());
         });
         enableRuntimeConsistencyCheckBoxMenuItem.setSelected(Settings.isConsistencyCheckEnabled());
-        preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
 
         JCheckBoxMenuItem showRuleEditorCheckBoxMenuItem = new JCheckBoxMenuItem();
         showRuleEditorCheckBoxMenuItem.setText("Show Rule Editor Tab");
@@ -194,7 +196,8 @@ public class MenuBar {
             app.showRuleEditorTab(showRuleEditorCheckBoxMenuItem.isSelected() && app.getRuleEditorTabPlacement() == -1);
         });
         showRuleEditorCheckBoxMenuItem.setSelected(Settings.showRules());
-        preferencesMenu.add(showRuleEditorCheckBoxMenuItem);
+
+
 
         JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
         showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
@@ -204,34 +207,43 @@ public class MenuBar {
             app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected());
         });
         showFactsTabCheckBoxMenuItem.setSelected(Settings.showFacts());
-        preferencesMenu.add(showFactsTabCheckBoxMenuItem);
 
-        preferencesMenu.addSeparator();
+
 
         JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
         simpleModeRadioButtonMenuItem.setToolTipText(
                 "<html>Disables <b>dependency relationship</b> in DCD's and does not<br/> take in consideration <b>object visibility</b> in consistency checks.</html>");
         simpleModeRadioButtonMenuItem.addActionListener(e -> app.simpleMode());
-        preferencesMenu.add(simpleModeRadioButtonMenuItem);
 
         JRadioButtonMenuItem advancedModeRadioButtonMenuItem = new JRadioButtonMenuItem("Advanced Mode", true);
         advancedModeRadioButtonMenuItem.setToolTipText(
                 "<html>Enables <b>dependency relationship</b> in DCD's and takes<br/> in consideration <b>object visibility</b> in consistency checks.</html>");
         advancedModeRadioButtonMenuItem.addActionListener(e -> app.advancedMode());
-        preferencesMenu.add(advancedModeRadioButtonMenuItem);
 
-        ButtonGroup bgroup = new ButtonGroup();
-        bgroup.add(simpleModeRadioButtonMenuItem);
-        bgroup.add(advancedModeRadioButtonMenuItem);
+        if (SHOW_CONSISTENCY_CHECKING_MENU) {
 
-        preferencesMenu.addSeparator();
+            preferencesMenu.add(enableRuntimeConsistencyCheckBoxMenuItem);
+
+            preferencesMenu.add(showRuleEditorCheckBoxMenuItem);
+            preferencesMenu.add(showFactsTabCheckBoxMenuItem);
+            preferencesMenu.add(simpleModeRadioButtonMenuItem);
+
+            preferencesMenu.addSeparator();
+            preferencesMenu.add(advancedModeRadioButtonMenuItem);
+
+            ButtonGroup bgroup = new ButtonGroup();
+            bgroup.add(simpleModeRadioButtonMenuItem);
+            bgroup.add(advancedModeRadioButtonMenuItem);
+            preferencesMenu.addSeparator();
+        }
+
 
         ButtonGroup lookAndFeelGroup = new ButtonGroup();
 
         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
             JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem(info.getName(),
                     UIManager.getLookAndFeel().getClass().getName().equals(info.getClassName()));
-            gtkLFRadioButtonMenuItem.setToolTipText("");
+            gtkLFRadioButtonMenuItem.setToolTipText("Use theme: " + info.getName());
             gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel(info.getClassName()));
             preferencesMenu.add(gtkLFRadioButtonMenuItem);
             lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
@@ -240,16 +252,16 @@ public class MenuBar {
         /*
          * Add option for Darcula theme
          */
-        JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem("Darcula",
+        JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem("Darcula (Dark)",
                 UIManager.getLookAndFeel() instanceof DarculaLaf);
-        gtkLFRadioButtonMenuItem.setToolTipText("");
+        gtkLFRadioButtonMenuItem.setToolTipText("Use theme: Darcula (Dark)");
         gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel("com.bulenkov.darcula.DarculaLaf"));
         preferencesMenu.add(gtkLFRadioButtonMenuItem);
         lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
 
-        JRadioButtonMenuItem gtkLFRadioButtonMenuItem1 = new JRadioButtonMenuItem("Lipstik",
+        JRadioButtonMenuItem gtkLFRadioButtonMenuItem1 = new JRadioButtonMenuItem("Lipstik (Light)",
                 UIManager.getLookAndFeel() instanceof LipstikLookAndFeel);
-        gtkLFRadioButtonMenuItem1.setToolTipText("");
+        gtkLFRadioButtonMenuItem1.setToolTipText("Use theme: Lipstik (Light)");
         gtkLFRadioButtonMenuItem1.addActionListener(e -> app.changeLookAndFeel("com.lipstikLF.LipstikLookAndFeel"));
         preferencesMenu.add(gtkLFRadioButtonMenuItem1);
         lookAndFeelGroup.add(gtkLFRadioButtonMenuItem1);
@@ -325,14 +337,22 @@ public class MenuBar {
         createMenu.add(newDesignClassMenuItem);
     }
 
-    // private void createHelpMenu() {
-    //     JMenu helpMenu = new JMenu();
-    //     helpMenu.setText(" Help ");
-    //     menuBar.add(helpMenu);
+    private JMenu createHelpMenu() {
+        JMenu helpMenu = new JMenu();
+        helpMenu.setText(" Help ");
 
-    //     JMenuItem getHelpMenuItem = new JMenuItem();
-    //     getHelpMenuItem.setText("Get Help");
-    //     getHelpMenuItem.addActionListener(e -> app.help());
-    //     helpMenu.add(getHelpMenuItem);
-    // }    
+        JMenuItem checkUpdatesMenuItem = new JMenuItem();
+        checkUpdatesMenuItem.setText("Check for updates...");
+        checkUpdatesMenuItem.addActionListener(e -> app.checkForUpdates());
+        helpMenu.add(checkUpdatesMenuItem);
+
+        helpMenu.addSeparator();
+
+        JMenuItem aboutMenuItem = new JMenuItem();
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(e -> app.aboutStudentUML());
+        helpMenu.add(aboutMenuItem);        
+
+        return helpMenu;
+    }    
 }

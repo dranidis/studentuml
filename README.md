@@ -25,4 +25,8 @@ mvn deploy:deploy-file -DgroupId=com.lipstikLF -DartifactId=lipstikLF -Dversion=
 mvn deploy:deploy-file -DgroupId=com.bulenkov -DartifactId=darcula -Dversion=2018.2 -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=libs/darcula.jar
 ```
 
+### Settings are saved at:
+```
+~/.java/.userPrefs/edu/city/studentuml/util/prefs.xml
+```
 
