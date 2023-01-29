@@ -453,12 +453,12 @@ public abstract class SelectionController {
                 return true;
             }
 
-            if (el instanceof CompositeUCDElementGR && selectedElement instanceof UCDComponentGR) {
-                return inCompositeUCD((CompositeUCDElementGR) el, (UCDComponentGR) selectedElement);
+            if (el instanceof CompositeUCDElementGR && selectedElement instanceof UCDComponentGR && inCompositeUCD((CompositeUCDElementGR) el, (UCDComponentGR) selectedElement)) {
+                return true;
             }
 
-            if (el instanceof CompositeNodeGR && selectedElement instanceof NodeComponentGR) {
-                return inCompositeNode((CompositeNodeGR) el, (NodeComponentGR) selectedElement);
+            if (el instanceof CompositeNodeGR && selectedElement instanceof NodeComponentGR && inCompositeNode((CompositeNodeGR) el, (NodeComponentGR) selectedElement)) {
+                return true;
             }
         }
         return false;
