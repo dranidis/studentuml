@@ -29,8 +29,14 @@ public class RuleBasedEngine {
         logger.finer(() -> "Adding clause: " + clause);
 
         if (!clauseTable.containsKey(clause)) {
-            modifyDatabase("assert", clause);
-            clauseTable.put(clause, true);
+            try {
+
+                modifyDatabase("assert", clause);
+                clauseTable.put(clause, true);
+            } catch (Exception e) {
+                logger.severe("Exception caught: clause");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -43,12 +49,8 @@ public class RuleBasedEngine {
 
     private void modifyDatabase(String action, String clause) {
         String queryString = action + "(" + clause + ").";
-        // try {
             prolog.query(queryString);
-        // } catch (Exception e) {
-        //     logger.severe("clause");
-        //     e.printStackTrace();
-        // }
+
     }
 
     public void addClauseTableToFacts(CollectionTreeModel facts) {
