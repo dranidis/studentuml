@@ -4,10 +4,13 @@
 
 - Support for Dark and Light themes
 - Choosing a personal color for diagram fills (for both dark and light themes)
+- Pressing CTRL while drawing a message in a SD only draws the call message without automatically adding the return message
+
 
 ### Fixed
 
 - Changing theme is fixed
+- Deleting elements from UCD and AD (bug when there was a System/ActivityNode element)
 
 ## 1.2.2 - 2023-01-12
 

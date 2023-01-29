@@ -44,6 +44,9 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
         setClone();
     }
 
+    /*
+     * TODO: Is it necessary to clone the domain elements???
+     */
     private void setClone() {
         if (element instanceof ConceptualClassGR) {
             clone = ((ConceptualClassGR) element).getConceptualClass().clone();
@@ -62,7 +65,7 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
                 clone = ((MultiObjectGR) element).getMultiObject().clone();
             } 
         } else {
-            logger.severe(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : " + element.toString());
+            logger.fine(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : " + element.toString());
         }
     }
 
