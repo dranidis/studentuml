@@ -1,13 +1,11 @@
 package edu.city.studentuml.util.validation;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.view.gui.CollectionTreeModel;
-import ubc.cs.JLog.Foundation.jPrologAPI;
 
 
 /**
@@ -19,9 +17,10 @@ public class RuleBasedEngine {
     private static final Logger logger = Logger.getLogger(RuleBasedEngine.class.getName());
 
     HashMap<String, Boolean> clauseTable = new HashMap<>();
-    private jPrologAPI prolog = new jPrologAPI("");
+    private PrologAPI prolog;
 
-    public RuleBasedEngine() {
+    public RuleBasedEngine(PrologAPI prolog) {
+        this.prolog = prolog;
         prolog.setFailUnknownPredicate(true);
     }
 
@@ -40,6 +39,9 @@ public class RuleBasedEngine {
         }
     }
 
+    /*
+     * currently not called
+     */
     public void removeClause(String clause) {
         modifyDatabase("retract", clause);
         if (clauseTable.containsKey(clause)) {
@@ -87,20 +89,19 @@ public class RuleBasedEngine {
      * @param allSolutions
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public synchronized Hashtable<String,  Hashtable<String, ?>> checkRule(String rule, boolean allSolutions) {
+    public synchronized Map<String,  Map<String, ?>> checkRule(String rule, boolean allSolutions) {
         if (!rule.substring(rule.length() - 1).equals(".")) {
             rule = rule + ".";
         }
 
         try {
             logger.finer("PROLOG Query: " + rule);
-            Hashtable<String,  Hashtable<String, ?>> ht = (Hashtable<String,  Hashtable<String, ?>>) prolog.query(rule);
+            Map<String,  Map<String, ?>> ht = prolog.query(rule);
             if (ht == null) {
                 return null;
             }
 
-            Hashtable<String,  Hashtable<String, ?>> results = new Hashtable<>();
+            Map<String,  Map<String, ?>> results = new HashMap<>();
 
             int index = 0;
 

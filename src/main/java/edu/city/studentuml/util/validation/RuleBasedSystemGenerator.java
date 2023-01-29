@@ -209,7 +209,9 @@ public class RuleBasedSystemGenerator {
      *
      */
     private void add(String name, Vector<String> output, Object[] objects) {
-        String result = name + "(";
+        StringBuilder sb = new StringBuilder();
+        sb.append(name + "(");
+
         boolean invalid = false;
         for (int i = 0; i < objects.length; i++) {
             String value = null;
@@ -225,7 +227,6 @@ public class RuleBasedSystemGenerator {
                         if (value.contains(".")) {
                             value = null;
                         }
-                        //System.out.println(value);
                     }
                 }
             }
@@ -238,13 +239,17 @@ public class RuleBasedSystemGenerator {
             if (value.equals("")) {
                 invalid = true;
             }
-            result = result + value;
+            sb.append(value);
+
             if (i < objects.length - 1) {
-                result = result + " , ";
+                sb.append(" , ");
             }
         }
+
+        String result = sb.toString();
+
         if (invalid) {
-            //System.out.println("Invalid statement : " + result + ")");
+            logger.severe(() -> "Invalid statement : " + result + ")");
         } else {
             output.add(result + ")");
         }

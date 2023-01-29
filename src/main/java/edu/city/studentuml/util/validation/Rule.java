@@ -2,8 +2,8 @@ package edu.city.studentuml.util.validation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -183,7 +183,7 @@ public class Rule {
      * Class designclass0 has no methods
      *
      */
-    private String getVariableTokenValue(String variableName, Hashtable<String, ?> solutions) {
+    private String getVariableTokenValue(String variableName, Map<String, ?> solutions) {
         variableName = variableName.substring(1);
         Object o = solutions.get(variableName);
 
@@ -214,7 +214,7 @@ public class Rule {
 
     }
 
-    public String messageToString(String message, Hashtable<String, ?> solutions) {
+    public String messageToString(String message, Map<String, ?> solutions) {
         StringTokenizer st = new StringTokenizer(message);
         String resultString = "";
         while (st.hasMoreTokens()) {
@@ -229,7 +229,7 @@ public class Rule {
         return resultString.trim();
     }
 
-    public String getMessage(Hashtable<String, ?> result) {
+    public String getMessage(Map<String, ?> result) {
         if (message != null) {
             return messageToString(message, result);
         } else {
@@ -287,7 +287,7 @@ public class Rule {
      *  using RTTI
      *
      */
-    private int runAction(String actionName, Hashtable<String, ?> results) {
+    private int runAction(String actionName, Map<String, ?> results) {
 
         StringTokenizer t = new StringTokenizer(actionName, "().,");
 
@@ -358,7 +358,7 @@ public class Rule {
      * runs runAction(action1),runAction(action2).....
      *
      */
-    public boolean executeAction(Hashtable<String, ?> results) {
+    public boolean executeAction(Map<String, ?> results) {
         //FIXME:TO HANDLE AT HIGHEST LEVEL BUT WITHOUT EXCEPTION
         if (action.equals("") || action == null) {
             JOptionPane.showMessageDialog(null, "No repair action defined for rule: " + ruleName, "", JOptionPane.INFORMATION_MESSAGE);

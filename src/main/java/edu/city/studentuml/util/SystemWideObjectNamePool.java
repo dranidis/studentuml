@@ -151,7 +151,12 @@ public class SystemWideObjectNamePool extends Observable {
 
     public void createNewConsistencyCheckerAndReloadRules() {
         consistencyChecker = new ConsistencyChecker(ruleFile);
+
+        consistencyChecker.setPrologAPI(false);
+
         reload();
+
+        logger.fine(consistencyChecker.getAllQueriesString());
     }
 
     @SuppressWarnings("unchecked")
