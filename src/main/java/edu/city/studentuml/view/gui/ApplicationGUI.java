@@ -180,7 +180,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         initializeRules();
         SystemWideObjectNamePool.getInstance().addObserver(this);
         setUserId();
-        createLookAndFeel();
         addKeyListener(this);
         createInterface();
     }
@@ -204,10 +203,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else {
             SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
         }
-    }
-
-    private void createLookAndFeel() {
-
     }
 
     private void createInterface() {
