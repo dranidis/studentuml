@@ -30,10 +30,20 @@ public class Aggregation extends Association {
         isStrong = composition;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getWhole() {
         return getClassA();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getPart() {
         return getClassB();
     }

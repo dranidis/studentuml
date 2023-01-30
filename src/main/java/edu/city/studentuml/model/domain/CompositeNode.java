@@ -12,9 +12,9 @@ public abstract class CompositeNode extends NodeComponent {
 
     private List<NodeComponent> nodeComponents;
 
-    public CompositeNode(String name) {
+    protected CompositeNode(String name) {
         super(name);
-        nodeComponents = new ArrayList<NodeComponent>();
+        nodeComponents = new ArrayList<>();
     }
 
     @Override
@@ -38,7 +38,7 @@ public abstract class CompositeNode extends NodeComponent {
     }
 
     @Override
-    public Iterator createIterator() {
+    public Iterator<NodeComponent> createIterator() {
         return new CompositeNodeIterator(nodeComponents.iterator());
     }
 

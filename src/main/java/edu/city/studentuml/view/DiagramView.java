@@ -1,13 +1,6 @@
 package edu.city.studentuml.view;
 
-import edu.city.studentuml.model.graphical.LinkGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.util.ScaleRound;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,12 +9,20 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
+
+import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
+import edu.city.studentuml.util.Colors;
+import edu.city.studentuml.util.ScaleRound;
+import edu.city.studentuml.util.Theme;
 
 public abstract class DiagramView extends JPanel implements Observer {
 
@@ -42,6 +43,8 @@ public abstract class DiagramView extends JPanel implements Observer {
     private int maxWidth;
     private int maxHeight;
 
+    protected ReentrantLock lock = new ReentrantLock();
+    
     protected DiagramView(DiagramModel m) {
         model = m;
 
@@ -49,7 +52,6 @@ public abstract class DiagramView extends JPanel implements Observer {
             m.addObserver(this);
         }
 
-        setBackground(Color.white);
         setDoubleBuffered(true);
    }
 
@@ -151,11 +153,21 @@ public abstract class DiagramView extends JPanel implements Observer {
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setBackground(Color.white);
+
+        /*
+         * set the background color before clearing
+         */
+        if (Theme.isDark()) {
+            g.setBackground(Colors.BLACK);
+        } else {
+            g.setBackground(Colors.WHITE);
+        }
+
         g.clearRect(0, 0, imageWidth, imageHeight);
 
         // maintain aspect ratio by using the same scale for x and y
         g.scale(scalex, scaley);
+
 
         // call method drawDiagram to draw the uml elements on the image
         drawDiagram(g);
@@ -164,25 +176,26 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     public void drawDiagram(Graphics2D g) {
-        SystemWideObjectNamePool.drawLock.lock();
+        lock.lock();
 
         // First draw all the LinkGR elements
         model.getGraphicalElements().stream()
                 .filter(LinkGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
-        // .. and then everything else
         model.getGraphicalElements().stream()
-                .filter(ge -> ! (ge instanceof LinkGR))
+                .filter(UMLNoteGR.class::isInstance)
                 .forEach(ge -> ge.draw(g));
 
-
-
+        // .. and then everything else
+        model.getGraphicalElements().stream()
+                .filter(ge -> !(ge instanceof LinkGR) && !(ge instanceof UMLNoteGR))
+                .forEach(ge -> ge.draw(g));
         
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
 
-        SystemWideObjectNamePool.drawLock.unlock();
+        lock.unlock();
     }
 
     /**
@@ -206,12 +219,11 @@ public abstract class DiagramView extends JPanel implements Observer {
     }
 
     protected void drawLineAndRectangle(Graphics2D g) {
-        g.setPaint(Color.GRAY);
         g.draw(dragLine);
 
-        float[] dashes = { 2 };
+        float[] rectangularDashes = { 2 };
 
-        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, rectangularDashes, 0));
         g.draw(dragRectangle);
     }
 

@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 
@@ -9,6 +8,7 @@ import org.w3c.dom.Element;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * @author Ervin Ramollari
@@ -19,17 +19,22 @@ public class CallMessageGR extends SDMessageGR {
         super(from, to, message, y);
     }
 
-    public Stroke getStroke() {
-        return new BasicStroke();
+    @Override
+    protected Stroke makeMessageStroke() {
+        return GraphicsHelper.makeSolidStroke();
     }
 
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
+    }
+
+    @Override
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
-            g.drawLine(x, y, x - 8, y - 4);
-            g.drawLine(x, y, x - 8, y + 4);
+            GraphicsHelper.drawBlackArrowHead(x, y, 0, g);
         } else {
-            g.drawLine(x, y, x + 8, y - 4);
-            g.drawLine(x, y, x + 8, y + 4);
+            GraphicsHelper.drawBlackArrowHead(x, y, -Math.PI, g);
         }
     }
 
@@ -49,6 +54,12 @@ public class CallMessageGR extends SDMessageGR {
 
         node.setAttribute("y", Integer.toString(getY()));
 
-        streamer.streamObject(node, "message", getCallMessage());
+        streamer.streamObject(node, XMLSyntax.MESSAGE, getCallMessage());
     }
+
+    @Override
+    public boolean isReflective() {
+        return message.isReflective();
+    }
+    
 }

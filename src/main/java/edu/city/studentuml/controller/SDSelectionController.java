@@ -13,7 +13,6 @@ import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -35,17 +34,10 @@ public class SDSelectionController extends AbstractSDSelectionController {
 
     public SDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
-    }
+        editElementMapper.put(SDObjectGR.class, el -> editSDObject((SDObjectGR) el));
+        editElementMapper.put(MultiObjectGR.class, el -> editMultiObject((MultiObjectGR) el));
+        editElementMapper.put(CreateMessageGR.class, el -> editCreateMessage((CreateMessageGR) el));
 
-    public void editElement(GraphicalElement selectedElement) {
-        if (selectedElement instanceof SDObjectGR) {
-            editSDObject((SDObjectGR) selectedElement);
-        } else if (selectedElement instanceof MultiObjectGR) {
-            editMultiObject((MultiObjectGR) selectedElement);
-        } else if (selectedElement instanceof CreateMessageGR) {
-        	editCreateMessage((CreateMessageGR) selectedElement);
-        // callMessage should be after create since create is a subclass
-        } 
     }
 
     public void editSDObject(SDObjectGR object) {

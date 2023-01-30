@@ -6,8 +6,9 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.Random;
 import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -15,10 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import org.w3c.dom.Element;
-
-import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -29,19 +29,12 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     private static final Logger logger = Logger.getLogger(GraphicalElement.class.getName());
 
     protected boolean selected = false;
-    @JsonIgnore
-    protected Color fillColor;
-    @JsonIgnore
-    protected Color highlightColor;
-    @JsonIgnore
-    protected Color outlineColor;
+
     protected Point startingPoint;
     protected int width;
     protected int height;
     protected String myUid;
-    public static final Color DESKTOP_USER_COLOR = Color.yellow;
-
-    private Random r = new Random();
+    public static final Color DESKTOP_USER_COLOR = new Color(220, 170, 100);
 
     @JsonIgnore
     public Rectangle2D getBounds() {
@@ -50,7 +43,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
 
     private String getMyUid() {
         if (myUid == null) {
-            myUid = SystemWideObjectNamePool.uid;
+            myUid = SystemWideObjectNamePool.getInstance().getUid();
         }
         return myUid;
     }
@@ -58,22 +51,6 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     @JsonGetter("internalid")
     public String getInternalid() {
         return SystemWideObjectNamePool.getInstance().getNameForObject(this);
-    }
-
-    public Color myColor() {
-        
-        if (getMyUid() == null) {
-            logger.severe("Fixme: move my fillcolor as in classgr " + this.getClass().getName());
-            return new Color(0, 0, 0);
-        }
-        if (SystemWideObjectNamePool.userColorMap.containsKey(getMyUid())) {
-            return SystemWideObjectNamePool.userColorMap.get(getMyUid());
-        }
-        logger.fine("============= UID: " + getMyUid());
-        SystemWideObjectNamePool.userColorMap.put(getMyUid(),
-                getMyUid().equals(Constants.DESKTOP_USER) ? DESKTOP_USER_COLOR
-                        : new Color(r.nextInt(128) + 128, r.nextInt(128) + 128, r.nextInt(128) + 128));
-        return this.myColor();
     }
 
     public static Color lighter(Color sourceColor) {
@@ -107,15 +84,23 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     public Color getFillColor() {
-        return myColor();
+        return Colors.getFillColor();
+    }
+
+    public Color getBackgroundColor() {
+        return Colors.getBackgroundColor();
     }
 
     public Color getOutlineColor() {
-        return outlineColor;
+        return Colors.getOutlineColor();
     }
 
     public Color getHighlightColor() {
-        return highlightColor;
+        return Colors.getHighlightColor();
+    }
+
+    public Color getErrorColor() {
+        return Colors.getErrorColor();
     }
 
     public void setSelected(boolean sel) {
@@ -126,9 +111,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return selected;
     }
 
-    public void draw(Graphics2D g) {
-
-    }
+    public abstract void draw(Graphics2D g);
 
     public abstract void move(int x, int y);
 
@@ -143,11 +126,12 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         return minx > x && miny > y && maxx < toX && maxy < toY;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         String uid = node.getAttribute("uid");
 
         if ((uid != null) && (uid.equals(""))) {
-            uid = SystemWideObjectNamePool.uid;
+            uid = SystemWideObjectNamePool.getInstance().getUid();
         }
 
         ((GraphicalElement) instance).myUid = uid;

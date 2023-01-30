@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -8,19 +9,18 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.UMLProject;
-
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -40,10 +40,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     @JsonProperty("name")
-    protected String diagramName;
+    protected String name;
     protected DiagramInternalFrame frame;
     protected NotifierVector<GraphicalElement> graphicalElements;
-    protected Vector<GraphicalElement> selected;
+    protected List<GraphicalElement> selected;
 
     // every diagram has to have a reference to the central repository of UML
     // elements
@@ -56,13 +56,12 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     protected DiagramModel(String name, UMLProject umlp) {
-        diagramName = name;
+        this.name = name;
         graphicalElements = new NotifierVector<>();
-        selected = null;
         umlProject = umlp;
         repository = umlp.getCentralRepository();
         umlProject.addDiagram(this);
-        selected = new Vector<>();
+        selected = new ArrayList<>();
     }
 
     public void setFrame(DiagramInternalFrame diagramInternalFrame) {
@@ -182,10 +181,15 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         }
     }
 
-    public Vector<GraphicalElement> getSelectedGraphicalElements() {
+    public List<GraphicalElement> getSelectedGraphicalElements() {
         return selected;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+     */    
     public NotifierVector<GraphicalElement> getGraphicalElements() {
         return graphicalElements;
     }
@@ -194,12 +198,13 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return repository;
     }
 
-    public String getDiagramName() {
-        return diagramName;
-    }
-
-    public void setDiagramName(String name) {
-        diagramName = name;
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -263,14 +268,14 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public void setName(String name) {
-        diagramName = name;
+        this.name = name;
         modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
 
     // method that prints the diagram's name
     public String toString() {
-        return diagramName;
+        return name;
     }
 
     @Override
@@ -293,26 +298,33 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         }
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("name", getDiagramName());
+        node.setAttribute("name", getName());
         if (frame != null) {
-            String values = frame.getBounds().x + "," + frame.getBounds().y + "," + frame.getBounds().width + ","
-                    + frame.getBounds().height;
+            /*
+             * save dimensions of frame when restored (even when maximised)
+             */
+            Rectangle bounds = frame.getNormalBounds();
+            String values = bounds.x + "," + bounds.y + "," + bounds.width + "," + bounds.height;
             node.setAttribute("framex", values);
             node.setAttribute("selected", Boolean.toString(frame.isSelected()));
             node.setAttribute("iconified", Boolean.toString(frame.isIcon()));
             node.setAttribute("scale", Double.toString(frame.getView().getScale()));
             node.setAttribute("maximized", Boolean.toString(frame.isMaximum()));
+            if (frame.getParent() != null)
+                node.setAttribute("zorder", Integer.toString(frame.getParent().getComponentZOrder(frame)));
 
         }
         streamer.streamObjects(node, graphicalElements.iterator());
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
-        setDiagramName(node.getAttribute("name"));
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
+        setName(node.getAttribute("name"));
 
         graphicalElements.clear();
-        streamer.streamObjectsFrom(node, graphicalElements, instance);
+        streamer.streamChildrenFrom(node, instance);
     }
 
     public UMLProject getUmlProject() {

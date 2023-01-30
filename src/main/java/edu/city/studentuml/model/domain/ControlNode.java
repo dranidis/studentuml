@@ -8,7 +8,7 @@ package edu.city.studentuml.model.domain;
  */
 public abstract class ControlNode extends LeafNode {
 
-    public ControlNode(String name) {
+    protected ControlNode(String name) {
         super(name);
     }
 

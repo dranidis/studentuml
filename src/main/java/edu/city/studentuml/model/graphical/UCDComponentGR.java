@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.UCDComponent;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -9,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.UCDComponent;
+import edu.city.studentuml.util.Coverable;
+
 /**
  *
  * @author draganbisercic
  */
-public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR {
+public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR, Coverable {
 
     protected UCDComponent component;
     public static final UCDComponentGR DEFAULT_CONTEXT = null;
@@ -30,14 +32,10 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     }
 
     // composite pattern
-    public void add(UCDComponentGR component) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void add(UCDComponentGR component);
 
-    public void remove(UCDComponentGR component) {
-        throw new UnsupportedOperationException();
-    }
-
+    public abstract void remove(UCDComponentGR component);
+    
     public UCDComponentGR getContext() {
         return context;
     }
@@ -65,8 +63,8 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return incomingRelations.size();
     }
 
-    public Iterator<UCLinkGR> getIncomingRelations() {
-        return incomingRelations.iterator();
+    public List<UCLinkGR> getIncomingRelations() {
+        return incomingRelations;
     }
 
     public void addOutgoingLink(UCLinkGR link) {
@@ -96,6 +94,11 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public abstract Iterator<UCDComponentGR> createIterator();
 
+    /*
+    * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+    *
+    * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+    */
     public UCDComponent getComponent() {
         return component;
     }

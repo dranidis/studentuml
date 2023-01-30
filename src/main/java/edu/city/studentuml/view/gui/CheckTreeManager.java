@@ -8,12 +8,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -66,6 +67,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         return selectable;
     }
 
+    @Override
     public void mouseClicked(MouseEvent me) {
         TreePath path = tree.getPathForLocation(me.getX(), me.getY());
         if (path == null) {
@@ -188,8 +190,8 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
 
         // is path1 descendant of path2
         private boolean isDescendant(TreePath path1, TreePath path2) {
-            Object obj1[] = path1.getPath();
-            Object obj2[] = path2.getPath();
+            Object[] obj1 = path1.getPath();
+            Object[] obj2 = path2.getPath();
             for (int i = 0; i < obj2.length; i++) {
                 if (obj1[i] != obj2[i]) {
                     return false;
@@ -198,6 +200,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             return true;
         }
 
+        @Override
         public void setSelectionPaths(TreePath[] paths) {
             if (dig) {
                 throw new UnsupportedOperationException("not implemented yet!!!");
@@ -206,6 +209,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             }
         }
 
+        @Override
         public void addSelectionPaths(TreePath[] paths) {
             if (!dig) {
                 super.addSelectionPaths(paths);
@@ -219,13 +223,13 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
                 if (selectionPaths == null) {
                     break;
                 }
-                ArrayList toBeRemoved = new ArrayList();
+                ArrayList<TreePath> toBeRemoved = new ArrayList<>();
                 for (int j = 0; j < selectionPaths.length; j++) {
                     if (isDescendant(selectionPaths[j], path)) {
                         toBeRemoved.add(selectionPaths[j]);
                     }
                 }
-                super.removeSelectionPaths((TreePath[]) toBeRemoved.toArray(new TreePath[0]));
+                super.removeSelectionPaths(toBeRemoved.toArray(new TreePath[0]));
             }
 
             // if all siblings are selected then unselect them and select parent recursively
@@ -277,6 +281,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             return true;
         }
 
+        @Override
         public void removeSelectionPaths(TreePath[] paths) {
             if (!dig) {
                 super.removeSelectionPaths(paths);
@@ -297,7 +302,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         //  and selection all its descendants except given path and descendants.
         // otherwise just unselect the given path
         private void toggleRemoveSelection(TreePath path) {
-            Stack stack = new Stack();
+            Deque<TreePath> stack = new ArrayDeque<>();
             TreePath parent = path.getParentPath();
             while (parent != null && !isPathSelected(parent)) {
                 stack.push(parent);
@@ -311,7 +316,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             }
 
             while (!stack.isEmpty()) {
-                TreePath temp = (TreePath) stack.pop();
+                TreePath temp = stack.pop();
                 TreePath peekPath = stack.isEmpty() ? path : (TreePath) stack.peek();
                 Object node = temp.getLastPathComponent();
                 Object peekNode = peekPath.getLastPathComponent();
@@ -326,12 +331,12 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             super.removeSelectionPaths(new TreePath[]{parent});
         }
 
-        public Enumeration getAllSelectedPaths() {
+        public Enumeration<TreePath> getAllSelectedPaths() {
             TreePath[] treePaths = getSelectionPaths();
             if (treePaths == null) {
-                return Collections.enumeration(Collections.EMPTY_LIST);
+                return Collections.enumeration(Collections.emptyList());
             }
-            Enumeration enumer = Collections.enumeration(Arrays.asList(treePaths));
+            Enumeration<TreePath> enumer = Collections.enumeration(Arrays.asList(treePaths));
             if (dig) {
                 enumer = new PreorderEnumeration(enumer, model);
             }
@@ -348,6 +353,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             // Add a listener for when the mouse is pressed
             super.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mousePressed(MouseEvent e) {
                     grabFocus();
                     model.nextState();
@@ -383,7 +389,9 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
 
         /** No one may add mouse listeners, not even Swing! */
-        public void addMouseListener(MouseListener l) {
+        @Override
+        public synchronized void addMouseListener(MouseListener l) {
+            // empty
         }
 
         /**
@@ -468,14 +476,9 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             public void setArmed(boolean b) {
             }
 
-            public boolean isFocusTraversable() {
-                return isEnabled();
-            }
-
             /** We disable focusing on the component when it is not
              * enabled. */
             public void setEnabled(boolean b) {
-                //            setFocusable(b);
                 other.setEnabled(b);
             }
 
@@ -563,7 +566,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
     }
 
-    class ChildrenEnumeration implements Enumeration {
+    class ChildrenEnumeration implements Enumeration<TreePath> {
 
         private TreePath path;
         private TreeModel model;
@@ -580,7 +583,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             return position < childCount;
         }
 
-        public Object nextElement() {
+        public TreePath nextElement() {
             if (!hasMoreElements()) {
                 throw new NoSuchElementException();
             }
@@ -588,27 +591,27 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
     }
 
-    class PreorderEnumeration implements Enumeration {
+    class PreorderEnumeration implements Enumeration<TreePath> {
 
         private TreeModel model;
-        protected Stack stack = new Stack();
+        protected Deque<Enumeration<TreePath>> stack = new ArrayDeque<>();
 
         public PreorderEnumeration(TreePath path, TreeModel model) {
             this(Collections.enumeration(Collections.singletonList(path)), model);
         }
 
-        public PreorderEnumeration(Enumeration enumer, TreeModel model) {
+        public PreorderEnumeration(Enumeration<TreePath> enumer, TreeModel model) {
             this.model = model;
             stack.push(enumer);
         }
 
         public boolean hasMoreElements() {
-            return (!stack.empty() && ((Enumeration) stack.peek()).hasMoreElements());
+            return (!stack.isEmpty() && (stack.peek()).hasMoreElements());
         }
 
-        public Object nextElement() {
-            Enumeration enumer = (Enumeration) stack.peek();
-            TreePath path = (TreePath) enumer.nextElement();
+        public TreePath nextElement() {
+            Enumeration<TreePath> enumer = stack.peek();
+            TreePath path = enumer.nextElement();
 
             if (!enumer.hasMoreElements()) {
                 stack.pop();

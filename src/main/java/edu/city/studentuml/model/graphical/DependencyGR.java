@@ -1,18 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * @author Ervin Ramollari
@@ -21,125 +20,62 @@ import edu.city.studentuml.util.XMLStreamer;
 public class DependencyGR extends LinkGR {
 
     // the graphical classes that the dependency line connects in the diagram
-    @JsonProperty("from")
-    private ClassGR classA;
-    @JsonProperty("to")
-    private ClassGR classB;
     private Dependency dependency;
-
-    protected ClassifierGR getClassifierA() {
-        return this.classA;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.classB;
-    }
 
     public DependencyGR(ClassGR a, ClassGR b, Dependency dep) {
         super(a, b);
-        classA = a;
-        classB = b;
         dependency = dep;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
     }
 
-    public int getTopLeftXA() {
-        return (int) classA.getStartingPoint().getX();
+    @Override
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        GraphicsHelper.drawSimpleArrowHead(bX, bY, rotationAngle, g);
     }
 
-    public int getTopLeftXB() {
-        return (int) classB.getStartingPoint().getX();
+    @Override
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeDashedStroke();
     }
 
-    public int getTopLeftYA() {
-        return (int) classA.getStartingPoint().getY();
-    }
-
-    public int getTopLeftYB() {
-        return (int) classB.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return classA.getWidth();
-    }
-
-    public int getWidthB() {
-        return classB.getWidth();
-    }
-
-    public int getHeightA() {
-        return classA.getHeight();
-    }
-
-    public int getHeightB() {
-        return classB.getHeight();
-    }
-
-    public void draw(Graphics2D g) {
-        classA.refreshDimensions(g);
-        classB.refreshDimensions(g);
-
-        super.draw(g);
-
-        int xA = getXA();
-        int yA = getYA();
-        int xB = getXB();
-        int yB = getYB();
-
-        Stroke originalStroke = g.getStroke();
-
-        // the pattern of dashes for drawing the dependency line
-        float dashes[] = { 8 };
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(xA, yA, xB, yB);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawDependencyArrowHead(xB, yB, rotationAngle, g);
-    }
-
-    public void drawDependencyArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-        g.drawLine(-8, -4, 0, 0);
-        g.drawLine(-8, 4, 0, 0);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+    @Override
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     // dependency cannot be reflective
+    @Override
     public boolean isReflective() {
         return false;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Dependency getDependency() {
         return dependency;
     }
 
+    @JsonProperty("from")
     public ClassGR getClassA() {
-        return classA;
+        return (ClassGR) a;
     }
 
+    @JsonProperty("to")
     public ClassGR getClassB() {
-        return classB;
+        return (ClassGR) b;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classA));
-        node.setAttribute("classb", SystemWideObjectNamePool.getInstance().getNameForObject(classB));
+        node.setAttribute(XMLSyntax.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute(XMLSyntax.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "dependency", dependency);
     }

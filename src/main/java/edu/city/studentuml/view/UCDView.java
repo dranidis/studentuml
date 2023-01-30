@@ -1,12 +1,11 @@
 package edu.city.studentuml.view;
 
+import java.awt.Graphics2D;
+
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UCLinkGR;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.awt.Graphics2D;
-import java.util.Iterator;
 
 public class UCDView extends DiagramView {
 
@@ -18,35 +17,22 @@ public class UCDView extends DiagramView {
     public void drawDiagram(Graphics2D g) {
 
         // draw links after
-        SystemWideObjectNamePool.drawLock.lock();
+        lock.lock();
 
-        Iterator<GraphicalElement> iterator = model.getGraphicalElements().iterator();
-        GraphicalElement element;
-
-        while (iterator.hasNext()) {
-            element = iterator.next();
+        for (GraphicalElement element : model.getGraphicalElements()) {
             if (element instanceof UCLinkGR) {
                 // do nothing
             } else if (element instanceof UCDComponentGR) {
                 UCDComponentGR comp = (UCDComponentGR) element;
                 comp.draw(g);
-                Iterator<UCLinkGR> incomingLinks = comp.getIncomingRelations();
-                while (incomingLinks.hasNext()) {
-                    UCLinkGR link = incomingLinks.next();
-                    link.draw(g);
-                }
 
-                Iterator<UCDComponentGR> elements = comp.createIterator();
-                while (elements.hasNext()) {
-                    UCDComponentGR el = elements.next();
+                comp.getIncomingRelations().forEach(link -> link.draw(g));
+
+                comp.createIterator().forEachRemaining(el -> {
                     el.draw(g);
+                    el.getIncomingRelations().forEach(link -> link.draw(g));
+                });
 
-                    incomingLinks = el.getIncomingRelations();
-                    while (incomingLinks.hasNext()) {
-                        UCLinkGR link = incomingLinks.next();
-                        link.draw(g);
-                    }
-                }
             } else {
                 element.draw(g);
             }
@@ -55,6 +41,6 @@ public class UCDView extends DiagramView {
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
 
-        SystemWideObjectNamePool.drawLock.unlock();
+        lock.unlock();
     }
 }

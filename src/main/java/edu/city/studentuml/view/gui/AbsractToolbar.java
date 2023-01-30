@@ -1,8 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.controller.EdgeController;
-import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
-import edu.city.studentuml.util.Constants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,7 +9,6 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -20,6 +16,12 @@ import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import edu.city.studentuml.controller.EdgeController;
+import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
+import edu.city.studentuml.util.Colors;
+import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.MyImageIcon;
 
 public abstract class AbsractToolbar extends JToolBar implements ActionListener {
 
@@ -30,13 +32,13 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
     private JToggleButton redoButton;
 
     protected JToggleButton addToolBarButton(String gif, String actionCommand, String text, ActionListener actionListener) {
-        Icon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + gif));
+        Icon icon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + gif));
         JToggleButton button = new JToggleButton(icon);
         button.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(4, 4, 4, 4)));
+                button.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
             }
 
             @Override

@@ -1,12 +1,13 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -34,8 +35,8 @@ public class PointGR extends AbstractPointGR {
     @Override
     public void draw(Graphics2D g) {
 
-        g.setStroke(new BasicStroke(1));
-        g.setPaint(outlineColor);
+        g.setStroke(GraphicsHelper.makeSolidStroke());
+        g.setPaint(getOutlineColor());
 
         Shape circle = new Ellipse2D.Double(getStartingPoint().x, getStartingPoint().y, width, height);
         g.fill(circle);

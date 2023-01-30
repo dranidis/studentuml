@@ -1,16 +1,12 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -18,144 +14,75 @@ import edu.city.studentuml.util.XMLStreamer;
 
 @JsonIncludeProperties({ "internalid", "from", "to", "generalization" })
 public class GeneralizationGR extends LinkGR {
+
     private Generalization generalization;
     // the graphical classes that the generalization line connects in the diagram
-    @JsonProperty("to")
-    private ClassifierGR superClass;
-    @JsonProperty("from")
-    private ClassifierGR baseClass;
 
     public GeneralizationGR(ClassifierGR parent, ClassifierGR child, Generalization gener) {
         super(child, parent);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        superClass = parent;
-        baseClass = child;
         generalization = gener;
     }
 
-
-    protected ClassifierGR getClassifierA() {
-        return this.baseClass;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.superClass;
-    }
-
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Generalization getGeneralization() {
         return generalization;
     }
 
+    @JsonProperty("to")
     public ClassifierGR getSuperClass() {
-        return superClass;
+        return b;
     }
 
+    @JsonProperty("from")
     public ClassifierGR getBaseClass() {
-        return baseClass;
-    }
-
-    public int getTopLeftXA() {
-        return (int) baseClass.getStartingPoint().getX();
-    }
-
-    public int getTopLeftXB() {
-        return (int) superClass.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYA() {
-        return (int) baseClass.getStartingPoint().getY();
-    }
-
-    public int getTopLeftYB() {
-        return (int) superClass.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return baseClass.getWidth();
-    }
-
-    public int getWidthB() {
-        return superClass.getWidth();
-    }
-
-    public int getHeightA() {
-        return baseClass.getHeight();
-    }
-
-    public int getHeightB() {
-        return superClass.getHeight();
+        return a;
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        baseClass.refreshDimensions(g);
-        superClass.refreshDimensions(g);
-        super.draw(g);
-
-        int baseX = getXA();
-        int baseY = getYA();
-        int superX = getXB();
-        int superY = getYB();
-
-        Stroke originalStroke = g.getStroke();
-
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(baseX, baseY, superX, superY);
-
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawGeneralizationArrowHead(superX, superY, rotationAngle, g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        GraphicsHelper.drawWhiteArrowHead(bX, bY, rotationAngle, g);
     }
 
-    public void drawGeneralizationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
+    @Override
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeSolidStroke();
+    }
 
-        GeneralPath triangle = new GeneralPath();
-
-        triangle.moveTo(0, 0);
-        triangle.lineTo(-10, -5);
-        triangle.lineTo(-10, 5);
-        triangle.closePath();
-
-        Paint originalPaint = g.getPaint();
-
-        g.setPaint(Color.white);
-        g.fill(triangle);
-        g.setPaint(originalPaint);
-        g.draw(triangle);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+    @Override
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedSolidStroke();
     }
 
     // generalizations cannot be reflective
+    @Override
     public boolean isReflective() {
         return false;
     }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
-        node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(baseClass));
-        node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(superClass));
+        node.setAttribute("base", SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("super", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "generalization", generalization);
     }
 
     @Override
     public String toString() {
-        return "" + baseClass + " ---generalization---> " + superClass;
+        return "" + a + " ---generalization---> " + b;
+    }
+
+    public void setGeneralization(Generalization generalization) {
+        this.generalization = generalization;
     }      
+    
 }

@@ -1,9 +1,18 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Point;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+import edu.city.studentuml.model.domain.Aggregation;
+import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class DCDModel extends AbstractCDModel {
 
@@ -55,10 +64,42 @@ public class DCDModel extends AbstractCDModel {
         super.addGraphicalElement(d);
     }
 
-    // add a new diagram realization
+    /**
+     * Adds the realization at the diagram model only if there is no
+     * realization graphical element from and to
+     * the same class and interface.
+     * 
+     * If the underlying domain realization already exists in the repository
+     * (from another diagram) it links the graphical element to the existing
+     * realization.
+     * 
+     * @param g
+     */
     private void addRealization(RealizationGR r) {
 
-        repository.addRealization(r.getRealization());
+        Optional<GraphicalElement> alreadyExistingGen = getGraphicalElements().stream().filter(e -> {
+            if (e instanceof RealizationGR) {
+                RealizationGR realizationGR = (RealizationGR) e;
+                if (realizationGR.getTheClass() == r.getTheClass()
+                        && realizationGR.getTheInterface() == r.getTheInterface()) {
+                    return true;
+                }
+            }
+            return false;
+        }).findFirst();
+
+        if (alreadyExistingGen.isPresent()) {
+            return;
+        }
+
+        Realization realization = r.getRealization();
+
+        // if get fails there is an existing generalization
+        if (repository.addRealization(realization) == false) {
+            // link to the already existing generalization
+            r.setRealization(repository.getRealization(realization.getTheClass(), realization.getTheInterface()));
+        }
+
         super.addGraphicalElement(r);
     }
 
@@ -133,9 +174,10 @@ public class DCDModel extends AbstractCDModel {
         return graphicalElements.stream()
                 .filter(grElement -> (grElement instanceof AssociationClassGR
                         && (((AssociationClassGR) grElement).getAssociationClass().getClassB() == c.getDesignClass()
-                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getDesignClass())))
+                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c
+                                        .getDesignClass())))
                 .collect(Collectors.toList());
-    }    
+    }
 
     public List<GraphicalElement> getClassGRRealizationGRs(ClassGR c) {
         return graphicalElements.stream()
@@ -149,8 +191,7 @@ public class DCDModel extends AbstractCDModel {
                 && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getDesignClass())
                         || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getDesignClass()))
                 .collect(Collectors.toList());
-    }    
-
+    }
 
     public List<GraphicalElement> getInterfaceGRRealizationGRs(InterfaceGR interf) {
         return graphicalElements.stream()
@@ -171,7 +212,7 @@ public class DCDModel extends AbstractCDModel {
                 && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == interf.getInterface())
                         || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == interf.getInterface()))
                 .collect(Collectors.toList());
-    }    
+    }
 
     private void removeDependency(DependencyGR d) {
         repository.removeDependency(d.getDependency());
@@ -181,6 +222,68 @@ public class DCDModel extends AbstractCDModel {
     private void removeRealization(RealizationGR r) {
         repository.removeRealization(r.getRealization());
         super.removeGraphicalElement(r);
+    }
+
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     * 
+     * @param dc
+     */
+    public void addC(DesignClass dc) {
+        SystemWideObjectNamePool.getInstance().loading();
+        Random rn = new Random();
+
+        ClassGR c = new ClassGR(dc, new Point(rn.nextInt(100), rn.nextInt(100)));
+        // add the class to the project repository first and then to the diagram
+        repository.addClass(c.getDesignClass());
+        super.addGraphicalElement(c);
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addAssoc(ClassifierGR classA, ClassifierGR classB) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        Association association = new Association(classA.getClassifier(), classB.getClassifier());
+        association.setDirection(Association.AB);
+        AssociationGR associationGR = new AssociationGR(classA, classB, association);
+
+        addAssociation(associationGR);
+
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addDep(ClassGR classA, ClassGR classB) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        Dependency dependency = new Dependency(classA.getDesignClass(), classB.getDesignClass());
+        DependencyGR dependencyGR = new DependencyGR(classA, classB, dependency);
+
+        addDependency(dependencyGR);
+
+        SystemWideObjectNamePool.getInstance().done();
+    }
+
+    /**
+     * Called by REFLECTION Repair actions from consistency check
+     */
+    public void addAggreg(ClassGR whole, ClassGR part) {
+        SystemWideObjectNamePool.getInstance().loading();
+
+        // the false flag indicates that the aggregation is not strong (composition)
+        Aggregation aggregation = new Aggregation(whole.getDesignClass(), part.getDesignClass(), false);
+        aggregation.setDirection(Association.AB);
+        AggregationGR aggregationGR = new AggregationGR(whole, part, aggregation);
+
+        addAggregation(aggregationGR);
+
+        SystemWideObjectNamePool.getInstance().done();
     }
 
 }

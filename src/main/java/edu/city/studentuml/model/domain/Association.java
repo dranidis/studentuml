@@ -2,12 +2,13 @@ package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 /**
  * @author Ramollari Ervin
  */
@@ -68,12 +69,22 @@ public class Association implements Serializable, IXMLCustomStreamable {
         showArrow = show;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */
     public String getName() {
         if (name == null)
             return "";
         return name.trim();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public int getDirection() {
         return direction;
     }
@@ -94,10 +105,20 @@ public class Association implements Serializable, IXMLCustomStreamable {
         return roleB;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getClassA() {
         return roleA.getReferredClass();
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Classifier getClassB() {
         return roleB.getReferredClass();
     }
@@ -119,8 +140,8 @@ public class Association implements Serializable, IXMLCustomStreamable {
         node.setAttribute("showArrow", String.valueOf(getShowArrow()));
         node.setAttribute("labelDirection", Integer.toString(getLabelDirection()));
 
-        streamer.streamObject(node, "rolea", roleA);
-        streamer.streamObject(node, "roleb", roleB);
+        streamer.streamObject(node, XMLSyntax.ROLEA, roleA);
+        streamer.streamObject(node, XMLSyntax.ROLEB, roleB);
     }
 
     public Association clone() {

@@ -1,8 +1,9 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.LeafNode;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
+
+import edu.city.studentuml.model.domain.LeafNode;
 
 /**
  *
@@ -17,18 +18,18 @@ public abstract class LeafNodeGR extends NodeComponentGR {
     /*
      * Returns the number of node components contained
      */
-    public int getNumberOfNodeComponents() {
+    public int getNumberOfElements() {
         return 0;
     }
 
-    public NodeComponentGR getNodeComponent(int index) {
+    public NodeComponentGR getElement(int index) {
         throw new IndexOutOfBoundsException("Index: " + index +
                 ", Size: " + 0);
     }
 
     @Override
-    public Iterator createIterator() {
-        return new NullGRIterator();
+    public Iterator<NodeComponentGR> createIterator() {
+        return new NullGRIterator<>();
     }
 
     public boolean contains(NodeComponentGR otherNodeComponent) {

@@ -1,11 +1,12 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  * 
@@ -14,6 +15,8 @@ import org.w3c.dom.Element;
 public class Role implements Serializable, IXMLCustomStreamable {
 
     private String roleName;
+    private String defaultName = "";
+
     private String multiplicity;
     private Classifier referredClass;
 
@@ -32,7 +35,6 @@ public class Role implements Serializable, IXMLCustomStreamable {
         multiplicity = mult;
     }
 
-    // 'get' methods
     public String getName() {
         if (roleName == null)
             return "";
@@ -76,5 +78,21 @@ public class Role implements Serializable, IXMLCustomStreamable {
         }
 
         return copyRole;
+    }
+
+    public String getDefaultName() {
+        return defaultName;
+    }
+
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
+    }
+
+    public String getDerivedName() {
+        if (getName().equals("")) {
+            return defaultName;
+        } else {
+            return roleName;
+        }
     }
 }

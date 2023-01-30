@@ -1,10 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ExtensionPoint;
-import edu.city.studentuml.model.domain.UseCase;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -15,7 +10,13 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ExtensionPoint;
+import edu.city.studentuml.model.domain.UseCase;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -41,16 +42,10 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         width = MIN.width;
         height = MIN.height;
-
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = myColor();
     }
 
     @Override
     public void draw(Graphics2D g) {
-
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -59,24 +54,24 @@ public class UseCaseGR extends LeafUCDElementGR {
         int startingY = getY();
 
         // paint use case
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fillOval(startingX, startingY, width, height);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the use case
         g.drawOval(startingX, startingY, width, height);
 
         if (getNumberOfExtensionPoints() == 0) {
             // draw use case name
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
             String useCaseName = getComponent().getName();
             if (useCaseName == null || useCaseName.length() == 0) {
                 useCaseName = " ";
@@ -96,13 +91,12 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private int getNumberOfExtensionPoints() {
         int counter = 0;
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
                 counter = counter + extend.getNumberOfExtensionPoints();
-            }
+            }            
         }
 
         return counter;
@@ -110,7 +104,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private void drawUseCaseNameAndExtensionPoints(Graphics2D g) {
         // draw line
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.drawLine(getX(), getY() + height / 2, getX() + width, getY() + height / 2);
 
         // draw use case name
@@ -144,9 +138,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         // get the largest width of all extension points
         int largest = 0;
 
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -165,9 +157,8 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         // draw extension points
         g.setFont(extensionPointFont);
-        i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -234,9 +225,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         }
 
         // check every extension string
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -253,6 +242,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                     }
                 }
             }
+
         }
 
         width = (int) (newWidth * multiplier);
@@ -288,9 +278,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         newHeight += ((int) bounds.getHeight()) + VGAP_BETWEEN_EXTENSION_POINTS;
 
-        Iterator<UCLinkGR> i = getIncomingRelations();
-        while (i.hasNext()) {
-            UCLinkGR link = i.next();
+        for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
@@ -323,7 +311,7 @@ public class UseCaseGR extends LeafUCDElementGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

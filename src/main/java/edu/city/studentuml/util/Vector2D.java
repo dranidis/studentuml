@@ -16,6 +16,11 @@ public class Vector2D {
         y = yy;
     }
 
+    public Vector2D(int xx, int yy) {
+        x = xx;
+        y = yy;
+    }
+
     public Vector2D multiply(double scalar) {
         return new Vector2D(x * scalar, y * scalar);
     }

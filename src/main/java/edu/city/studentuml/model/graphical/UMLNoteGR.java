@@ -1,10 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -23,6 +18,10 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+
 public class UMLNoteGR extends GraphicalElement {
     private static final Logger logger = Logger.getLogger(UMLNoteGR.class.getName());
 
@@ -35,6 +34,8 @@ public class UMLNoteGR extends GraphicalElement {
     private static final int MINWIDTH = 50;
     private static final Font nameFont = new Font("SansSerif", Font.PLAIN, 10);
 
+    private static final int ENVELOPE_DISTANCE = 8;
+
     public UMLNoteGR(String textualContent, GraphicalElement connectedTo, Point start) {
         if (connectedTo == null) {
             logger.severe(() -> "Note: " + textualContent + " at Point: " + start.getX() + ", " + start.getY() + " not connected to an element!");
@@ -45,9 +46,6 @@ public class UMLNoteGR extends GraphicalElement {
 
         width = MAXWIDTH;
         height = 50;
-        fillColor = null;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
 
         paddingHorizontal = 10;
         paddingVertical = 15;
@@ -56,65 +54,55 @@ public class UMLNoteGR extends GraphicalElement {
     @Override
     public void draw(Graphics2D g) {
 
-        if (fillColor == null) {
-            fillColor = GraphicalElement.lighter(this.myColor());
-        }
-
         // refresh dimensions; first calculate width and then height based on width
         this.width = calculateWidth(g);
         this.height = calculateHeight(g);
 
-        super.draw(g);
-
         // REPLACE super.draw(g) because only UMLNoteGR should show user
         g.setFont(new Font("SansSerif", Font.PLAIN, 8));
         
-        if (!this.myUid.equals(Constants.DESKTOP_USER)) {
-            g.drawString("user: " + this.myUid, getX(), getY() - 5);
-        }
-
-        g.setStroke(new BasicStroke(0.3f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Rectangle2D toBounds = to.getBounds();
 
         // Draw connecting line
-        float[] dashes = {8};
-        g.setStroke(new BasicStroke(0.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
+        
+        g.setStroke(GraphicsHelper.makeDashedStroke());
         g.drawLine(getX() + getWidth() / 2, getY() + getHeight() / 2, (int) toBounds.getCenterX(), (int) toBounds.getCenterY());
 
         // Draw note shape
         GeneralPath shape = new GeneralPath();
         shape.moveTo(getX(), getY());
-        shape.lineTo(getX() + getWidth() - 15.0, getY());
-        shape.lineTo(getX() + getWidth() + 0.0, getY() + 15.0);
+        shape.lineTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY());
+        shape.lineTo(getX() + getWidth() + 0.0, getY() + ENVELOPE_DISTANCE);
         shape.lineTo(getX() + getWidth() + 0.0, getY() + getHeight() + 0.0);
         shape.lineTo(getX(), getY() + getHeight() + 0.0);
         shape.closePath();
 
-        shape.moveTo(getX() + getWidth() - 15.0, getY());
-        shape.lineTo(getX() + getWidth() - 15.0, getY() + 15.0);
-        shape.lineTo(getX() + getWidth() + 0.0, getY() + 15.0);
+        shape.moveTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY());
+        shape.lineTo(getX() + getWidth() - ENVELOPE_DISTANCE, getY() + ENVELOPE_DISTANCE);
+        shape.lineTo(getX() + getWidth() + 0.0, getY() + ENVELOPE_DISTANCE);
 
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // Draw the text
         Point pen = new Point(getX(), getY() + paddingVertical);
-        g.setColor(outlineColor);
+        g.setColor(getOutlineColor());
         
         String noteText = getNoteText();
         String[] lines = noteText.split("\\R");
@@ -234,7 +222,7 @@ public class UMLNoteGR extends GraphicalElement {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

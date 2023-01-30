@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.NodeComponent;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -8,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.city.studentuml.model.domain.NodeComponent;
+import edu.city.studentuml.util.Coverable;
+
 /**
  *
  * @author Biser
  */
-public abstract class NodeComponentGR extends GraphicalElement {
+public abstract class NodeComponentGR extends GraphicalElement implements Coverable {
 
     protected NodeComponent component;
     public static final NodeComponentGR DEFAULT_CONTEXT = null;
@@ -88,9 +90,9 @@ public abstract class NodeComponentGR extends GraphicalElement {
     /*
      * Returns the number of node components contained
      */
-    public abstract int getNumberOfNodeComponents();
+    public abstract int getNumberOfElements();
 
-    public abstract NodeComponentGR getNodeComponent(int index);
+    public abstract NodeComponentGR getElement(int index);
 
     public abstract Iterator<NodeComponentGR> createIterator();
 

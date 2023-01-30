@@ -1,8 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.SDMessage;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -16,7 +13,11 @@ import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.SDMessage;
+
 public abstract class SDMessageGR extends GraphicalElement {
+    
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
     // the message concept this graphical element refers to
@@ -26,15 +27,23 @@ public abstract class SDMessageGR extends GraphicalElement {
     protected RoleClassifierGR target;
     private String errorMessage;
 
-    // of the x and y coordinates, only y is significant, since
-    // the x coordinate is derived from the x coordinates of source and target
+    private Color outlineColor;
+
+    /**
+     * of the x and y coordinates, only y is significant, since the x coordinate is
+     * derived from the x coordinates of source and target
+     * 
+     * @param from
+     * @param to
+     * @param m
+     * @param y
+     */
     protected SDMessageGR(RoleClassifierGR from, RoleClassifierGR to, SDMessage m, int y) {
         source = from;
         target = to;
         message = m;
         startingPoint = new Point(0, y);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
         messageFont = new Font("SansSerif", Font.PLAIN, 12);
     }
 
@@ -58,11 +67,11 @@ public abstract class SDMessageGR extends GraphicalElement {
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(makeSelectedMessageStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(makeMessageStroke());
+            g.setPaint(getOutlineColor());
         }
 
         int startingX = getStartingX();
@@ -70,22 +79,18 @@ public abstract class SDMessageGR extends GraphicalElement {
         
         if (!message.isReflective()) {
             boolean forward = (endingX > startingX);
-            if(!forward) 
+            if (!forward) 
                 startingX -= barWidth;
             
             if (!(message instanceof CreateMessage)) {
-            if(forward)
-                endingX -= barWidth/2;
-            else
-                endingX += barWidth/2;                
+                if (forward)
+                    endingX -= barWidth / 2;
+                else
+                    endingX += barWidth / 2;
             }
 
-            g.setStroke(getStroke());
             g.drawLine(startingX, getY(), endingX, getY());
             
-            // restore the original stroke
-            g.setStroke(originalStroke);
-
             // the arrowhead points to the right if the target role classifier
             // is further to the right (greater x)
 
@@ -97,7 +102,7 @@ public abstract class SDMessageGR extends GraphicalElement {
                 g.drawLine(endingX - 15, getY() + 20, endingX + 15, getY() - 20);
             }
 
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
 
             // draw the message string by calling the polymorphic method toString()
             g.setFont(messageFont);
@@ -117,8 +122,6 @@ public abstract class SDMessageGR extends GraphicalElement {
             }
         } else { // handle reflective message rendering 'ad-hoc'
         
-            g.setStroke(getStroke());
-
             GeneralPath path = new GeneralPath();
 
             if(this instanceof CallMessageGR)
@@ -131,10 +134,8 @@ public abstract class SDMessageGR extends GraphicalElement {
             path.lineTo(startingX, getY() + 15.0);
             g.draw(path);
 
-            // restore the original stroke
-            g.setStroke(originalStroke);
             drawMessageArrow(startingX, getY() + 15, false, g);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
 
             // draw the message string by calling the polymorphic method toString()
             g.setFont(messageFont);
@@ -142,9 +143,9 @@ public abstract class SDMessageGR extends GraphicalElement {
             String messageText = message.toString();
 
             g.drawString(messageText, startingX + 5, getY() - messageDY);
-
-
         }
+        // restore the original stroke
+        g.setStroke(originalStroke);
     }
 
     public boolean contains(Point2D point) {
@@ -179,9 +180,11 @@ public abstract class SDMessageGR extends GraphicalElement {
         startingPoint.setLocation(startingPoint.getX(), y);
     }
 
-    public abstract void drawMessageArrow(int x, int y, boolean forward, Graphics2D g);
+    protected abstract void drawMessageArrow(int x, int y, boolean forward, Graphics2D g);
 
-    public abstract Stroke getStroke();
+    protected abstract Stroke makeMessageStroke();
+
+    protected abstract Stroke makeSelectedMessageStroke();
 
     public SDMessage getMessage() {
         return message;
@@ -197,6 +200,17 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     void setErrorMsg(String validatedStr) {
         errorMessage = validatedStr;
+    }
+
+    public abstract boolean isReflective();
+
+    public void setOutlineColor(Color outlineColor) {
+        this.outlineColor = outlineColor;
+    }
+
+    @Override
+    public Color getOutlineColor() {
+        return this.outlineColor;
     }
 
 }

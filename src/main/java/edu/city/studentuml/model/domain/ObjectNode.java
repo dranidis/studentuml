@@ -3,19 +3,27 @@ package edu.city.studentuml.model.domain;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.StringJoiner;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
  * @author Biser
  */
 public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
+
+    private static final Logger logger = Logger.getLogger(ObjectNode.class.getName());
+
+    private static final String TYPEINSTANCE = "typeinstance";
+    private static final String TYPEID = "typeid";
 
     private Type type;
     private List<State> states; // required states of the object
@@ -91,15 +99,10 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             return "";
         }
 
-        String string = "[";
-        Iterator it = states.iterator();
-        while (it.hasNext()) {
-            State s = (State) it.next();
-            string += s.getName() + ", ";
-        }
-        string = string.trim();
-        int i = string.lastIndexOf(',');
-        return string.substring(0, i) + "]";
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        states.forEach(s -> sj.add(s.getName()));
+
+        return sj.toString();
     }
 
     @Override
@@ -116,27 +119,22 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             copyNode.setType(t);
         }
 
-        State s;
-        Iterator stateIterator = states.iterator();
-        while (stateIterator.hasNext()) {
-            s = (State) stateIterator.next();
-            copyNode.addState(s.clone());
-        }
+        states.forEach(s -> copyNode.addState(s.clone()));
 
         return copyNode;
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         String thistype = node.getAttribute("type");
-        String typeinstance = node.getAttribute("typeinstance");
-        String typeid = node.getAttribute("typeid");
+        String typeinstance = node.getAttribute(TYPEINSTANCE);
+        String typeid = node.getAttribute(TYPEID);
 
         if (thistype.equals("")) {
             type = null;
         } else {
             if (typeinstance.equals("datatype")) {
                 setType(new DataType(thistype));
-            } else if (typeinstance.equals("designclass")) {
+            } else if (typeinstance.equals(XMLSyntax.DESIGNCLASS)) {
                 if (!typeid.equals("")) {
                     DesignClass dc = (DesignClass) SystemWideObjectNamePool.getInstance().getObjectByName(typeid);
                     if (dc != null) {
@@ -157,11 +155,11 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
                     }
                 }
             } else {
-                java.lang.System.err.println("Error in ObjectNode:streamFromXML()!");
+                logger.severe("Error in ObjectNode:streamFromXML()!");
             }
         }
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "states"), new Vector(states), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "states"), this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
@@ -174,24 +172,20 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             if (t instanceof DataType) {
                 typeinstance = "datatype";
             } else if (t instanceof DesignClass) {
-                typeinstance = "designclass";
+                typeinstance = XMLSyntax.DESIGNCLASS;
                 DesignClass dc = (DesignClass) t;
-                //// dc.streamToXML(node, streamer);
-                // streamer.streamObject(node, "type", dc);
-                node.setAttribute("typeid", SystemWideObjectNamePool.getInstance().getNameForObject(dc));
+                node.setAttribute(TYPEID, SystemWideObjectNamePool.getInstance().getNameForObject(dc));
             } else if (t instanceof Interface) {
                 typeinstance = "interface";
                 Interface i = (Interface) t;
-                //// i.streamToXML(node, streamer);
-                // streamer.streamObject(node, "interface", i);
-                node.setAttribute("typeid", SystemWideObjectNamePool.getInstance().getNameForObject(i));
+                node.setAttribute(TYPEID, SystemWideObjectNamePool.getInstance().getNameForObject(i));
             }
 
-            node.setAttribute("typeinstance", typeinstance);
+            node.setAttribute(TYPEINSTANCE, typeinstance);
         } else {
             node.setAttribute("type", "");
-            node.setAttribute("typeinstance", "");
-            node.setAttribute("typeid", "");
+            node.setAttribute(TYPEINSTANCE, "");
+            node.setAttribute(TYPEID, "");
         }
 
         streamer.streamObjects(streamer.addChild(node, "states"), states.iterator());

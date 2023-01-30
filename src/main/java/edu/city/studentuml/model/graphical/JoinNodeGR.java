@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -11,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.JoinNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -19,9 +18,9 @@ import edu.city.studentuml.util.XMLStreamer;
  */
 public class JoinNodeGR extends ControlNodeGR {
 
-    private static int JOIN_WIDTH = 60;
-    private static int JOIN_HEIGHT = 10;
-    protected static int nameXOffset = 5;
+    private static final int JOIN_WIDTH = 60;
+    private static final int JOIN_HEIGHT = 10;
+    protected static final int NAME_X_OFFSET = 5;
     private Font joinFont;
 
     public JoinNodeGR(JoinNode joinNode, int x, int y) {
@@ -30,15 +29,12 @@ public class JoinNodeGR extends ControlNodeGR {
         // initialize the element's width and height to the minimum ones
         width = JOIN_WIDTH;
         height = JOIN_HEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = Color.black;
+
         joinFont = new Font("SansSerif", Font.ITALIC, 10);
     }
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -47,28 +43,28 @@ public class JoinNodeGR extends ControlNodeGR {
         int startingY = getY();
 
         // paint join node
-        g.setPaint(fillColor);
+        g.setPaint(getOutlineColor());
         g.fillRect(startingX, startingY, width, height);
 
         // draw join node
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         g.drawRect(startingX, startingY, width, height);
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw fork node string
         if (!component.toString().equals("")) {
             String decisionName = component.toString();
-            int nameX = width + nameXOffset;
+            int nameX = width + NAME_X_OFFSET;
             int nameY = height;
 
             g.setFont(joinFont);
@@ -96,7 +92,7 @@ public class JoinNodeGR extends ControlNodeGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -105,7 +101,7 @@ public class JoinNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "joinnode", (JoinNode) getComponent());
+        streamer.streamObject(node, "joinnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -1,22 +1,27 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.city.studentuml.util.validation;
 
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
  *
  * @author
  */
 public class Rule {
+
+    private static final String RULE_OPENING = "{";
+    private static final String RULE_CLOSING = "}";
+
+    private static final Logger logger = Logger.getLogger(Rule.class.getName());
 
     private String prologExpression = null;
     private String severity = null;
@@ -25,46 +30,21 @@ public class Rule {
     private String ruleName = "";
     private String action = "";
     private String helpurl = null;
-    //private ConsistencyChecker owner = null;
 
-    /*
-     * The constructor creates a rule from the text file passed in v
-     * only parses all the lines until it finds "}"
+    /**
+     * The constructor creates a rule from the List of lines
+     * parses and remove all the lines until it finds "}"
      *
      */
-    public Rule(Vector v) {
+    public Rule(List<String> lines) {
 
-        //owner = aowner;
-        //ruleName = "unnamed_rule_" + rulesSize;
-
-        StringTokenizer t = new StringTokenizer(get(v));
-        //String token = t.nextToken();
-
-        // Read FIRST LINE, which is RULE NAME, before '{' character
-        ruleName = "";
-        while (t.hasMoreTokens()) {
-            String token = t.nextToken();
-            if (token.equals("{")) {
-                break;
-            }
-            ruleName = ruleName + " " + token;
-        }
-
-        ruleName = ruleName.trim();
-
-        //if (!token.equals("{")) {
-        //ruleName = token;
-        //}
+        ruleName = getRuleName(removeFirst(lines));
 
         // READ EVERY LINE INSIDE RULE
-        while (true) {
-            String data = get(v);
-            if (data.equals("}")) {
-                break;
-            }
+        for (String line = removeFirst(lines); !line.equals(RULE_CLOSING); line = removeFirst(lines)) {
 
             // SPLIT AN INSIDE LINE BY WHITESPACES
-            t = new StringTokenizer(data);
+            StringTokenizer t = new StringTokenizer(line);
 
             // HEADER takes values 'expression', 'result', 'severity', ...
             String header = t.nextToken();
@@ -74,51 +54,61 @@ public class Rule {
             // BUILD SENTENCE after ':' character, e.g.
             // "getSDClass(_,SDclass,SD),not(getDCDClass(SDclass)),
             // class(SDclass,CLName),diagram(DCD,DCDname,dcd)"
-            String sentence = "";
+            StringBuilder sentenceBuilder = new StringBuilder();
             while (t.hasMoreTokens()) {
-                sentence = sentence + " " + t.nextToken();
+                sentenceBuilder.append(" " + t.nextToken()); 
             }
-            sentence = sentence.trim();
-
+            String sentence = sentenceBuilder.toString().trim();
 
             // invoke Rule method "set"+header, e.g. setexpression, setresult, etc.
             // through JAVA REFLECTION mechanisms
             try {
-                Method m = this.getClass().getDeclaredMethod("set" + header, new Class[]{String.class});
-                try {
-                    m.invoke(this, new Object[]{sentence});
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            } catch (SecurityException e) {
+                Method m = this.getClass().getDeclaredMethod("set" + header, String.class);
+                m.invoke(this, sentence);
             } catch (NoSuchMethodException e) {
-                System.out.println("ERROR no such method : set" + header);
-            }
+                logger.severe("ERROR no such method : set" + header);
+            } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | SecurityException e) {
+                e.printStackTrace();
+            } 
         }
+    }
+
+    private String getRuleName(String line) {
+
+        StringTokenizer t = new StringTokenizer(line);
+
+        // Read FIRST LINE, which is RULE NAME, before '{' character
+        StringBuilder nameBuilder = new StringBuilder();
+        while (t.hasMoreTokens()) {
+            String token = t.nextToken();
+            if (token.equals(RULE_OPENING)) {
+                break;
+            }
+            nameBuilder.append(" " + token);
+        }
+
+        return nameBuilder.toString().trim();
     }
 
     public String getName() {
         return ruleName;
     }
 
-    private String peek(Vector v) {
-        return (String) v.get(0);
-    }
-
     public String getAction() {
         return action;
     }
 
-    private String get(Vector v) {
-        String result = peek(v);
+    private String removeFirst(List<String> v) {
+        String first = v.get(0);
         v.remove(0);
-        return result;
+        return first;
     }
 
+    /**
+     * called by reflection
+     * 
+     * @param data
+     */
     protected void setexpression(String data) {
         prologExpression = data;
     }
@@ -127,6 +117,11 @@ public class Rule {
         return prologExpression;
     }
 
+    /**
+     * called by reflection
+     * 
+     * @param data
+     */
     protected void setresult(String data) {
         result = data;
     }
@@ -135,14 +130,29 @@ public class Rule {
         return result;
     }
 
+    /**
+     * called by reflection
+     * 
+     * @param data
+     */
     protected void setseverity(String data) {
         severity = data;
     }
 
+    /**
+     * called by reflection
+     * 
+     * @param data
+     */
     protected void setmessage(String data) {
         message = data;
     }
 
+    /**
+     * called by reflection
+     * 
+     * @param data
+     */
     protected void setaction(String data) {
         action = data;
     }
@@ -163,7 +173,7 @@ public class Rule {
         return helpurl;
     }
 
-    /*
+    /**
      * nest three methods parse the message returned after a rule has fired
      *
      * ex.
@@ -173,24 +183,24 @@ public class Rule {
      * Class designclass0 has no methods
      *
      */
-    private String getVariableTokenValue(String variableName, Hashtable solutions) {
+    private String getVariableTokenValue(String variableName, Map<String, ?> solutions) {
         variableName = variableName.substring(1);
         Object o = solutions.get(variableName);
 
         if (o instanceof Vector) {
-            String VectorString = "";
-            Vector v = (Vector) o;
+            String vectorString = "";
+            Vector<?> v = (Vector<?>) o;
 
             for (int i = 0; i < v.size(); i++) {
-                VectorString = VectorString + v.get(i).toString();
+                vectorString = vectorString + v.get(i).toString();
                 if (i < v.size() - 1) {
-                    VectorString = VectorString + ",";
+                    vectorString = vectorString + ",";
                 }
             }
 
-            VectorString = "[" + VectorString + "]";
+            vectorString = "[" + vectorString + "]";
 
-            return VectorString;
+            return vectorString;
         }
         if (o instanceof Integer) {
             return ((Integer) o).toString();
@@ -204,7 +214,7 @@ public class Rule {
 
     }
 
-    public String messageToString(String message, Hashtable solutions) {
+    public String messageToString(String message, Map<String, ?> solutions) {
         StringTokenizer st = new StringTokenizer(message);
         String resultString = "";
         while (st.hasMoreTokens()) {
@@ -219,7 +229,7 @@ public class Rule {
         return resultString.trim();
     }
 
-    public String getMessage(Hashtable result) {
+    public String getMessage(Map<String, ?> result) {
         if (message != null) {
             return messageToString(message, result);
         } else {
@@ -240,7 +250,7 @@ public class Rule {
         return s;
     }
 
-    /*
+    /**
      * runAction is applied only for one action from the action defined for the rules separated by ";"
      * for example if we have action1;action2;...;
      *
@@ -277,13 +287,13 @@ public class Rule {
      *  using RTTI
      *
      */
-    private int runAction(String actionName, Hashtable results) {
+    private int runAction(String actionName, Map<String, ?> results) {
 
         StringTokenizer t = new StringTokenizer(actionName, "().,");
 
         String objectInstanceName = t.nextToken();
         String methodName = t.nextToken();
-        Vector<String> arguments = new Vector<String>();
+        Vector<String> arguments = new Vector<>();
         while (t.hasMoreTokens()) {
             arguments.add(unEscape((String) results.get(t.nextToken())));
         }
@@ -295,12 +305,12 @@ public class Rule {
 
         Object objectInstance = null;
 
-        Vector<Object> objectArguments = new Vector<Object>();
+        Vector<Object> objectArguments = new Vector<>();
 
         synchronized (SystemWideObjectNamePool.getInstance()) {
             objectInstance = SystemWideObjectNamePool.getInstance().getObjectByName(objectInstanceName);
             for (int i = 0; i < arguments.size(); i++) {
-                System.out.println(arguments.get(i));
+                logger.finer(arguments.get(i));
                 Object fromPool = SystemWideObjectNamePool.getInstance().getObjectByName(arguments.get(i));
                 if (fromPool == null) {
                     fromPool = arguments.get(i);
@@ -320,12 +330,6 @@ public class Rule {
 
         Object[] methodParameters = objectArguments.toArray();
 
-        //FIXME: we don't need this??
-        Class[] classArray = new Class[objectArguments.size()];
-        for (int i = 0; i < methodParameters.length; i++) {
-            classArray[i] = methodParameters[i].getClass();
-        }
-
         try {
             Method[] methods = objectInstance.getClass().getMethods();
             Method m = null;
@@ -336,35 +340,25 @@ public class Rule {
                 }
             }
             if (m == null) {
-                System.out.println("Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
+                logger.severe(() -> "Invalid method name " + methodName + " for action in rule '" + ruleName + "'");
                 return 0;
             }
-            //Method m = objectInstance.getClass().getMethod(methodName, classArray);
             m.invoke(objectInstance, methodParameters);
             return 1;
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return 0;
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return 0;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return 0;
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        } 
     }
 
-    /*
+    /**
      * Calls runAction for every member of the actions which is separated by ";"
      * ex : action1;action2;actionN...
      *
      * runs runAction(action1),runAction(action2).....
      *
      */
-    public boolean executeAction(Hashtable results) {
+    public boolean executeAction(Map<String, ?> results) {
         //FIXME:TO HANDLE AT HIGHEST LEVEL BUT WITHOUT EXCEPTION
         if (action.equals("") || action == null) {
             JOptionPane.showMessageDialog(null, "No repair action defined for rule: " + ruleName, "", JOptionPane.INFORMATION_MESSAGE);
@@ -379,10 +373,5 @@ public class Rule {
 
         return rezCount > 0;
     }
-    
-//    public Hashtable check() {
-//    	String res = "all";
-//    	Hashtable rez = owner.rbs.checkRule(prologExpression,res.equals(result));
-//        return rez ;
-//    }
+
 }

@@ -1,12 +1,13 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.CompositeNode;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import edu.city.studentuml.model.domain.CompositeNode;
 
 /**
  *
@@ -40,11 +41,11 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     /*
      * Returns the number of node components contained
      */
-    public int getNumberOfNodeComponents() {
+    public int getNumberOfElements() {
         return components.size();
     }
 
-    public NodeComponentGR getNodeComponent(int index) {
+    public NodeComponentGR getElement(int index) {
         return components.get(index);
     }
 

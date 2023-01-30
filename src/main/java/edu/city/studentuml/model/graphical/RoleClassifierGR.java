@@ -1,47 +1,68 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.RoleClassifier;
-import edu.city.studentuml.model.domain.SDObject;
 import java.awt.Point;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.logging.Logger;
 
-//the inherited startingPoint refers ot the x coordinate of the center
-//and to the y coordinate of the top most point
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.RoleClassifier;
+import edu.city.studentuml.model.domain.SDObject;
+
+
+/**
+ * The inherited startingPoint refers to the x coordinate of the center and to
+ * the y coordinate of the top most point
+ */
 public abstract class RoleClassifierGR extends GraphicalElement {
 
     private static final Logger logger = Logger.getLogger(RoleClassifierGR.class.getName());
 
     public static final int MINIMUM_LIFELINE_LENGTH = 60;
-    // the default vertical distance from the top
-    // border where drawing of role classifiers starts
+
+    /**
+     * The default vertical distance from the top border where drawing of role
+     * classifiers starts
+     */
     public static final int VERTICAL_OFFSET = 20;
-    // this new variable refers to the point where the lifeline of the object ends
-    // in case it is destroyed, or for display purposes
+
+    /**
+     * Refers to the point where the lifeline of the object ends in case it is
+     * destroyed, or for display purposes
+     */
     protected int endingY;
-    // the role classifier concept this graphical element refers to
+    /**
+     * the role classifier concept this graphical element refers to
+     */
     protected RoleClassifier roleClassifier;
     
     /**
      * stacks keeping ingoing and outgoing messages for SD validation
      */
-    private Stack<RoleClassifierGR> in = new Stack<>();
-    private Stack<RoleClassifierGR> out = new Stack<>();
+    private Deque<RoleClassifierGR> in = new ArrayDeque<>();
+    private Deque<RoleClassifierGR> out = new ArrayDeque<>();
+
     /**
      * store all the Ys of messages
-     * and the activation depth at that Y
     */
     protected List<Integer> messageYs = new ArrayList<>();
+    
+    /**
+     * Stores the activation depth at Y
+     */
     protected Map<Integer, Integer> activationAt =  new HashMap<>();
 
-    // of the x and y coordinates, x is significant
-    protected RoleClassifierGR(RoleClassifier rc, int x) {
-        roleClassifier = rc;
+    /**
+     * of the x and y coordinates, x is significant
+     * @param roleClassifier
+     * @param x
+     */
+    protected RoleClassifierGR(RoleClassifier roleClassifier, int x) {
+        this.roleClassifier = roleClassifier;
         startingPoint = new Point(x, VERTICAL_OFFSET);
         endingY = VERTICAL_OFFSET + MINIMUM_LIFELINE_LENGTH;
     }
@@ -62,13 +83,19 @@ public abstract class RoleClassifierGR extends GraphicalElement {
         endingY = y;
     }
 
-    // used only to move the name box down when a create message is added
+    /**
+     * used only to move the name box down when a create message is added
+     * 
+     * @param y
+     */
     public void setBeginningY(int y) {
         startingPoint.setLocation(startingPoint.getX(), y);
     }
 
-    // override abstract method move of GraphicalElement
-    // all role classifiers respond to drag and drop events by moving only horizontally
+    /**
+     * all role classifiers respond to drag and drop events by moving only horizontally
+     */
+    @Override
     public void move(int x, int y) {
         startingPoint.setLocation(x, startingPoint.getY());
     }

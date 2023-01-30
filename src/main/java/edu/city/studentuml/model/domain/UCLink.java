@@ -1,11 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.Iterator;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -71,9 +74,12 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
         throw new UnsupportedOperationException("Not supported!");
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
+        // empty
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(source));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(target));

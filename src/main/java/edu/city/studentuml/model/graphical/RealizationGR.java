@@ -1,20 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  * @author Ervin Ramollari
@@ -24,111 +21,30 @@ public class RealizationGR extends LinkGR {
 
     // the graphical class and interface that the dependency line connects in the
     // diagram
-    private ClassGR classGR;
-    private InterfaceGR interfaceGR;
     private Realization realization;
-
-    protected ClassifierGR getClassifierA() {
-        return this.classGR;
-    }
-
-    protected ClassifierGR getClassifierB() {
-        return this.interfaceGR;
-    }
 
     public RealizationGR(ClassGR c, InterfaceGR i, Realization real) {
         super(c, i);
-        classGR = c;
-        interfaceGR = i;
         realization = real;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-    }
-
-    public int getTopLeftXA() {
-        return (int) classGR.getStartingPoint().getX();
-    }
-
-    public int getTopLeftXB() {
-        return (int) interfaceGR.getStartingPoint().getX();
-    }
-
-    public int getTopLeftYA() {
-        return (int) classGR.getStartingPoint().getY();
-    }
-
-    public int getTopLeftYB() {
-        return (int) interfaceGR.getStartingPoint().getY();
-    }
-
-    public int getWidthA() {
-        return classGR.getWidth();
-    }
-
-    public int getWidthB() {
-        return interfaceGR.getWidth();
-    }
-
-    public int getHeightA() {
-        return classGR.getHeight();
-    }
-
-    public int getHeightB() {
-        return interfaceGR.getHeight();
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        classGR.refreshDimensions(g);
-        interfaceGR.refreshDimensions(g);
+    protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
+        drawRealizationArrowHead(bX, bY, rotationAngle, g);
+    }
 
-        super.draw(g);
+    @Override
+    protected BasicStroke makeStroke() {
+        return GraphicsHelper.makeDashedStroke();
+    }
 
-        int classX = getXA();
-        int classY = getYA();
-        int interfaceX = getXB();
-        int interfaceY = getYB();
-
-        Stroke originalStroke = g.getStroke();
-
-        // the pattern of dashes for drawing the realization line
-        float[] dashes = { 8 };
-        if (isSelected()) {
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
-            g.setPaint(highlightColor);
-        } else {
-            g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0));
-            g.setPaint(outlineColor);
-        }
-
-        g.drawLine(classX, classY, interfaceX, interfaceY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-
-        double rotationAngle = getAngleRoleA();
-        drawRealizationArrowHead(interfaceX, interfaceY, rotationAngle, g);
+    @Override
+    protected BasicStroke makeSelectedStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
     }
 
     public void drawRealizationArrowHead(int x, int y, double angle, Graphics2D g) {
-        g.translate(x, y);
-        g.rotate(angle);
-
-        GeneralPath triangle = new GeneralPath();
-
-        triangle.moveTo(0, 0);
-        triangle.lineTo(-8, -4);
-        triangle.lineTo(-8, 4);
-        triangle.closePath();
-
-        Paint originalPaint = g.getPaint();
-
-        g.setPaint(Color.white);
-        g.fill(triangle);
-        g.setPaint(originalPaint);
-        g.draw(triangle);
-        g.rotate(-angle);
-        g.translate(-x, -y);
+        GraphicsHelper.drawWhiteArrowHead(x, y, angle, g);
     }
 
     // realizations cannot be reflective
@@ -142,24 +58,30 @@ public class RealizationGR extends LinkGR {
 
     @JsonProperty("from")
     public ClassGR getTheClass() {
-        return classGR;
+        return (ClassGR) a;
     }
 
     @JsonProperty("to")
     public InterfaceGR getTheInterface() {
-        return interfaceGR;
+        return (InterfaceGR) b;
     }
 
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // empty
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
 
-        node.setAttribute("classa", SystemWideObjectNamePool.getInstance().getNameForObject(classGR));
-        node.setAttribute("interfaceb", SystemWideObjectNamePool.getInstance().getNameForObject(interfaceGR));
+        node.setAttribute(XMLSyntax.CLASSA, SystemWideObjectNamePool.getInstance().getNameForObject(a));
+        node.setAttribute("interfaceb", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "realization", realization);
     }
+
+    public void setRealization(Realization realization) {
+        this.realization = realization;
+    }
+
 }

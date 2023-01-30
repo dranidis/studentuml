@@ -16,7 +16,6 @@ import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.NotifierVector;
@@ -33,6 +32,8 @@ import edu.city.studentuml.view.gui.InterfaceEditor;
 
 public class DCDSelectionController extends SelectionController {
 
+
+    
     public DCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
 
@@ -207,12 +208,6 @@ public class DCDSelectionController extends SelectionController {
         // set observable model to changed in order to notify its views
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
-    }
-
-    // TODO to be removed when all in mappers
-    @Override
-    public void editElement(GraphicalElement selectedElement) {
-        // left empty
     }
 
 }

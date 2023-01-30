@@ -4,22 +4,22 @@
 # Use $ to define simplification
 
 :- DiagramModel belongsTo(this,getGraphicalElements.this)
-:- CCDModel diagram(this,'getDiagramName',"ccd")
-:- SDModel diagram(this,'getDiagramName',"sd")
-:- DCDModel diagram(this,'getDiagramName',"dcd")
+:- CCDModel diagram(this,'getName',"ccd")
+:- SDModel diagram(this,'getName',"sd")
+:- DCDModel diagram(this,'getName',"dcd")
 
 :- Association association(this,'getName')
 :- Association assocBetween(this,getClassA,getClassB,getDirection)
-:- AssociationGR responisbleFor(getAssociation,this)
+:- AssociationGR responsibleFor(getAssociation,this)
 
 :- Aggregation aggregation(this,'getName')
 :- Aggregation aggregBetween(this,getWhole,getPart)
 
 :- Dependency dependBetween(this,getFrom,getTo)
-:- DependencyGR responisbleFor(getDependency,this)
+:- DependencyGR responsibleFor(getDependency,this)
 
 :- Generalization generBetween(this,getBaseClass,getSuperClass)
-:- GeneralizationGR responisbleFor(getGeneralization,this)
+:- GeneralizationGR responsibleFor(getGeneralization,this)
 
 :- ConceptualClass concept(this,'getName')
 :- ConceptualClassGR responsibleFor(getConceptualClass,this)

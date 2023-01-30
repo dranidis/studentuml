@@ -1,14 +1,17 @@
 package edu.city.studentuml.codegeneration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
@@ -17,11 +20,9 @@ import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.gui.ApplicationFrame;
-import org.junit.Before;
 
 public class CodeGeneratorTest {
 
@@ -33,7 +34,7 @@ public class CodeGeneratorTest {
     @Before
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
 
         umlProject = UMLProject.getInstance();
         umlProject.clear();
@@ -158,8 +159,8 @@ public class CodeGeneratorTest {
     public void testGenerateImplementInterfaceStart() {
         Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
-        dc.resetImplementInterfaces();
-        dc.addImplementInterfaces(new Interface("Int1"));
+        dc.getCcDesignClass().resetImplementInterfaces();
+        dc.getCcDesignClass().addImplementInterfaces(new Interface("Int1"));
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, dc, projectPath, umlProject);
@@ -190,7 +191,7 @@ public class CodeGeneratorTest {
         DesignClass dc = (DesignClass) classObject;
         DesignClass adc = new DesignClass("AbstractClass1");
         adc.setStereotype("abstract");
-        dc.setExtendClass(adc);
+        dc.getCcDesignClass().setExtendClass(adc);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, dc, projectPath, umlProject);
@@ -221,8 +222,8 @@ public class CodeGeneratorTest {
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
         dc.addMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
@@ -254,9 +255,9 @@ public class CodeGeneratorTest {
         DesignClass dc = (DesignClass) classObject;
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        dc.addSDMethod(mtd1);
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        dc.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -285,7 +286,7 @@ public class CodeGeneratorTest {
     public void testGenerateCoreAttribute() {
         Classifier classObject = new DesignClass("Class1");
         DesignClass dc = (DesignClass) classObject;
-        dc.addAttribute(new Attribute("attr1", new DataType("String")));
+        dc.addAttribute(new Attribute("attr1", DataType.STRING));
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -319,11 +320,11 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        headMethod.addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);
-        dc2.addSDMethod(mtd1);
+        dc2.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -335,6 +336,7 @@ public class CodeGeneratorTest {
                 FileReader fr = new FileReader(f);
                 BufferedReader br = new BufferedReader(fr);
                 while ((line = br.readLine()) != null) {
+                    System.out.println(line);
                     if (line.contains("x = sd2.mtd1(x)")) {
                         calledBranchedMethodExists = true;
                     }
@@ -356,11 +358,11 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("void"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        headMethod.addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
+        mtd1.setReturnType(DataType.VOID);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);
-        dc2.addSDMethod(mtd1);
+        dc2.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -393,11 +395,11 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        headMethod.addCalledMethod(dc, mtd1, dc2, new MultiObject("sd2Array", dc2), false);
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new MultiObject("sd2Array", dc2), false);
         dc.addMethod(headMethod);
-        dc2.addSDMethod(mtd1);
+        dc2.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -429,11 +431,11 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        headMethod.addCalledMethod(dc, mtd1, dc, new SDObject("sd1", dc), true);
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc, new SDObject("sd1", dc), true);
         dc.addMethod(headMethod);
-        dc.addSDMethod(mtd1);
+        dc.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);
@@ -466,12 +468,12 @@ public class CodeGeneratorTest {
         Method headMethod = new Method("hmtd");
         Method mtd1 = new Method("mtd1");
         mtd1.setVisibility(2);
-        mtd1.setReturnType(new DataType("int"));
-        mtd1.addParameter(new MethodParameter("x", new DataType("int")));
-        mtd1.setIterative(true);
-        headMethod.addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
+        mtd1.setReturnType(DataType.INTEGER);
+        mtd1.addParameter(new MethodParameter("x", DataType.INTEGER));
+        mtd1.getCCMethod().setIterative(true);
+        headMethod.getCCMethod().addCalledMethod(dc, mtd1, dc2, new SDObject("sd2", dc2), false);
         dc.addMethod(headMethod);
-        dc2.addSDMethod(mtd1);
+        dc2.getCcDesignClass().addSDMethod(mtd1);
         String projectPath = new File(umlProject.getFilepath()).getParent();
         CodeGenerator testGenerator = new CodeGenerator();
         String path = testGenerator.generateFile(false, classObject, projectPath, umlProject);

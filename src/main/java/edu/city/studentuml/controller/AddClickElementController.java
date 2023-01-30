@@ -33,11 +33,11 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
  */
 public abstract class AddClickElementController extends AddElementController {
 
+    private static final Logger logger = Logger.getLogger(AddClickElementController.class.getName());
+
     protected AddClickElementController(DiagramModel model, DiagramInternalFrame frame) {
         super(model, frame);
     }
-
-    private static final Logger logger = Logger.getLogger(AddClickElementController.class.getName());
 
     @Override
     public void pressed(int x, int y) {

@@ -21,10 +21,21 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
         to = b;
     }
 
+
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public DesignClass getFrom() {
         return from;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public DesignClass getTo() {
         return to;
     }

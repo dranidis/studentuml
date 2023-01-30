@@ -63,6 +63,10 @@ public abstract class AbstractSDSelectionController extends SelectionController 
      */
     @Override
     protected void setRedoCoordinates() {
+
+        if (selectedElements.isEmpty())
+            return;
+            
         int newIndexX = 0;
         int newIndexY = 0;
         for (int i = 0; i < oldXList.size(); i++) {

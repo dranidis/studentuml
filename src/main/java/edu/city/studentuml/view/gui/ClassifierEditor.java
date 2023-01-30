@@ -35,7 +35,6 @@ public abstract class ClassifierEditor extends JPanel implements ActionListener 
     protected JDialog classifierDialog;
     private boolean ok; // stores whether the user has pressed ok
 
-    private Classifier classifier;
     protected CentralRepository repository;
     private JLabel nameLabel;
     protected JPanel namePanel;
@@ -52,7 +51,6 @@ public abstract class ClassifierEditor extends JPanel implements ActionListener 
     }
 
     protected ClassifierEditor(Classifier classifier, CentralRepository cr, boolean autoComplete) {
-        this.classifier = classifier;
         repository = cr;
         this.autoComplete = autoComplete;
 

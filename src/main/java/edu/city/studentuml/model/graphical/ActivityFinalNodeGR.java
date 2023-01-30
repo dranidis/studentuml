@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ActivityFinalNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -23,12 +24,12 @@ public class ActivityFinalNodeGR extends FinalNodeGR {
 
         // paint the inner circle of the activity final node
         int delta = 6;
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.fillOval(getX() + delta, getY() + delta, width - 2 * delta, height - 2 * delta);
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -37,7 +38,7 @@ public class ActivityFinalNodeGR extends FinalNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "activityfinalnode", (ActivityFinalNode) getComponent());
+        streamer.streamObject(node, "activityfinalnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

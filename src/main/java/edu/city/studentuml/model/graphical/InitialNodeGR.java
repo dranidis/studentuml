@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
@@ -10,6 +8,7 @@ import java.awt.geom.Point2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -26,14 +25,10 @@ public class InitialNodeGR extends ControlNodeGR {
         width = 2 * RADIUS;
         height = width;
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = myColor();
     }
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -42,17 +37,17 @@ public class InitialNodeGR extends ControlNodeGR {
         int startingY = getY();
 
         // paint initial node
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.fillOval(startingX, startingY, width, height);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the initial node
         g.drawOval(startingX, startingY, width, height);
@@ -74,7 +69,7 @@ public class InitialNodeGR extends ControlNodeGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -83,7 +78,7 @@ public class InitialNodeGR extends ControlNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "initialnode", (InitialNode) getComponent());
+        streamer.streamObject(node, "initialnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

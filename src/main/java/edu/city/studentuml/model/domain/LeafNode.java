@@ -8,12 +8,12 @@ import java.util.Iterator;
  */
 public abstract class LeafNode extends NodeComponent {
 
-    public LeafNode(String name) {
+    protected LeafNode(String name) {
         super(name);
     }
 
-    public Iterator createIterator() {
-        return new NullIterator();
+    public Iterator<NodeComponent>  createIterator() {
+        return new NullIterator<>();
     }
 
     public int getNumberOfNodeComponents() {

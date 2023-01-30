@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -14,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ObjectNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -44,16 +43,13 @@ public class ObjectNodeGR extends LeafNodeGR {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = Color.white;
+
         objectNameFont = new Font("SansSerif", Font.PLAIN, 14);
         objectStatesFont = new Font("SansSerif", Font.PLAIN, 11);
     }
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -62,25 +58,25 @@ public class ObjectNodeGR extends LeafNodeGR {
         int startingY = getY();
 
         // paint action node
-        g.setPaint(fillColor);
+        g.setPaint(getBackgroundColor());
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the action node
         g.draw(shape);
 
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         ObjectNode node = (ObjectNode) component;
         if (!node.hasStates()) {
@@ -188,7 +184,7 @@ public class ObjectNodeGR extends LeafNodeGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -197,7 +193,7 @@ public class ObjectNodeGR extends LeafNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "objectnode", (ObjectNode) getComponent());
+        streamer.streamObject(node, "objectnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

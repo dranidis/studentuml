@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -15,6 +13,7 @@ import java.awt.geom.RoundRectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ActionNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -35,15 +34,12 @@ public class ActionNodeGR extends LeafNodeGR  {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = myColor();
+
         actionNameFont = new Font("SansSerif", Font.PLAIN, 14);
     }
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -52,25 +48,26 @@ public class ActionNodeGR extends LeafNodeGR  {
         int startingY = getY();
 
         // paint action node
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new RoundRectangle2D.Double(startingX, startingY, width, height, 10, 10);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
+
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
         // draw the action node
         g.draw(shape);
 
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw action node name
@@ -79,7 +76,6 @@ public class ActionNodeGR extends LeafNodeGR  {
             TextLayout layout = new TextLayout(actionName, actionNameFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            //int nameY = actionNameYOffset - (int) bounds.getY();
             int nameY = ((height - (int) bounds.getHeight()) / 2) - (int) bounds.getY();
 
             g.setFont(actionNameFont);
@@ -123,7 +119,7 @@ public class ActionNodeGR extends LeafNodeGR  {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -132,7 +128,7 @@ public class ActionNodeGR extends LeafNodeGR  {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "actionnode", (ActionNode) getComponent());
+        streamer.streamObject(node, "actionnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

@@ -53,7 +53,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.city.studentuml.model.domain.UMLProject;
-
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -61,10 +60,14 @@ import edu.city.studentuml.model.graphical.DiagramType;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.Mode;
+import edu.city.studentuml.util.MyImageIcon;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
 import edu.city.studentuml.view.DiagramView;
 import edu.city.studentuml.view.gui.CCDInternalFrame;
@@ -89,10 +92,6 @@ import edu.city.studentuml.view.gui.SSDInternalFrame;
  */
 public class Application extends JApplet implements Observer, KeyListener {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private static Application instance;
 
     private JButton repairButton;
@@ -135,6 +134,7 @@ public class Application extends JApplet implements Observer, KeyListener {
     // init method just creates an instance of the StudentUMLApplet class
     // which handles the rest of the program
     // Firefox: when a fresh browser is opened
+    @Override
     public void init() {
         addKeyListener(this);
         super.init();
@@ -144,13 +144,16 @@ public class Application extends JApplet implements Observer, KeyListener {
     }
 
     // Firefox: when the URL containing the applet is opened
+    @Override
     public void start() {
     }
 
     // Firefox: when the URL containing the applet is closed or navigated away
+    @Override
     public void stop() {
     }
 
+    @Override
     public void destroy() {
         // Firefox: when the last browser instance is closed
     }
@@ -166,9 +169,6 @@ public class Application extends JApplet implements Observer, KeyListener {
         String passedAuthenticationToken = getParameter("auth_token");
         serverInterface = new ServerInterface(apiURL, passedAuthenticationToken);
 
-        // initialize the rules files
-        // simpleRulesFile = getCodeBase() + "rules/simplerules.txt";
-        // advancedRulesFile = getCodeBase() + "rules/advancedrules.txt";
         String rulesLocation = "/edu/city/studentuml/util/validation/rules/";
         this.getClass().getResource(rulesLocation + "simplerules.txt").toString();
         advancedRulesFile = this.getClass().getResource(rulesLocation + "advancedrules.txt").toString();
@@ -176,8 +176,8 @@ public class Application extends JApplet implements Observer, KeyListener {
 
         // initialize the SystemWideObjectNamePool singleton for the first time
         // with the current rules file
-        SystemWideObjectNamePool.uid = username;
-        SystemWideObjectNamePool.getInstance().init(currentRuleFile);
+        SystemWideObjectNamePool.getInstance().setUid(username);
+        SystemWideObjectNamePool.getInstance().setRuleFile(currentRuleFile);
         SystemWideObjectNamePool.getInstance().addObserver(this);
 
         factsTree = new JTree();
@@ -299,11 +299,13 @@ public class Application extends JApplet implements Observer, KeyListener {
         repairButton = new JButton();
         repairButton.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 repairButton.setBorder(
                         new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
             }
@@ -456,7 +458,12 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             umlProject.clear();
 
-            umlProject.loadFromXMLString(solution);
+            try {
+                umlProject.loadFromXMLString(solution);
+            } catch (NotStreamable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             umlProject.setUser(username);
             umlProject.setExid(exerciseid);
@@ -517,7 +524,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
             if (runtimeChecking) {
-                SystemWideObjectNamePool.getInstance().reloadRules();
+                SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
             }
 
             return true;
@@ -747,7 +754,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             String messTreeState = null;
 
             if ((messageTree.getModel() != null) && (messageTree.getModel() instanceof CollectionTreeModel)) {
-                messTreeState = getExpansionState(messageTree, 0);
+                messTreeState = TreeExpansionState.getExpansionState(messageTree, 0);
                 checkTreeManager.getSelectionModel().clearSelection();
                 repairButton.setEnabled(false);
             }
@@ -1049,11 +1056,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             openButton = new JButton(openIcon);
             openButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    openButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    openButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1063,15 +1072,17 @@ public class Application extends JApplet implements Observer, KeyListener {
             openButton.addActionListener(this);
             add(openButton);
 
-            ImageIcon saveIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "save.gif"));
+            ImageIcon saveIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "save.gif"));
             saveButton = new JButton(saveIcon);
             saveButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    saveButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    saveButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1082,15 +1093,17 @@ public class Application extends JApplet implements Observer, KeyListener {
             add(saveButton);
 
             // SSD
-            ImageIcon ssdIcon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
+            ImageIcon ssdIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
             ssdButton = new JButton(ssdIcon);
             ssdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    ssdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    ssdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1102,15 +1115,17 @@ public class Application extends JApplet implements Observer, KeyListener {
             add(ssdButton);
 
             // CCD
-            ImageIcon ccdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "ccd.gif"));
+            ImageIcon ccdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "ccd.gif"));
             ccdButton = new JButton(ccdIcon);
             ccdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    ccdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    ccdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1121,15 +1136,17 @@ public class Application extends JApplet implements Observer, KeyListener {
             addSeparator();
             add(ccdButton);
 
-            ImageIcon sdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd.gif"));
+            ImageIcon sdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd.gif"));
             sdButton = new JButton(sdIcon);
             sdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    sdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    sdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1139,15 +1156,17 @@ public class Application extends JApplet implements Observer, KeyListener {
             sdButton.addActionListener(this);
             add(sdButton);
 
-            ImageIcon dcdIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "dcd.gif"));
+            ImageIcon dcdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "dcd.gif"));
             dcdButton = new JButton(dcdIcon);
             dcdButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    dcdButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    dcdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1164,7 +1183,7 @@ public class Application extends JApplet implements Observer, KeyListener {
              * exportButton = new JButton(exportIcon); exportButton.addMouseListener(new
              * MouseAdapter() { public void mouseEntered(MouseEvent e) {
              * exportButton.setBorder(new CompoundBorder(new
-             * LineBorder(UIManager.getColor("blue"), 1),new EmptyBorder(4, 4, 4, 4))); }
+             * LineBorder(Colors.getHighlightColor(), 1),new EmptyBorder(4, 4, 4, 4))); }
              * public void mouseExited(MouseEvent e) { exportButton.setBorder(new
              * EmptyBorder(5, 5, 5, 5)); } }); exportButton.setBorder(new EmptyBorder(5, 5,
              * 5, 5)); exportButton.setToolTipText("Export to image");
@@ -1172,16 +1191,18 @@ public class Application extends JApplet implements Observer, KeyListener {
              * 
              * add(exportButton);
              */
-            ImageIcon resizeIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
+            ImageIcon resizeIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
 
             resizeButton = new JButton(resizeIcon);
             resizeButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    resizeButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    resizeButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1192,22 +1213,24 @@ public class Application extends JApplet implements Observer, KeyListener {
             addSeparator();
             add(resizeButton);
 
-            Icon validateSD_DCDIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd_dcd.gif"));
+            Icon validateSD_DCDIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd_dcd.gif"));
             validateSD_DCDButton = new JButton(validateSD_DCDIcon);
             validateSD_DCDButton.setToolTipText("Validate SD against DCD");
             validateSD_DCDButton.addActionListener(this);
             addSeparator();
 
-            ImageIcon reloadIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "reload.gif"));
+            ImageIcon reloadIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "reload.gif"));
 
             reloadRulesButton = new JButton(reloadIcon);
             reloadRulesButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1219,7 +1242,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             addSeparator();
 
-            ImageIcon forwardEngineerIcon = new ImageIcon(
+            ImageIcon forwardEngineerIcon = new MyImageIcon(
                     Application.class.getResource(Constants.IMAGES_DIR + "code.gif"));
             Image img2 = forwardEngineerIcon.getImage();
             Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
@@ -1229,11 +1252,13 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             forwardEngineerButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1248,7 +1273,7 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             addSeparator();
 
-            ImageIcon helpIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "help.gif"));
+            ImageIcon helpIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "help.gif"));
             Image img = helpIcon.getImage();
             Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             helpIcon.setImage(imgScaled);
@@ -1257,11 +1282,13 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             helpButton.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mouseEntered(MouseEvent e) {
-                    helpButton.setBorder(new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1),
+                    helpButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
                             new EmptyBorder(4, 4, 4, 4)));
                 }
 
+                @Override
                 public void mouseExited(MouseEvent e) {
                     helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
                 }
@@ -1306,7 +1333,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             } /*
                * else if (event.getSource() == validateSD_DCDButton) { validateSD_DCD(); }
                */ else if (event.getSource() == reloadRulesButton) {
-                SystemWideObjectNamePool.getInstance().reloadRules();
+                SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
             } else if (event.getSource() == helpButton) {
                 try {
                     URL helpURL = new URL(getCodeBase() + "help/StudentUMLHelp.htm");
@@ -1387,7 +1414,12 @@ public class Application extends JApplet implements Observer, KeyListener {
 
                 umlProject.clear();
 
-                umlProject.loadFromXMLString(solution);
+                try {
+                    umlProject.loadFromXMLString(solution);
+                } catch (NotStreamable e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
                 setSaved(true);
                 umlProject.addObserver(this);
@@ -1398,7 +1430,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
 
                 if (runtimeChecking) {
-                    SystemWideObjectNamePool.getInstance().reloadRules();
+                    SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
                 }
             } catch (APICallException ace) {
                 JOptionPane.showMessageDialog(this, "There was an API error while loading node", ace.getMessage(),
@@ -1478,12 +1510,14 @@ public class Application extends JApplet implements Observer, KeyListener {
     private void addPopup(final Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
                 }
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if ((e.isPopupTrigger())) {
                     showMenu(e);
@@ -1532,6 +1566,7 @@ public class Application extends JApplet implements Observer, KeyListener {
     private void showRepairButton(final Component component, final JButton button) {
         component.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 // System.out.println(checkTreeManager.getSelectionModel().getSelectionPaths()
                 // != null);
@@ -1543,6 +1578,7 @@ public class Application extends JApplet implements Observer, KeyListener {
                 // }
             }
 
+            @Override
             public void mouseClicked(MouseEvent e) {
                 // System.out.println(e.getSource().toString());
                 // System.out.println(checkTreeManager.getSelectionModel().getSelectionPaths()
@@ -1575,23 +1611,6 @@ public class Application extends JApplet implements Observer, KeyListener {
             count1--;
         }
         return path1.equals(path2);
-    }
-
-    public static String getExpansionState(JTree tree, int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuffer buf = new StringBuffer();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + String.valueOf(i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
     }
 
     public static void restoreExpanstionState(JTree tree, int row, String expansionState) {

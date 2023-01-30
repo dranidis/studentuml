@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,13 +9,15 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -48,9 +48,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // initialize the element's width and height to the minimum ones
         width = MINIMUMWIDTH;
         height = MINIMUMNAMEFIELDHEIGHT + MINIMUMATTRIBUTEFIELDHEIGHT + MINIMUMMETHODFIELDHEIGHT;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = null;
+
         nameFont = new Font("SansSerif", Font.BOLD, 14);
         attributeFont = new Font("SansSerif", Font.PLAIN, 12);
     }
@@ -61,12 +59,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     // this is default drawing for conceptual class
     @Override
     public final void draw(Graphics2D g) {
-        if (fillColor == null) {
-            fillColor = this.myColor();
-        }
-
-        super.draw(g);
-
         // refresh the width and height attributes
         refreshDimensions(g);
 
@@ -76,23 +68,22 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         int startingY = getY();
 
         // determine the outline of the rectangle representing the class
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
         g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         g.draw(shape);
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         // draw the inner lines
         g.drawLine(startingX, startingY + nameFieldHeight, startingX + width, startingY + nameFieldHeight);
@@ -269,7 +260,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

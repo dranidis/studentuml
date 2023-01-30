@@ -1,34 +1,47 @@
 package edu.city.studentuml.util.validation;
 
-import edu.city.studentuml.view.gui.CollectionTreeModel;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Logger;
 
-import ubc.cs.JLog.Foundation.jPrologAPI;
+import edu.city.studentuml.view.gui.CollectionTreeModel;
 
 
-/*
+/**
  * A class for performing a high level interface with the prolog engine.
  *
  */
 public class RuleBasedEngine {
 
-    HashMap clauseTable = new HashMap();
-    private jPrologAPI prolog = new jPrologAPI("");
+    private static final Logger logger = Logger.getLogger(RuleBasedEngine.class.getName());
 
-    public RuleBasedEngine() {
+    HashMap<String, Boolean> clauseTable = new HashMap<>();
+    private PrologAPI prolog;
+
+    public RuleBasedEngine(PrologAPI prolog) {
+        this.prolog = prolog;
         prolog.setFailUnknownPredicate(true);
     }
 
     public void addClause(String clause) {
+        logger.finer(() -> "Adding clause: " + clause);
 
         if (!clauseTable.containsKey(clause)) {
-            modifyDatabase("assert", clause);
-            clauseTable.put(clause, true);
+            try {
+
+                modifyDatabase("assert", clause);
+                clauseTable.put(clause, true);
+            } catch (Exception e) {
+                logger.severe("Exception caught: clause");
+                e.printStackTrace();
+            }
         }
     }
 
+    /*
+     * currently not called
+     */
     public void removeClause(String clause) {
         modifyDatabase("retract", clause);
         if (clauseTable.containsKey(clause)) {
@@ -37,53 +50,61 @@ public class RuleBasedEngine {
     }
 
     private void modifyDatabase(String action, String clause) {
-        prolog.query(action + "(" + clause + ").");
+        String queryString = action + "(" + clause + ").";
+            prolog.query(queryString);
+
     }
 
-    public void printDatabase(CollectionTreeModel facts) {
-        Iterator i = clauseTable.keySet().iterator();
-        while (i.hasNext()) {
-            String a = (String) i.next();
-            //System.out.println(a + ".");
-            //SystemWideObjectNamePool.getInstance().addFact( a);
+    public void addClauseTableToFacts(CollectionTreeModel facts) {
+        for (String a : clauseTable.keySet()) {
+            logger.finest(() -> a + ".");
             facts.add(a);
         }
     }
 
-    public void printSolution(HashMap result) {
+    public void printSolution(Map<String, Map<String, String>> result) {
         if (result != null) {
-            Iterator i = result.keySet().iterator();
-            System.out.println("Rule has (" + result.size() + ") solution: ");
+            Iterator<String> i = result.keySet().iterator();
+            logger.finest(() -> "Rule has (" + result.size() + ") solution: ");
             while (i.hasNext()) {
-                String solution = (String) i.next();
-                HashMap solutionMap = (HashMap) result.get(solution);
-                Iterator b = solutionMap.keySet().iterator();
-                System.out.println(" " + solution);
+                String solution = i.next();
+                Map<String, String> solutionMap = result.get(solution);
+                Iterator<String> b = solutionMap.keySet().iterator();
+                logger.finest(() -> " " + solution);
                 while (b.hasNext()) {
-                    String name = (String) b.next();
-                    String variableValue = (String) solutionMap.get(name);
-                    System.out.println("        " + name + "->" + variableValue);
+                    String name = b.next();
+                    String variableValue = solutionMap.get(name);
+                    logger.finest(() -> "        " + name + "->" + variableValue);
                 }
             }
         }
     }
 
-    // WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE
-    // IF A RULE FIRES FOR X,Y !!! THEN WE HAVE AN INVALD UML!!!
-    public synchronized Hashtable checkRule(String rule, boolean allSolutions) {
+
+    /**
+     * WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE
+     * IF A RULE FIRES FOR X,Y !!! THEN WE HAVE AN INVALD UML!!!
+     * 
+     * @param rule
+     * @param allSolutions
+     * @return
+     */
+    public synchronized Map<String,  Map<String, ?>> checkRule(String rule, boolean allSolutions) {
         if (!rule.substring(rule.length() - 1).equals(".")) {
             rule = rule + ".";
         }
 
         try {
-            Hashtable ht = prolog.query(rule);
+            logger.finer("PROLOG Query: " + rule);
+            Map<String,  Map<String, ?>> ht = prolog.query(rule);
             if (ht == null) {
                 return null;
             }
 
-            Hashtable results = new Hashtable();
+            Map<String,  Map<String, ?>> results = new HashMap<>();
 
             int index = 0;
+
             while (ht != null) {
                 String solutionName = "solution" + index;
                 results.put(solutionName, ht);
@@ -97,7 +118,7 @@ public class RuleBasedEngine {
             return results;
 
         } catch (Exception E) {
-            System.out.println("prolog error -> " + E.getMessage());
+            logger.severe("prolog error -> " + E.getMessage());
             return null;
         }
     }

@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -12,10 +11,10 @@ import java.util.Vector;
  */
 public abstract class AbstractLinkGR extends GraphicalElement {
     
-    public static final int REFLECTIVE_UP = 3;
-    public static final int REFLECTIVE_RIGHT = 6;
+    public static final double REFLECTIVE_UP = 3.0;
+    public static final double REFLECTIVE_RIGHT = 6.0;
 
-    public static Vector<AbstractLinkGR> linkInstances = new Vector();
+    protected static Vector<AbstractLinkGR> linkInstances = new Vector<>();
 
     public abstract int getTopLeftXA();
 
@@ -34,21 +33,6 @@ public abstract class AbstractLinkGR extends GraphicalElement {
     public abstract int getHeightB();
 
     public abstract boolean isReflective();
-
-
-
-    @Override
-    public void draw(Graphics2D g) {
-//        Rectangle2D r = getBounds();
-//        if(r.getHeight() < 0) {
-//            r = new Rectangle2D.Double(r.getX(), r.getY() + r.getHeight(), r.getWidth(), -1*r.getHeight());
-//        }
-//        if(r.getWidth() < 0) {
-//            r = new Rectangle2D.Double(r.getX() + r.getWidth(), r.getY(), -1 * r.getWidth(), r.getHeight());
-//        }        
-//        System.out.println(r);
-//        g.draw(r);
-    }
 
     protected abstract ClassifierGR getClassifierA();
 
@@ -100,13 +84,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         }
     }
 
-
-
-    // returns the endpoint corresponding to role A
-    private double getMaxWidth() {
-        return Math.max(getWidthA(), getWidthB());
-    }
-    
+   
     /**
      * Returns a border point on the line starting from orX, orY within the box, parallel to the 
      * line defined by the gradient dx, dy.
@@ -169,14 +147,14 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
 
     public Point2D getCentreRoleA() {
-        double x = getTopLeftXA() + getWidthA() / 2;
-        double y = getTopLeftYA() + getHeightA() / 2;
+        double x = getTopLeftXA() + getWidthA() / 2.0;
+        double y = getTopLeftYA() + getHeightA() / 2.0;
         return new Point2D.Double(x, y);
     }
 
     public Point2D getCentreRoleB() {
-        double x = getTopLeftXB() + getWidthB() / 2;
-        double y = getTopLeftYB() + getHeightB() / 2;
+        double x = getTopLeftXB() + getWidthB() / 2.0;
+        double y = getTopLeftYB() + getHeightB() / 2.0;
         return new Point2D.Double(x, y);
     }
 
@@ -188,7 +166,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         double angle;
 
         if (x2 - x1 != 0) {
-            double gradient = ((double) (y2 - y1)) / ((double) (x2 - x1));
+            double gradient = (y2 - y1) / (x2 - x1);
 
             if (x2 - x1 > 0) // positive gradient
             {
@@ -208,8 +186,8 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         return angle;
     }
     
-    abstract public Point2D getEndPointRoleA();
-    abstract public Point2D getEndPointRoleB();
+    public abstract Point2D getEndPointRoleA();
+    public abstract Point2D getEndPointRoleB();
     
     public int getXA() {
         double rez = getEndPointRoleA().getX();
@@ -231,8 +209,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
     public int getReflectiveStep() {
         int gap = 7;
-        int step = 10 + gap * (getIndexOfLink()); 
-        return step;
+        return 10 + gap * (getIndexOfLink());
     }
     
     public boolean contains(Point2D p) {
@@ -245,21 +222,19 @@ public abstract class AbstractLinkGR extends GraphicalElement {
         } else // reflective
         {
             int step = getReflectiveStep();
-            Rectangle2D definingRect1 = new Rectangle2D.Double(getXA() + step/2, getYB(), REFLECTIVE_RIGHT * step, step);
-            Rectangle2D definingRect2 = new Rectangle2D.Double(getXA() - step/2, getYA() - REFLECTIVE_UP * step, step, REFLECTIVE_UP * step);
-            Rectangle2D definingRect3 = new Rectangle2D.Double(getXA(), getYA() - REFLECTIVE_UP * step - step/2, REFLECTIVE_RIGHT * step, step);
-            Rectangle2D definingRect4 = new Rectangle2D.Double(getXA() + REFLECTIVE_RIGHT * step, getYA() - REFLECTIVE_UP * step - step/2, step, step * REFLECTIVE_UP + getYB() - getYA());
-//            Rectangle2D definingRect1 = new Rectangle2D.Double(getTopLeftXA() + getWidthA() - 30, getTopLeftYA() - 15,
-//                    45, 15);
-//            Rectangle2D definingRect2 = new Rectangle2D.Double(getTopLeftXA() + getWidthA(), getTopLeftYA(), 15, 30);
+            Rectangle2D definingRect1 = new Rectangle2D.Double(getXA() + step/2.0, getYB(), REFLECTIVE_RIGHT * step, step);
+            Rectangle2D definingRect2 = new Rectangle2D.Double(getXA() - step/2.0, getYA() - REFLECTIVE_UP * step, step, REFLECTIVE_UP * step);
+            Rectangle2D definingRect3 = new Rectangle2D.Double(getXA(), getYA() - REFLECTIVE_UP * step - step/2.0, REFLECTIVE_RIGHT * step, step);
+            Rectangle2D definingRect4 = new Rectangle2D.Double(getXA() + REFLECTIVE_RIGHT * step, getYA() - REFLECTIVE_UP * step - step/2.0, step, step * REFLECTIVE_UP + getYB() - getYA());
 
             return (definingRect1.contains(p) || definingRect2.contains(p) || definingRect3.contains(p) || definingRect4.contains(p));
         }
 
     }
 
-    // do not respond to drag-and-drop events;
+    // do not respond to drag-and-drop events
     // the links' positions depend on the classes that are connected
     public void move(int x, int y) {
+        // empty
     }
 }

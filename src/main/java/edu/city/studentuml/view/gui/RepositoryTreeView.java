@@ -3,10 +3,11 @@ package edu.city.studentuml.view.gui;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,6 +66,8 @@ import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.MyImageIcon;
+import edu.city.studentuml.util.TreeExpansionState;
 
 public class RepositoryTreeView extends JPanel implements Observer {
 
@@ -89,7 +92,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         treeRenderer = new UMLTreeRenderer(rootIcon);
         tree.setCellRenderer(treeRenderer);
         tree.setRowHeight(20);
-        tree.setBackground(UIManager.getColor("Panel.background"));
+        tree.setBackground(UIManager.getColor("Tree.background"));
 
         add(tree);
         datamodelnode = addObject("Data Model");
@@ -99,33 +102,30 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     }
 
+    @Override
     public void update(Observable o, Object arg) {
+        updateTree();
+    }
+
+    public void updateTree() {
         DefaultMutableTreeNode dnode;
-        Vector<DiagramModel> diagrams;
-        Vector<DesignClass> classes;
-        Vector<Interface> interfaces;
-        Vector<RoleClassifierGR> roleClassifiers;
-        DiagramModel diagram;
-        Interface designInterface;
         RoleClassifier classifier;
 
-        Vector<ConceptualClassGR> concepts;
         UCDComponent ucdComponent;
         ConceptualClass concept;
         NodeComponent nodeComponent;
 
-        String expState = getExpansionState(tree, 0);
+        String expState = getExpansionState(0);
         datamodelnode.removeAllChildren();
         treeModel.reload();
         diagrammodelnode.removeAllChildren();
         treeModel.reload();
 
-        classes = umlProject.getCentralRepository().getClasses();
+        List<DesignClass> classes = new ArrayList<>();
+        classes.addAll(umlProject.getCentralRepository().getClasses());
         classes.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-        Iterator<DesignClass> designClassIterator = classes.iterator();
-        while (designClassIterator.hasNext()) {
-            DesignClass dc = designClassIterator.next();
+        for(DesignClass dc : classes) {
             DefaultMutableTreeNode designClassNode = addObject(datamodelnode, dc);
 
             DefaultMutableTreeNode generalizationsNode = addObject(designClassNode, "extends");
@@ -139,19 +139,17 @@ public class RepositoryTreeView extends JPanel implements Observer {
                     .collect(Collectors.toList()).forEach(cg -> addObject(raelizationsNode, cg.getTheInterface()));
         }
 
-        interfaces = umlProject.getCentralRepository().getInterfaces();
+        List<Interface> interfaces = new ArrayList<>();
+        interfaces.addAll(umlProject.getCentralRepository().getInterfaces());
         interfaces.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-        Iterator<Interface> interfaceIterator = interfaces.iterator();
-        while (interfaceIterator.hasNext()) {
-            designInterface = interfaceIterator.next();
-            addObject(datamodelnode, designInterface);
-        }
+        interfaces.forEach(designInterface -> addObject(datamodelnode, designInterface));
 
-        diagrams = umlProject.getDiagramModels();
-        Iterator<DiagramModel> diagramIterator = diagrams.iterator();
-        while (diagramIterator.hasNext()) {
-            diagram = diagramIterator.next();
+        List<DiagramModel> diagramModels = new ArrayList<>();
+        diagramModels.addAll(umlProject.getDiagramModels());
+        diagramModels.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
+
+        for (DiagramModel diagram : diagramModels) {
             dnode = addObject(diagrammodelnode, diagram);
 
             if (diagram instanceof UCDModel) {
@@ -166,7 +164,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             }
 
             if (diagram instanceof SSDModel) {
-                roleClassifiers = ((SSDModel) diagram).getRoleClassifiers();
+                Vector<RoleClassifierGR> roleClassifiers  = ((SSDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
                     Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
@@ -179,7 +177,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             }
 
             if (diagram instanceof CCDModel) {
-                concepts = ((CCDModel) diagram).getConceptualClasses();
+                Vector<ConceptualClassGR> concepts = ((CCDModel) diagram).getConceptualClasses();
 
                 Iterator<ConceptualClassGR> iterator2 = concepts.iterator();
 
@@ -191,7 +189,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             }
 
             if (diagram instanceof SDModel) {
-                roleClassifiers = ((SDModel) diagram).getRoleClassifiers();
+                Vector<RoleClassifierGR> roleClassifiers = ((SDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
                     Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
@@ -215,7 +213,8 @@ public class RepositoryTreeView extends JPanel implements Observer {
             }
         }
 
-        restoreExpanstionState(tree, 0, expState);
+        restoreExpansionState(0, expState);
+
     }
 
     private void addNodeComponent(DefaultMutableTreeNode dnode, NodeComponent nodeComponent) {
@@ -282,7 +281,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         java.net.URL imgURL = ApplicationGUI.class.getResource(Constants.IMAGES_DIR + img);
 
         if (imgURL != null) {
-            return new ImageIcon(imgURL);
+            return new MyImageIcon(imgURL);
         } else {
             logger.severe(() -> "[createImageIcon] Couldn't find file: " + img);
 
@@ -406,32 +405,32 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 setIcon(diagramIcon);
                 setToolTipText("Diagram Model");
             } else if (userObject instanceof UCDModel) {
-                nodeText = ((UCDModel) userObject).getDiagramName();
+                nodeText = ((UCDModel) userObject).getName();
                 setText(nodeText);
                 setIcon(ucdIcon);
                 setToolTipText("Use Case Diagram - " + nodeText);
             } else if (userObject instanceof SSDModel) {
-                nodeText = ((SSDModel) userObject).getDiagramName();
+                nodeText = ((SSDModel) userObject).getName();
                 setText(nodeText);
                 setIcon(ssdIcon);
                 setToolTipText("System Sequence Diagram - " + nodeText);
             } else if (userObject instanceof CCDModel) {
-                nodeText = ((CCDModel) userObject).getDiagramName();
+                nodeText = ((CCDModel) userObject).getName();
                 setText(nodeText);
                 setIcon(ccdIcon);
                 setToolTipText("Use Case Diagram - " + nodeText);
             } else if (userObject instanceof SDModel) {
-                nodeText = ((SDModel) userObject).getDiagramName();
+                nodeText = ((SDModel) userObject).getName();
                 setText(nodeText);
                 setIcon(sdIcon);
                 setToolTipText("Sequence Diagram - " + nodeText);
             } else if (userObject instanceof DCDModel) {
-                nodeText = ((DCDModel) userObject).getDiagramName();
+                nodeText = ((DCDModel) userObject).getName();
                 setText(nodeText);
                 setIcon(dcdIcon);
                 setToolTipText("Design Class Diagram - " + nodeText);
             } else if (userObject instanceof ADModel) {
-                nodeText = ((ADModel) userObject).getDiagramName();
+                nodeText = ((ADModel) userObject).getName();
                 setText(nodeText);
                 setIcon(adIcon);
                 setToolTipText("Activity Diagram - " + nodeText);
@@ -521,43 +520,13 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
     // Below methods are used for remembering the tree expansion state for the Tree
     //
-    // is path1 descendant of path2
-    public static boolean isDescendant(TreePath path1, TreePath path2) {
-        int count1 = path1.getPathCount();
-        int count2 = path2.getPathCount();
-        if (count1 <= count2) {
-            return false;
-        }
-        while (count1 != count2) {
-            path1 = path1.getParentPath();
-            count1--;
-        }
-        return path1.equals(path2);
+
+    public String getExpansionState(int row) {
+        return TreeExpansionState.getExpansionState(tree, row);
     }
 
-    public static String getExpansionState(JTree tree, int row) {
-        TreePath rowPath = tree.getPathForRow(row);
-        StringBuffer buf = new StringBuffer();
-        int rowCount = tree.getRowCount();
-        for (int i = row; i < rowCount; i++) {
-            TreePath path = tree.getPathForRow(i);
-            if (i == row || isDescendant(path, rowPath)) {
-                if (tree.isExpanded(path)) {
-                    buf.append("," + String.valueOf(i - row));
-                }
-            } else {
-                break;
-            }
-        }
-        return buf.toString();
-    }
-
-    public static void restoreExpanstionState(JTree tree, int row, String expansionState) {
-        StringTokenizer stok = new StringTokenizer(expansionState, ",");
-        while (stok.hasMoreTokens()) {
-            int token = row + Integer.parseInt(stok.nextToken());
-            tree.expandRow(token);
-        }
+    public void restoreExpansionState(int row, String expansionState) {
+        TreeExpansionState.restoreExpansionState(tree, row, expansionState);
     }
 
     private class RepositoryTreeSelectionListener implements TreeSelectionListener {

@@ -1,15 +1,14 @@
 package edu.city.studentuml.model.domain;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+
+import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
-import org.w3c.dom.Element;
-
+import edu.city.studentuml.codegeneration.CCDesignClass;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
 
@@ -18,13 +17,9 @@ public class DesignClass extends AbstractClass {
 
     private String stereotype;
     private NotifierVector<Method> methods;
-    @JsonIgnore
-    private Classifier extendClass; // used by codegeneration; refactor
-    @JsonIgnore
-    private List<Interface> implementInterfaces = new ArrayList<>(); // used by codegeneration; refactor
 
     @JsonIgnore
-    private Vector<Method> sdMethods = new Vector<>(); // used by codegeneration; refactor
+    private final CCDesignClass ccDesignClass = new CCDesignClass();
 
     public DesignClass(GenericClass gc) {
         super(gc);
@@ -63,6 +58,11 @@ public class DesignClass extends AbstractClass {
         methods = meths;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public NotifierVector<Method> getMethods() {
         return methods;
     }
@@ -87,13 +87,15 @@ public class DesignClass extends AbstractClass {
         methods.clear();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setStereotype(node.getAttribute("stereotype"));
         clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "attributes"), attributes, this);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
         node.setAttribute("stereotype", getStereotype());
@@ -127,38 +129,9 @@ public class DesignClass extends AbstractClass {
         return copyClass;
     }
 
-    // all methods below used by codegeneration; refactor
 
-    public void setExtendClass(Classifier newExtendClass) {
-        this.extendClass = newExtendClass;
-    }
-
-    public Classifier getExtendClass() {
-        return this.extendClass;
-    }
-
-    public void addImplementInterfaces(Interface newInterface) {
-        this.implementInterfaces.add(newInterface);
-    }
-
-    public List<Interface> getImplementInterfaces() {
-        return this.implementInterfaces;
-    }
-
-    public void resetImplementInterfaces() {
-        this.implementInterfaces.clear();
-    }
-
-    public void addSDMethod(Method m) {
-        this.sdMethods.add(m);
-    }
-
-    public Vector<Method> getSDMethods() {
-        return this.sdMethods;
-    }
-
-    public void replaceSDMethod(int index, Method newSDMethod) {
-        this.sdMethods.set(index, newSDMethod);
+    public CCDesignClass getCcDesignClass() {
+        return ccDesignClass;
     }
 
 }

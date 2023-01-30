@@ -2,9 +2,11 @@ package edu.city.studentuml.model.domain;
 
 import java.util.StringJoiner;
 import java.util.Vector;
+
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -28,6 +30,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         parameters = new NotifierVector<>();
     }
 
+    @Override
     public String getName() {
         return genericOperation.getName();
     }
@@ -52,6 +55,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         parameters.remove(p);
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public Vector<MethodParameter> getParameters() {
         return parameters;
     }
@@ -110,6 +118,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         return text;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */        
     public String getReturnValueAsString() {
         if (returnValue != null && !returnValue.getName().equals("")) {
             return returnValue.getName();
@@ -126,11 +139,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         return sj.toString();
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setName(node.getAttribute("name"));
         setIterative(Boolean.parseBoolean(node.getAttribute("iterative")));
         parameters.clear();
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "parameters"), parameters, this);
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
 
         String rv = node.getAttribute("returns");
         if (rv != null) {

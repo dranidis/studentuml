@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
 package edu.city.studentuml.controller;
 
 import java.util.Iterator;
@@ -18,7 +14,6 @@ import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -159,9 +154,4 @@ public class CCDSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    // TODO to be removed when all in mappers
-    @Override
-    public void editElement(GraphicalElement selectedElement) {
-        // left empty
-    }
 }

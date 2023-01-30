@@ -1,15 +1,17 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ReturnMessage;
-import edu.city.studentuml.util.Settings;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.util.Settings;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 public class ReturnMessageGR extends SDMessageGR {
 
@@ -17,13 +19,18 @@ public class ReturnMessageGR extends SDMessageGR {
         super(from, to, message, y);
     }
 
-    public Stroke getStroke() {
-        float[] dashes = { 8 }; // the pattern of dashes for drawing the return line
-
-        return new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, dashes, 0);
+    @Override
+    protected Stroke makeMessageStroke() {
+        return GraphicsHelper.makeDashedStroke();
     }
 
-    public void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
+    @Override
+    protected Stroke makeSelectedMessageStroke() {
+        return GraphicsHelper.makeSelectedDashedStroke();
+    }
+
+    @Override
+    protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         if (forward) {
             g.drawLine(x, y, x - 8, y - 4);
             g.drawLine(x, y, x - 8, y + 4);
@@ -43,11 +50,11 @@ public class ReturnMessageGR extends SDMessageGR {
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(5));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         int startingX = getStartingX();
@@ -66,7 +73,7 @@ public class ReturnMessageGR extends SDMessageGR {
 
         if (!getMessage().isReflective()) {
             // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(getStartingX() - 10, getY() - 10, 20, 20);
+            Rectangle2D bounds = new Rectangle2D.Double(getStartingX() - 10.0, getY() - 10.0, 20, 20);
 
             return bounds.contains(point);
         } else {
@@ -92,6 +99,11 @@ public class ReturnMessageGR extends SDMessageGR {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
         node.setAttribute("y", Integer.toString(getY()));
-        streamer.streamObject(node, "message", getReturnMessage());
+        streamer.streamObject(node, XMLSyntax.MESSAGE, getReturnMessage());
+    }
+
+    @Override
+    public boolean isReflective() {
+        return message.isReflective();
     }
 }

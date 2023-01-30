@@ -1,5 +1,10 @@
 package edu.city.studentuml.controller;
 
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
+
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.model.domain.ControlFlow;
@@ -14,9 +19,6 @@ import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.EdgeGR;
-import edu.city.studentuml.model.graphical.GraphicalElement;
-import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -34,11 +36,6 @@ import edu.city.studentuml.view.gui.DecisionNodeEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
-import java.util.Iterator;
-import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
 
 /**
  *
@@ -46,29 +43,16 @@ import javax.swing.undo.UndoableEdit;
  */
 public class ADSelectionController extends SelectionController {
 
-    private static final Logger logger1 = Logger.getLogger(ADSelectionController.class.getName());
-    
+    private static final String OBJECT_FLOW_ERROR_STRING = "Object Flow Error";
+
     public ADSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
-    }
-    
-    @Override
-    public void editElement(GraphicalElement selectedElement) {
-        if (selectedElement instanceof EdgeGR) {
-            editEdge((EdgeGR) selectedElement);
-        } else if (selectedElement instanceof NodeComponentGR) {
-            editNodeComponent((NodeComponentGR) selectedElement);
-        } 
-    }
-    
-    private void editEdge(EdgeGR edgeGR) {
-        if (edgeGR instanceof ControlFlowGR) {
-            editControlFlow((ControlFlowGR) edgeGR);
-        } else if (edgeGR instanceof ObjectFlowGR) {
-            editObjectFlow((ObjectFlowGR) edgeGR);
-        } else {
-            logger1.severe("Error in editEdge(edge)");
-        }
+        editElementMapper.put(ControlFlowGR.class, el -> editControlFlow((ControlFlowGR) el));
+        editElementMapper.put(ObjectFlowGR.class, el -> editObjectFlow((ObjectFlowGR) el));
+        editElementMapper.put(ActionNodeGR.class, el -> editActionNode((ActionNodeGR) el));
+        editElementMapper.put(ObjectNodeGR.class, el -> editObjectNode((ObjectNodeGR) el));
+        editElementMapper.put(ActivityNodeGR.class, el -> editActivityNode((ActivityNodeGR) el));
+        editElementMapper.put(DecisionNodeGR.class, el -> editDecisionNode((DecisionNodeGR) el));
     }
     
     private void editControlFlow(ControlFlowGR controlFlowGR) {
@@ -140,7 +124,7 @@ public class ADSelectionController extends SelectionController {
         if (sourceNode instanceof DecisionNode && guard.isEmpty()) {
             JOptionPane.showMessageDialog(parentComponent,
                     "The guard must be specified for the flow going out from the decision node!",
-                    "Object Flow Error",
+                    OBJECT_FLOW_ERROR_STRING,
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -153,7 +137,7 @@ public class ADSelectionController extends SelectionController {
                 if (s.equals(guard) && !s.isEmpty()) {
                     JOptionPane.showMessageDialog(parentComponent,
                             "Multiple outgoing edges with the same guard are not allowed!",
-                            "Object Flow Error",
+                            OBJECT_FLOW_ERROR_STRING,
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -165,7 +149,7 @@ public class ADSelectionController extends SelectionController {
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(parentComponent,
                     e.getMessage(),
-                    "Object Flow Error",
+                    OBJECT_FLOW_ERROR_STRING,
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -181,19 +165,7 @@ public class ADSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
     
-    private void editNodeComponent(NodeComponentGR nodeComponentGR) {
-        if (nodeComponentGR instanceof ActionNodeGR) {
-            editActionNode((ActionNodeGR) nodeComponentGR);
-        } else if (nodeComponentGR instanceof ObjectNodeGR) {
-            editObjectNode((ObjectNodeGR) nodeComponentGR);
-        } else if (nodeComponentGR instanceof ActivityNodeGR) {
-            editActivityNode((ActivityNodeGR) nodeComponentGR);
-        } else if (nodeComponentGR instanceof DecisionNodeGR) {
-            editDecisionNode((DecisionNodeGR) nodeComponentGR);
-        }else {
-            logger1.severe("Error in editNode(node)");
-        }
-    }
+
     
     private void editActionNode(ActionNodeGR actionNodeGR) {
         ActionNodeEditor actionNodeEditor = new ActionNodeEditor(actionNodeGR);

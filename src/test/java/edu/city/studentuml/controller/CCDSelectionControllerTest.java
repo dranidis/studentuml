@@ -61,7 +61,6 @@ public class CCDSelectionControllerTest {
 
     @Test
     public void testDeleteElementWithRelationshipsUndo() {
-        CCDSelectionController ccdSelectionController = new CCDSelectionController(ccdInternalFrame, model);
 
         ConceptualClassGR a = h.addConceptualClass("A");
         ConceptualClassGR b = h.addConceptualClass("B");
@@ -77,8 +76,8 @@ public class CCDSelectionControllerTest {
         h.addGeneralization(a, b);
         h.addConceptualAssociationClass(a, f);
 
-        System.out.println("BEFORE");
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("BEFORE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
 
         /**
@@ -91,17 +90,15 @@ public class CCDSelectionControllerTest {
                 && ((ConceptualClassGR) ge).getAbstractClass().getName().equals("A")));
         assertEquals(0, h.countRelationshipsWithClassNamed("A"));
 
-        System.out.println("DELETED A");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("DELETED A");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         /**
          * UNDO
          */
         ccdInternalFrame.getUndoManager().undo();
-        System.out.println("UNDONE");
-
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // System.out.println("UNDONE");
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));

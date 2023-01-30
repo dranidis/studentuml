@@ -2,29 +2,31 @@ package edu.city.studentuml.view.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
+import edu.city.studentuml.codegeneration.CodePreparation;
 import edu.city.studentuml.frame.StudentUMLFrame;
+import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
+import edu.city.studentuml.util.MyImageIcon;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.view.DiagramView;
 
 public class ApplicationFrame extends ApplicationGUI {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
 
@@ -35,11 +37,22 @@ public class ApplicationFrame extends ApplicationGUI {
 
         logger.fine(() -> "Path: " + Settings.getDefaultPath());
 
-        ImageIcon icon = new ImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
+        Colors.setFillColor(Settings.getFillColor());
+        Colors.setDarkFillColor(Settings.getDarkFillColor());
+
+        ImageIcon icon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "icon.gif"));
+        logger.finer(() -> "ICON: " + icon);
         frame.setIconImage(icon.getImage());
         createXMLFileChooser();
 
         umlProject.setUser(Constants.DESKTOP_USER);
+
+        /*
+         * when the window opens a New Project appears but it should be considered saved
+         * if the user does nothing.
+         */
+        umlProject.setSaved(true);
+        updateFrameTitle();
     }
 
     private JFileChooser createXMLFileChooser() {
@@ -112,8 +125,9 @@ public class ApplicationFrame extends ApplicationGUI {
 
         closingOrLoading = true;
 
+        List<String> errors = new ArrayList<>();
         try {
-            umlProject.loadFromXML(fileName);
+            errors = umlProject.loadFromXML(fileName);
         } catch (IOException e) {
             logger.finer(e::getMessage);
             JOptionPane.showMessageDialog(null, "The file " + fileName + " cannot be found.", "IO Error",
@@ -121,6 +135,20 @@ public class ApplicationFrame extends ApplicationGUI {
             RecentFiles.getInstance().removeRecentFile(fileName);
             menuBar.loadRecentFilesInMenu();
             return;
+        } catch (NotStreamable e) {
+            logger.finer("File cannot be read (NotStreamable): " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Encountered some problems while reading the file " + fileName + ". \nContents might not fully loaded.", "XML file error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            errors.forEach(e -> sb.append(e + "\n"));
+            logger.finer(() ->"File cannot be read (NotStreamable): " + sb.toString());
+            JOptionPane.showMessageDialog(null,
+                    "Encountered some problems while reading the file " + fileName
+                            + ". \nContents might not fully loaded.\nElements with errors:\n" + sb.toString(),
+                    "XML file error", JOptionPane.ERROR_MESSAGE);
         }
 
         repositoryTreeView.expandDiagrams();
@@ -130,8 +158,10 @@ public class ApplicationFrame extends ApplicationGUI {
 
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(runtimeChecking);
         if (runtimeChecking) {
-            SystemWideObjectNamePool.getInstance().reloadRules();
+            SystemWideObjectNamePool.getInstance().createNewConsistencyCheckerAndReloadRules();
         }
+
+        setZOrderOfInternalFrames();
 
         umlProject.setSaved(true);
         closingOrLoading = false;
@@ -212,4 +242,30 @@ public class ApplicationFrame extends ApplicationGUI {
     public void help() {
         // to be implemented
     }
+
+    @Override
+    public void forwardEngineer() {
+        JCheckBox checkBox = new JCheckBox("Update Current Files", false);
+        String message = "Do you Want to Generate Code? \n"
+                + "Make Sure You Have Created and Saved the Approrpiate\n"
+                + "Design (first) and Sequence Diagrams!";
+        Object[] params = { message, checkBox };
+        // 0 for yes and 1 for no
+        int codeGenerationConfirm = JOptionPane.showConfirmDialog(frame, params, "Code Generation",
+                JOptionPane.YES_NO_OPTION);
+        if (codeGenerationConfirm == 0) {
+            CodePreparation codePreparation = new CodePreparation();
+            int genFilesCount = codePreparation.generateCode(checkBox.isSelected());
+            if (genFilesCount > 0) {
+                JOptionPane.showMessageDialog(frame,
+                        "Success!! \n" + "You have generated " + genFilesCount + " files in\n"
+                                + umlProject.getFilepath().replace(".xml", File.separator),
+                        "Code Generator", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "No Input - New Files Not Generated", "Code Generator",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
 }

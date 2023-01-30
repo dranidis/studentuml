@@ -1,11 +1,13 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.XMLStreamer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -75,9 +77,9 @@ public class UCExtend extends UCLink {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "extensionpoints"), new Vector<>(extensionPoints), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "extensionpoints"), this);
     }
 
     @Override

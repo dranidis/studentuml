@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,13 +11,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.Optional;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ActivityNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -47,9 +45,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = lighter(myColor());
+
         activityNameFont = new Font("SansSerif", Font.BOLD, 12);
 
         // resize handles
@@ -57,7 +53,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         down = new DownResizeHandle(this);
         left = new LeftResizeHandle(this);
         right = new RightResizeHandle(this);
-        resizeHandles = new ArrayList<ResizeHandle>();
+        resizeHandles = new ArrayList<>();
         resizeHandles.add(up);
         resizeHandles.add(down);
         resizeHandles.add(left);
@@ -66,7 +62,6 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     @Override
     public void draw(Graphics2D g) {
-        super.draw(g);
 
         calculateWidth(g);
         calculateHeight(g);
@@ -75,34 +70,29 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         int startingY = getY();
 
         // paint activity node
-        g.setPaint(fillColor);
+        g.setPaint(getFillColor());
         Shape shape = new RoundRectangle2D.Double(startingX, startingY, width, height, 20, 20);
-        g.fill(shape);
+        // g.fill(shape);
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(3));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
         // draw the activity node
         g.draw(shape);
 
         // draw resize handles if selected
         if (isSelected()) {
-            Iterator it = resizeHandles.iterator();
-            while (it.hasNext()) {
-                ResizeHandle handle = (ResizeHandle) it.next();
-                handle.draw(g);
-            }
+            resizeHandles.forEach(handle -> handle.draw(g));
         }
 
-
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw acticity node name
@@ -117,13 +107,6 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
             g.setFont(activityNameFont);
             g.drawString(activityName, startingX + nameX, startingY + nameY);
         }
-
-        // draw the other elements contained in this activity node
-//        Iterator it = this.createIterator();
-//        while (it.hasNext()) {
-//            NodeComponentGR node = (NodeComponentGR) it.next();
-//            node.draw(g);
-//        }
     }
 
     @Override
@@ -164,23 +147,13 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     public boolean isResizeHandleSelected(int x, int y) {
-        Iterator it = resizeHandles.iterator();
-        while (it.hasNext()) {
-            ResizeHandle handle = (ResizeHandle) it.next();
-            if (handle.contains(new Point2D.Double(x, y))) {
-                return true;
-            }
-        }
-        return false;
+        return resizeHandles.stream().anyMatch(handle -> handle.contains(new Point2D.Double(x, y)));
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        Iterator it = resizeHandles.iterator();
-        while (it.hasNext()) {
-            ResizeHandle handle = (ResizeHandle) it.next();
-            if (handle.contains(new Point2D.Double(x, y))) {
-                return handle;
-            }
+        Optional<ResizeHandle> resizeHandle = resizeHandles.stream().filter(handle -> handle.contains(new Point2D.Double(x, y))).findFirst();
+        if (resizeHandle.isPresent()) {
+            return resizeHandle.get();
         }
         return null;
     }
@@ -199,16 +172,16 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     public int getLeftBorder() {
         int tempWidth = 0;
-        int noOfNodes = getNumberOfNodeComponents();
+        int noOfNodes = getNumberOfElements();
 
         if (noOfNodes == 0 && activityNameWidth == 0) {
             tempWidth = minimumWidth;
-        } else if (noOfNodes == 0 && activityNameWidth != 0) {
+        } else if (noOfNodes == 0) {
             tempWidth = Math.max(activityNameWidth, minimumWidth);
-        } else if (noOfNodes != 0 && activityNameWidth == 0) {
+        } else if (activityNameWidth == 0) {
             int minX = startingPoint.x + width;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 minX = Math.min(minX, node.getStartingPoint().x);
             }
             tempWidth = startingPoint.x + width - minX + ResizeHandle.SIZE;
@@ -216,7 +189,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         } else {
             int minX = startingPoint.x + width;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 minX = Math.min(minX, node.getStartingPoint().x);
             }
             tempWidth = startingPoint.x + width - minX + ResizeHandle.SIZE;
@@ -227,16 +200,16 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     public int getRightBorder() {
         int tempWidth = 0;
-        int noOfNodes = getNumberOfNodeComponents();
+        int noOfNodes = getNumberOfElements();
 
         if (noOfNodes == 0 && activityNameWidth == 0) {
             tempWidth = minimumWidth;
-        } else if (noOfNodes == 0 && activityNameWidth != 0) {
+        } else if (noOfNodes == 0) {
             tempWidth = Math.max(activityNameWidth, minimumWidth);
-        } else if (noOfNodes != 0 && activityNameWidth == 0) {
+        } else if (activityNameWidth == 0) {
             int maxX = startingPoint.x;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 maxX = Math.max(maxX, node.getStartingPoint().x + node.getWidth());
             }
             tempWidth = maxX - startingPoint.x + ResizeHandle.SIZE;
@@ -244,7 +217,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         } else {
             int maxX = startingPoint.x;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 maxX = Math.max(maxX, node.getStartingPoint().x + node.getWidth());
             }
             tempWidth = maxX - startingPoint.x + ResizeHandle.SIZE;
@@ -255,14 +228,14 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     public int getTopBorder() {
         int tempHeight = 0;
-        int noOfNodes = getNumberOfNodeComponents();
+        int noOfNodes = getNumberOfElements();
 
         if (noOfNodes == 0) {
             tempHeight = minimumHeight;
         } else {
             int minY = startingPoint.y + height;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 minY = Math.min(minY, node.getStartingPoint().y);
             }
             tempHeight = startingPoint.y + height - minY + ResizeHandle.SIZE;
@@ -273,14 +246,14 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
     public int getBottomBorder() {
         int tempHeight = 0;
-        int noOfNodes = getNumberOfNodeComponents();
+        int noOfNodes = getNumberOfElements();
 
         if (noOfNodes == 0) {
             tempHeight = minimumHeight;
         } else {
             int maxY = startingPoint.y;
             for (int i = 0; i < noOfNodes; i++) {
-                NodeComponentGR node = getNodeComponent(i);
+                NodeComponentGR node = getElement(i);
                 maxY = Math.max(maxY, node.getStartingPoint().y + node.getHeight());
             }
             tempHeight = maxY - startingPoint.y + ResizeHandle.SIZE;
@@ -293,11 +266,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
             return false;
         } else {
-            if (context instanceof Resizable) {
-                return true;
-            } else {
-                return false;
-            }
+            return (context instanceof Resizable);
         }
     }
 
@@ -319,20 +288,20 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "nodes"), new Vector(components), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "nodes"), this);
     }
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "activitynode", (ActivityNode) getComponent());
+        streamer.streamObject(node, "activitynode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
         node.setAttribute("width", Integer.toString(width));

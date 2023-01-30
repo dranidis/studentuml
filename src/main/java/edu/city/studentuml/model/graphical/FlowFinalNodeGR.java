@@ -1,11 +1,11 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
-import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.FlowFinalNode;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
@@ -13,7 +13,6 @@ import edu.city.studentuml.util.XMLStreamer;
  * @author Biser
  */
 public class FlowFinalNodeGR extends FinalNodeGR {
-    private static final Logger logger = Logger.getLogger(FlowFinalNodeGR.class.getName());
 
     public FlowFinalNodeGR(FlowFinalNode finalNode, int x, int y) {
         super(finalNode, x, y);
@@ -26,7 +25,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
         // draw the inner part of the flow final node
         int lineWidth = 2;
 
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
         g.translate(getX() + width / 2, getY() + height / 2);
 
         g.rotate((45 * java.lang.Math.PI) / 180);
@@ -47,7 +46,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
@@ -56,7 +55,7 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObject(node, "flowfinalnode", (FlowFinalNode) getComponent());
+        streamer.streamObject(node, "flowfinalnode", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }

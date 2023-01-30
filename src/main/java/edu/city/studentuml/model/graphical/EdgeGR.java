@@ -1,9 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Edge;
-import edu.city.studentuml.util.Vector2D;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -15,8 +11,10 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import edu.city.studentuml.model.domain.Edge;
+import edu.city.studentuml.util.Vector2D;
 
 /**
  *
@@ -42,8 +40,7 @@ public abstract class EdgeGR extends GraphicalElement {
         points = new ArrayList<>();
 
         font = new Font("SansSerif", Font.PLAIN, 10);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
     protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
@@ -56,10 +53,14 @@ public abstract class EdgeGR extends GraphicalElement {
         points.add(getInitialPoint(trgPoint));
 
         font = new Font("SansSerif", Font.PLAIN, 10);
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
+
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
+     */        
     public Edge getEdge() {
         return edge;
     }
@@ -88,8 +89,8 @@ public abstract class EdgeGR extends GraphicalElement {
         points.remove(point);
     }
 
-    public Iterator<AbstractPointGR> getPoints() {
-        return points.iterator();
+    public List<AbstractPointGR> getPoints() {
+        return points;
     }
 
     public void clearPoints() {
@@ -199,14 +200,11 @@ public abstract class EdgeGR extends GraphicalElement {
             endY = edgeNode.getStartingPoint().y + edgeNode.getHeight();
             end = new EndPointGR(endX, endY);
         }
-//        points.set(getNumberOfPoints() - 1, end);
         points.set(getIndexOfPoint(edgePoint), end);
     }
 
     private EndPointGR getInitialPoint(Point point) {
-        EndPointGR end = new EndPointGR(point);
-        
-        return end;
+        return new EndPointGR(point);
     }
 
     @Override
@@ -216,7 +214,8 @@ public abstract class EdgeGR extends GraphicalElement {
 
     @Override
     public boolean contains(Point2D p) {
-        AbstractPointGR start, end;
+        AbstractPointGR start;
+        AbstractPointGR end;
 
         for (int i = 0; i < points.size() - 1; i++) {
             start = points.get(i);
@@ -248,17 +247,15 @@ public abstract class EdgeGR extends GraphicalElement {
 
         // check containment
         Rectangle rect = new Rectangle(start.getX(), start.getY() - 6, (int) b.getLength(), 12);
-        if (rect.contains(rotated)) {
-            return true;
-        }
 
-        return false;
+        return (rect.contains(rotated));
     }
 
     public int getContainingLineSegment(Point2D p) {
         int index;
-        AbstractPointGR start, end;
-
+        AbstractPointGR start;
+        AbstractPointGR end;
+        
         for (index = 0; index < points.size() - 1; index++) {
             start = points.get(index);
             end = points.get(index + 1);
@@ -274,14 +271,15 @@ public abstract class EdgeGR extends GraphicalElement {
     @Override
     public void draw(Graphics2D g) {
         Line2D line;
-        AbstractPointGR start, end;
+        AbstractPointGR start;
+        AbstractPointGR end;
 
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
-            g.setStroke(new BasicStroke(1));
-            g.setPaint(outlineColor);
+            g.setStroke(GraphicsHelper.makeSolidStroke());
+            g.setPaint(getOutlineColor());
         }
 
         setStartPoint();
@@ -307,14 +305,13 @@ public abstract class EdgeGR extends GraphicalElement {
         drawEdgeArrowHead(b.x, b.y, angle, g);
 
         // draw string for guard and weight
-        g.setStroke(new BasicStroke(1));
-        g.setPaint(outlineColor);
+        g.setStroke(GraphicsHelper.makeSolidStroke());
+        g.setPaint(getOutlineColor());
         a = getStartPoint().getMyPoint();
         b = getPointAt(1).getMyPoint();
         int x = (a.x + b.x) / 2;
         int y = (a.y + b.y) / 2;
-//        angle = getAngle(a, b);
-//        drawEdgeString(x, y, angle, edge.toString(), g);
+
         drawEdgeString(x, y, 0, edge.toString(), g);
     }
 
@@ -359,7 +356,7 @@ public abstract class EdgeGR extends GraphicalElement {
         double angle;
 
         if (x2 - x1 != 0) {
-            double gradient = ((double) (y2 - y1)) / ((double) (x2 - x1));
+            double gradient = (y2 - y1) / (x2 - x1);
 
             if (x2 - x1 > 0) // positive gradient
             {

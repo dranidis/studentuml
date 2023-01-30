@@ -1,10 +1,5 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.System;
-import edu.city.studentuml.util.XMLStreamer;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -16,14 +11,22 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.logging.Logger;
+
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.System;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author draganbisercic
  */
 public class SystemGR extends CompositeUCDElementGR implements Resizable {
+
+    private static final Logger logger = Logger.getLogger(SystemGR.class.getName());
 
     private static int systemNameXOffset = 10;
     private static int systemNameYOffset = 5;
@@ -45,10 +48,6 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         systemNameFont = new Font("Sans Serif", Font.BOLD, 12);
 
-        outlineColor = Color.black;
-        highlightColor = Color.blue;
-        fillColor = lighter(myColor());
-
         // resize handles
         up = new UpResizeHandle(this);
         down = new DownResizeHandle(this);
@@ -64,26 +63,20 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     @Override
     public void draw(Graphics2D g) {
 
-        super.draw(g);
-
         calculateWidth(g);
         calculateHeight(g);
 
         int startingX = getX();
         int startingY = getY();
 
-        // paint the system
-        // g.setPaint(fillColor);
-        // g.fillRect(startingX, startingY, width, height);
-
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(GraphicsHelper.makeSolidStroke());
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
-            g.setStroke(new BasicStroke(2));
-            g.setPaint(highlightColor);
+            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
+            g.setPaint(getHighlightColor());
         } else {
             g.setStroke(originalStroke);
-            g.setPaint(outlineColor);
+            g.setPaint(getOutlineColor());
         }
 
         // draw the system edges
@@ -95,7 +88,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         }
 
         g.setStroke(originalStroke);
-        g.setPaint(outlineColor);
+        g.setPaint(getOutlineColor());
 
         FontRenderContext frc = g.getFontRenderContext();
         // draw system name
@@ -183,9 +176,9 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         if (noOfElements == 0 && systemNameWidth == 0) {
             tempWidth = (int) MIN.getWidth();
-        } else if (noOfElements == 0 && systemNameWidth != 0) {
+        } else if (noOfElements == 0) {
             tempWidth = Math.max(systemNameWidth, (int) MIN.getWidth());
-        } else if (noOfElements != 0 && systemNameWidth == 0) {
+        } else if (systemNameWidth == 0) {
             int minX = startingPoint.x + width;
             for (int i = 0; i < noOfElements; i++) {
                 UCDComponentGR comp = getElement(i);
@@ -211,9 +204,9 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         if (noOfElements == 0 && systemNameWidth == 0) {
             tempWidth = (int) MIN.getWidth();
-        } else if (noOfElements == 0 && systemNameWidth != 0) {
+        } else if (noOfElements == 0) {
             tempWidth = Math.max(systemNameWidth, (int) MIN.getWidth());
-        } else if (noOfElements != 0 && systemNameWidth == 0) {
+        } else if (systemNameWidth == 0) {
             int maxX = startingPoint.x;
             for (int i = 0; i < noOfElements; i++) {
                 UCDComponentGR comp = getElement(i);
@@ -273,11 +266,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         if (context == UCDComponentGR.DEFAULT_CONTEXT) {
             return false;
         } else {
-            if (context instanceof Resizable) {
-                return true;
-            } else {
-                return false;
-            }
+            return (context instanceof Resizable);
         }
     }
 
@@ -299,14 +288,19 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));
         width = Integer.parseInt(node.getAttribute("width"));
         height = Integer.parseInt(node.getAttribute("height"));
 
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "ucdcomponents"), new Vector(components), this);
+        try {
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "ucdcomponents"), this);
+        } catch (NotStreamable e) {
+            logger.severe("Not streamable");
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,15 +1,13 @@
 package edu.city.studentuml.view;
 
+import java.awt.Graphics2D;
+
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.awt.Graphics2D;
-import java.util.Iterator;
 
 /**
- *
  * @author Biser
  */
 public class ADView extends DiagramView {
@@ -22,35 +20,22 @@ public class ADView extends DiagramView {
     public void drawDiagram(Graphics2D g) {
 
         // draw edges after the target node is drawn
-        SystemWideObjectNamePool.drawLock.lock();
+        lock.lock();
 
-        Iterator<GraphicalElement> iterator = model.getGraphicalElements().iterator();
-        GraphicalElement element;
-
-        while (iterator.hasNext()) {
-            element = iterator.next();
+        for (GraphicalElement element : model.getGraphicalElements()) {
             if (element instanceof EdgeGR) {
                 // do nothing
             } else if (element instanceof NodeComponentGR) {
-                NodeComponentGR node = (NodeComponentGR) element;
-                node.draw(g);
-                Iterator<EdgeGR> incomingEdges = node.getIncomingRelations();
-                while (incomingEdges.hasNext()) {
-                    EdgeGR edge = incomingEdges.next();
-                    edge.draw(g);
-                }
+                NodeComponentGR comp = (NodeComponentGR) element;
+                comp.draw(g);
 
-                Iterator<NodeComponentGR> subnodes = node.createIterator();
-                while (subnodes.hasNext()) {
-                    NodeComponentGR subnode = subnodes.next();
-                    subnode.draw(g);
+                comp.getIncomingRelations().forEachRemaining(link -> link.draw(g));
 
-                    incomingEdges = subnode.getIncomingRelations();
-                    while (incomingEdges.hasNext()) {
-                        EdgeGR edge = incomingEdges.next();
-                        edge.draw(g);
-                    }
-                }
+                comp.createIterator().forEachRemaining(el -> {
+                    el.draw(g);
+                    el.getIncomingRelations().forEachRemaining(link -> link.draw(g));
+                });
+
             } else {
                 element.draw(g);
             }
@@ -59,6 +44,6 @@ public class ADView extends DiagramView {
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
 
-        SystemWideObjectNamePool.drawLock.unlock();
+        lock.unlock();
     }
 }

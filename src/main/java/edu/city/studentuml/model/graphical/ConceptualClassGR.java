@@ -1,10 +1,12 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.util.XMLStreamer;
 import java.awt.Point;
 
 import org.w3c.dom.Element;
+
+import edu.city.studentuml.model.domain.ConceptualClass;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
@@ -20,12 +22,17 @@ public class ConceptualClassGR extends AbstractClassGR {
         abstractClass = cl;
     }
 
+    /*
+     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
+     *
+     * if name is changed the rules.txt / file needs to be updated
+     */    
     public ConceptualClass getConceptualClass() {
         return (ConceptualClass) abstractClass;
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
     }
 

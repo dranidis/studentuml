@@ -25,6 +25,7 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
@@ -39,7 +40,7 @@ public class TypedCallMessageTest {
     @Before
     public void setup() {
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().init(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
 
         umlProject = UMLProject.getInstance();
         umlProject.clear();
@@ -97,6 +98,9 @@ public class TypedCallMessageTest {
         try {
             umlProject.loadFromXML(fullpath);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NotStreamable e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

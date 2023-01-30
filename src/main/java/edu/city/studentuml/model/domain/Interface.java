@@ -1,15 +1,17 @@
 package edu.city.studentuml.model.domain;
 
-import edu.city.studentuml.util.IXMLCustomStreamable;
-import edu.city.studentuml.util.NotifierVector;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.XMLStreamer;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.w3c.dom.Element;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 
-import org.w3c.dom.Element;
+import edu.city.studentuml.util.IXMLCustomStreamable;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.NotifierVector;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.XMLStreamer;
 
 public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable {
 
@@ -73,10 +75,10 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
 
     }
 
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         methods.clear();
         setName(node.getAttribute("name"));
-        streamer.streamObjectsFrom(streamer.getNodeById(node, "methods"), methods, this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
 
     }
 

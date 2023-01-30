@@ -12,9 +12,9 @@ public abstract class CompositeUCDElement extends UCDComponent {
 
     private List<UCDComponent> ucdComponents;
 
-    public CompositeUCDElement(String name) {
+    protected CompositeUCDElement(String name) {
         super(name);
-        ucdComponents = new ArrayList<UCDComponent>();
+        ucdComponents = new ArrayList<>();
     }
 
     @Override
@@ -38,7 +38,7 @@ public abstract class CompositeUCDElement extends UCDComponent {
     }
 
     @Override
-    public Iterator createIterator() {
+    public Iterator<UCDComponent> createIterator() {
         return new CompositeUCDIterator(ucdComponents.iterator());
     }
 

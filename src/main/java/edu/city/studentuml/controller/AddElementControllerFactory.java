@@ -3,6 +3,7 @@ package edu.city.studentuml.controller;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -21,6 +22,7 @@ import edu.city.studentuml.model.domain.DecisionNode;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.FlowFinalNode;
 import edu.city.studentuml.model.domain.ForkNode;
@@ -32,6 +34,7 @@ import edu.city.studentuml.model.domain.MergeNode;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.Realization;
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
@@ -55,6 +58,7 @@ import edu.city.studentuml.model.graphical.ClassifierGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
+import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.FlowFinalNodeGR;
 import edu.city.studentuml.model.graphical.ForkNodeGR;
@@ -68,6 +72,9 @@ import edu.city.studentuml.model.graphical.MergeNodeGR;
 import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.graphical.SystemGR;
@@ -90,6 +97,8 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 public class AddElementControllerFactory {
 
     private static final Logger logger = Logger.getLogger(AddElementControllerFactory.class.getName());
+
+    private static final String LINK_BETWEEN_CLASSIFIERS_EXISTS = "The link between these two classifiers already exists!";
 
     /**
      * Each frame has its own controllers, one for each command represented by the
@@ -460,7 +469,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, baseClass, superClass)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 
@@ -505,7 +514,7 @@ public class AddElementControllerFactory {
                     if (classA instanceof ClassGR && classB instanceof InterfaceGR) {
 
                         if (relationshipExists(model, classA, classB)) {
-                            showErrorMessage(frame, "The link between these two classifiers already exists!");
+                            showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                             return null;
                         }
                         ClassGR classGR = (ClassGR) classA;
@@ -528,7 +537,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, uc1, uc2)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 
@@ -554,7 +563,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     if (relationshipExists(model, uc1, uc2)) {
-                        showErrorMessage(frame, "The link between these two classifiers already exists!");
+                        showErrorMessage(frame, LINK_BETWEEN_CLASSIFIERS_EXISTS);
                         return null;
                     }
 
@@ -577,13 +586,32 @@ public class AddElementControllerFactory {
         case "SystemOperationGR":
             return new AddCallMessageController(model, frame);
         case "ReturnMessageGR":
-            return new AddReturnMessageController(model, frame);
+            return new AddSDLinkController(model, frame) {
+
+                @Override
+                protected SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y) {
+                    ReturnMessage message = new ReturnMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier(), "");
+                    return new ReturnMessageGR(roleA, roleB, message, y);
+                }
+
+            };
         case "CallMessageGR":
             return new AddCallMessageController(model, frame);
         case "CreateMessageGR":
             return new AddCreateMessageController((SDModel) model, frame);
         case "DestroyMessageGR":
-            return new AddDestroyMessageController((SDModel) model, frame);
+            return new AddSDLinkController(model, frame) {
+
+                @Override
+                protected SDMessageGR createRelationship(RoleClassifierGR roleA, RoleClassifierGR roleB, int y) {
+                    if (roleA == roleB) {
+                        return null;
+                    }
+                    DestroyMessage message = new DestroyMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier());
+                    return new DestroyMessageGR(roleA, roleB, message, y);                    
+                }
+
+            };
         case "ControlFlowGR":
             return new AddControlFlowController((ADModel) model, frame);
         case "ObjectFlowGR":
@@ -597,17 +625,32 @@ public class AddElementControllerFactory {
 
     protected boolean relationshipExists(DiagramModel model, ClassifierGR baseClass, ClassifierGR superClass) {
 
-        boolean anyRealizationMatch = model.getCentralRepository().getRealizations().stream().anyMatch(
-                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
-                        || (r.getTheClass() == superClass.getClassifier()
-                                && r.getTheInterface() == baseClass.getClassifier()));
-
-        boolean anyGeneralizationnMatch = model.getCentralRepository().getGeneralizations().stream().anyMatch(
+         Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
                 r -> (r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
                         || r.getBaseClass() == superClass.getClassifier()
-                                && r.getSuperClass() == baseClass.getClassifier()));
+                                && r.getSuperClass() == baseClass.getClassifier())).findFirst();
 
-        if (anyRealizationMatch || anyGeneralizationnMatch) {
+        Optional<Realization> aRealization = model.getCentralRepository().getRealizations().stream().filter(
+                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
+                        || (r.getTheClass() == superClass.getClassifier()
+                                && r.getTheInterface() == baseClass.getClassifier()))
+                .findFirst();
+
+        if (aRealization.isPresent() || aGeneralization.isPresent()) {
+            if (aRealization.isPresent()) {
+                Realization realization = aRealization.get();
+                // it is the same relationship; allow
+                if (realization.getTheClass() == baseClass.getClassifier()) {
+                    return false;
+                }
+            }
+            if (aGeneralization.isPresent()) {
+                 Generalization generalization = aGeneralization.get();
+                // it is the same relationship; allow
+                if (generalization.getBaseClass() == baseClass.getClassifier()) {
+                    return false;
+                }
+            }
             return true;
         }
 

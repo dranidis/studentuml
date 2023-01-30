@@ -1,19 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package edu.city.studentuml.util.undoredo;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 /**
  *
