@@ -152,10 +152,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
         UMLProject umlProject = UMLProject.getInstance();
-        umlProject.clear();
-
         umlProject.clear();
 
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
@@ -179,10 +178,10 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
-        UMLProject umlProject = UMLProject.getInstance();
-        umlProject.clear();
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
+        UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
@@ -214,7 +213,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -246,7 +247,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -267,7 +270,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -286,7 +291,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -309,7 +316,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -359,7 +368,9 @@ public class IgnoreJSONTest {
         ObjectMapper mapper = new ObjectMapper();
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -496,7 +507,9 @@ public class IgnoreJSONTest {
         String filename = "diagrams" + File.separator + "tests" + File.separator + "classes.xml";
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
@@ -523,7 +536,9 @@ public class IgnoreJSONTest {
         String filename = "diagrams" + File.separator + "studentuml.xml";
 
         String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
+
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
