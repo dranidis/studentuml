@@ -237,14 +237,14 @@ public final class ObjectFactory extends Observable {
         try {
             scale = Double.parseDouble(element.getAttribute("scale"));
         } catch (Exception e) {
-            logger.severe("scale attribute not existing or cannot be converted to double. Setting scale to 1.0.");
+            logger.fine("scale attribute not existing or cannot be converted to double. Setting scale to 1.0.");
             scale = 1.0;
         }
 
         try {
             isMaximum = Boolean.parseBoolean(element.getAttribute("maximized"));
         } catch (Exception e) {
-            logger.severe("maximized attribute not existing or cannot be converted to double. Setting to false");
+            logger.fine("maximized attribute not existing or cannot be converted to double. Setting to false");
             isMaximum = false;
         }
 
@@ -252,7 +252,7 @@ public final class ObjectFactory extends Observable {
         try {
             zOrder = Integer.parseInt(element.getAttribute("zorder"));
         } catch (Exception e) {
-            logger.severe("zorder attribute not existing. Setting to -1");
+            logger.fine("zorder attribute not existing. Setting to -1");
             zOrder = -1;
         }
 

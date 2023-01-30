@@ -67,6 +67,7 @@ import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.view.gui.components.HTMLEditorPane;
 import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
@@ -127,8 +128,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         frame.setVisible(true);
 
-        NewversionChecker.checkForNewVersion(frame);
-
         ObjectFactory.getInstance().addObserver(this);
         umlProject.addObserver(this);
 
@@ -181,7 +180,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         initializeRules();
         SystemWideObjectNamePool.getInstance().addObserver(this);
         setUserId();
-        createLookAndFeel();
         addKeyListener(this);
         createInterface();
     }
@@ -193,9 +191,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         // set the rule file and construct the consistency checker
         SystemWideObjectNamePool.getInstance().setRuleFile(currentRuleFile);
-        
-    }
 
+    }
 
     /*
      * sets the user id for coloring purposes (when drawing graphical elements)
@@ -206,10 +203,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         } else {
             SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
         }
-    }
-
-    private void createLookAndFeel() {
-
     }
 
     private void createInterface() {
@@ -240,7 +233,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         ProjectToolBar c = (ProjectToolBar) bl.getLayoutComponent(BorderLayout.NORTH);
         if (c != null) {
             remove(c);
-        } 
+        }
         add(toolbar, BorderLayout.NORTH);
         revalidate();
         repaint();
@@ -549,32 +542,32 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         String dialogText;
         String initialName;
         switch (type) {
-            case DiagramType.UCD:
-                dialogText = "Use Case Diagram Name: ";
-                initialName = "ucd";
-                break;
-            case DiagramType.SSD:
-                dialogText = "System Sequence Diagram Name:";
-                initialName = "ssd";
-                break;
-            case DiagramType.SD:
-                dialogText = "Sequence Diagram Name: ";
-                initialName = "sd";
-                break;
-            case DiagramType.CCD:
-                dialogText = "Conceptual Class Diagram Name: ";
-                initialName = "ccd";
-                break;
-            case DiagramType.DCD:
-                dialogText = "Design Class Diagram Name: ";
-                initialName = "dcd";
-                break;
-            case DiagramType.AD:
-                dialogText = "Activity Diagram Name: ";
-                initialName = "ad";
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
+        case DiagramType.UCD:
+            dialogText = "Use Case Diagram Name: ";
+            initialName = "ucd";
+            break;
+        case DiagramType.SSD:
+            dialogText = "System Sequence Diagram Name:";
+            initialName = "ssd";
+            break;
+        case DiagramType.SD:
+            dialogText = "Sequence Diagram Name: ";
+            initialName = "sd";
+            break;
+        case DiagramType.CCD:
+            dialogText = "Conceptual Class Diagram Name: ";
+            initialName = "ccd";
+            break;
+        case DiagramType.DCD:
+            dialogText = "Design Class Diagram Name: ";
+            initialName = "dcd";
+            break;
+        case DiagramType.AD:
+            dialogText = "Activity Diagram Name: ";
+            initialName = "ad";
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
         }
         // modelName
         return JOptionPane.showInputDialog(dialogText, initialName);
@@ -787,7 +780,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (ruleEditorTabPlacement != -1) {
             int selected = consistencyCheckTabbedPane.getSelectedIndex();
             consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
-            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null,
+                    ruleEditorTabPlacement);
             consistencyCheckTabbedPane.setSelectedIndex(selected);
         }
 
@@ -801,7 +795,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         if (ruleEditorTabPlacement != -1) {
             int selected = consistencyCheckTabbedPane.getSelectedIndex();
             consistencyCheckTabbedPane.remove(ruleEditorTabPlacement);
-            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null, ruleEditorTabPlacement);
+            consistencyCheckTabbedPane.insertTab("Rule Editor", null, new RuleEditor(currentRuleFile), null,
+                    ruleEditorTabPlacement);
             consistencyCheckTabbedPane.setSelectedIndex(selected);
         }
         getInternalFramesOfType(DiagramType.DCD).forEach(iFrame -> ((DCDInternalFrame) iFrame).setAdvancedMode(true));
@@ -869,11 +864,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     /**
-     * Closes the current project while prompting the user to save changes if necessary
+     * Closes the current project while prompting the user to save changes if
+     * necessary
      * 
-     * @return true if project was closed AND false if closing was cancelled or if saving was cancellled in an unsaved project. 
+     * @return true if project was closed AND false if closing was cancelled or if
+     *         saving was cancellled in an unsaved project.
      */
-     public boolean closeProject() {
+    public boolean closeProject() {
         boolean runtimeChecking = isRuntimeChecking();
         setRuntimeChecking(false);
 
@@ -956,14 +953,11 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     //     return path1.equals(path2);
     // }
 
-
-
     // Inner class ProjectToolBar implements the main toolbar of the application
-
 
     public void changeLookAndFeel(String className) {
 
-        for (JInternalFrame f: desktopPane.getAllFrames()) {
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
             DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
             iFrame.setzOrder(desktopPane.getComponentZOrder(iFrame));
         }
@@ -985,14 +979,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         for (JInternalFrame f : desktopPane.getAllFrames()) {
             DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
             iFrame.recreateInternalFrame();
-        }   
+        }
 
         setZOrderOfInternalFrames();
 
         for (JInternalFrame f : desktopPane.getAllFrames()) {
             f.revalidate();
             f.repaint();
-        }   
+        }
 
         /*
          * create again the repositoryTreeView
@@ -1000,7 +994,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         umlProject.deleteObserver(repositoryTreeView);
         RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
         JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
-        
+
         int splitLocation = mainSplitPane.getDividerLocation();
         mainSplitPane.setLeftComponent(newTreePane);
         mainSplitPane.setDividerLocation(splitLocation);
@@ -1013,7 +1007,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         mainSplitPane.revalidate();
         mainSplitPane.repaint();
-        
+
         repositoryTreeView.updateTree();
         repositoryTreeView.restoreExpansionState(0, expansionState);
 
@@ -1034,24 +1028,40 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public void changeFillColor() {
         Colors.chooseFillColor();
-        repaintInternalFrames();    
+        repaintInternalFrames();
     }
 
     protected void setZOrderOfInternalFrames() {
         /*
          * set the Zorder of internalframes according to the XML file ZOrder property
          */
-        for (JInternalFrame frame : desktopPane.getAllFrames()) {
-            DiagramInternalFrame iframe = (DiagramInternalFrame) frame;
+        for (JInternalFrame f : desktopPane.getAllFrames()) {
+            DiagramInternalFrame iframe = (DiagramInternalFrame) f;
             if (iframe.getzOrder() >= 0 && iframe.getzOrder() < desktopPane.getAllFrames().length) {
                 logger.finer(() -> "Restore: " + iframe.getModel().getName() + " at zorder " + iframe.getzOrder());
                 desktopPane.setComponentZOrder(iframe, iframe.getzOrder());
             } else {
-                logger.finer(() -> "ZOrder for frame: " + iframe.getModel().getName() + " not set: " + iframe.getzOrder());
+                logger.finer(
+                        () -> "ZOrder for frame: " + iframe.getModel().getName() + " not set: " + iframe.getzOrder());
             }
         }
     }
 
+    public void checkForUpdates() {
+        NewversionChecker.checkForNewVersion(frame);
+    }
 
+    public void aboutStudentUML() {
+        final String  ISSUES_URL = "https://bitbucket.org/studentuml/studentuml-public/issues?status=new&status=open";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<h1>StudentUML</h1>");
+        sb.append("<p>" + "Version: " + NewversionChecker.getCurrentVersion() + "</p>");
+        sb.append("<p>Report issues at:</p>");
+        sb.append("<p><a href=\"" + ISSUES_URL + "\">" + ISSUES_URL + "</a></p>");
+
+        HTMLEditorPane.showHTMLbody(frame, sb.toString());
+    }
 
 }

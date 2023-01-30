@@ -42,7 +42,7 @@ public abstract class AddSDLinkController extends AddElementController {
         GraphicalElement toClassifier = diagramModel.getContainingGraphicalElement(x, y);
 
         if (toClassifier instanceof RoleClassifierGR) {
-            addRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
+            addCompoundRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
         }
 
         // set classA to null to start over again
@@ -59,7 +59,7 @@ public abstract class AddSDLinkController extends AddElementController {
         GraphicalElement toClassifier = diagramModel.getContainingGraphicalElement(x, y);
 
         if (toClassifier instanceof RoleClassifierGR) {
-            addCompoundRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
+            addRelationship(fromClassifier, (RoleClassifierGR) toClassifier, y);
         }
 
         // set classA to null to start over again

@@ -2,6 +2,7 @@ package edu.city.studentuml.util.validation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -125,7 +126,7 @@ public class RuleBasedSystemGenerator {
      *                     belongsTo(a1,a2), a1 is "this" a2 is
      *                     "getGraphicalElements.this"
      */
-    private void addFromVector(Object object, String functionName, Vector<String> factList, Vector<String> arguments) {
+    private void addFromVector(Object object, String functionName, Vector<String> factList, List<String> arguments) {
         Vector<Object> objects = new Vector<>();
         for (int i = 0; i < arguments.size(); i++) {
             if ((arguments.get(i)).split("[.]").length == 2) {
@@ -161,7 +162,7 @@ public class RuleBasedSystemGenerator {
                                         logger.severe("not implemented!!!");
                                     }
                                 } else {
-                                    newArguments.add(getter(object, (String) arguments.get(z)));
+                                    newArguments.add(getter(object, arguments.get(z)));
                                 }
                             }
                         }

@@ -267,4 +267,5 @@ public class ApplicationFrame extends ApplicationGUI {
             }
         }
     }
+
 }
