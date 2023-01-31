@@ -1,43 +1,46 @@
 package edu.city.studentuml.view.gui;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Enumeration;
-import java.io.Serializable;
+
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.EventListenerList;
 
 /**
  *
  */
 public class CollectionTreeModel implements Serializable, TreeModel {
 
-    ArrayList root;
-    HashMap allNodes, parents;
+    List root;
+    Map allNodes;
+    Map parents;
     EventListenerList eventList = new EventListenerList();
     String name;
 
     /**
      * Inner class that provides the ability to enumerate over this collection.
      */
-    class MyEnumeration implements Enumeration {
+    class MyEnumeration<E> implements Enumeration<E> {
 
-        Enumeration enumer;
-        Iterator itr;
+        Enumeration<E> enumer;
+        Iterator<E> itr;
         boolean skip = true;
 
-        MyEnumeration(Iterator iterator) {
+        MyEnumeration(Iterator<E> iterator) {
             itr = iterator;
         }
 
-        MyEnumeration(Enumeration e) {
+        MyEnumeration(Enumeration<E> e) {
             enumer = e;
         }
 
@@ -48,8 +51,8 @@ public class CollectionTreeModel implements Serializable, TreeModel {
             return itr.hasNext();
         }
 
-        public Object nextElement() {
-            Object obj;
+        public E nextElement() {
+            E obj;
             if (enumer != null) {
                 obj = enumer.nextElement();
                 enumer.nextElement();  //Drop child collection.
@@ -66,9 +69,9 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     /**
      */
     public CollectionTreeModel() {
-        root = new ArrayList();
-        allNodes = new HashMap(10);
-        parents = new HashMap(10);
+        root = new ArrayList<>();
+        allNodes = new HashMap<>(10);
+        parents = new HashMap<>(10);
     }
 
     /** Adds new elements to the root of the tree.  If the element
@@ -81,7 +84,8 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     /**
      * Implement TreeModel
      */
-    public void addTreeModelListener(TreeModelListener l) {
+    @Override
+     public void addTreeModelListener(TreeModelListener l) {
         eventList.add(TreeModelListener.class, l);
     }
 
@@ -109,7 +113,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     /** Return an enumeration of the entire contents of collection.
      */
     public Enumeration elements() {
-        Iterator itr = ((HashMap) allNodes.clone()).keySet().iterator();
+        Iterator itr = ((HashMap) ((HashMap) allNodes).clone()).keySet().iterator();
         MyEnumeration enumer = new MyEnumeration(itr);
         enumer.skip = false;
         return enumer;
@@ -347,7 +351,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
      * Path to the parent of key.  At minimum this will contain the
      * root node.
      */
-    public Object[] pathTo(Object key) {
+    private Object[] pathTo(Object key) {
         List v = new ArrayList();
         Object parent = getParent(key);
         while (parent != null) {
