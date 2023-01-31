@@ -1,38 +1,18 @@
 package edu.city.studentuml;
 
-import java.awt.geom.Point2D;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import edu.city.studentuml.model.graphical.AssociationGR;
 import static org.junit.Assert.assertTrue;
+
+import java.awt.geom.Point2D;
+
+import org.junit.Test;
+
+import edu.city.studentuml.model.graphical.AssociationGR;
 
 /**
  *
  * @author dimitris
  */
 public class AbstractLinGRTest {
-
-    public AbstractLinGRTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void getEndPointFromTest() {

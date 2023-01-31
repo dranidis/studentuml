@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,7 +19,6 @@ import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
-import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.Interface;
@@ -34,23 +34,34 @@ import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
-import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 public class IgnoreJSONTest {
-    @Test
-    public void designClass() {
-        ObjectMapper mapper = new ObjectMapper();
-        DesignClass dc = new DesignClass("A");
+    ObjectMapper mapper;
+
+    @Before
+    public void setup() {
+        mapper = new ObjectMapper();
+    }
+
+    private String getJSON(Object cl) {
         String jsonString = "";
         try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dc);
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cl);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        // System.out.println(jsonString);
+        return jsonString;
+    }
+
+    @Test
+    public void designClass() {
+        DesignClass dc = new DesignClass("A");
+        String jsonString = getJSON(dc);
+        System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("\"name\" : \"A\""));
         assertTrue(jsonString.contains("attributes"));
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
@@ -60,17 +71,11 @@ public class IgnoreJSONTest {
 
     @Test
     public void classGr() {
-        ObjectMapper mapper = new ObjectMapper();
-        DesignClass dc = new DesignClass("A");
-        ClassGR cl = new ClassGR(dc, new Point(23, 2));
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cl);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        ClassGR cl = new ClassGR("A");
+        String jsonString = getJSON(cl);
         // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
+        assertTrue(jsonString.contains("\"name\" : \"A\""));
         assertTrue(jsonString.contains("attributes"));
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
@@ -81,14 +86,8 @@ public class IgnoreJSONTest {
 
     @Test
     public void interface_() {
-        ObjectMapper mapper = new ObjectMapper();
         Interface in = new Interface("SomeI");
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(in);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(in);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
@@ -97,15 +96,9 @@ public class IgnoreJSONTest {
 
     @Test
     public void interfaceGr() {
-        ObjectMapper mapper = new ObjectMapper();
         Interface in = new Interface("SomeI");
         InterfaceGR inGr = new InterfaceGR(in, new Point(1, 2));
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(inGr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(inGr);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("methods"));
         assertTrue(jsonString.contains("name"));
@@ -116,43 +109,28 @@ public class IgnoreJSONTest {
 
     @Test
     public void designClassWithAttributesAndMethods() {
-        ObjectMapper mapper = new ObjectMapper();
         DesignClass dc = new DesignClass("A");
         dc.addAttribute(new Attribute("length", DataType.INTEGER));
         Method m = new Method("setLength");
         m.addParameter(new MethodParameter("length", DataType.INTEGER));
         dc.addMethod(m);
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dc);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(dc);
         // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
     }
 
     @Test
     public void graphicalClass() {
-        ObjectMapper mapper = new ObjectMapper();
         new DesignClass("A");
         ClassGR graphicalClass = new ClassGR(new DesignClass("A"), new java.awt.Point(10, 12));
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(graphicalClass);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(graphicalClass);
         // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
     }
 
     @Test
     public void diagramClass() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
@@ -163,22 +141,14 @@ public class IgnoreJSONTest {
         ClassGR graphicalClass = new ClassGR(dc, new java.awt.Point(10, 12));
         diagramModel.addGraphicalElement(graphicalClass);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(diagramModel);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("\"name\" : \"dcd diagram\""));
     }
 
     @Test
     public void diagramClassWithAssociation() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+       
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -198,22 +168,14 @@ public class IgnoreJSONTest {
         AssociationGR associationGR = new AssociationGR(graphicalClass1, graphicalClass2, association);
         diagramModel.addGraphicalElement(associationGR);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(diagramModel);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("association"));
     }
 
     @Test
     public void diagramClassWithAggregation() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -232,22 +194,14 @@ public class IgnoreJSONTest {
         AggregationGR aggregationGR = new AggregationGR(graphicalClass1, graphicalClass2, aggregation);
         diagramModel.addGraphicalElement(aggregationGR);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(diagramModel);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("association"));
     }
 
     @Test
     public void emptyDiagram() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -255,43 +209,27 @@ public class IgnoreJSONTest {
 
         DCDModel diagramModel = new DCDModel("dcd diagram", umlProject);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(diagramModel);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(diagramModel);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("dcd diagram"));
     }
 
     @Test
     public void emptyProject() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(umlProject);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("diagramModels"));
     }
 
     @Test
     public void projectWithTwoDiagrams() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -300,12 +238,7 @@ public class IgnoreJSONTest {
         new DCDModel("dcd diagram", umlProject);
         new DCDModel("dcd2 diagram", umlProject);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(umlProject);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("dcd diagram"));
         assertTrue(jsonString.contains("dcd2 diagram"));
@@ -313,10 +246,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void projectWithTwoDiagramsTwoClassesAndGeneralizations() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -345,12 +275,7 @@ public class IgnoreJSONTest {
         dcd2.addGraphicalElement(cgrB2);
         dcd2.addGraphicalElement(genGR2);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(umlProject);
         // System.out.println(jsonString);
 
         int count = 0, index = 0;
@@ -365,10 +290,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void projectWithTwoDiagramsAClassAnInterfaceAndRealizations() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -381,8 +303,7 @@ public class IgnoreJSONTest {
         ClassGR cgr = new ClassGR(dc, new Point());
         Interface in = new Interface(("In"));
         InterfaceGR ingr = new InterfaceGR(in, new Point());
-        Realization r = new Realization(dc, in);
-        RealizationGR rgr = new RealizationGR(cgr, ingr, r);
+        RealizationGR rgr = new RealizationGR(cgr, ingr);
 
         dcd.addGraphicalElement(cgr);
         dcd.addGraphicalElement(ingr);
@@ -399,12 +320,7 @@ public class IgnoreJSONTest {
         dcd2.addGraphicalElement(ingr2);
         dcd2.addGraphicalElement(rgr2);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(umlProject);
         // System.out.println(jsonString);
 
         int count = 0, index = 0;
@@ -419,18 +335,12 @@ public class IgnoreJSONTest {
 
     @Test
     public void realization() {
-        ObjectMapper mapper = new ObjectMapper();
 
         DesignClass dc = new DesignClass("A");
         Interface in = new Interface(("In"));
         Realization r = new Realization(dc, in);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(r);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(r);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("theClass"));
         assertTrue(jsonString.contains("theInterface"));
@@ -438,42 +348,25 @@ public class IgnoreJSONTest {
 
     @Test
     public void realizationGR() {
-        ObjectMapper mapper = new ObjectMapper();
 
-        DesignClass dc = new DesignClass("A");
-        ClassGR cgr = new ClassGR(dc, new Point(23, 2));
+        ClassGR cgr = new ClassGR("A");
         Interface in = new Interface(("In"));
         InterfaceGR ingr = new InterfaceGR(in, new Point(23, 2));
-        Realization r = new Realization(dc, in);
-        RealizationGR rgr = new RealizationGR(cgr, ingr, r);
+        RealizationGR rgr = new RealizationGR(cgr, ingr);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rgr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(rgr);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("RealizationGR"));
     }
 
     @Test
     public void dependencyGR() {
-        ObjectMapper mapper = new ObjectMapper();
 
-        DesignClass dc1 = new DesignClass("A");
-        ClassGR cgr1 = new ClassGR(dc1, new Point(23, 2));
-        DesignClass dc2 = new DesignClass("B");
-        ClassGR cgr2 = new ClassGR(dc2, new Point(23, 2));
-        Dependency d = new Dependency(dc1, dc2);
-        DependencyGR dgr = new DependencyGR(cgr1, cgr2, d);
+        ClassGR cgr1 = new ClassGR("A");
+        ClassGR cgr2 = new ClassGR("B");
+        DependencyGR dgr = new DependencyGR(cgr1, cgr2);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dgr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(dgr);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("DependencyGR"));
         assertTrue(jsonString.contains("dependency"));
@@ -481,21 +374,12 @@ public class IgnoreJSONTest {
 
     @Test
     public void generalizationGR() {
-        ObjectMapper mapper = new ObjectMapper();
 
-        DesignClass dc1 = new DesignClass("Super");
-        ClassGR cgr1 = new ClassGR(dc1, new Point(23, 2));
-        DesignClass dc2 = new DesignClass("Sub");
-        ClassGR cgr2 = new ClassGR(dc2, new Point(23, 2));
-        Generalization g = new Generalization(dc1, dc2);
-        GeneralizationGR ggr = new GeneralizationGR(cgr1, cgr2, g);
+        ClassGR cgr1 = new ClassGR("Super");
+        ClassGR cgr2 = new ClassGR("Sub");
+        GeneralizationGR ggr = new GeneralizationGR(cgr1, cgr2);
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ggr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(ggr);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("GeneralizationGR"));
         assertTrue(jsonString.contains("generalization"));
@@ -503,11 +387,8 @@ public class IgnoreJSONTest {
 
     @Test
     public void readXML() {
-        ObjectMapper mapper = new ObjectMapper();
         String filename = "diagrams" + File.separator + "tests" + File.separator + "classes.xml";
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -521,12 +402,7 @@ public class IgnoreJSONTest {
             e.printStackTrace();
         }
 
-        String jsonString = "";
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(umlProject);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String jsonString = getJSON(umlProject);
         // System.out.println(jsonString);
         assertTrue(jsonString.contains("diagramModels"));
     }
@@ -534,9 +410,7 @@ public class IgnoreJSONTest {
     @Test
     public void readStudentXML() {
         String filename = "diagrams" + File.separator + "studentuml.xml";
-
-        String simpleRulesFile = this.getClass().getResource(Constants.RULES_SIMPLE).toString();
-        // SystemWideObjectNamePool.getInstance().setRuleFileAndCreateConsistencyChecker(simpleRulesFile);
+        
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();

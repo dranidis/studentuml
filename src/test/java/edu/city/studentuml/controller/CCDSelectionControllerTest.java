@@ -80,7 +80,7 @@ public class CCDSelectionControllerTest {
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
 
-        /**
+        /*
          * DELETE a
          */
         selectionController.addElementToSelection(a);
@@ -93,7 +93,7 @@ public class CCDSelectionControllerTest {
         // System.out.println("DELETED A");
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
-        /**
+        /*
          * UNDO
          */
         ccdInternalFrame.getUndoManager().undo();

@@ -32,23 +32,23 @@ public class DCDSelectionControllerTest {
         model = new DCDModel("ccd", umlProject);
         internalFrame = new DCDInternalFrame(model, true);
         h = new Helper(model);
-        selectionController  = new DCDSelectionController(internalFrame, model);
+        selectionController = new DCDSelectionController(internalFrame, model);
     }
 
     @Test
     public void testCreation() {
-        
+
         assertNotNull(selectionController);
     }
 
-    @Test 
+    @Test
     public void testDeleteInterfaceWithAnAssociation() {
-        
+
         InterfaceGR i = h.addInterface("I");
         ClassGR a = h.addClass("A");
 
         h.addAssociation(a, i);
-        
+
         selectionController.addElementToSelection(i);
         selectionController.deleteSelected();
 
@@ -58,7 +58,6 @@ public class DCDSelectionControllerTest {
 
     @Test
     public void testDeleteElementUndo() {
-        
 
         /**
          * Adds a conceptual class A
@@ -68,18 +67,15 @@ public class DCDSelectionControllerTest {
         selectionController.addElementToSelection(cGr);
         selectionController.deleteSelected();
 
-        assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> 
-        ge instanceof ClassGR));
+        assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR));
 
         internalFrame.getUndoManager().undo();
 
-        assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> 
-        ge instanceof ClassGR));        
+        assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR));
     }
 
     @Test
     public void testDeleteElementWithRelationshipsUndo() {
-        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -104,9 +100,9 @@ public class DCDSelectionControllerTest {
          */
         selectionController.addElementToSelection(a);
         selectionController.deleteSelected();
-        
-        assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR
-                && ((ClassGR) ge).getAbstractClass().getName().equals("A")));
+
+        assertFalse("no matches", model.getGraphicalElements().stream()
+                .anyMatch(ge -> ge instanceof ClassGR && ((ClassGR) ge).getAbstractClass().getName().equals("A")));
         assertEquals(0, h.countRelationshipsWithClassNamed("A"));
 
         // System.out.println("DELETED A");
@@ -121,11 +117,10 @@ public class DCDSelectionControllerTest {
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ClassGR));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
-    }  
-    
+    }
+
     @Test
     public void testdeleteSelectedElements() {
-        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -144,7 +139,6 @@ public class DCDSelectionControllerTest {
         selectionController.selectAll();
         selectionController.deleteSelected();
 
-
         // System.out.println("DELETE ALL");
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
@@ -155,10 +149,10 @@ public class DCDSelectionControllerTest {
         internalFrame.getUndoManager().undo();
         // System.out.println("UNDO");
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
-        
+
         assertEquals(4, model.getGraphicalElements().size());
 
-                /**
+        /**
          * REDO
          */
         internalFrame.getUndoManager().redo();
@@ -166,11 +160,10 @@ public class DCDSelectionControllerTest {
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
 
         assertEquals(0, model.getGraphicalElements().size());
-    }  
+    }
 
     @Test
     public void testdeleteSelectedElementsWithNotes() {
-        
 
         ClassGR a = h.addClass("A");
         ClassGR b = h.addClass("B");
@@ -189,18 +182,17 @@ public class DCDSelectionControllerTest {
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(countAll, model.getGraphicalElements().size());
 
-        /**
+        /*
          * DELETE all
          */
         selectionController.selectAll();
         selectionController.deleteSelected();
 
-
         // System.out.println("DELETE ALL");
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
 
-        /**
+        /*
          * UNDO
          */
         internalFrame.getUndoManager().undo();
@@ -208,14 +200,13 @@ public class DCDSelectionControllerTest {
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(countAll, model.getGraphicalElements().size());
 
-                /**
+        /*
          * REDO
          */
         internalFrame.getUndoManager().redo();
         // System.out.println("REDO");
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(0, model.getGraphicalElements().size());
-    }  
-
+    }
 
 }
