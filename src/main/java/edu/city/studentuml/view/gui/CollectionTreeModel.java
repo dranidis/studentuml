@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelEvent;
@@ -20,6 +21,8 @@ import javax.swing.tree.TreePath;
  *
  */
 public class CollectionTreeModel implements Serializable, TreeModel {
+
+    private static final Logger logger = Logger.getLogger(CollectionTreeModel.class.getName());
 
     List root;
     Map allNodes;
@@ -156,13 +159,12 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         }
         List target = getListFor(key);
         if (target == null) {
-            return new Vector().elements();
+            return new Vector<>().elements();
         }
         return new MyEnumeration(target.iterator());
     }
 
-    /**
-     */
+    @Override
     public Object getChild(Object parent, int index) {
         List children = null;
         if (parent == null || parent == this) {
@@ -179,8 +181,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         return children.get((index * 2));
     }
 
-    /**
-     */
+    @Override
     public int getChildCount(Object parent) {
         if (parent == this) {
             parent = null;
@@ -195,9 +196,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
             }
             size = target.size();
         }
-        if (size == 0) {
-            return size;
-        }
+
         return size / 2;
     }
 
@@ -212,6 +211,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
      * @param parent If null, look at root values.
      * @return int Index of the child. -1 if child not found at parent.
      */
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         List children = null;
         if (parent == null || parent == this) {
@@ -235,6 +235,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         return parents.get(key);
     }
 
+    @Override
     public Object getRoot() {
         return this;
     }
@@ -268,12 +269,10 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     }
 
     public void sortRoot() {
-        //List target = (List)allNodes.get(key);
         if (root == null) {
             return;
         }
-        //List list = getChildrenCollection(key, target);
-        List strList = new ArrayList();
+        List strList = new ArrayList<>();
 
         Iterator i = root.iterator();
         while (i.hasNext()) {
@@ -308,11 +307,12 @@ public class CollectionTreeModel implements Serializable, TreeModel {
      */
     public boolean isEmpty(Object key) {
         List target = getListFor(key);
-        return target == null ? true : target.isEmpty();
+        return target == null || target.isEmpty();
     }
 
     /**
      */
+    @Override
     public boolean isLeaf(Object node) {
         return getChildCount(node) == 0;
     }
@@ -326,7 +326,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         allNodes.put(key, dest);
         if (target == null) {
             dest.add(key);
-            dest.add(new ArrayList());
+            dest.add(new ArrayList<>());
 
             int[] vals = new int[1];
             vals[0] = dest.indexOf(key) / 2;
@@ -352,7 +352,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
      * root node.
      */
     private Object[] pathTo(Object key) {
-        List v = new ArrayList();
+        List<Object> v = new ArrayList<>();
         Object parent = getParent(key);
         while (parent != null) {
             v.add(parent);
@@ -399,7 +399,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
             target = root;
             allNodes.put(key, root);
             root.add(key);
-            content = new ArrayList();
+            content = new ArrayList<>();
             root.add(content);
         }
         parents.put(node, key);
@@ -410,22 +410,10 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     }
 
     /**
-     */
-    public void refreshPath(TreePath path) {
-        int[] vals = new int[1];
-        Object key = path.getLastPathComponent();
-        vals[0] = getIndexOfChild(getParent(key), key);
-        Object[] child = new Object[1];
-        child[0] = key;
-        TreeModelEvent e = new TreeModelEvent(this, pathTo(key), vals, child);
-        fireTreeNodesChanged(e);
-    }
-
-    /**
      * Remove the object 'key' and promote all of it's children to have
      * the same parent that 'key' had.
      */
-    public synchronized void remove(Object key) {
+    private synchronized void remove(Object key) {
         Enumeration contents = get(key);
         if (contents == null) {
             return;
@@ -452,6 +440,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
 
     /**
      */
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         eventList.remove(TreeModelListener.class, l);
     }
@@ -473,7 +462,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         allNodes.remove(key);
         Object parent = parents.get(key);
         parents.remove(key);
-        if (with != null && parent != null) {
+        if (parent != null) {
             parents.put(with, parent);
         }
     }
@@ -491,30 +480,20 @@ public class CollectionTreeModel implements Serializable, TreeModel {
     }
 
     /**
-     * @deprecated Get the child count at the object.
-     */
-    public int size(Object key) {
-        return getChildCount(key);
-    }
-
-    /**
      * What is the name of 'this' object.
      */
     public String toString() {
         if (name != null) {
             return name;
         }
-        String str = new String();
-        str += "";
-
-        return str;
+        return "";
     }
 
-    /**
-     */
+
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
-        System.out.println("??----TreeCollection>>valueForPathChanged(path,val)----?");
-        System.out.println(path);
-        System.out.println(newValue);
+        logger.info("??----TreeCollection>>valueForPathChanged(path,val)----?");
+        logger.info(() -> "" + path);
+        logger.info(() -> "" + newValue);
     }
 }
