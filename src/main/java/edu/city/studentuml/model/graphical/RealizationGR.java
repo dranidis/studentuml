@@ -28,6 +28,10 @@ public class RealizationGR extends LinkGR {
         realization = real;
     }
 
+    public RealizationGR(ClassGR c, InterfaceGR i) {
+        this(c, i, new Realization (c.getDesignClass(), i.getInterface()));
+    }
+
     @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         drawRealizationArrowHead(bX, bY, rotationAngle, g);

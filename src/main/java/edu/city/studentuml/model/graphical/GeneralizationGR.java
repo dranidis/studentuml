@@ -23,6 +23,10 @@ public class GeneralizationGR extends LinkGR {
         generalization = gener;
     }
 
+    public GeneralizationGR(ClassifierGR parent, ClassifierGR child) {
+        this(parent, child, new Generalization(parent.getClassifier(), child.getClassifier()));
+    }
+
     /*
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *

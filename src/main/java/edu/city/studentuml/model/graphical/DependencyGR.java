@@ -27,6 +27,10 @@ public class DependencyGR extends LinkGR {
         dependency = dep;
     }
 
+    public DependencyGR(ClassGR a, ClassGR b) {
+        this(a, b, new Dependency(a.getDesignClass(), b.getDesignClass()));
+    }
+
     @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         GraphicsHelper.drawSimpleArrowHead(bX, bY, rotationAngle, g);

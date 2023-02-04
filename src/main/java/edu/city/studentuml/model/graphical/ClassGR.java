@@ -31,6 +31,10 @@ public class ClassGR extends AbstractClassGR {
         methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
+    public ClassGR(String name) {
+        this(new DesignClass(name), new Point());
+    }
+
     // Hollywood principle; override the hooks from the abstract base class
     @Override
     protected int drawStereotype(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
