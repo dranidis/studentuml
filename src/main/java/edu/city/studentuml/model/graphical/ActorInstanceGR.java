@@ -1,12 +1,8 @@
 package edu.city.studentuml.model.graphical;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -20,20 +16,19 @@ import edu.city.studentuml.util.XMLStreamer;
  * 
  * @author Ervin Ramollari
  */
-public class ActorInstanceGR extends RoleClassifierGR {
+public class ActorInstanceGR extends AbstractSDObjectGR {
 
-    private static int actorTextDistance = 6;
-    private static int stickFigureHeight = 35;
-    private static int stickFigureWidth = 20;
-    private Font actorNameFont;
+    private static final int ACTOR_TEXT_DISTANCE = 8;
+    private static final int STICKFIGURE_HEIGHT = 35;
+    private static final int STICKFIGURE_WIDTH = 20;
 
     public ActorInstanceGR(ActorInstance actor, int x) {
         super(actor, x);
-        width = stickFigureWidth;
-        height = stickFigureHeight;
-        actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
+        width = STICKFIGURE_WIDTH;
+        height = STICKFIGURE_HEIGHT;
     }
 
+    @Override
     public boolean contains(Point2D point) {
 
         // The portion including the stick figure and description underneath
@@ -47,111 +42,19 @@ public class ActorInstanceGR extends RoleClassifierGR {
     }
 
     @Override
-    public void draw(Graphics2D g) {
-
-        calculateWidth(g);
-        calculateHeight(g);
-
-        int startingX = getX();
-        int startingY = getY();
-
-        Stroke originalStroke = g.getStroke();
-
-        if (isSelected()) {
-            g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
-            g.setPaint(getHighlightColor());
-        } else {
-            g.setStroke(GraphicsHelper.makeSolidStroke());
-            g.setPaint(getOutlineColor());
-        }
-
-        // draw the actor stick figure
-        drawStickFigure(startingX + (width / 2), startingY, g);
-
-        // draw the actor description under the stick figure
-        g.setPaint(getOutlineColor());
-
-        String actorText = roleClassifier.toString();
-        FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorText, actorNameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
-
-        // draw the actor string under the stick figure and center it
-        int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-        int nameY = stickFigureHeight + actorTextDistance - (int) bounds.getY();
-
-        g.setFont(actorNameFont);
-        g.drawString(actorText, startingX + nameX, startingY + nameY);
-
-        if (ConstantsGR.UNDERLINE_OBJECTS) {
-            // underline the text
-            int underlineX = nameX + (int) bounds.getX();
-            int underlineY = nameY + (int) bounds.getHeight() + (int) bounds.getY();
-
-            g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                    startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
-        }
-
-        // draw the dashed lifeline below the name box
-        if (isSelected()) {
-            g.setPaint(getHighlightColor());
-        } else {
-            g.setPaint(getOutlineColor());
-        }
-
-        
-
-        g.setStroke(GraphicsHelper.makeDashedStroke());
-        g.drawLine(startingX + width / 2, startingY + height + 4, startingX + width / 2, endingY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
+    protected void drawObjectShape(Graphics2D g, int startingX, int startingY) {
+        GraphicsHelper.drawStickFigure(g, startingX + (width / 2), startingY, isSelected(), getFillColor(), getOutlineColor(), getHighlightColor());
     }
 
-    public void drawStickFigure(int x, int y, Graphics2D g) {
-        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
-
-        g.setPaint(getFillColor());
-        g.fill(head);
-
-        if (isSelected()) {
-            g.setPaint(getHighlightColor());
-        } else {
-            g.setPaint(getOutlineColor());
-        }
-
-        g.draw(head);
-        g.drawLine(x, y + 12, x, y + 25);
-        g.drawLine(x - 10, y + 16, x + 10, y + 16);
-        g.drawLine(x - 10, y + 35, x, y + 25);
-        g.drawLine(x, y + 25, x + 10, y + 35);
-    }
-
-    public int calculateWidth(Graphics2D g) {
+    @Override
+    protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
         String actorText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorText, actorNameFont, frc);
+        TextLayout layout = new TextLayout(actorText, nameFont, frc);
         Rectangle2D bounds = layout.getBounds();
-        int newWidth = stickFigureWidth;
+        int nameY = STICKFIGURE_HEIGHT/2 + ACTOR_TEXT_DISTANCE - (int) bounds.getY();
 
-        if (bounds.getWidth() > newWidth) {
-            newWidth = (int) bounds.getWidth();
-        }
-
-        width = newWidth;
-
-        return width;
-    }
-
-    public int calculateHeight(Graphics2D g) {
-        String actorText = roleClassifier.toString();
-        FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorText, actorNameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
-
-        height = stickFigureHeight + actorTextDistance + (int) bounds.getHeight();
-
-        return height;
+        super.drawObjectName(g, startingX, startingY + nameY);
     }
 
     public ActorInstance getActorInstance() {

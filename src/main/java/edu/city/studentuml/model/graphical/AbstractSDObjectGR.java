@@ -22,7 +22,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
-    private Font nameFont;
+    protected Font nameFont;
 
     protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
@@ -49,7 +49,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
     public void draw(Graphics2D g) {
         Stroke originalStroke = g.getStroke();
 
-        refreshDimensions(g);
+        calculateWidth(g);
 
         int startingX = getX();
         int startingY = getY();
@@ -87,7 +87,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         g.draw(shape);
     }
 
-    private void drawObjectName(Graphics2D g, int startingX, int startingY) {
+    protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
         // draw the object text within the box
         String nameBoxText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
@@ -118,17 +118,13 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         } else {
             g.setStroke(GraphicsHelper.makeDashedStroke());
         }
-        
-        g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
-    }
 
-    public void refreshDimensions(Graphics2D g) {
-        calculateWidth(g);
+        g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
     }
 
     // Calculates the width of the name box as it appears on the screen.
     // The width will depend on the length of the name string and the graphics context.
-    protected int calculateWidth(Graphics2D g) {
+    private int calculateWidth(Graphics2D g) {
         FontRenderContext frc = g.getFontRenderContext();
         String boxText = roleClassifier.toString();
         TextLayout layout = new TextLayout(boxText, nameFont, frc);

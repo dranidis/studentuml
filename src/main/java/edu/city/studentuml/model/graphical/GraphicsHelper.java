@@ -1,13 +1,16 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
@@ -166,6 +169,25 @@ public class GraphicsHelper {
         g.translate(-x, -y);
     }
 
+    public static void drawStickFigure(Graphics2D g, int x, int y, boolean isSelected, 
+    Color fillColor, Color outlineColor, Color highlightColor) {
+        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
+
+        g.setPaint(fillColor);
+        g.fill(head);
+
+        if (isSelected) {
+            g.setPaint(highlightColor);
+        } else {
+            g.setPaint(outlineColor);
+        }
+
+        g.draw(head);
+        g.drawLine(x, y + 12, x, y + 25);
+        g.drawLine(x - 10, y + 16, x + 10, y + 16);
+        g.drawLine(x - 10, y + 35, x, y + 25);
+        g.drawLine(x, y + 25, x + 10, y + 35);
+    }
 
 
     public static void clearBorder(JComponent button) {

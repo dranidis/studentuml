@@ -31,7 +31,7 @@ public class MenuBar {
 
     private static final Logger logger = Logger.getLogger(MenuBar.class.getName());
 
-    private static final boolean SHOW_CONSISTENCY_CHECKING_MENU = false;
+    private static final boolean SHOW_CONSISTENCY_CHECKING_MENU = true;
 
     ApplicationGUI app;
     JMenuBar jMenuBar;
