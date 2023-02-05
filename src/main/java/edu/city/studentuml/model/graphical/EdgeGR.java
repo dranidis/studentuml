@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,15 +13,25 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Edge;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public abstract class EdgeGR extends GraphicalElement {
+
+    private static final Logger logger = Logger.getLogger(EdgeGR.class.getName());
 
     protected NodeComponentGR source;
     protected NodeComponentGR target;
@@ -375,4 +386,30 @@ public abstract class EdgeGR extends GraphicalElement {
 
         return angle;
     }
+
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
+        super.streamFromXML(node, streamer, instance);
+        try {
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "points"), this);
+        } catch (NotStreamable e) {
+            logger.severe("Not streamable");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void streamToXML(Element node, XMLStreamer streamer) {
+        super.streamToXML(node, streamer);
+
+        node.setAttribute(XMLSyntax.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(source));
+        node.setAttribute(XMLSyntax.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(target));
+
+        streamer.streamObjects(streamer.addChild(node, "points"), getPoints().iterator());
+
+        streamer.streamObject(node, getStreamName(), getEdge());
+    }
+
+    protected abstract String getStreamName();
+
 }
