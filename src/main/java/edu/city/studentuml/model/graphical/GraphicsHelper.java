@@ -4,10 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import edu.city.studentuml.util.Colors;
 
@@ -157,6 +164,31 @@ public class GraphicsHelper {
         g.draw(diamond);
         g.rotate(-angle);
         g.translate(-x, -y);
+    }
+
+
+
+    public static void clearBorder(JComponent button) {
+        button.setBorder(new EmptyBorder(5, 5, 5, 5));
+    }
+
+    public static void highlightBorder(JComponent button) {
+        button.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
+    }
+
+    public static void addHightLightMouseAdapter(JComponent button) {
+        button.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                GraphicsHelper.highlightBorder(button);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                GraphicsHelper.clearBorder(button);
+            }
+        });
     }
 
 }

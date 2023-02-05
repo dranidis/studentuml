@@ -13,13 +13,10 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
-import edu.city.studentuml.util.Colors;
+import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.MyImageIcon;
 
@@ -38,15 +35,15 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
+                GraphicsHelper.highlightBorder(button);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBorder(new EmptyBorder(5, 5, 5, 5));
+                GraphicsHelper.clearBorder(button);
             }
         });
-        button.setBorder(new EmptyBorder(5, 5, 5, 5));
+        GraphicsHelper.clearBorder(button);
         button.setActionCommand(actionCommand);
         button.setToolTipText(text);
 

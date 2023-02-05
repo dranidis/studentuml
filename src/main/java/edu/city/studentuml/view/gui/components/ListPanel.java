@@ -1,10 +1,9 @@
 package edu.city.studentuml.view.gui.components;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -45,9 +44,9 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
 
         this.setLayout(new BorderLayout());
 
-        TitledBorder title3 = BorderFactory.createTitledBorder(title);
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
 
-        this.setBorder(title3);
+        this.setBorder(titledBorder);
         elementsList = new JList<>();
         elementsList.setFixedCellWidth(400);
         elementsList.setVisibleRowCount(5);

@@ -39,8 +39,6 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -54,6 +52,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.DiagramType;
+import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
@@ -379,7 +378,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.add(repairPanel, BorderLayout.PAGE_END);
 
         repairButton = new JButton();
-        repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
+        GraphicsHelper.clearBorder(repairButton);
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
         addBorderListener(repairButton);
@@ -413,13 +412,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBorder(
-                        new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
+                GraphicsHelper.highlightBorder(null);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBorder(new EmptyBorder(5, 5, 5, 5));
+                GraphicsHelper.clearBorder(button);
             }
         });
     }

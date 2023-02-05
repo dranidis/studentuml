@@ -40,8 +40,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
@@ -57,10 +55,10 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.DiagramType;
+import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.ImageExporter;
 import edu.city.studentuml.util.Mode;
@@ -297,19 +295,7 @@ public class Application extends JApplet implements Observer, KeyListener {
         panel.add(repairPanel, BorderLayout.PAGE_END);
 
         repairButton = new JButton();
-        repairButton.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                repairButton.setBorder(
-                        new CompoundBorder(new LineBorder(UIManager.getColor("blue"), 1), new EmptyBorder(1, 4, 1, 4)));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
-            }
-        });
+        GraphicsHelper.addHightLightMouseAdapter(repairButton);
         repairButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -331,7 +317,7 @@ public class Application extends JApplet implements Observer, KeyListener {
             }
         });
 
-        repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
+        GraphicsHelper.clearBorder(repairButton);
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
         repairPanel.add(repairButton);
@@ -1054,40 +1040,18 @@ public class Application extends JApplet implements Observer, KeyListener {
              */
             ImageIcon openIcon = new ImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "open.gif"));
             openButton = new JButton(openIcon);
-            openButton.addMouseListener(new MouseAdapter() {
+            GraphicsHelper.addHightLightMouseAdapter(openButton);
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    openButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            openButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.clearBorder(openButton);
             openButton.setToolTipText("Open a Private Solution");
             openButton.addActionListener(this);
             add(openButton);
 
             ImageIcon saveIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "save.gif"));
             saveButton = new JButton(saveIcon);
-            saveButton.addMouseListener(new MouseAdapter() {
+            GraphicsHelper.addHightLightMouseAdapter(saveButton);
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    saveButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            saveButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.clearBorder(saveButton);
             saveButton.setToolTipText("Share this Solution in PENCIL");
             saveButton.addActionListener(this);
             add(saveButton);
@@ -1095,20 +1059,9 @@ public class Application extends JApplet implements Observer, KeyListener {
             // SSD
             ImageIcon ssdIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "ssd.gif"));
             ssdButton = new JButton(ssdIcon);
-            ssdButton.addMouseListener(new MouseAdapter() {
+            GraphicsHelper.addHightLightMouseAdapter(ssdButton);
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    ssdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            ssdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.clearBorder(ssdButton);
             ssdButton.setToolTipText("New Conceptual Class Diagram");
             ssdButton.addActionListener(this);
             addSeparator();
@@ -1117,20 +1070,9 @@ public class Application extends JApplet implements Observer, KeyListener {
             // CCD
             ImageIcon ccdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "ccd.gif"));
             ccdButton = new JButton(ccdIcon);
-            ccdButton.addMouseListener(new MouseAdapter() {
+            GraphicsHelper.addHightLightMouseAdapter(ccdButton);
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    ccdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            ccdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.clearBorder(ccdButton);
             ccdButton.setToolTipText("New Conceptual Class Diagram");
             ccdButton.addActionListener(this);
             addSeparator();
@@ -1138,40 +1080,16 @@ public class Application extends JApplet implements Observer, KeyListener {
 
             ImageIcon sdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "sd.gif"));
             sdButton = new JButton(sdIcon);
-            sdButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    sdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            sdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.addHightLightMouseAdapter(sdButton);
+            GraphicsHelper.clearBorder(sdButton);
             sdButton.setToolTipText("New Sequence Diagram");
             sdButton.addActionListener(this);
             add(sdButton);
 
             ImageIcon dcdIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "dcd.gif"));
             dcdButton = new JButton(dcdIcon);
-            dcdButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    dcdButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            dcdButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.addHightLightMouseAdapter(dcdButton);
+            GraphicsHelper.clearBorder(dcdButton);
             dcdButton.setToolTipText("New Design Class Diagram");
             dcdButton.addActionListener(this);
             add(dcdButton);
@@ -1194,20 +1112,8 @@ public class Application extends JApplet implements Observer, KeyListener {
             ImageIcon resizeIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "resize.gif"));
 
             resizeButton = new JButton(resizeIcon);
-            resizeButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    resizeButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            resizeButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.addHightLightMouseAdapter(resizeButton);
+            GraphicsHelper.clearBorder(resizeButton);
             resizeButton.setToolTipText("Resize the drawing area");
             resizeButton.addActionListener(this);
             addSeparator();
@@ -1222,20 +1128,8 @@ public class Application extends JApplet implements Observer, KeyListener {
             ImageIcon reloadIcon = new MyImageIcon(Application.class.getResource(Constants.IMAGES_DIR + "reload.gif"));
 
             reloadRulesButton = new JButton(reloadIcon);
-            reloadRulesButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    reloadRulesButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
-            reloadRulesButton.setBorder(new EmptyBorder(5, 5, 5, 5));
+            GraphicsHelper.addHightLightMouseAdapter(reloadRulesButton);
+            GraphicsHelper.clearBorder(reloadRulesButton);
             reloadRulesButton.addActionListener(this);
             reloadRulesButton.setToolTipText("Reload Rules");
             add(reloadRulesButton);
@@ -1248,28 +1142,13 @@ public class Application extends JApplet implements Observer, KeyListener {
             Image imgScaled2 = img2.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             forwardEngineerIcon.setImage(imgScaled2);
             forwardEngineerButton = new JButton(forwardEngineerIcon);
-            forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-            forwardEngineerButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    forwardEngineerButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    forwardEngineerButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
+            GraphicsHelper.addHightLightMouseAdapter(forwardEngineerButton);
+            GraphicsHelper.clearBorder(forwardEngineerButton);
 
             forwardEngineerButton.setToolTipText("Generate Code");
             forwardEngineerButton.addActionListener(this);
 
             add(forwardEngineerButton);
-
-            setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
             addSeparator();
 
@@ -1278,21 +1157,8 @@ public class Application extends JApplet implements Observer, KeyListener {
             Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
             helpIcon.setImage(imgScaled);
             helpButton = new JButton(helpIcon);
-            helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-            helpButton.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    helpButton.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1),
-                            new EmptyBorder(4, 4, 4, 4)));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-                }
-            });
+            GraphicsHelper.addHightLightMouseAdapter(helpButton);
+            GraphicsHelper.clearBorder(helpButton);
 
             helpButton.setToolTipText("Get help on using StudentUML");
             helpButton.addActionListener(this);
