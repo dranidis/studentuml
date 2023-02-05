@@ -14,7 +14,7 @@ import edu.city.studentuml.model.domain.ControlNode;
  * @author Biser
  * @author Dimitris Dranidis
  */
-public abstract class AbstractDecisionNodeGR extends ControlNodeGR {
+public abstract class AbstractDecisionNodeGR extends LeafNodeGR {
 
     private static final int WIDTH = 22;
     private static final int HEIGHT = 40;

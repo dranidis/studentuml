@@ -10,8 +10,9 @@ import edu.city.studentuml.model.domain.FinalNode;
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
-public abstract class FinalNodeGR extends ControlNodeGR {
+public abstract class FinalNodeGR extends LeafNodeGR {
     private static final Logger logger = Logger.getLogger(FinalNodeGR.class.getName());
 
     public static final int RADIUS = 14;
@@ -52,11 +53,6 @@ public abstract class FinalNodeGR extends ControlNodeGR {
     @Override
     protected int calculateWidth(Graphics2D g) {
         return width;
-    }
-
-    @Override
-    protected int calculateHeight(Graphics2D g) {
-        return height;
     }
 
     @Override

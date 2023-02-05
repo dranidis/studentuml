@@ -10,8 +10,9 @@ import edu.city.studentuml.model.domain.InitialNode;
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
-public class InitialNodeGR extends ControlNodeGR {
+public class InitialNodeGR extends LeafNodeGR {
 
     public static final int RADIUS = 12;
 

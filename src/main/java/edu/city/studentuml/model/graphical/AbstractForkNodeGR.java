@@ -11,7 +11,7 @@ import edu.city.studentuml.model.domain.ControlNode;
  * @author Biser
  * @author Dimitris Dranidis
  */
-public abstract class AbstractForkNodeGR extends ControlNodeGR {
+public abstract class AbstractForkNodeGR extends LeafNodeGR {
 
     private static final int FORK_WIDTH = 60;
     private static final int FORK_HEIGHT = 10;
