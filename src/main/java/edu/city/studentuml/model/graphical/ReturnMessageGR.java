@@ -31,13 +31,16 @@ public class ReturnMessageGR extends SDMessageGR {
 
     @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
-        if (forward) {
-            g.drawLine(x, y, x - 8, y - 4);
-            g.drawLine(x, y, x - 8, y + 4);
-        } else {
-            g.drawLine(x, y, x + 8, y - 4);
-            g.drawLine(x, y, x + 8, y + 4);
-        }
+        double angle = forward ? 0 : -Math.PI;
+        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
+    }
+
+    @Override
+    public int getEndingX() {
+        int endingX = super.getEndingX();
+        boolean forward = (endingX > getStartingX());
+        int plusBarWidth = forward ? - barWidth / 2 : barWidth / 2;
+        return endingX + (target.acticationAtY(getY()) - 1) * barWidth/2 + plusBarWidth;
     }
 
     @Override

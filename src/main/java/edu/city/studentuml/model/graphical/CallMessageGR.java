@@ -31,11 +31,16 @@ public class CallMessageGR extends SDMessageGR {
 
     @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
-        if (forward) {
-            GraphicsHelper.drawBlackArrowHead(x, y, 0, g);
-        } else {
-            GraphicsHelper.drawBlackArrowHead(x, y, -Math.PI, g);
-        }
+        double angle = forward ? 0 : -Math.PI;
+        GraphicsHelper.drawBlackArrowHead(x, y, angle, g);
+    }
+
+    @Override
+    public int getEndingX() {
+        int endingX = super.getEndingX();
+        boolean forward = (endingX > getStartingX());
+        int plusBarWidth = forward ? - barWidth / 2 : barWidth / 2;
+        return endingX + (target.acticationAtY(getY()) - 1) * barWidth/2 + plusBarWidth;
     }
 
     public CallMessage getCallMessage() {

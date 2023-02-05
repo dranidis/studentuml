@@ -26,7 +26,6 @@ public class AddCallMessageController extends AddSDLinkController {
     }
 
     /**
-     * Responds to CTRL-released.
      * Creates a call message and its return message
      */
     @Override

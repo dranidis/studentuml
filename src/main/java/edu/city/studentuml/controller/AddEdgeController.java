@@ -126,7 +126,7 @@ public abstract class AddEdgeController extends AddElementController {
     protected abstract void addFlow(NodeComponentGR src, NodeComponentGR trg, Point srcPoint, Point trgPoint);
 
     protected void setSelectionMode() {
-        ((ADInternalFrame) parentFrame).setSelectionMode();
+        parentFrame.setSelectionMode();
     }
 
     protected void showErrorMessage(String msg) {

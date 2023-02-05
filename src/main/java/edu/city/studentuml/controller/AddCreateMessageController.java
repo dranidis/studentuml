@@ -28,6 +28,11 @@ public class AddCreateMessageController extends AddSDLinkController {
 
     @Override
     public void addCompoundRelationship(RoleClassifierGR source, RoleClassifierGR target, int y) {
+        if (source == target) {
+            parentFrame.setSelectionMode();
+            return;
+        }
+
         SDMessageGR messageGR = createRelationship(source, target, y);
 
         int barHeight = ConstantsGR.getInstance().get("SDMessageGR", "initBarHeight");
@@ -45,9 +50,7 @@ public class AddCreateMessageController extends AddSDLinkController {
         diagramModel.addGraphicalElement(returnMessageGR);
         ((AbstractSDModel) diagramModel).setAutomove(false);
 
-        if (parentFrame instanceof SDInternalFrame) {
-            ((SDInternalFrame) parentFrame).setSelectionMode();
-        }
+        parentFrame.setSelectionMode();
 
         compoundEdit.end();
         ((AbstractSDModel) diagramModel).setCompoundEdit(null);
