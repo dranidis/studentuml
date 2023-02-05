@@ -75,9 +75,8 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // hook; calls the methods in subclass that need to perform subclass specific tasks
-    protected void addToRepository(RoleClassifierGR rc) {
-    }
-
+    protected abstract void addToRepository(RoleClassifierGR rc);
+    
     // before calling the superclass add element, the message
     // is added to the project repository, then to the messages list,
     // which is validated for consistency,
