@@ -178,7 +178,7 @@ public class CollectionTreeModel implements Serializable, TreeModel {
         if (children.size() < (index * 2) + 1) {
             return null;
         }
-        return children.get((index * 2));
+        return children.get(index * 2);
     }
 
     @Override

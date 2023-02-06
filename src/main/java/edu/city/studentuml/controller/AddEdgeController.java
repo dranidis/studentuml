@@ -47,7 +47,7 @@ public abstract class AddEdgeController extends AddElementController {
         }
 
         GraphicalElement element = diagramModel.getContainingGraphicalElement(x, y);
-        if ((element != null) && (element != source) && (element instanceof NodeComponentGR)) {
+        if (element != null && element != source && element instanceof NodeComponentGR) {
             NodeComponentGR target = (NodeComponentGR) element;
             Point targetPoint = new Point(x, y);
             addEdge(source, target, sourcePoint, targetPoint);

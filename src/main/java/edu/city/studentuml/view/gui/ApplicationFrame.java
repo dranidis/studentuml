@@ -181,7 +181,7 @@ public class ApplicationFrame extends ApplicationGUI {
     public void saveProject() {
         String umlProjectFilePath = umlProject.getFilepath();
 
-        if ((umlProjectFilePath == null) || umlProjectFilePath.equals("")) {
+        if (umlProjectFilePath == null || umlProjectFilePath.equals("")) {
             // if no file has yet been chosen, prompt via method saveProjectAs
             saveProjectAs();
         } else {

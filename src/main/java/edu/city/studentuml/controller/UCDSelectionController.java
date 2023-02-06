@@ -51,7 +51,7 @@ public class UCDSelectionController extends SelectionController {
 
         Actor newActor = actorEditor.getActor();
 
-        if (!originalActor.getName().equals(newActor.getName()) && (repository.getActor(newActor.getName()) != null)
+        if (!originalActor.getName().equals(newActor.getName()) && repository.getActor(newActor.getName()) != null
                 && !newActor.getName().equals("")) {
             JOptionPane.showMessageDialog(null, "There is an existing actor with the given name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
@@ -81,7 +81,7 @@ public class UCDSelectionController extends SelectionController {
         UseCase newUseCase = new UseCase(useCaseName);
 
         if (!originalUseCase.getName().equals(newUseCase.getName())
-                && (repository.getUseCase(newUseCase.getName()) != null) && !newUseCase.getName().equals("")) {
+                && repository.getUseCase(newUseCase.getName()) != null && !newUseCase.getName().equals("")) {
             JOptionPane.showMessageDialog(null, "There is an existing use case with the same name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);
         } else {
@@ -108,7 +108,7 @@ public class UCDSelectionController extends SelectionController {
 
         System newSystem = new System(systemName);
 
-        if (!originalSystem.getName().equals(newSystem.getName()) && (repository.getSystem(newSystem.getName()) != null)
+        if (!originalSystem.getName().equals(newSystem.getName()) && repository.getSystem(newSystem.getName()) != null
                 && !newSystem.getName().equals("")) {
             JOptionPane.showMessageDialog(null, "There is an existing system with the given name already!\n",
                     CANNOT_EDIT, JOptionPane.ERROR_MESSAGE);

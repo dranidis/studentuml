@@ -84,7 +84,7 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             string += name;
         }
 
-        if ((type != null) && (type.getName() != null)) {
+        if (type != null && type.getName() != null) {
             if (!string.isEmpty() && !type.getName().isEmpty()) {
                 string += " : ";
             }

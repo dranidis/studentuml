@@ -259,7 +259,7 @@ public class ConceptualAssociationClassEditor extends JPanel implements ActionLi
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == okButton || e.getSource() == nameField) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide an association class name",
                         "Warning", JOptionPane.WARNING_MESSAGE);
 

@@ -130,7 +130,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         String uid = node.getAttribute("uid");
 
-        if ((uid != null) && (uid.equals(""))) {
+        if (uid != null && uid.equals("")) {
             uid = SystemWideObjectNamePool.getInstance().getUid();
         }
 

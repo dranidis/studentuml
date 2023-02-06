@@ -41,10 +41,8 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
 
     protected boolean isSameLink(AbstractLinkGR with) {
-        return (((this.getClassifierA() == with.getClassifierA())
-                && (this.getClassifierB() == with.getClassifierB()))
-                || ((this.getClassifierA() == with.getClassifierB())
-                && (this.getClassifierB() == with.getClassifierA())));
+        return this.getClassifierA() == with.getClassifierA() && this.getClassifierB() == with.getClassifierB()
+                || this.getClassifierA() == with.getClassifierB() && this.getClassifierB() == with.getClassifierA();
     }
 
     protected int getNumberOfLinks() {
@@ -72,7 +70,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        if ((!AbstractLinkGR.linkInstances.contains(obj)) && (obj instanceof AbstractLinkGR)) {
+        if (!AbstractLinkGR.linkInstances.contains(obj) && obj instanceof AbstractLinkGR) {
             AbstractLinkGR.linkInstances.add((AbstractLinkGR) obj);
         }
     }

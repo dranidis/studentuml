@@ -320,7 +320,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (isApplet) {
                     applet.getAppletContext().showDocument(url, "_blank");
                 } else {
-                    // do something about this
+                    logger.finest("Nothing done if not applet");
                 }
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
@@ -514,7 +514,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         DiagramModel model;
         String modelName = inputModelName(type);
 
-        if ((modelName != null) && (modelName.length() > 0)) {
+        if (modelName != null && modelName.length() > 0) {
             if (type == DiagramType.SSD) {
                 model = new SSDModel("SSD: " + modelName, umlProject);
             } else if (type == DiagramType.SD) {

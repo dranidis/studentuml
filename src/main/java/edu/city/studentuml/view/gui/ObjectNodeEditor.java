@@ -216,7 +216,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             }
 
             for (Type t : types) {
-                if ((t != null) && !t.getName().equals("")) {
+                if (t != null && !t.getName().equals("")) {
                     objectTypeComboBox.addItem(t.getName());
                 }
             }
@@ -239,7 +239,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
     public String addNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {
@@ -368,7 +368,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         Type t = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {

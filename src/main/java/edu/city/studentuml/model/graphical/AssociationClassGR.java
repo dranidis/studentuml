@@ -56,7 +56,7 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        if ((!AbstractLinkGR.linkInstances.contains(obj)) && (obj instanceof AssociationClassGR)) {
+        if (!AbstractLinkGR.linkInstances.contains(obj) && obj instanceof AssociationClassGR) {
             AbstractLinkGR.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
         associationElement.objectAdded(associationElement);

@@ -35,7 +35,7 @@ public class GraphicsHelper {
 
         double textAngle = angle;
 
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+        if (angleGreaterThanHalfPi(angle)) {
             textAngle -= Math.PI;
         }
 
@@ -110,7 +110,7 @@ public class GraphicsHelper {
     public static void drawNameArrow(int x, int y, double angle, int offset, Graphics2D g) {
 
         // try to always draw the arrow above the association line
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+        if (angleGreaterThanHalfPi(angle)) {
             g.translate(x, y);
             g.rotate(angle);
 
@@ -211,6 +211,11 @@ public class GraphicsHelper {
                 GraphicsHelper.clearBorder(button);
             }
         });
+    }
+
+    public static boolean angleGreaterThanHalfPi(double angle) {
+        return angle < 3 * Math.PI / 2 && angle >= Math.PI / 2;
+        
     }
 
 }

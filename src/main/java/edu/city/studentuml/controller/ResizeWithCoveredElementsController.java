@@ -62,7 +62,7 @@ public abstract class ResizeWithCoveredElementsController {
 
             @Override
             public void mouseReleased(MouseEvent event) {
-                myMouseReleased(event);
+                myMouseReleased();
             }
         };
 
@@ -116,7 +116,7 @@ public abstract class ResizeWithCoveredElementsController {
         }
     }
 
-    private void myMouseReleased(MouseEvent event) {
+    private void myMouseReleased() {
         if (!selectionMode) {
             return;
         }

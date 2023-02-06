@@ -40,7 +40,7 @@ public class ClassGR extends AbstractClassGR {
     protected int drawStereotype(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
         DesignClass designClass = (DesignClass) abstractClass;
         // draw the stereotype text first, if any
-        if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
+        if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
             String stereotype = "<<" + designClass.getStereotype() + ">>";
             TextLayout layout = new TextLayout(stereotype, stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
@@ -89,7 +89,7 @@ public class ClassGR extends AbstractClassGR {
         DesignClass designClass = (DesignClass) abstractClass;
 
         // consider stereotype text dimensions
-        if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
+        if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
             TextLayout layout = new TextLayout("<<" + designClass.getStereotype() + ">>", stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();
             int stereotypeWidth = (int) bounds.getWidth() + (2 * NAMEFIELDXOFFSET);
@@ -129,7 +129,7 @@ public class ClassGR extends AbstractClassGR {
         DesignClass designClass = (DesignClass) abstractClass;
 
         // consider stereotype text dimensions
-        if ((designClass.getStereotype() != null) && !designClass.getStereotype().equals("")) {
+        if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
             String stereotype = "<<" + designClass.getStereotype() + ">>";
             TextLayout layout = new TextLayout(stereotype, stereotypeFont, frc);
             Rectangle2D bounds = layout.getBounds();

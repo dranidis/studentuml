@@ -56,9 +56,7 @@ public class CallMessageGR extends SDMessageGR {
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("from", SystemWideObjectNamePool.getInstance().getNameForObject(getSource()));
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(getTarget()));
-
         node.setAttribute("y", Integer.toString(getY()));
-
         streamer.streamObject(node, XMLSyntax.MESSAGE, getCallMessage());
     }
 

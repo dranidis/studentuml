@@ -99,7 +99,7 @@ public class CCDModel extends AbstractCDModel {
 
     public List<GraphicalElement> getClassGRGeneralizationGRs(ConceptualClassGR c) {
         return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
-                && ((((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getAbstractClass())
+                && (((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getAbstractClass()
                         || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getAbstractClass()))
                 .collect(Collectors.toList());
     }    

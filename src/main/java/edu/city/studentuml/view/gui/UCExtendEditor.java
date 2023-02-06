@@ -164,8 +164,8 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public void editExtensionPoint() {
-        if ((extensionPoints == null) || (extensionPoints.isEmpty())
-                || (extensionsList.getSelectedIndex() < 0)) {
+        if (extensionPoints == null || extensionPoints.isEmpty()
+                || extensionsList.getSelectedIndex() < 0) {
             return;
         }
 
@@ -188,8 +188,8 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public void deleteExtensionPoint() {
-        if ((extensionPoints == null) || (extensionPoints.isEmpty())
-                || (extensionsList.getSelectedIndex() < 0)) {
+        if (extensionPoints == null || extensionPoints.isEmpty()
+                || extensionsList.getSelectedIndex() < 0) {
             return;
         }
 

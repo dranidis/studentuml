@@ -20,7 +20,6 @@ import javax.swing.event.DocumentListener;
 
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.graphical.ClassGR;
-import edu.city.studentuml.model.repository.CentralRepository;
 
 /**
  *
@@ -38,7 +37,7 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
     private JButton okButton;
     private JButton cancelButton;
 
-    public ClassNameEditor(ClassGR cl, CentralRepository cr) {
+    public ClassNameEditor(ClassGR cl) {
         classGR = cl;
 
         setLayout(new BorderLayout());
@@ -125,8 +124,8 @@ public class ClassNameEditor extends JPanel implements ActionListener, DocumentL
         if (event.getSource() == nameField && (nameField.getText() == null || nameField.getText().equals(""))) {
             okButton.setEnabled(false);
         }
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this,
                         "You must provide a class name",
                         "Warning",

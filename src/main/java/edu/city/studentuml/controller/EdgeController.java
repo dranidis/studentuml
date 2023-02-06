@@ -47,7 +47,7 @@ public class EdgeController {
 
             @Override
             public void mousePressed(MouseEvent event) {
-                if ((!selectionMode) || (event.getButton() != MouseEvent.BUTTON1)) {
+                if (!selectionMode || event.getButton() != MouseEvent.BUTTON1) {
                     return;
                 }
 
@@ -172,7 +172,7 @@ public class EdgeController {
      * @return
      */
     private boolean isPointSelected(Point p) {
-        return edgeGR.getPoints().stream().anyMatch(point -> point.contains(p) && (point instanceof PointGR));
+        return edgeGR.getPoints().stream().anyMatch(point -> point.contains(p) && point instanceof PointGR);
     }
 
     /**

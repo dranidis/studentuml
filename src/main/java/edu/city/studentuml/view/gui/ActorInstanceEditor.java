@@ -154,7 +154,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         while (iterator.hasNext()) {
             a = (Actor) iterator.next();
 
-            if ((a != null) && !a.getName().equals("")) {
+            if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
             } else {
                 actorComboBox.addItem("(unnamed)");
@@ -206,7 +206,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!a.getName().equals(newActor.getName())
-                && (repository.getActor(newActor.getName()) != null)
+                && repository.getActor(newActor.getName()) != null
                 && !newActor.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing actor with the given name already!\n",
@@ -227,7 +227,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         while (iterator.hasNext()) {
             a = (Actor) iterator.next();
 
-            if ((a != null) && !a.getName().equals("")) {
+            if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
             } else {
                 actorComboBox.addItem("(unnamed)");

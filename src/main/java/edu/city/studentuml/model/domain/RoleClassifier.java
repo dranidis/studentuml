@@ -48,7 +48,7 @@ public abstract class RoleClassifier implements Serializable {
 
         toString += " : ";
 
-        if ((classifier != null) && (classifier.getName() != null)) {
+        if (classifier != null && classifier.getName() != null) {
             toString += classifier.getName();
         }
 

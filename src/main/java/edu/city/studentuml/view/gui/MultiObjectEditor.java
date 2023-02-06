@@ -160,9 +160,9 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         while (iterator.hasNext()) {
             dc = (DesignClass) iterator.next();
 
-            if ((dc != null) && !dc.getName().equals("")) {
+            if (dc != null && !dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } else if ((dc != null) && dc.getName().equals("")) {
+            } else if (dc != null && dc.getName().equals("")) {
                 typeComboBox.addItem("(unnamed)");
                 hasEmpty = true;
             }
@@ -200,7 +200,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
 
     public String addNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
 
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return "fail";
@@ -226,7 +226,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     // edits the class of object o
     public String editTypeName(DesignClass dc) {
         ClassGR classGR = new ClassGR(dc, new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {
@@ -241,7 +241,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!dc.getName().equals(newClass.getName())
-                && (repository.getDesignClass(newClass.getName()) != null)
+                && repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",

@@ -63,7 +63,7 @@ public class DCDSelectionController extends SelectionController {
         // conflict
         // or if the new name is blank
         if (!originalClass.getName().equals(newClass.getName())
-                && (repository.getDesignClass(newClass.getName()) != null) && !newClass.getName().equals("")) {
+                && repository.getDesignClass(newClass.getName()) != null && !newClass.getName().equals("")) {
 
             classGR.setDesignClass(repository.getDesignClass(newClass.getName()));
 
@@ -103,7 +103,7 @@ public class DCDSelectionController extends SelectionController {
         // conflict
         // or if the new name is blank
         if (!originalInterface.getName().equals(newInterface.getName())
-                && (repository.getInterface(newInterface.getName()) != null) && !newInterface.getName().equals("")) {
+                && repository.getInterface(newInterface.getName()) != null && !newInterface.getName().equals("")) {
 
             interfaceGR.setInterface(repository.getInterface(newInterface.getName()));
 

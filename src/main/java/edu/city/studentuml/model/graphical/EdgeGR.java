@@ -341,7 +341,7 @@ public abstract class EdgeGR extends GraphicalElement {
         if (string.length() > 0) {
             double textAngle = angle;
 
-            if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+            if (GraphicsHelper.angleGreaterThanHalfPi(angle)) {
                 textAngle -= Math.PI;
             }
 

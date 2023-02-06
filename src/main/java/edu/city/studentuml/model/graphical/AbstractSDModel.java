@@ -258,7 +258,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         while (iterator.hasNext()) {
             message = iterator.next();
 
-            if ((message instanceof DestroyMessageGR) && (message.getTarget() == rc)) {
+            if (message instanceof DestroyMessageGR && message.getTarget() == rc) {
                 return true;
             }
         }

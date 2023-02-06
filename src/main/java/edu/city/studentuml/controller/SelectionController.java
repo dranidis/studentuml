@@ -400,7 +400,7 @@ public abstract class SelectionController {
     private class PopupListener implements ActionListener {
 
         public void actionPerformed(ActionEvent event) {
-            if ((event.getSource() == editMenuItem) && (selectedElements.size() == 1)) {
+            if (event.getSource() == editMenuItem && selectedElements.size() == 1) {
 
                 // call abstract method editElement that is to be overridden by subclasses
                 mapeditElement(selectedElements.get(0));
