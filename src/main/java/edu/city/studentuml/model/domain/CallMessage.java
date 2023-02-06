@@ -160,7 +160,6 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
                 returnType = null;
             } else {
                 returnType = new DataType(rv);
-                ;
             }
         }
 

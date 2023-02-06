@@ -15,6 +15,6 @@ import java.util.Collection;
 	 * @param value A searchable value of type V
 	 * @return A Collection of items of type E.
 	 */
-	public Collection<E> search(V value);
+	Collection<E> search(V value);
 	
 }

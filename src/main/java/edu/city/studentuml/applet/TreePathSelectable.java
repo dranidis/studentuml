@@ -8,5 +8,5 @@ import javax.swing.tree.TreePath;
  */
 public interface TreePathSelectable {
 
-    public boolean isSelectable(TreePath path);
+    boolean isSelectable(TreePath path);
 }
