@@ -9,6 +9,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
+import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -328,23 +329,12 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editConceptualClass(ConceptualClass originalClass, ConceptualClass newClass) {
         ConceptualClass existingClass = getConceptualClass(newClass.getName());
 
-        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
-                && !newClass.getName().equals("")) {
+        if (editAbstractClass(originalClass, newClass, existingClass)) {
+            repositoryChanged();
+            return true;
+        } else {
             return false;
         }
-
-        GenericClass existingGenericClass = getGenericClass(newClass.getName());
-
-        if ((existingGenericClass == null) || existingGenericClass.getName().equals("")) {
-            originalClass.setName(newClass.getName());
-        } else {
-            originalClass.setGenericClass(newClass.getGenericClass());
-        }
-
-        originalClass.setAttributes(newClass.getAttributes());
-        repositoryChanged();
-
-        return true;
     }
 
     public boolean removeConceptualClass(ConceptualClass c) {
@@ -396,6 +386,19 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editClass(DesignClass originalClass, DesignClass newClass) {
         DesignClass existingClass = getDesignClass(newClass.getName());
 
+        if (editAbstractClass(originalClass, newClass, existingClass)) {
+            originalClass.setStereotype(newClass.getStereotype());
+            originalClass.setMethods(newClass.getMethods());
+            repositoryChanged();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // returns true if the editing was successful
+    private boolean editAbstractClass(AbstractClass originalClass, AbstractClass newClass, AbstractClass existingClass) {
+
         // if the name of the class is changed and the new name causes conflict
         // with an existing class, and the new name is non-blank, then don't edit
         // and return false
@@ -412,14 +415,11 @@ public class CentralRepository extends Observable implements Serializable {
             originalClass.setGenericClass(newClass.getGenericClass());
         }
 
-        originalClass.setStereotype(newClass.getStereotype());
         originalClass.setAttributes(newClass.getAttributes());
-        originalClass.setMethods(newClass.getMethods());
-        repositoryChanged();
 
         return true;
     }
-
+    
     public boolean removeClass(DesignClass c) {
         if (classes.remove(c)) {
             removeGenericClass(c.getGenericClass());
