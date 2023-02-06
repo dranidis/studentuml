@@ -44,7 +44,6 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
 
-import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -76,7 +75,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
-    protected StudentUMLApplet applet = null;
+    protected StudentUMLAppletAPI applet = null;
     protected boolean repairMode = false;
     protected UMLProject umlProject = UMLProject.getInstance();
     protected CentralRepository centralRepository;
@@ -160,7 +159,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
-    protected ApplicationGUI(StudentUMLApplet applet) {
+    protected ApplicationGUI(StudentUMLAppletAPI applet) {
         isApplet = true;
         this.applet = applet;
         instance = this;
@@ -320,7 +319,9 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 URL url = new URL(helpString);
                 if (isApplet) {
                     applet.getAppletContext().showDocument(url, "_blank");
-                } 
+                } else {
+                    // do something about this
+                }
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
                         JOptionPane.ERROR_MESSAGE);
