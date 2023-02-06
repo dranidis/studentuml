@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Edge;
+import edu.city.studentuml.util.Geometry;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
@@ -312,7 +313,7 @@ public abstract class EdgeGR extends GraphicalElement {
         end = getEndPoint();
         Point b = end.getMyPoint();
         Point a = getPointAt(points.size() - 2).getMyPoint();
-        double angle = getAngle(a, b);
+        double angle = Geometry.getAngle(a, b);
         drawEdgeArrowHead(b.x, b.y, angle, g);
 
         // draw string for guard and weight
@@ -357,34 +358,6 @@ public abstract class EdgeGR extends GraphicalElement {
             g.translate(-x, -y);
         }
 
-    }
-
-    private double getAngle(Point2D point1, Point2D point2) {
-        double x1 = point1.getX();
-        double y1 = point1.getY();
-        double x2 = point2.getX();
-        double y2 = point2.getY();
-        double angle;
-
-        if (x2 - x1 != 0) {
-            double gradient = (y2 - y1) / (x2 - x1);
-
-            if (x2 - x1 > 0) // positive gradient
-            {
-                angle = Math.atan(gradient);
-            } else // negative gradient
-            {
-                angle = Math.atan(gradient) + Math.PI;
-            }
-        } else {
-            if (y2 - y1 > 0) {
-                angle = Math.PI / 2;
-            } else {
-                angle = -Math.PI / 2;
-            }
-        }
-
-        return angle;
     }
 
     @Override

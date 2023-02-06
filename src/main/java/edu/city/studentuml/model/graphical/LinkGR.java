@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import edu.city.studentuml.util.Geometry;
 import edu.city.studentuml.util.Rotate;
 
 /**
@@ -297,11 +298,11 @@ public abstract class LinkGR extends AbstractLinkGR {
     }
 
     public double getAngleRoleA() {
-        return getAngle(new Point2D.Double(getXA(), getYA()), new Point2D.Double(getXB(), getYB()));
+        return Geometry.getAngle(new Point2D.Double(getXA(), getYA()), new Point2D.Double(getXB(), getYB()));
     }
 
     public double getAngleRoleB() {
-        return getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
+        return Geometry.getAngle(new Point2D.Double(getXB(), getYB()), new Point2D.Double(getXA(), getYA()));
     }
 
     protected ClassifierGR getClassifierA() {

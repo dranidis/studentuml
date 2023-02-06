@@ -22,14 +22,15 @@ public class ActorInstance extends RoleClassifier implements IXMLCustomStreamabl
         classifier = actor;
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
+        // emtpy
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
         streamer.streamObject(node, "actor", getActor());
-        // node.setAttribute("actor",
-        // SystemWideObjectNamePool.getInstance().getNameForObject(getActor()));
     }
 
     public ActorInstance clone() {
