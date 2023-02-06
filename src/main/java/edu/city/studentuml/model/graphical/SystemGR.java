@@ -33,10 +33,6 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     private Font systemNameFont;
     private static final Dimension MIN = new Dimension(120, 180);
     // resize handles needed in order to control activity node resizing
-    private ResizeHandle up;
-    private ResizeHandle down;
-    private ResizeHandle left;
-    private ResizeHandle right;
     private List<ResizeHandle> resizeHandles;
     private int systemNameWidth = 0; // calculated in calculateWidth()
 
@@ -49,15 +45,11 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         systemNameFont = new Font("Sans Serif", Font.BOLD, 12);
 
         // resize handles
-        up = new UpResizeHandle(this);
-        down = new DownResizeHandle(this);
-        left = new LeftResizeHandle(this);
-        right = new RightResizeHandle(this);
         resizeHandles = new ArrayList<>();
-        resizeHandles.add(up);
-        resizeHandles.add(down);
-        resizeHandles.add(left);
-        resizeHandles.add(right);
+        resizeHandles.add(new UpResizeHandle(this));
+        resizeHandles.add(new DownResizeHandle(this));
+        resizeHandles.add(new LeftResizeHandle(this));
+        resizeHandles.add(new RightResizeHandle(this));
     }
     
     @Override
