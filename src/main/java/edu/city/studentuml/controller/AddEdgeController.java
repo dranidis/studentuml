@@ -1,5 +1,9 @@
 package edu.city.studentuml.controller;
 
+import java.awt.Point;
+
+import javax.swing.JOptionPane;
+
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.FinalNodeGR;
@@ -9,10 +13,7 @@ import edu.city.studentuml.model.graphical.InitialNodeGR;
 import edu.city.studentuml.model.graphical.JoinNodeGR;
 import edu.city.studentuml.model.graphical.MergeNodeGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
-import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.awt.Point;
-import javax.swing.JOptionPane;
 
 /**
  *

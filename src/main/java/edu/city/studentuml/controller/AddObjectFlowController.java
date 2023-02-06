@@ -41,15 +41,10 @@ public class AddObjectFlowController extends AddEdgeController {
             return;
         }
 
-        if (src instanceof ActionNodeGR) {
-            // target must be Object Node then
-            if (trg instanceof ObjectNodeGR) {
-                // nothing on purpose
-            } else {
-                showErrorMessage("Target node is not an object node!");
-                setSelectionMode();
-                return;
-            }
+        if (src instanceof ActionNodeGR && !(trg instanceof ObjectNodeGR)) {
+            showErrorMessage("Target node is not an object node!");
+            setSelectionMode();
+            return;
         }
 
         if (trg instanceof DecisionNodeGR) {
@@ -57,9 +52,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the decision "
                             + "node must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -74,9 +67,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the decision node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -87,9 +78,7 @@ public class AddObjectFlowController extends AddEdgeController {
             it = src.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = (Edge) it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the decision node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -124,9 +113,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the merge node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -140,9 +127,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the merge node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -153,9 +138,7 @@ public class AddObjectFlowController extends AddEdgeController {
             it = trg.getComponent().getIncomingEdges();
             while (it.hasNext()) {
                 Edge edge = (Edge) it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the merge node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -169,9 +152,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the fork node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -185,9 +166,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = src.getComponent().getIncomingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the fork node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -198,9 +177,7 @@ public class AddObjectFlowController extends AddEdgeController {
             it = src.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = (Edge) it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The incoming and outgoing edges in the fork node "
                             + "must be either all control flows or all object flows!");
                     setSelectionMode();
@@ -219,9 +196,7 @@ public class AddObjectFlowController extends AddEdgeController {
                 if (edge instanceof ObjectFlow) {
                     allow = true;
                     break;
-                } else {
-                    // this is control flow; do nothing
-                }
+                } 
             }
             if (!allow) {
                 showErrorMessage("The join node has no incoming object flows, "
@@ -237,9 +212,7 @@ public class AddObjectFlowController extends AddEdgeController {
             Iterator<Edge> it = trg.getComponent().getOutgoingEdges();
             while (it.hasNext()) {
                 Edge edge = it.next();
-                if (edge instanceof ObjectFlow) {
-                    // nothing on purpose
-                } else {
+                if (!(edge instanceof ObjectFlow)) {
                     showErrorMessage("The join node has an outgoing control flow, "
                             + "therefore, the incoming flow cannot be an object flow!");
                     setSelectionMode();

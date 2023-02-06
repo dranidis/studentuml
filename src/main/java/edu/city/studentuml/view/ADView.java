@@ -23,9 +23,7 @@ public class ADView extends DiagramView {
         lock.lock();
 
         for (GraphicalElement element : model.getGraphicalElements()) {
-            if (element instanceof EdgeGR) {
-                // do nothing
-            } else if (element instanceof NodeComponentGR) {
+            if (element instanceof NodeComponentGR) {
                 NodeComponentGR comp = (NodeComponentGR) element;
                 comp.draw(g);
 
@@ -36,7 +34,7 @@ public class ADView extends DiagramView {
                     el.getIncomingRelations().forEachRemaining(link -> link.draw(g));
                 });
 
-            } else {
+            } else if (!(element instanceof EdgeGR)){ // already drawn
                 element.draw(g);
             }
         }

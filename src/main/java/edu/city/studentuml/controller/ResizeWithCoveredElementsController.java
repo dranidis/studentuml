@@ -131,10 +131,8 @@ public abstract class ResizeWithCoveredElementsController {
                 loadContextSizes(resizableElement.getResizableContext(), redoContextSizes);
             }
 
-            if (redoSize.getStartingPosition().equals(undoSize.getStartingPosition())
-                    && redoSize.getDimension().equals(undoSize.getDimension())) {
-                // nothing happens
-            } else {
+            if (!(redoSize.getStartingPosition().equals(undoSize.getStartingPosition())
+                    && redoSize.getDimension().equals(undoSize.getDimension()))) {
                 // hook method: subclasses know how to deal with
                 // adding newly covered elements after resize
                 addContainingElements();

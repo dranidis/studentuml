@@ -320,9 +320,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 URL url = new URL(helpString);
                 if (isApplet) {
                     applet.getAppletContext().showDocument(url, "_blank");
-                } else {
-                    // do something about this
-                }
+                } 
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
                         JOptionPane.ERROR_MESSAGE);

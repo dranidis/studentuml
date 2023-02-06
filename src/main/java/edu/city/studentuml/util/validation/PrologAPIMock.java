@@ -5,8 +5,6 @@ import java.util.Map;
 
 public class PrologAPIMock implements PrologAPI {
 
-    private String query;
-
     private StringBuilder sb = new StringBuilder();
 
     public String getAllQueriesString() {
@@ -21,7 +19,6 @@ public class PrologAPIMock implements PrologAPI {
     @Override
     public Map<String, Map<String, ?>> query(String q) {
         // mock behaviour
-        this.query = q;
         sb.append(q);
         sb.append("\n");
         return null;

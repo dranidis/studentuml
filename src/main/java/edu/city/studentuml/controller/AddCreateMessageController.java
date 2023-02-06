@@ -14,7 +14,6 @@ import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.SDInternalFrame;
 
 /**
  * @author Ervin Ramollari

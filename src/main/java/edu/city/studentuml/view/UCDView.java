@@ -20,9 +20,7 @@ public class UCDView extends DiagramView {
         lock.lock();
 
         for (GraphicalElement element : model.getGraphicalElements()) {
-            if (element instanceof UCLinkGR) {
-                // do nothing
-            } else if (element instanceof UCDComponentGR) {
+            if (element instanceof UCDComponentGR) {
                 UCDComponentGR comp = (UCDComponentGR) element;
                 comp.draw(g);
 
@@ -33,7 +31,7 @@ public class UCDView extends DiagramView {
                     el.getIncomingRelations().forEach(link -> link.draw(g));
                 });
 
-            } else {
+            } else if (!(element instanceof UCLinkGR)) { // links are already drawn
                 element.draw(g);
             }
         }

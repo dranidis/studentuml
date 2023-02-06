@@ -18,12 +18,8 @@ public class CompositeNodeGRIterator extends CompositeGRIterator<NodeComponentGR
         NodeComponentGR nodeComponent = iterator.next(); // get the next component
 
         // TESTED (works)
-        if (iterator instanceof CompositeNodeGRIterator) {
-            // do nothing on purpose
-        } else {
-            if (nodeComponent instanceof CompositeNodeGR) {
-                stack.push(nodeComponent.createIterator());
-            }
+        if (!(iterator instanceof CompositeNodeGRIterator) && nodeComponent instanceof CompositeNodeGR) {
+            stack.push(nodeComponent.createIterator());
         }
         return nodeComponent;
     }

@@ -13,8 +13,6 @@ import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 
 public abstract class SDMessageGR extends GraphicalElement {
