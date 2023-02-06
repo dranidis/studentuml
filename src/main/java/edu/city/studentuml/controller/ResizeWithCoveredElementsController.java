@@ -18,6 +18,7 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.model.graphical.ResizeHandle;
+import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.Size;
 import edu.city.studentuml.util.SizeWithCoveredElements;
 import edu.city.studentuml.util.undoredo.CompoundResizeEdit;
@@ -185,8 +186,11 @@ public abstract class ResizeWithCoveredElementsController {
             return;
         }
 
+        int x = Math.max(scale(event.getX()), Constants.CANVAS_MARGIN);
+        int y = Math.max(scale(event.getY()), Constants.CANVAS_MARGIN);
+
         // resize the resizable element by moving the handle
-        handle.move(scale(event.getX()), scale(event.getY()));
+        handle.move(x, y);
         
         lastSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
         lastSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));

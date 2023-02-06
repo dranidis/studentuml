@@ -59,13 +59,4 @@ public class LeftResizeHandle extends ResizeHandle {
         return new Point(x, y);
     }
 
-    @Override
-    protected int getMinWidth() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    protected int getMinHeight() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

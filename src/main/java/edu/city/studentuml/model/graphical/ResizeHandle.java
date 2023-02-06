@@ -56,10 +56,4 @@ public abstract class ResizeHandle extends GraphicalElement {
     @Override
     public abstract Point getStartingPoint();
 
-    /*
-     * Each resize handle knows how far it can be moved
-     */
-    protected abstract int getMinWidth();
-
-    protected abstract int getMinHeight();
 }
