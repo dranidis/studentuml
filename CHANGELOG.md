@@ -1,5 +1,12 @@
 # StudentUML Changelog
 
+## 1.3.1 - 2023-02-17
+
+### Fixed
+- Bug when "Choose a fill color" and pressing Cancel
+
+## 1.3.0 - 2023-01-30
+
 ### Added
 
 - Support for Dark and Light themes
