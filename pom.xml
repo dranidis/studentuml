@@ -62,17 +62,10 @@
       <version>20220924</version>
     </dependency>
 
-    <!-- local repo -->
     <dependency>
-      <groupId>com.bulenkov</groupId>
-      <artifactId>darcula</artifactId>
-      <version>2018.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.lipstikLF</groupId>
-      <artifactId>lipstikLF</artifactId>
-      <version>1.0</version>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>3.0</version>
     </dependency>
 
   </dependencies>
