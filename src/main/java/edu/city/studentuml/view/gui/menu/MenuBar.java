@@ -16,12 +16,11 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import com.bulenkov.darcula.DarculaLaf;
-import com.lipstikLF.LipstikLookAndFeel;
-
 import edu.city.studentuml.model.graphical.DiagramType;
+import edu.city.studentuml.util.FlatLafTheme;
 import edu.city.studentuml.util.RecentFiles;
 import edu.city.studentuml.util.Settings;
+import edu.city.studentuml.util.Theme;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 /**
@@ -249,22 +248,14 @@ public class MenuBar {
             lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
         }
 
-        /*
-         * Add option for Darcula theme
-         */
-        JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem("Darcula (Dark)",
-                UIManager.getLookAndFeel() instanceof DarculaLaf);
-        gtkLFRadioButtonMenuItem.setToolTipText("Use theme: Darcula (Dark)");
-        gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel("com.bulenkov.darcula.DarculaLaf"));
-        preferencesMenu.add(gtkLFRadioButtonMenuItem);
-        lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
-
-        JRadioButtonMenuItem gtkLFRadioButtonMenuItem1 = new JRadioButtonMenuItem("Lipstik (Light)",
-                UIManager.getLookAndFeel() instanceof LipstikLookAndFeel);
-        gtkLFRadioButtonMenuItem1.setToolTipText("Use theme: Lipstik (Light)");
-        gtkLFRadioButtonMenuItem1.addActionListener(e -> app.changeLookAndFeel("com.lipstikLF.LipstikLookAndFeel"));
-        preferencesMenu.add(gtkLFRadioButtonMenuItem1);
-        lookAndFeelGroup.add(gtkLFRadioButtonMenuItem1);
+        for (FlatLafTheme theme : Theme.getFlatLafThemes()) {
+            JRadioButtonMenuItem gtkLFRadioButtonMenuItem = new JRadioButtonMenuItem(theme.getName(),
+                    UIManager.getLookAndFeel().getClass().getName().equals(theme.getClassName()));
+            gtkLFRadioButtonMenuItem.setToolTipText("Use theme: " + theme.getName());
+            gtkLFRadioButtonMenuItem.addActionListener(e -> app.changeLookAndFeel(theme.getClassName()));
+            preferencesMenu.add(gtkLFRadioButtonMenuItem);
+            lookAndFeelGroup.add(gtkLFRadioButtonMenuItem);
+        }
 
         preferencesMenu.addSeparator();
 

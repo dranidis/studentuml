@@ -1,5 +1,6 @@
 package edu.city.studentuml.view.gui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,6 +21,9 @@ import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.MyImageIcon;
 
+/**
+ * Abstract class for the toolbars in all diagrams
+ */
 public abstract class AbsractToolbar extends JToolBar implements ActionListener {
 
     private List<JToggleButton> buttons;
@@ -90,6 +94,7 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
         
         this.setFloatable(false);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
     protected abstract void addDiagramButtons();

@@ -953,6 +953,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     // Inner class ProjectToolBar implements the main toolbar of the application
 
     public void changeLookAndFeel(String className) {
+        String oldFeel = Settings.getLookAndFeel();
 
         for (JInternalFrame f : desktopPane.getAllFrames()) {
             DiagramInternalFrame iFrame = (DiagramInternalFrame) f;
@@ -961,11 +962,22 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         try {
             UIManager.setLookAndFeel(className);
-            Settings.setLookAndFeel(className);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+        } 
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+        | UnsupportedLookAndFeelException | NoClassDefFoundError e) {
+            try {
+                UIManager.setLookAndFeel(oldFeel);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                    | UnsupportedLookAndFeelException e1) {
+                e1.printStackTrace();
+            }
+            logger.severe(e.getMessage());
+            JOptionPane.showMessageDialog(this, "Could not change theme to: " + className, "Error",
+            JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        Settings.setLookAndFeel(className);
 
         SwingUtilities.updateComponentTreeUI(frame);
 
