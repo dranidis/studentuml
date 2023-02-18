@@ -6,12 +6,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
-import java.util.logging.Logger;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.beans.PropertyVetoException;
+import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -61,7 +61,6 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected JMenuBar menuBar;
     
     private JScrollPane drawingAreaScrollPane;
-    private JScrollPane toolbarScrollPane;
 
     // Undo/Redo
     protected UndoManager undoManager;
@@ -103,9 +102,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         drawingAreaScrollPane = new JScrollPane(view);
 
         getContentPane().add(drawingAreaScrollPane, BorderLayout.CENTER);
-        toolbarScrollPane = new JScrollPane(toolbar);
-        toolbarScrollPane.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(toolbarScrollPane, BorderLayout.WEST);
+        getContentPane().add(toolbar, BorderLayout.WEST);
 
         addComponentListener(new ComponentAdapter() {
 
@@ -449,7 +446,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     public void setzOrder(int zOrder) {
-        logger.finer("" + zOrder);
+        logger.finer(() -> "" + zOrder);
         this.zOrder = zOrder;
     }
 
@@ -459,15 +456,11 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
         AbsractToolbar newToolbar = makeToolbar(this);
 
-        getContentPane().remove(toolbarScrollPane);
+        getContentPane().remove(toolbar);
 
         toolbar = newToolbar;
 
-        JScrollPane newToolbarScrollPane = new JScrollPane(toolbar);
-        toolbarScrollPane = newToolbarScrollPane;
-
-        newToolbarScrollPane.setPreferredSize(new Dimension(55, 400));
-        getContentPane().add(newToolbarScrollPane, BorderLayout.WEST);
+        getContentPane().add(toolbar, BorderLayout.WEST);
 
         getContentPane().revalidate();
         getContentPane().repaint();

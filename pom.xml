@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.city.studentuml</groupId>
   <artifactId>studentuml</artifactId>
-  <version>1.3.0</version>
+  <version>1.3.1</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,17 +62,10 @@
       <version>20220924</version>
     </dependency>
 
-    <!-- local repo -->
     <dependency>
-      <groupId>com.bulenkov</groupId>
-      <artifactId>darcula</artifactId>
-      <version>2018.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.lipstikLF</groupId>
-      <artifactId>lipstikLF</artifactId>
-      <version>1.0</version>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>3.0</version>
     </dependency>
 
   </dependencies>

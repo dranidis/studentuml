@@ -65,11 +65,19 @@ public class Colors {
     public static void chooseFillColor() {
         if (Theme.isDark()) {
             Color fc = JColorChooser.showDialog(null, "Choose a color", darkFillColor);
+            
+            if (fc == null) {
+                return;
+            }
 
             darkFillColor = fc;
             Settings.setDarkFillColor(darkFillColor);
         } else {
             Color fc = JColorChooser.showDialog(null, "Choose a color", fillColor);
+
+            if (fc == null) {
+                return;
+            }
 
             fillColor = fc;
             Settings.setFillColor(fillColor);

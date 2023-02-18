@@ -1,5 +1,16 @@
 # StudentUML Changelog
 
+## 1.3.1 - 2023-02-18
+
+### Added
+- Flatlaf themes (light and dark)
+
+### Fixed
+- Bug when "Choose a fill color" and pressing Cancel
+- Removed Darcula and Lipstik (don't work with newer Java in Windows)
+
+## 1.3.0 - 2023-01-30
+
 ### Added
 
 - Support for Dark and Light themes
