@@ -42,6 +42,7 @@ public class MenuBar {
 
         this.app = app;
         createFileMenu();
+        createEditMenu();
         createCreateMenu();
         jMenuBar.add(createHelpMenu());
     }
@@ -114,6 +115,24 @@ public class MenuBar {
             exportToImageMenuItem.setEnabled(false);
             exitMenuItem.setEnabled(false);
         }
+    }
+
+    private void createEditMenu() {
+        JMenu editMenu = new JMenu();
+        editMenu.setText(" Edit ");
+        jMenuBar.add(editMenu);
+
+        JMenuItem copyMenuItem = new JMenuItem();
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+        copyMenuItem.addActionListener(e -> app.copySelectedElements());
+        editMenu.add(copyMenuItem);
+
+        JMenuItem pasteMenuItem = new JMenuItem();
+        pasteMenuItem.setText("Paste");
+        pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
+        pasteMenuItem.addActionListener(e -> app.pasteElements());
+        editMenu.add(pasteMenuItem);
     }
 
     public void loadRecentFilesInMenu() {

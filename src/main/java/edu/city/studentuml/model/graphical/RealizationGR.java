@@ -88,4 +88,18 @@ public class RealizationGR extends LinkGR {
         this.realization = realization;
     }
 
+    @Override
+    public RealizationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassGR sameClass = getTheClass();
+        InterfaceGR sameInterface = getTheInterface();
+        Realization sameRealization = getRealization();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        RealizationGR clonedGR = new RealizationGR(sameClass, sameInterface, sameRealization);
+        
+        return clonedGR;
+    }
+
 }

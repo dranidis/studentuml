@@ -301,4 +301,22 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
         streamer.streamObjects(streamer.addChild(node, "nodes"), components.iterator());
     }
+
+    @Override
+    public ActivityNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ActivityNode sameActivityNode = (ActivityNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ActivityNodeGR clonedGR = new ActivityNodeGR(sameActivityNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        // Note: components (child nodes) are NOT cloned - they would need to be
+        // copied separately if the user also selects them
+        
+        return clonedGR;
+    }
 }

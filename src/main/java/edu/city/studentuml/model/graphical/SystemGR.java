@@ -311,4 +311,23 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     public Classifier getClassifier() {
         return component;
     }
+
+    @Override
+    public SystemGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        System sameSystem = (System) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        SystemGR clonedGR = new SystemGR(sameSystem, 
+            this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        // Note: components (child elements) are NOT cloned - they would need to be
+        // copied separately if the user also selects them
+        
+        return clonedGR;
+    }
 }

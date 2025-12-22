@@ -35,4 +35,17 @@ public class UCIncludeGR extends UCLinkGR {
         GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
     }
 
+    @Override
+    public UCIncludeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        UseCaseGR sameIncludingUseCase = (UseCaseGR) getSource();
+        UseCaseGR sameIncludedUseCase = (UseCaseGR) getTarget();
+        UCInclude sameLink = (UCInclude) getLink();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        UCIncludeGR clonedGR = new UCIncludeGR(sameIncludingUseCase, sameIncludedUseCase, sameLink);
+        
+        return clonedGR;
+    }
 }

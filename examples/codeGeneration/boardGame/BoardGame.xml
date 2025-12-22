@@ -1,1 +1,336 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><uml><object class="UMLProject" id="project"><object class="DCDModel" framex="16,-6,550,450" iconified="false" id="" internalid="dcdmodel0" name="DCD: dc1" selected="false"><object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="83" y="78"><object class="DesignClass" id="designclass" internalid="designclass0" name="Player" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass0" name="Player"/><object id="attributes"><object class="Attribute" id="" internalid="attribute6" name="fv" scope="1" type="int" visibility="1"/><object class="Attribute" id="" internalid="attribute7" name="board" scope="1" type="Board" visibility="1"/><object class="Attribute" id="" internalid="attribute8" name="p" scope="1" type="Player" visibility="1"/><object class="Attribute" id="" internalid="attribute9" name="dice" scope="1" type="Collection&lt;Die&gt;" visibility="1"/></object><object id="methods"><object class="Method" id="" internalid="method1" name="takeTurn" returntype="void" scope="1" visibility="2"><object id="parameters"/></object></object></object></object><object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="292" y="66"><object class="DesignClass" id="designclass" internalid="designclass1" name="Die" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass1" name="Die"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method4" name="roll" returntype="void" scope="1" visibility="2"><object id="parameters"/></object><object class="Method" id="" internalid="method5" name="getFV" returntype="int" scope="1" visibility="2"><object id="parameters"/></object></object></object></object><object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="31" y="215"><object class="DesignClass" id="designclass" internalid="designclass2" name="Board" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass2" name="Board"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method0" name="getSquare" returntype="Square" scope="1" visibility="2"><object id="parameters"><object class="MethodParameter" id="" internalid="methodparameter8" name="loc" type="Square"/><object class="MethodParameter" id="" internalid="methodparameter10" name="fv" type="int"/></object></object></object></object></object><object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="297" y="216"><object class="DesignClass" id="designclass" internalid="designclass3" name="Square" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass3" name="Square"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method2" name="landedOn" returntype="void" scope="1" visibility="2"><object id="parameters"><object class="MethodParameter" id="" internalid="methodparameter4" name="p" type="Player"/></object></object></object></object></object><object class="AssociationGR" classa="classgr0" classb="classgr1" id="" internalid="associationgr0" uid="Desktop Application User"><object class="Association" direction="1" id="association" internalid="association0" labelDirection="3" name="" showArrow="false"><object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/><object class="Role" classifier="designclass1" id="roleb" multiplicity="1..*" name="dice"/></object></object><object class="AssociationGR" classa="classgr0" classb="classgr2" id="" internalid="associationgr1" uid="Desktop Application User"><object class="Association" direction="1" id="association" internalid="association1" labelDirection="3" name="" showArrow="false"><object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/><object class="Role" classifier="designclass2" id="roleb" multiplicity="1" name="board"/></object></object><object class="AssociationGR" classa="classgr0" classb="classgr0" id="" internalid="associationgr3" uid="Desktop Application User"><object class="Association" direction="1" id="association" internalid="association3" labelDirection="3" name="" showArrow="false"><object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/><object class="Role" classifier="designclass0" id="roleb" multiplicity="1" name="p"/></object></object><object class="DependencyGR" classa="classgr0" classb="classgr3" id="" internalid="dependencygr0"><object class="Dependency" from="designclass0" id="dependency" internalid="dependency0" to="designclass3"/></object></object><object class="SDModel" framex="634,88,897,602" iconified="false" id="" internalid="sdmodel0" name="SD: sd1" selected="true"><object class="ActorInstanceGR" id="" internalid="actorinstancegr0" uid="Desktop Application User" x="28"><object class="ActorInstance" id="actor" internalid="actorinstance0" name="player"><object class="Actor" id="actor" internalid="actor0" name="Player"/></object></object><object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="171"><object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="p"><object class="DesignClass" id="designclass" internalid="designclass0" name="Player" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass0" name="Player"/><object id="attributes"><object class="Attribute" id="" internalid="attribute6" name="fv" scope="1" type="int" visibility="1"/><object class="Attribute" id="" internalid="attribute7" name="board" scope="1" type="Board" visibility="1"/><object class="Attribute" id="" internalid="attribute8" name="p" scope="1" type="Player" visibility="1"/><object class="Attribute" id="" internalid="attribute9" name="dice" scope="1" type="Collection&lt;Die&gt;" visibility="1"/></object><object id="methods"><object class="Method" id="" internalid="method1" name="takeTurn" returntype="void" scope="1" visibility="2"><object id="parameters"/></object></object></object></object></object><object class="MultiObjectGR" id="" internalid="multiobjectgr0" uid="Desktop Application User" x="298"><object class="MultiObject" designclass="designclass1" id="multiobject" internalid="multiobject0" name="dice"><object class="DesignClass" id="designclass" internalid="designclass1" name="Die" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass1" name="Die"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method4" name="roll" returntype="void" scope="1" visibility="2"><object id="parameters"/></object><object class="Method" id="" internalid="method5" name="getFV" returntype="int" scope="1" visibility="2"><object id="parameters"/></object></object></object></object></object><object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="417"><object class="SDObject" designclass="designclass2" id="sdobject" internalid="sdobject1" name="board"><object class="DesignClass" id="designclass" internalid="designclass2" name="Board" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass2" name="Board"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method0" name="getSquare" returntype="Square" scope="1" visibility="2"><object id="parameters"><object class="MethodParameter" id="" internalid="methodparameter8" name="loc" type="Square"/><object class="MethodParameter" id="" internalid="methodparameter10" name="fv" type="int"/></object></object></object></object></object></object><object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="528"><object class="SDObject" designclass="designclass3" id="sdobject" internalid="sdobject2" name="loc"><object class="DesignClass" id="designclass" internalid="designclass3" name="Square" stereotype=""><object class="GenericClass" id="generic" internalid="genericclass3" name="Square"/><object id="attributes"/><object id="methods"><object class="Method" id="" internalid="method2" name="landedOn" returntype="void" scope="1" visibility="2"><object id="parameters"><object class="MethodParameter" id="" internalid="methodparameter4" name="p" type="Player"/></object></object></object></object></object></object><object class="CallMessageGR" from="actorinstancegr0" id="" internalid="callmessagegr0" to="sdobjectgr0" y="98"><object class="CallMessage" from="actorinstance0" id="message" internalid="callmessage0" iterative="false" name="takeTurn" returns="boolean finish" to="sdobject0"><object class="GenericOperation" id="operation" name="takeTurn"/><object id="parameters"/></object></object><object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr1" to="multiobjectgr0" y="196"><object class="CallMessage" from="sdobject0" id="message" internalid="callmessage1" iterative="true" name="roll" returns="" to="multiobject0"><object class="GenericOperation" id="operation" name="roll"/><object id="parameters"/></object></object><object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr2" to="multiobjectgr0" y="256"><object class="CallMessage" from="sdobject0" id="message" internalid="callmessage2" iterative="true" name="getFV" returns="int fv" to="multiobject0"><object class="GenericOperation" id="operation" name="getFV"/><object id="parameters"/></object></object><object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr3" to="sdobjectgr1" y="316"><object class="CallMessage" from="sdobject0" id="message" internalid="callmessage3" iterative="false" name="getSquare" returns="Square loc" to="sdobject1"><object class="GenericOperation" id="operation" name="getSquare"/><object id="parameters"><object class="MessageParameter" id="" internalid="messageparameter0" name="Square loc"/><object class="MessageParameter" id="" internalid="messageparameter1" name="int fv"/></object></object></object><object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr4" to="sdobjectgr2" y="376"><object class="CallMessage" from="sdobject0" id="message" internalid="callmessage4" iterative="false" name="landedOn" returns="" to="sdobject2"><object class="GenericOperation" id="operation" name="landedOn"/><object id="parameters"><object class="MessageParameter" id="" internalid="messageparameter3" name="Player p"/></object></object></object><object class="ReturnMessageGR" from="multiobjectgr0" id="" internalid="returnmessagegr0" to="sdobjectgr0" y="286"><object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage0" name="" to="sdobject0"/></object><object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr1" to="sdobjectgr0" y="346"><object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage1" name="" to="sdobject0"/></object><object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr2" to="sdobjectgr0" y="406"><object class="ReturnMessage" from="sdobject2" id="message" internalid="returnmessage2" name="" to="sdobject0"/></object><object class="ReturnMessageGR" from="sdobjectgr0" id="" internalid="returnmessagegr3" to="actorinstancegr0" y="436"><object class="ReturnMessage" from="sdobject0" id="message" internalid="returnmessage3" name="" to="actorinstance0"/></object><object class="ReturnMessageGR" from="multiobjectgr0" id="" internalid="returnmessagegr4" to="sdobjectgr0" y="226"><object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage4" name="" to="sdobject0"/></object><object class="CreateMessageGR" from="sdobjectgr0" id="" internalid="createmessagegr0" to="sdobjectgr1" y="136"><object class="CreateMessage" from="sdobject0" id="message" internalid="createmessage0" to="sdobject1"><object id="parameters"><object class="MessageParameter" id="" internalid="messageparameter4" name="int west"/><object class="MessageParameter" id="" internalid="messageparameter5" name="String why"/></object></object></object><object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr5" to="sdobjectgr0" y="166"><object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage5" name="" to="sdobject0"/></object></object></object></uml>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="16,0,550,450" iconified="false" id="" internalid="dcdmodel0" maximized="false" name="DCD: dc1" scale="1.0" selected="false" zorder="2">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="83" y="78">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="Player" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass0" name="Player"/>
+          <object id="attributes">
+            <object class="Attribute" id="" internalid="attribute6" name="fv" scope="1" type="int" visibility="1"/>
+            <object class="Attribute" id="" internalid="attribute7" name="board" scope="1" type="Board" visibility="1"/>
+            <object class="Attribute" id="" internalid="attribute8" name="p" scope="1" type="Player" visibility="1"/>
+            <object class="Attribute" id="" internalid="attribute9" name="dice" scope="1" type="Collection&lt;Die&gt;" visibility="1"/>
+          </object>
+          <object id="methods">
+            <object class="Method" id="" internalid="method1" name="takeTurn" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="292" y="66">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="Die" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="Die"/>
+          <object id="attributes"/>
+          <object id="methods">
+            <object class="Method" id="" internalid="method4" name="roll" returntype="void" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+            <object class="Method" id="" internalid="method5" name="getFV" returntype="int" scope="1" visibility="2">
+              <object id="parameters"/>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="31" y="215">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="Board" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name="Board"/>
+          <object id="attributes"/>
+          <object id="methods">
+            <object class="Method" id="" internalid="method0" name="getSquare" returntype="Square" scope="1" visibility="2">
+              <object id="parameters">
+                <object class="MethodParameter" id="" internalid="methodparameter8" name="loc" type="Square"/>
+                <object class="MethodParameter" id="" internalid="methodparameter10" name="fv" type="int"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="297" y="216">
+        <object class="DesignClass" id="designclass" internalid="designclass3" name="Square" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass3" name="Square"/>
+          <object id="attributes"/>
+          <object id="methods">
+            <object class="Method" id="" internalid="method2" name="landedOn" returntype="void" scope="1" visibility="2">
+              <object id="parameters">
+                <object class="MethodParameter" id="" internalid="methodparameter4" name="p" type="Player"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="AssociationGR" classa="classgr0" classb="classgr1" id="" internalid="associationgr0" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association0" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/>
+          <object class="Role" classifier="designclass1" id="roleb" multiplicity="1..*" name="dice"/>
+        </object>
+      </object>
+      <object class="AssociationGR" classa="classgr0" classb="classgr2" id="" internalid="associationgr1" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association1" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/>
+          <object class="Role" classifier="designclass2" id="roleb" multiplicity="1" name="board"/>
+        </object>
+      </object>
+      <object class="AssociationGR" classa="classgr0" classb="classgr0" id="" internalid="associationgr3" uid="Desktop Application User">
+        <object class="Association" direction="1" id="association" internalid="association3" labelDirection="3" name="" showArrow="false">
+          <object class="Role" classifier="designclass0" id="rolea" multiplicity="1" name="p"/>
+          <object class="Role" classifier="designclass0" id="roleb" multiplicity="1" name="p"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr0" classb="classgr3" id="" internalid="dependencygr0">
+        <object class="Dependency" from="designclass0" id="dependency" internalid="dependency0" to="designclass3"/>
+      </object>
+    </object>
+    <object class="SDModel" framex="560,2,897,602" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd1" scale="1.0" selected="false" zorder="1">
+      <object class="ActorInstanceGR" id="" internalid="actorinstancegr0" uid="Desktop Application User" x="28">
+        <object class="ActorInstance" id="actor" internalid="actorinstance0" name="player">
+          <object class="Actor" id="actor" internalid="actor0" name="Player"/>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="171">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="p">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="Player" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="Player"/>
+            <object id="attributes">
+              <object class="Attribute" id="" internalid="attribute6" name="fv" scope="1" type="int" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute7" name="board" scope="1" type="Board" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute8" name="p" scope="1" type="Player" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute9" name="dice" scope="1" type="Collection&lt;Die&gt;" visibility="1"/>
+            </object>
+            <object id="methods">
+              <object class="Method" id="" internalid="method1" name="takeTurn" returntype="void" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="MultiObjectGR" id="" internalid="multiobjectgr0" uid="Desktop Application User" x="298">
+        <object class="MultiObject" designclass="designclass1" id="multiobject" internalid="multiobject0" name="dice">
+          <object class="DesignClass" id="designclass" internalid="designclass1" name="Die" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass1" name="Die"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method4" name="roll" returntype="void" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+              <object class="Method" id="" internalid="method5" name="getFV" returntype="int" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="417">
+        <object class="SDObject" designclass="designclass2" id="sdobject" internalid="sdobject1" name="board">
+          <object class="DesignClass" id="designclass" internalid="designclass2" name="Board" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name="Board"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method0" name="getSquare" returntype="Square" scope="1" visibility="2">
+                <object id="parameters">
+                  <object class="MethodParameter" id="" internalid="methodparameter8" name="loc" type="Square"/>
+                  <object class="MethodParameter" id="" internalid="methodparameter10" name="fv" type="int"/>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="528">
+        <object class="SDObject" designclass="designclass3" id="sdobject" internalid="sdobject2" name="loc">
+          <object class="DesignClass" id="designclass" internalid="designclass3" name="Square" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass3" name="Square"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method2" name="landedOn" returntype="void" scope="1" visibility="2">
+                <object id="parameters">
+                  <object class="MethodParameter" id="" internalid="methodparameter4" name="p" type="Player"/>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="actorinstancegr0" id="" internalid="callmessagegr0" to="sdobjectgr0" y="98">
+        <object class="CallMessage" from="actorinstance0" id="message" internalid="callmessage0" iterative="false" name="takeTurn" returnType="" returns="boolean finish" to="sdobject0">
+          <object class="GenericOperation" id="operation" name="takeTurn"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr1" to="multiobjectgr0" y="196">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage1" iterative="true" name="roll" returnType="" returns="" to="multiobject0">
+          <object class="GenericOperation" id="operation" name="roll"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr2" to="multiobjectgr0" y="256">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage2" iterative="true" name="getFV" returnType="" returns="int fv" to="multiobject0">
+          <object class="GenericOperation" id="operation" name="getFV"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr3" to="sdobjectgr1" y="316">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage3" iterative="false" name="getSquare" returnType="" returns="Square loc" to="sdobject1">
+          <object class="GenericOperation" id="operation" name="getSquare"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr4" to="sdobjectgr2" y="376">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage4" iterative="false" name="landedOn" returnType="" returns="" to="sdobject2">
+          <object class="GenericOperation" id="operation" name="landedOn"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="multiobjectgr0" id="" internalid="returnmessagegr0" to="sdobjectgr0" y="286">
+        <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage0" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr1" to="sdobjectgr0" y="346">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage1" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr2" to="sdobjectgr0" y="406">
+        <object class="ReturnMessage" from="sdobject2" id="message" internalid="returnmessage2" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr0" id="" internalid="returnmessagegr3" to="actorinstancegr0" y="436">
+        <object class="ReturnMessage" from="sdobject0" id="message" internalid="returnmessage3" name="" to="actorinstance0"/>
+      </object>
+      <object class="ReturnMessageGR" from="multiobjectgr0" id="" internalid="returnmessagegr4" to="sdobjectgr0" y="226">
+        <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage4" name="" to="sdobject0"/>
+      </object>
+      <object class="CreateMessageGR" from="sdobjectgr0" id="" internalid="createmessagegr0" to="sdobjectgr1" y="136">
+        <object class="CreateMessage" from="sdobject0" id="message" internalid="createmessage0" to="sdobject1">
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr5" to="sdobjectgr0" y="166">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage5" name="" to="sdobject0"/>
+      </object>
+    </object>
+    <object class="SDModel" framex="0,0,650,550" iconified="false" id="" internalid="sdmodel1" maximized="true" name="SD: sd2" scale="1.0" selected="true" zorder="0">
+      <object class="ActorInstanceGR" id="" internalid="actorinstancegr1" uid="Desktop Application User" x="104">
+        <object class="ActorInstance" id="actor" internalid="actorinstance0" name="player">
+          <object class="Actor" id="actor" internalid="actor0" name="Player"/>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr3" uid="Desktop Application User" x="295">
+        <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="p">
+          <object class="DesignClass" id="designclass" internalid="designclass0" name="Player" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass0" name="Player"/>
+            <object id="attributes">
+              <object class="Attribute" id="" internalid="attribute6" name="fv" scope="1" type="int" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute7" name="board" scope="1" type="Board" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute8" name="p" scope="1" type="Player" visibility="1"/>
+              <object class="Attribute" id="" internalid="attribute9" name="dice" scope="1" type="Collection&lt;Die&gt;" visibility="1"/>
+            </object>
+            <object id="methods">
+              <object class="Method" id="" internalid="method1" name="takeTurn" returntype="void" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="MultiObjectGR" id="" internalid="multiobjectgr1" uid="Desktop Application User" x="422">
+        <object class="MultiObject" designclass="designclass1" id="multiobject" internalid="multiobject0" name="dice">
+          <object class="DesignClass" id="designclass" internalid="designclass1" name="Die" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass1" name="Die"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method4" name="roll" returntype="void" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+              <object class="Method" id="" internalid="method5" name="getFV" returntype="int" scope="1" visibility="2">
+                <object id="parameters"/>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr4" uid="Desktop Application User" x="541">
+        <object class="SDObject" designclass="designclass2" id="sdobject" internalid="sdobject1" name="board">
+          <object class="DesignClass" id="designclass" internalid="designclass2" name="Board" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name="Board"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method0" name="getSquare" returntype="Square" scope="1" visibility="2">
+                <object id="parameters">
+                  <object class="MethodParameter" id="" internalid="methodparameter8" name="loc" type="Square"/>
+                  <object class="MethodParameter" id="" internalid="methodparameter10" name="fv" type="int"/>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr5" uid="Desktop Application User" x="652">
+        <object class="SDObject" designclass="designclass3" id="sdobject" internalid="sdobject2" name="loc">
+          <object class="DesignClass" id="designclass" internalid="designclass3" name="Square" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass3" name="Square"/>
+            <object id="attributes"/>
+            <object id="methods">
+              <object class="Method" id="" internalid="method2" name="landedOn" returntype="void" scope="1" visibility="2">
+                <object id="parameters">
+                  <object class="MethodParameter" id="" internalid="methodparameter4" name="p" type="Player"/>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="actorinstancegr1" id="" internalid="callmessagegr5" to="sdobjectgr3" y="98">
+        <object class="CallMessage" from="actorinstance0" id="message" internalid="callmessage5" iterative="false" name="takeTurn" returnType="boolean" returns="finish" to="sdobject0">
+          <object class="GenericOperation" id="operation" name="takeTurn"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr3" id="" internalid="callmessagegr6" to="multiobjectgr1" y="196">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage6" iterative="true" name="roll" returnType="" returns="" to="multiobject0">
+          <object class="GenericOperation" id="operation" name="roll"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr3" id="" internalid="callmessagegr7" to="multiobjectgr1" y="256">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage7" iterative="true" name="getFV" returnType="int" returns="fv" to="multiobject0">
+          <object class="GenericOperation" id="operation" name="getFV"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr3" id="" internalid="callmessagegr8" to="sdobjectgr4" y="316">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage8" iterative="false" name="getSquare" returnType="Square" returns="loc" to="sdobject1">
+          <object class="GenericOperation" id="operation" name="getSquare"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr3" id="" internalid="callmessagegr9" to="sdobjectgr5" y="376">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage9" iterative="false" name="landedOn" returnType="" returns="" to="sdobject2">
+          <object class="GenericOperation" id="operation" name="landedOn"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="multiobjectgr1" id="" internalid="returnmessagegr6" to="sdobjectgr3" y="286">
+        <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage6" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr4" id="" internalid="returnmessagegr7" to="sdobjectgr3" y="346">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage7" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr5" id="" internalid="returnmessagegr8" to="sdobjectgr3" y="406">
+        <object class="ReturnMessage" from="sdobject2" id="message" internalid="returnmessage8" name="" to="sdobject0"/>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr3" id="" internalid="returnmessagegr9" to="actorinstancegr1" y="436">
+        <object class="ReturnMessage" from="sdobject0" id="message" internalid="returnmessage9" name="" to="actorinstance0"/>
+      </object>
+      <object class="ReturnMessageGR" from="multiobjectgr1" id="" internalid="returnmessagegr10" to="sdobjectgr3" y="226">
+        <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage10" name="" to="sdobject0"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr3" id="" internalid="callmessagegr10" to="sdobjectgr4" y="136">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage10" iterative="false" name="create" returnType="" returns="" to="sdobject1">
+          <object class="GenericOperation" id="operation" name="create"/>
+          <object id="parameters"/>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr4" id="" internalid="returnmessagegr11" to="sdobjectgr3" y="166">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage11" name="" to="sdobject0"/>
+      </object>
+    </object>
+  </object>
+</uml>

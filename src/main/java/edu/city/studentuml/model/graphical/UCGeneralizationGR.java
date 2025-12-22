@@ -22,4 +22,21 @@ public class UCGeneralizationGR extends UCLinkGR {
     protected void drawArrowHead(int x, int y, double angle, Graphics2D g) {
         GraphicsHelper.drawWhiteArrowHead(x, y, angle, g);
     }
+
+    @Override
+    public UCGeneralizationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        UCDComponentGR sameSource = (UCDComponentGR) getSource();
+        UCDComponentGR sameTarget = (UCDComponentGR) getTarget();
+        UCGeneralization sameLink = (UCGeneralization) getLink();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        // Check if connecting actors or use cases
+        if (sameSource instanceof UCActorGR && sameTarget instanceof UCActorGR) {
+            return new UCGeneralizationGR((UCActorGR) sameSource, (UCActorGR) sameTarget, sameLink);
+        } else {
+            return new UCGeneralizationGR((UseCaseGR) sameSource, (UseCaseGR) sameTarget, sameLink);
+        }
+    }
 }

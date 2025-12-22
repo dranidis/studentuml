@@ -730,6 +730,26 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return new ArrayList<>();
     }
 
+    /**
+     * Copies selected elements in the currently active diagram
+     */
+    public void copySelectedElements() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame instanceof DiagramInternalFrame) {
+            ((DiagramInternalFrame) selectedFrame).getSelectionController().copySelected();
+        }
+    }
+
+    /**
+     * Pastes clipboard elements into the currently active diagram
+     */
+    public void pasteElements() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame instanceof DiagramInternalFrame) {
+            ((DiagramInternalFrame) selectedFrame).getSelectionController().pasteClipboard();
+        }
+    }
+
     public void setRunTimeConsistencyCheckAndShowTabbedPane(boolean b) {
         setRuntimeChecking(b);
         consistencyCheckTabbedPane.setVisible(b);

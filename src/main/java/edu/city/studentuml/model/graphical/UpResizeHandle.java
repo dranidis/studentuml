@@ -59,4 +59,13 @@ public class UpResizeHandle extends ResizeHandle {
         return new Point(x, y);
     }
 
+    @Override
+    public UpResizeHandle clone() {
+        // Resize handles don't have domain objects - they're purely graphical UI controls
+        // Just create a new handle referencing the same resizable element
+        UpResizeHandle clonedHandle = new UpResizeHandle(this.resizableElement);
+        
+        return clonedHandle;
+    }
+
 }

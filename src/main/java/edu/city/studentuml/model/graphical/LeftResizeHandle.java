@@ -59,4 +59,13 @@ public class LeftResizeHandle extends ResizeHandle {
         return new Point(x, y);
     }
 
+    @Override
+    public LeftResizeHandle clone() {
+        // Resize handles don't have domain objects - they're purely graphical UI controls
+        // Just create a new handle referencing the same resizable element
+        LeftResizeHandle clonedHandle = new LeftResizeHandle(this.resizableElement);
+        
+        return clonedHandle;
+    }
+
 }

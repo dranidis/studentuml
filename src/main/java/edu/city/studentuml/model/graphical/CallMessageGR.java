@@ -64,5 +64,19 @@ public class CallMessageGR extends SDMessageGR {
     public boolean isReflective() {
         return message.isReflective();
     }
+
+    @Override
+    public CallMessageGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Messages connect graphical elements, so we reference the same endpoints
+        RoleClassifierGR sameFrom = (RoleClassifierGR) getSource();
+        RoleClassifierGR sameTo = (RoleClassifierGR) getTarget();
+        CallMessage sameMessage = getCallMessage();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        CallMessageGR clonedGR = new CallMessageGR(sameFrom, sameTo, sameMessage, this.getY());
+        
+        return clonedGR;
+    }
     
 }

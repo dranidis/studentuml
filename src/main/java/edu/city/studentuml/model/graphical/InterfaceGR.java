@@ -227,4 +227,21 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
+
+    @Override
+    public InterfaceGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Multiple graphical elements can reference the same domain object
+        Interface sameInterface = getInterface();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        InterfaceGR clonedGR = new InterfaceGR(sameInterface, 
+            new Point(this.startingPoint.x, this.startingPoint.y));
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

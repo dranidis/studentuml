@@ -87,6 +87,20 @@ public class GeneralizationGR extends LinkGR {
 
     public void setGeneralization(Generalization generalization) {
         this.generalization = generalization;
-    }      
+    }
+
+    @Override
+    public GeneralizationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassifierGR sameParent = getSuperClass();
+        ClassifierGR sameChild = getBaseClass();
+        Generalization sameGeneralization = getGeneralization();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        GeneralizationGR clonedGR = new GeneralizationGR(sameParent, sameChild, sameGeneralization);
+        
+        return clonedGR;
+    }
     
 }
