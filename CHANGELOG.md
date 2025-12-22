@@ -1,5 +1,19 @@
 # StudentUML Changelog
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Deprecated
+
+### Removed
+
+### Security
+
 ## [1.4.0] - 2025-12-22
 
 ### Added
