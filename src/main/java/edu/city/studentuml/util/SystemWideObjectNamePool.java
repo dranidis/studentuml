@@ -266,6 +266,8 @@ public class SystemWideObjectNamePool extends Observable {
     public void clear() {
         objectMap = new HashMap<>();
         namedMap = new HashMap<>();
+        loading = 0; // Reset loading counter for test isolation
+        messageTypes.clear(); // Clear message types for test isolation
     }
 
 
