@@ -1,6 +1,6 @@
 # StudentUML Changelog
 
-## [Unreleased]
+## [1.4.0] - 2025-12-22
 
 ### Added
 
@@ -10,6 +10,7 @@
 
 ### Fixed
 
+-   Original association deleted when undoing paste operation - now properly handles domain object reuse
 -   Test isolation issues in ConsistencyCheckTest (documented and skipped flaky test)
 
 ### Changed
