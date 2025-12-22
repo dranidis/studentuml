@@ -46,4 +46,19 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     protected String getStreamName() {
         return "flowfinalnode";
     }
+
+    @Override
+    public FlowFinalNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        FlowFinalNode sameFinalNode = (FlowFinalNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        FlowFinalNodeGR clonedGR = new FlowFinalNodeGR(sameFinalNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

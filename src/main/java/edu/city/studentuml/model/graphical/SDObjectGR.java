@@ -37,4 +37,20 @@ public class SDObjectGR extends AbstractSDObjectGR {
         streamer.streamObject(node, "sdobject", getSDObject());
         node.setAttribute("x", Integer.toString(startingPoint.x));
     }
+
+    @Override
+    public SDObjectGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        SDObject sameSDObject = getSDObject();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        SDObjectGR clonedGR = new SDObjectGR(sameSDObject, this.startingPoint.x);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        clonedGR.endingY = this.endingY;
+        
+        return clonedGR;
+    }
 }

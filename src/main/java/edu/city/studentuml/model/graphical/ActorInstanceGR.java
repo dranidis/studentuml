@@ -77,4 +77,20 @@ public class ActorInstanceGR extends AbstractSDObjectGR {
         streamer.streamObject(node, "actor", getActorInstance());
         node.setAttribute("x", Integer.toString(startingPoint.x));
     }
+
+    @Override
+    public ActorInstanceGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ActorInstance sameActorInstance = getActorInstance();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ActorInstanceGR clonedGR = new ActorInstanceGR(sameActorInstance, this.startingPoint.x);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        clonedGR.endingY = this.endingY;
+        
+        return clonedGR;
+    }
 }

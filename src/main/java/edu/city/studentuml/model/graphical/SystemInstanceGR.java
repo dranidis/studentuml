@@ -32,4 +32,20 @@ public class SystemInstanceGR extends AbstractSDObjectGR {
         streamer.streamObject(node, "systeminstance", getSystemInstance());
         node.setAttribute("x", Integer.toString(startingPoint.x));
     }
+
+    @Override
+    public SystemInstanceGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        SystemInstance sameSystemInstance = getSystemInstance();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        SystemInstanceGR clonedGR = new SystemInstanceGR(sameSystemInstance, this.startingPoint.x);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        clonedGR.endingY = this.endingY;
+        
+        return clonedGR;
+    }
 }

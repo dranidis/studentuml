@@ -36,4 +36,17 @@ public class UCExtendGR extends UCLinkGR {
         GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
     }
 
+    @Override
+    public UCExtendGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        UseCaseGR sameExtendingUseCase = (UseCaseGR) getSource();
+        UseCaseGR sameExtendedUseCase = (UseCaseGR) getTarget();
+        UCExtend sameLink = (UCExtend) getLink();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        UCExtendGR clonedGR = new UCExtendGR(sameExtendingUseCase, sameExtendedUseCase, sameLink);
+        
+        return clonedGR;
+    }
 }

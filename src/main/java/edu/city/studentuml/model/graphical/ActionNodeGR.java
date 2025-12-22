@@ -104,4 +104,19 @@ public class ActionNodeGR extends LeafNodeGR  {
     protected String getStreamName() {
         return "actionnode";
     }
+
+    @Override
+    public ActionNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ActionNode sameActionNode = (ActionNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ActionNodeGR clonedGR = new ActionNodeGR(sameActionNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

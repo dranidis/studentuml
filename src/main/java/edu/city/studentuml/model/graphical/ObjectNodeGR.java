@@ -174,4 +174,19 @@ public class ObjectNodeGR extends LeafNodeGR {
     protected String getStreamName() {
         return "objectnode";
     }
+
+    @Override
+    public ObjectNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ObjectNode sameObjectNode = (ObjectNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ObjectNodeGR clonedGR = new ObjectNodeGR(sameObjectNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

@@ -24,4 +24,18 @@ public class ObjectFlowGR extends EdgeGR {
         return "objectflow";
     }
 
+    @Override
+    public ObjectFlowGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Edges connect graphical elements, so we reference the same endpoints
+        NodeComponentGR sameSource = (NodeComponentGR) getSource();
+        NodeComponentGR sameTarget = (NodeComponentGR) getTarget();
+        ObjectFlow sameFlow = (ObjectFlow) getEdge();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        ObjectFlowGR clonedGR = new ObjectFlowGR(sameSource, sameTarget, sameFlow);
+        
+        return clonedGR;
+    }
+
 }

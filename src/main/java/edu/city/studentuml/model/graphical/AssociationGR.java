@@ -204,4 +204,18 @@ public class AssociationGR extends LinkGR {
         return "" + a + " ---association---> " + b + " " + super.toString();
     }
 
+    @Override
+    public AssociationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassifierGR sameA = (ClassifierGR) a;
+        ClassifierGR sameB = (ClassifierGR) b;
+        Association sameAssociation = getAssociation();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        AssociationGR clonedGR = new AssociationGR(sameA, sameB, sameAssociation);
+        
+        return clonedGR;
+    }
+
 }

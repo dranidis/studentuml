@@ -76,4 +76,20 @@ public class MultiObjectGR extends AbstractSDObjectGR {
         streamer.streamObject(node, "multiobject", getMultiObject());
         node.setAttribute("x", Integer.toString(startingPoint.x));
     }
+
+    @Override
+    public MultiObjectGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        MultiObject sameMultiObject = getMultiObject();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        MultiObjectGR clonedGR = new MultiObjectGR(sameMultiObject, this.startingPoint.x);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        clonedGR.endingY = this.endingY;
+        
+        return clonedGR;
+    }
 }

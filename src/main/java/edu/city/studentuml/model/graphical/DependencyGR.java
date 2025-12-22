@@ -83,4 +83,18 @@ public class DependencyGR extends LinkGR {
 
         streamer.streamObject(node, "dependency", dependency);
     }
+
+    @Override
+    public DependencyGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassGR sameA = getClassA();
+        ClassGR sameB = getClassB();
+        Dependency sameDependency = getDependency();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        DependencyGR clonedGR = new DependencyGR(sameA, sameB, sameDependency);
+        
+        return clonedGR;
+    }
 }

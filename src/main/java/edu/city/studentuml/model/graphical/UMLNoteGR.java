@@ -261,7 +261,24 @@ public class UMLNoteGR extends GraphicalElement {
             new AttributedString(noteText, amap).getIterator(),
             BreakIterator.getLineInstance(),
             g.getFontRenderContext());
-    }    
+    }
+
+    @Override
+    public UMLNoteGR clone() {
+        // Notes don't have domain objects in CentralRepository - they're purely graphical
+        // Just copy the text content and create a new note at the same position
+        UMLNoteGR clonedNote = new UMLNoteGR(this.text, this.to, 
+            new Point(this.startingPoint.x, this.startingPoint.y));
+        
+        // Copy visual properties
+        clonedNote.width = this.width;
+        clonedNote.height = this.height;
+        
+        // Note: The "to" reference will need to be updated during paste
+        // if the connected element is also in the clipboard
+        
+        return clonedNote;
+    }
 
 }
 

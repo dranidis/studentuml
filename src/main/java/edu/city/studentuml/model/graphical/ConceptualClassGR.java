@@ -43,4 +43,21 @@ public class ConceptualClassGR extends AbstractClassGR {
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
+
+    @Override
+    public ConceptualClassGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Multiple graphical elements can reference the same domain object
+        ConceptualClass sameClass = getConceptualClass();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ConceptualClassGR clonedGR = new ConceptualClassGR(sameClass,
+            new Point(this.startingPoint.x, this.startingPoint.y));
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

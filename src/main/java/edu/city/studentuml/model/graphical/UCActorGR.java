@@ -131,4 +131,20 @@ public class UCActorGR extends LeafUCDElementGR {
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
+
+    @Override
+    public UCActorGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        Actor sameActor = (Actor) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        UCActorGR clonedGR = new UCActorGR(sameActor, 
+            this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }
