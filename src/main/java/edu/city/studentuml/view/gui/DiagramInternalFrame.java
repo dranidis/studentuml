@@ -218,6 +218,22 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         redoMenuItem.addActionListener(e -> redo());
         editMenu.add(redoMenuItem);
 
+        editMenu.addSeparator();
+
+        JMenuItem copyMenuItem = new JMenuItem();
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+        copyMenuItem.addActionListener(e -> selectionController.copySelected());
+        editMenu.add(copyMenuItem);
+
+        JMenuItem pasteMenuItem = new JMenuItem();
+        pasteMenuItem.setText("Paste");
+        pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
+        pasteMenuItem.addActionListener(e -> selectionController.pasteClipboard());
+        editMenu.add(pasteMenuItem);
+
+        editMenu.addSeparator();
+
         JMenuItem selectAllMenuItem = new JMenuItem();
         selectAllMenuItem.setText("Select all");
         selectAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));

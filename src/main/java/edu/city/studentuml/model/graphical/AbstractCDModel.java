@@ -15,7 +15,11 @@ public abstract class AbstractCDModel extends DiagramModel {
      * shared methods in subclasses
      */
     protected void addAssociation(AssociationGR a) {
-        repository.addAssociation(a.getAssociation());
+        // Only add to repository if not already present (avoid duplicates when pasting)
+        // Multiple graphical elements can reference the same domain association
+        if (!repository.getAssociations().contains(a.getAssociation())) {
+            repository.addAssociation(a.getAssociation());
+        }
         super.addGraphicalElement(a);
     }
 
@@ -66,7 +70,10 @@ public abstract class AbstractCDModel extends DiagramModel {
     }
 
     protected void addAggregation(AggregationGR a) {
-        repository.addAggregation(a.getAggregation());
+        // Only add to repository if not already present (avoid duplicates when pasting)
+        if (!repository.getAggregations().contains(a.getAggregation())) {
+            repository.addAggregation(a.getAggregation());
+        }
 
         super.addGraphicalElement(a);
     }
@@ -74,24 +81,56 @@ public abstract class AbstractCDModel extends DiagramModel {
     // since graphical associations, dependencies, and other links
     // have a one-to one association with their domain representations,
     // remove them both from the central repository and from the diagram
+    // HOWEVER, when pasting, multiple graphical elements can reference the same domain object,
+    // so only remove from repository if this is the LAST graphical reference to it
     protected void removeAssociation(AssociationGR a) {
-        repository.removeAssociation(a.getAssociation());
+        // Count how many other AssociationGRs reference the same domain Association
+        long count = graphicalElements.stream()
+            .filter(e -> e instanceof AssociationGR && e != a)
+            .filter(e -> ((AssociationGR) e).getAssociation() == a.getAssociation())
+            .count();
+        
+        // Only remove from repository if this is the last graphical reference
+        if (count == 0 && repository.getAssociations().contains(a.getAssociation())) {
+            repository.removeAssociation(a.getAssociation());
+        }
         super.removeGraphicalElement(a);
     }
 
     protected void removeGeneralization(GeneralizationGR g) {
-        repository.removeGeneralization(g.getGeneralization());
+        long count = graphicalElements.stream()
+            .filter(e -> e instanceof GeneralizationGR && e != g)
+            .filter(e -> ((GeneralizationGR) e).getGeneralization() == g.getGeneralization())
+            .count();
+        
+        if (count == 0 && repository.getGeneralizations().contains(g.getGeneralization())) {
+            repository.removeGeneralization(g.getGeneralization());
+        }
         super.removeGraphicalElement(g);
     }
 
     protected void removeAssociationClass(AssociationClassGR a) {
-        // a.clear(); //removes association object from links instances in
-        repository.removeAssociationClass(a.getAssociationClass());
+        long count = graphicalElements.stream()
+            .filter(e -> e instanceof AssociationClassGR && e != a)
+            .filter(e -> ((AssociationClassGR) e).getAssociationClass() == a.getAssociationClass())
+            .count();
+        
+        if (count == 0 && (repository.getConceptualAssociationClasses().contains(a.getAssociationClass()) ||
+            repository.getDesignAssociationClasses().contains(a.getAssociationClass()))) {
+            repository.removeAssociationClass(a.getAssociationClass());
+        }
         super.removeGraphicalElement(a);
     }
 
     protected void removeAggregation(AggregationGR a) {
-        repository.removeAggregation(a.getAggregation());
+        long count = graphicalElements.stream()
+            .filter(e -> e instanceof AggregationGR && e != a)
+            .filter(e -> ((AggregationGR) e).getAggregation() == a.getAggregation())
+            .count();
+        
+        if (count == 0 && repository.getAggregations().contains(a.getAggregation())) {
+            repository.removeAggregation(a.getAggregation());
+        }
         super.removeGraphicalElement(a);
     }
 }

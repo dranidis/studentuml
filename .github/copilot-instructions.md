@@ -52,6 +52,18 @@ This project uses a local Maven repo (`local-maven-repo/`) for custom JARs:
 -   Test helpers create models without GUI: see `src/test/java/edu/city/studentuml/controller/Helper.java` for examples
 -   Models can exist independently of frames/views for testing
 
+### Test-Driven Bug Fixes
+
+**When an issue is reported, follow this workflow:**
+
+1. **Document the issue** in the appropriate file (e.g., `manual-tests.md` or inline comments)
+2. **Create a failing test** that reproduces the issue
+3. **Fix the code** to address the root cause
+4. **Verify the test passes** after the fix
+5. **Update documentation** to reflect the resolution
+
+This ensures issues are properly tested and prevents regressions.
+
 ## Critical Conventions
 
 ### Reflection and Naming

@@ -210,7 +210,43 @@ public class DCDSelectionControllerTest {
     }
 
     @Test
-    public void testCopyPasteClassesWithAssociation() {
+    public void testCopyPasteClassesWithoutAssociation() {
+        // Setup: Create two classes with an association between them
+        ClassGR classA = h.addClass("A");
+        ClassGR classB = h.addClass("B");
+        h.addAssociation(classA, classB);
+
+        // Initial state: 2 classes + 1 association = 3 elements
+        assertEquals(3, model.getGraphicalElements().size());
+
+        // Copy both classes ONLY (not the association)
+        selectionController.addElementToSelection(classA);
+        selectionController.addElementToSelection(classB);
+        selectionController.copySelected();
+
+        // Paste
+        selectionController.pasteClipboard();
+
+        // After paste: original 2 classes + 1 association + pasted 2 classes = 5 elements
+        // Association should NOT be copied unless explicitly selected
+        assertEquals("Should have 5 elements after paste (2 original classes, 1 association, 2 pasted classes)", 
+                     5, model.getGraphicalElements().size());
+
+        // Count associations - should still have only 1 (the original)
+        long associationCount = model.getGraphicalElements().stream()
+            .filter(e -> e instanceof AssociationGR)
+            .count();
+        assertEquals("Should have only 1 association (not copied)", 1, associationCount);
+
+        // Find the pasted classes (they should be selected)
+        long selectedClassCount = model.getGraphicalElements().stream()
+            .filter(e -> e instanceof ClassGR && e.isSelected())
+            .count();
+        assertEquals("Should have 2 selected classes (the pasted ones)", 2, selectedClassCount);
+    }
+
+    @Test
+    public void testCopyPasteClassesWithExplicitlySelectedAssociation() {
         // Setup: Create two classes with an association between them
         ClassGR classA = h.addClass("A");
         ClassGR classB = h.addClass("B");
@@ -219,16 +255,17 @@ public class DCDSelectionControllerTest {
         // Initial state: 2 classes + 1 association = 3 elements
         assertEquals(3, model.getGraphicalElements().size());
 
-        // Copy both classes (not the association)
+        // Copy both classes AND the association (explicitly select all)
         selectionController.addElementToSelection(classA);
         selectionController.addElementToSelection(classB);
+        selectionController.addElementToSelection(originalAssociation);
         selectionController.copySelected();
 
         // Paste
         selectionController.pasteClipboard();
 
-        // After paste: original 2 classes + 1 association + pasted 2 classes + 1 new association = 6 elements
-        assertEquals("Should have 6 elements after paste (2 original classes, 2 pasted classes, 2 associations)", 
+        // After paste: original 2 classes + 1 association + pasted 2 classes + 1 pasted association = 6 elements
+        assertEquals("Should have 6 elements after paste (original 3 + pasted 3)", 
                      6, model.getGraphicalElements().size());
 
         // Count associations - should have 2 (one for original, one for pasted)
@@ -236,12 +273,6 @@ public class DCDSelectionControllerTest {
             .filter(e -> e instanceof AssociationGR)
             .count();
         assertEquals("Should have 2 associations after paste", 2, associationCount);
-
-        // Find the pasted classes (they should be selected)
-        long selectedClassCount = model.getGraphicalElements().stream()
-            .filter(e -> e instanceof ClassGR && e.isSelected())
-            .count();
-        assertEquals("Should have 2 selected classes (the pasted ones)", 2, selectedClassCount);
 
         // Find the new association
         AssociationGR newAssociation = (AssociationGR) model.getGraphicalElements().stream()
@@ -280,9 +311,10 @@ public class DCDSelectionControllerTest {
         originalAssociation.getAssociation().getRoleB().setName("employee");
         originalAssociation.getAssociation().getRoleB().setMultiplicity("*");
 
-        // Copy and paste the classes
+        // Copy and paste the classes AND the association (explicitly)
         selectionController.addElementToSelection(classA);
         selectionController.addElementToSelection(classB);
+        selectionController.addElementToSelection(originalAssociation);
         selectionController.copySelected();
         selectionController.pasteClipboard();
 
@@ -318,9 +350,10 @@ public class DCDSelectionControllerTest {
 
         assertEquals(3, model.getGraphicalElements().size());
 
-        // Copy and paste
+        // Copy and paste - including the generalization
         selectionController.addElementToSelection(superClass);
         selectionController.addElementToSelection(subClass);
+        selectionController.addElementToSelection(originalGen);
         selectionController.copySelected();
         selectionController.pasteClipboard();
 
@@ -347,42 +380,44 @@ public class DCDSelectionControllerTest {
     }
 
     @Test
-    public void testCopyPasteUndo() {
-        // Setup
+    public void testCopyPasteAssociationUndo() {
+        // Setup: Create two classes and an association
         ClassGR classA = h.addClass("A");
         ClassGR classB = h.addClass("B");
-        h.addAssociation(classA, classB);
+        AssociationGR assoc = h.addAssociation(classA, classB);
 
-        assertEquals(3, model.getGraphicalElements().size());
+        int initialCount = model.getGraphicalElements().size();
+        assertEquals("Should have 2 classes + 1 association", 3, initialCount);
 
-        // Copy and paste
+        // Copy and paste - including the association
         selectionController.addElementToSelection(classA);
         selectionController.addElementToSelection(classB);
+        selectionController.addElementToSelection(assoc);
         selectionController.copySelected();
         selectionController.pasteClipboard();
 
-        assertEquals(6, model.getGraphicalElements().size());
+        assertEquals("After paste should have 6 elements (2 original + 2 pasted classes + 2 associations)", 
+                     6, model.getGraphicalElements().size());
 
-        // Undo should remove the 3 pasted elements (2 classes + 1 association)
-        // Note: Each pasted element creates separate undo edits, so we need to undo 3 times
+        // Undo the paste operation (should be atomic - one compound edit)
         internalFrame.getUndoManager().undo();
-        assertEquals(5, model.getGraphicalElements().size());
         
-        internalFrame.getUndoManager().undo();
-        assertEquals(4, model.getGraphicalElements().size());
+        assertEquals("After undo should be back to original 3 elements", 
+                     initialCount, model.getGraphicalElements().size());
         
-        internalFrame.getUndoManager().undo();
-        assertEquals(3, model.getGraphicalElements().size());
+        // Verify the original association still exists
+        assertTrue("Original association should still be in model", 
+                   model.getGraphicalElements().contains(assoc));
+        assertTrue("Original class A should still be in model", 
+                   model.getGraphicalElements().contains(classA));
+        assertTrue("Original class B should still be in model", 
+                   model.getGraphicalElements().contains(classB));
 
-        // Redo should restore all 3
+        // Redo
         internalFrame.getUndoManager().redo();
-        assertEquals(4, model.getGraphicalElements().size());
         
-        internalFrame.getUndoManager().redo();
-        assertEquals(5, model.getGraphicalElements().size());
-        
-        internalFrame.getUndoManager().redo();
-        assertEquals(6, model.getGraphicalElements().size());
+        assertEquals("After redo should have 6 elements again", 
+                     6, model.getGraphicalElements().size());
     }
 
 }

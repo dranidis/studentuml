@@ -156,4 +156,89 @@ public class UCDSelectionControllerTest {
              
     }
 
+    @Test
+    public void testCopyPasteSystemWithUseCases() {
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+
+        // Create a system with use cases inside
+        SystemGR system = h.addSystem("System");
+        UseCaseGR uc1 = h.addUseCase("UseCase1");
+        UseCaseGR uc2 = h.addUseCase("UseCase2");
+        
+        // Move use cases inside system
+        model.removeGraphicalElement(uc1);
+        model.removeGraphicalElement(uc2);
+        system.add(uc1);
+        uc1.setContext(system);
+        system.add(uc2);
+        uc2.setContext(system);
+        
+        assertEquals(1, model.getGraphicalElements().size()); // Just the system
+        assertEquals(2, system.getNumberOfElements()); // 2 use cases inside
+        
+        // Select only the system (not individual use cases)
+        selectionController.addElementToSelection(system);
+        
+        // Copy and paste
+        selectionController.copySelected();
+        selectionController.pasteClipboard();
+        
+        // Should now have 2 systems, each with 2 use cases
+        assertEquals(2, model.getGraphicalElements().size());
+        
+        // Find the pasted system (should be the second one)
+        SystemGR pastedSystem = null;
+        for (int i = 0; i < model.getGraphicalElements().size(); i++) {
+            if (model.getGraphicalElements().get(i) != system) {
+                pastedSystem = (SystemGR) model.getGraphicalElements().get(i);
+            }
+        }
+        
+        assertNotNull("Pasted system should exist", pastedSystem);
+        assertEquals("Pasted system should have 2 use cases", 2, pastedSystem.getNumberOfElements());
+        
+        // Verify the use cases are properly connected to the pasted system
+        final SystemGR finalPastedSystem = pastedSystem;
+        pastedSystem.createIterator().forEachRemaining(child -> {
+            assertEquals("Child should have pasted system as context", finalPastedSystem, child.getContext());
+        });
+    }
+
+    @Test
+    public void testCopyPasteUndoSingleOperation() {
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+
+        // Create a system with use cases inside
+        SystemGR system = h.addSystem("System");
+        UseCaseGR uc1 = h.addUseCase("UseCase1");
+        UseCaseGR uc2 = h.addUseCase("UseCase2");
+        
+        // Move use cases inside system
+        model.removeGraphicalElement(uc1);
+        model.removeGraphicalElement(uc2);
+        system.add(uc1);
+        uc1.setContext(system);
+        system.add(uc2);
+        uc2.setContext(system);
+        
+        int initialCount = model.getGraphicalElements().size();
+        assertEquals(1, initialCount); // Just the system
+        
+        // Select and paste the system
+        selectionController.addElementToSelection(system);
+        selectionController.copySelected();
+        selectionController.pasteClipboard();
+        
+        // Should now have 2 systems
+        assertEquals(2, model.getGraphicalElements().size());
+        
+        // Single undo should remove all pasted elements (1 system + 2 use cases)
+        internalFrame.getUndoManager().undo();
+        
+        // Should be back to original state with single undo
+        assertEquals("Single undo should remove entire paste operation", 
+                     initialCount, model.getGraphicalElements().size());
+    }
+
 }
+

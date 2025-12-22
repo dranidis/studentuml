@@ -12,25 +12,33 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.Generalization;
+import edu.city.studentuml.model.domain.GenericOperation;
+import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Realization;
+import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.model.domain.UCAssociation;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
@@ -45,8 +53,15 @@ import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
+import edu.city.studentuml.model.graphical.RoleClassifierGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
+import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.UCActorGR;
+import edu.city.studentuml.model.graphical.UCAssociationGR;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
+import edu.city.studentuml.model.graphical.UseCaseGR;
 import edu.city.studentuml.util.ClipboardManager;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotifierVector;
@@ -87,6 +102,9 @@ public abstract class SelectionController {
     // data required for drag-and-drop
     protected int lastX;
     protected int lastY;
+    // Current mouse position (updated on mouse move for paste positioning)
+    protected int currentMouseX;
+    protected int currentMouseY;
     protected GraphicalElement lastPressed = null;
     // data required for undo/redo [move]
     protected Point2D undoCoordinates;
@@ -151,6 +169,13 @@ public abstract class SelectionController {
                 if (selectionMode) {
                     myMouseDragged(event);
                 }
+            }
+            
+            @Override
+            public void mouseMoved(MouseEvent event) {
+                // Track mouse position for paste positioning
+                currentMouseX = scale(event.getX());
+                currentMouseY = scale(event.getY());
             }
         };
 
@@ -559,6 +584,7 @@ public abstract class SelectionController {
     /**
      * Copy the selected elements to the clipboard.
      * The elements are stored in the ClipboardManager for later pasting.
+     * If a composite element (e.g., System box) is selected, its child components are also included.
      */
     public void copySelected() {
         if (selectedElements.isEmpty()) {
@@ -566,8 +592,33 @@ public abstract class SelectionController {
             return;
         }
         
-        ClipboardManager.getInstance().copy(selectedElements, model);
-        logger.info(() -> "Copied " + selectedElements.size() + " elements to clipboard");
+        // Expand selection to include child components of composite elements
+        List<GraphicalElement> expandedSelection = new ArrayList<>(selectedElements);
+        
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof CompositeUCDElementGR) {
+                // Add all child components of the composite element
+                CompositeUCDElementGR composite = (CompositeUCDElementGR) element;
+                for (UCDComponentGR child : composite.getComponents()) {
+                    if (!expandedSelection.contains(child)) {
+                        expandedSelection.add(child);
+                        logger.fine("Auto-including child component: " + child.getClass().getSimpleName());
+                    }
+                }
+            } else if (element instanceof CompositeNodeGR) {
+                // Add all child components of the composite node (Activity Diagrams)
+                CompositeNodeGR composite = (CompositeNodeGR) element;
+                for (NodeComponentGR child : composite.getComponents()) {
+                    if (!expandedSelection.contains(child)) {
+                        expandedSelection.add(child);
+                        logger.fine("Auto-including child component: " + child.getClass().getSimpleName());
+                    }
+                }
+            }
+        }
+        
+        ClipboardManager.getInstance().copy(expandedSelection, model);
+        logger.info(() -> "Copied " + expandedSelection.size() + " elements to clipboard (including child components)");
     }
     
     /**
@@ -581,6 +632,26 @@ public abstract class SelectionController {
             return;
         }
         
+        // Check if source diagram type matches current diagram type
+        DiagramModel sourceDiagram = ClipboardManager.getInstance().getSourceDiagram();
+        if (sourceDiagram != null && !sourceDiagram.getClass().equals(model.getClass())) {
+            String sourceType = sourceDiagram.getClass().getSimpleName().replace("Model", "");
+            String targetType = model.getClass().getSimpleName().replace("Model", "");
+            
+            logger.warning("Cannot paste from " + sourceDiagram.getClass().getSimpleName() + 
+                          " to " + model.getClass().getSimpleName() + 
+                          " - diagram types must match");
+            
+            JOptionPane.showMessageDialog(
+                parentComponent,
+                "Cannot paste elements from a " + sourceType + " diagram into a " + targetType + " diagram.\n" +
+                "Elements can only be pasted within the same diagram type.",
+                "Paste Error",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+        
         List<GraphicalElement> clipboardElements = ClipboardManager.getInstance().getClipboardElements();
         if (clipboardElements.isEmpty()) {
             logger.fine("Clipboard has no elements to paste");
@@ -589,8 +660,28 @@ public abstract class SelectionController {
         
         logger.info("Pasting " + clipboardElements.size() + " elements from clipboard");
         
-        // Offset for pasted elements (20 pixels right and down)
-        final int PASTE_OFFSET = 20;
+        // Calculate the bounding box of the original elements (find top-left corner)
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        for (GraphicalElement element : clipboardElements) {
+            if (!(element instanceof LinkGR)) { // Only consider non-link elements for bounding box
+                minX = Math.min(minX, element.getX());
+                minY = Math.min(minY, element.getY());
+            }
+        }
+        
+        // Calculate offset to position at mouse cursor (or use default offset if no mouse position)
+        final int offsetX;
+        final int offsetY;
+        if (currentMouseX > 0 || currentMouseY > 0) {
+            // Position the top-left element at the mouse cursor
+            offsetX = currentMouseX - minX;
+            offsetY = currentMouseY - minY;
+        } else {
+            // Fallback: use fixed offset (20 pixels right and down)
+            offsetX = 20;
+            offsetY = 20;
+        }
         
         // List to store newly created (pasted) elements
         List<GraphicalElement> pastedElements = new ArrayList<>();
@@ -598,10 +689,27 @@ public abstract class SelectionController {
         // Map to track original -> cloned element mappings (for reconnecting links)
         Map<GraphicalElement, GraphicalElement> originalToCloneMap = new HashMap<>();
         
+        // Track which elements are children of composites (should not be added to model directly)
+        Set<GraphicalElement> childElements = new HashSet<>();
+        
+        // Create compound edit to group all paste operations into single undoable action
+        CompoundEdit compoundEdit = new CompoundEdit();
+        
+        // Identify child elements first
+        for (GraphicalElement originalElement : clipboardElements) {
+            if (originalElement instanceof CompositeUCDElementGR) {
+                CompositeUCDElementGR composite = (CompositeUCDElementGR) originalElement;
+                childElements.addAll(composite.getComponents());
+            } else if (originalElement instanceof CompositeNodeGR) {
+                CompositeNodeGR composite = (CompositeNodeGR) originalElement;
+                childElements.addAll(composite.getComponents());
+            }
+        }
+        
         // First pass: Clone non-link elements (classes, use cases, etc.)
         for (GraphicalElement originalElement : clipboardElements) {
-            // Skip links in first pass - we'll handle them after classes are cloned
-            if (originalElement instanceof LinkGR) {
+            // Skip links and SD messages in first pass - we'll handle them after objects are cloned
+            if (originalElement instanceof LinkGR || originalElement instanceof SDMessageGR) {
                 continue;
             }
             
@@ -609,24 +717,29 @@ public abstract class SelectionController {
                 // Clone the graphical element (shares domain object reference)
                 GraphicalElement clonedElement = originalElement.clone();
                 
-                // Offset the position to avoid overlapping with original
+                // Apply calculated offset to position element at mouse cursor
                 clonedElement.move(
-                    clonedElement.getX() + PASTE_OFFSET,
-                    clonedElement.getY() + PASTE_OFFSET
+                    clonedElement.getX() + offsetX,
+                    clonedElement.getY() + offsetY
                 );
                 
-                // Add to model (this will notify observers/view automatically)
-                model.addGraphicalElement(clonedElement);
-                pastedElements.add(clonedElement);
+                // Only add to model if it's NOT a child of a composite
+                // Children will be added to their parent composite in the third pass
+                if (!childElements.contains(originalElement)) {
+                    model.addGraphicalElement(clonedElement);
+                    pastedElements.add(clonedElement);
+                    
+                    // Create undo/redo edit for this paste and add to compound edit
+                    UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(clonedElement, model);
+                    compoundEdit.addEdit(addEdit);
+                    
+                    logger.fine("Pasted element: " + clonedElement.getClass().getSimpleName());
+                } else {
+                    logger.fine("Skipping direct add for child element: " + clonedElement.getClass().getSimpleName());
+                }
                 
-                // Track the mapping for link reconnection
+                // Track the mapping for link reconnection and parent-child relationships
                 originalToCloneMap.put(originalElement, clonedElement);
-                
-                // Create undo/redo edit for this paste
-                UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(clonedElement, model);
-                parentComponent.getUndoSupport().postEdit(addEdit);
-                
-                logger.fine("Pasted element: " + clonedElement.getClass().getSimpleName());
                 
             } catch (Exception e) {
                 logger.warning("Failed to paste element " + originalElement.getClass().getSimpleName() + ": " + e.getMessage());
@@ -634,9 +747,138 @@ public abstract class SelectionController {
             }
         }
         
-        // Second pass: Find associations connecting the copied elements
-        // and create new associations connecting the pasted elements
-        pasteRelatedLinks(clipboardElements, originalToCloneMap, pastedElements, PASTE_OFFSET);
+        // Second pass: Handle links and SD messages that were explicitly copied
+        // Clone links only if they were in the clipboard (explicitly selected)
+        for (GraphicalElement originalElement : clipboardElements) {
+            if (!(originalElement instanceof LinkGR) && !(originalElement instanceof SDMessageGR)) {
+                continue;
+            }
+            
+            try {
+                // Handle regular links (associations, dependencies, etc.)
+                if (originalElement instanceof LinkGR) {
+                    LinkGR originalLink = (LinkGR) originalElement;
+                    
+                    // Get the endpoints of the original link
+                    GraphicalElement endpointA = (GraphicalElement) originalLink.getA();
+                    GraphicalElement endpointB = (GraphicalElement) originalLink.getB();
+                    
+                    // Check if both endpoints were copied
+                    GraphicalElement clonedA = originalToCloneMap.get(endpointA);
+                    GraphicalElement clonedB = originalToCloneMap.get(endpointB);
+                    
+                    if (clonedA instanceof ClassifierGR && clonedB instanceof ClassifierGR) {
+                        // Create new link connecting the pasted elements
+                        LinkGR newLink = createLinkForPastedElements(
+                            originalLink, 
+                            (ClassifierGR) clonedA, 
+                            (ClassifierGR) clonedB
+                        );
+                        
+                        if (newLink != null) {
+                            model.addGraphicalElement(newLink);
+                            pastedElements.add(newLink);
+                            
+                            // Create undo/redo edit and add to compound edit
+                            UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newLink, model);
+                            compoundEdit.addEdit(addEdit);
+                            
+                            logger.fine("Pasted link: " + newLink.getClass().getSimpleName());
+                        }
+                    }
+                }
+                // Handle SD messages (CallMessageGR, ReturnMessageGR)
+                else if (originalElement instanceof SDMessageGR) {
+                    SDMessageGR originalMessage = (SDMessageGR) originalElement;
+                    
+                    // Get the endpoints of the original message
+                    RoleClassifierGR originalSource = originalMessage.getSource();
+                    RoleClassifierGR originalTarget = originalMessage.getTarget();
+                    
+                    // Check if both endpoints were copied
+                    GraphicalElement clonedSource = originalToCloneMap.get(originalSource);
+                    GraphicalElement clonedTarget = originalToCloneMap.get(originalTarget);
+                    
+                    if (clonedSource instanceof RoleClassifierGR && clonedTarget instanceof RoleClassifierGR) {
+                        // Create new message connecting the pasted SD objects
+                        SDMessageGR newMessage = createMessageForPastedElements(
+                            originalMessage,
+                            (RoleClassifierGR) clonedSource,
+                            (RoleClassifierGR) clonedTarget
+                        );
+                        
+                        if (newMessage != null) {
+                            model.addGraphicalElement(newMessage);
+                            pastedElements.add(newMessage);
+                            
+                            // Create undo/redo edit and add to compound edit
+                            UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newMessage, model);
+                            compoundEdit.addEdit(addEdit);
+                            
+                            logger.info("Pasted SD message: " + newMessage.getClass().getSimpleName() + 
+                                       " connecting " + clonedSource.getClass().getSimpleName() + 
+                                       " to " + clonedTarget.getClass().getSimpleName());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.warning("Failed to paste link/message " + originalElement.getClass().getSimpleName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        // Third pass: Re-establish parent-child relationships for composite elements
+        for (GraphicalElement originalElement : clipboardElements) {
+            if (originalElement instanceof CompositeUCDElementGR) {
+                CompositeUCDElementGR originalComposite = (CompositeUCDElementGR) originalElement;
+                GraphicalElement clonedComposite = originalToCloneMap.get(originalElement);
+                
+                if (clonedComposite instanceof CompositeUCDElementGR) {
+                    // Add all cloned children to the cloned composite
+                    for (UCDComponentGR originalChild : originalComposite.getComponents()) {
+                        GraphicalElement clonedChild = originalToCloneMap.get(originalChild);
+                        if (clonedChild instanceof UCDComponentGR) {
+                            ((CompositeUCDElementGR) clonedComposite).add((UCDComponentGR) clonedChild);
+                            ((UCDComponentGR) clonedChild).setContext((UCDComponentGR) clonedComposite);
+                            pastedElements.add(clonedChild);
+                            
+                            // Create undo/redo edit for the child and add to compound edit
+                            UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(clonedChild, model);
+                            compoundEdit.addEdit(addEdit);
+                            
+                            logger.fine("Re-established parent-child: " + clonedComposite.getClass().getSimpleName() + 
+                                       " -> " + clonedChild.getClass().getSimpleName());
+                        }
+                    }
+                }
+            } else if (originalElement instanceof CompositeNodeGR) {
+                CompositeNodeGR originalComposite = (CompositeNodeGR) originalElement;
+                GraphicalElement clonedComposite = originalToCloneMap.get(originalElement);
+                
+                if (clonedComposite instanceof CompositeNodeGR) {
+                    // Add all cloned children to the cloned composite node
+                    for (NodeComponentGR originalChild : originalComposite.getComponents()) {
+                        GraphicalElement clonedChild = originalToCloneMap.get(originalChild);
+                        if (clonedChild instanceof NodeComponentGR) {
+                            ((CompositeNodeGR) clonedComposite).add((NodeComponentGR) clonedChild);
+                            ((NodeComponentGR) clonedChild).setContext((NodeComponentGR) clonedComposite);
+                            pastedElements.add(clonedChild);
+                            
+                            // Create undo/redo edit for the child and add to compound edit
+                            UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(clonedChild, model);
+                            compoundEdit.addEdit(addEdit);
+                            
+                            logger.fine("Re-established parent-child: " + clonedComposite.getClass().getSimpleName() + 
+                                       " -> " + clonedChild.getClass().getSimpleName());
+                        }
+                    }
+                }
+            }
+        }
+        
+        // End the compound edit and post it as a single undoable operation
+        compoundEdit.end();
+        parentComponent.getUndoSupport().postEdit(compoundEdit);
         
         // Clear current selection and select all pasted elements
         selectedElements.clear();
@@ -650,70 +892,13 @@ public abstract class SelectionController {
     }
     
     /**
-     * Detects links (associations, aggregations, etc.) between copied elements
-     * and creates new links connecting the pasted elements.
-     */
-    private void pasteRelatedLinks(List<GraphicalElement> clipboardElements, 
-                                   Map<GraphicalElement, GraphicalElement> originalToCloneMap,
-                                   List<GraphicalElement> pastedElements,
-                                   int offset) {
-        // Get all links in the model
-        List<GraphicalElement> allLinks = model.getGraphicalElements().stream()
-            .filter(element -> element instanceof LinkGR)
-            .collect(Collectors.toList());
-        
-        logger.fine("Checking " + allLinks.size() + " links for relationships between pasted elements");
-        
-        // Check each link to see if it connects two elements that were copied
-        for (GraphicalElement linkElement : allLinks) {
-            if (!(linkElement instanceof LinkGR)) {
-                continue;
-            }
-            
-            LinkGR originalLink = (LinkGR) linkElement;
-            ClassifierGR linkA = originalLink.getA();
-            ClassifierGR linkB = originalLink.getB();
-            
-            // Check if both endpoints are in the copied elements
-            boolean aWasCopied = clipboardElements.contains((GraphicalElement) linkA);
-            boolean bWasCopied = clipboardElements.contains((GraphicalElement) linkB);
-            
-            if (aWasCopied && bWasCopied) {
-                // Both endpoints were copied, create a new link for the pasted elements
-                GraphicalElement clonedA = originalToCloneMap.get((GraphicalElement) linkA);
-                GraphicalElement clonedB = originalToCloneMap.get((GraphicalElement) linkB);
-                
-                if (clonedA instanceof ClassifierGR && clonedB instanceof ClassifierGR) {
-                    try {
-                        LinkGR newLink = createLinkForPastedElements(
-                            originalLink, 
-                            (ClassifierGR) clonedA, 
-                            (ClassifierGR) clonedB
-                        );
-                        
-                        if (newLink != null) {
-                            model.addGraphicalElement(newLink);
-                            pastedElements.add(newLink);
-                            
-                            // Create undo/redo edit
-                            UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newLink, model);
-                            parentComponent.getUndoSupport().postEdit(addEdit);
-                            
-                            logger.info("Created " + newLink.getClass().getSimpleName() + 
-                                       " between pasted elements");
-                        }
-                    } catch (Exception e) {
-                        logger.warning("Failed to create link between pasted elements: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
      * Creates a new link (association, aggregation, etc.) of the same type as the original,
      * but connecting the newly pasted elements.
+     * 
+     * IMPORTANT: The pasted link REUSES the same domain object (Association, Aggregation, etc.)
+     * as the original link. This is by design - multiple graphical elements can reference the
+     * same domain concept. This prevents duplicate domain objects in the repository when pasting
+     * links whose endpoints share domain classifiers with the original.
      */
     private LinkGR createLinkForPastedElements(LinkGR originalLink, 
                                                ClassifierGR newA, 
@@ -722,50 +907,43 @@ public abstract class SelectionController {
         if (originalLink instanceof AssociationGR) {
             AssociationGR origAssoc = (AssociationGR) originalLink;
             Association origDomain = origAssoc.getAssociation();
-            // Clone the domain association with new classifiers
-            Association newDomain = new Association(
-                newA.getClassifier(), 
-                newB.getClassifier()
-            );
-            // Copy properties from original
-            copyAssociationProperties(origDomain, newDomain);
-            return new AssociationGR(newA, newB, newDomain);
+            // REUSE the same domain Association object (don't create a new one)
+            // Multiple graphical associations can reference the same domain association
+            return new AssociationGR(newA, newB, origDomain);
             
         } else if (originalLink instanceof AggregationGR) {
             AggregationGR origAggr = (AggregationGR) originalLink;
             Aggregation origDomain = origAggr.getAggregation();
-            Aggregation newDomain = new Aggregation(
-                newA.getClassifier(), 
-                newB.getClassifier()
-            );
-            copyAssociationProperties(origDomain, newDomain);
-            return new AggregationGR(newA, newB, newDomain);
+            // REUSE the same domain Aggregation object
+            return new AggregationGR(newA, newB, origDomain);
             
         } else if (originalLink instanceof GeneralizationGR) {
-            Generalization newDomain = new Generalization(
-                newA.getClassifier(), 
-                newB.getClassifier()
-            );
-            return new GeneralizationGR(newA, newB, newDomain);
+            Generalization origDomain = ((GeneralizationGR) originalLink).getGeneralization();
+            // REUSE the same domain Generalization object
+            return new GeneralizationGR(newA, newB, origDomain);
             
         } else if (originalLink instanceof DependencyGR) {
             // Dependency requires both to be DesignClass (not interfaces)
             if (newA instanceof ClassGR && newB instanceof ClassGR) {
-                Dependency newDomain = new Dependency(
-                    ((ClassGR) newA).getDesignClass(), 
-                    ((ClassGR) newB).getDesignClass()
-                );
-                return new DependencyGR((ClassGR) newA, (ClassGR) newB, newDomain);
+                Dependency origDomain = ((DependencyGR) originalLink).getDependency();
+                // REUSE the same domain Dependency object
+                return new DependencyGR((ClassGR) newA, (ClassGR) newB, origDomain);
             }
             
         } else if (originalLink instanceof RealizationGR) {
             // Realization requires DesignClass and Interface
             if (newA instanceof ClassGR && newB instanceof InterfaceGR) {
-                Realization newDomain = new Realization(
-                    ((ClassGR) newA).getDesignClass(), 
-                    ((InterfaceGR) newB).getInterface()
-                );
-                return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, newDomain);
+                Realization origDomain = ((RealizationGR) originalLink).getRealization();
+                // REUSE the same domain Realization object
+                return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, origDomain);
+            }
+            
+        } else if (originalLink instanceof UCAssociationGR) {
+            // Use Case Association requires UCActorGR and UseCaseGR
+            if (newA instanceof UCActorGR && newB instanceof UseCaseGR) {
+                UCAssociation origDomain = (UCAssociation) ((UCAssociationGR) originalLink).getLink();
+                // REUSE the same domain UCAssociation object
+                return new UCAssociationGR((UCActorGR) newA, (UseCaseGR) newB, origDomain);
             }
         }
         
@@ -775,29 +953,62 @@ public abstract class SelectionController {
     }
     
     /**
-     * Copies association properties (name, direction, roles, etc.) from original to new.
+     * Creates a new SD message (call or return) of the same type as the original,
+     * but connecting the newly pasted SD objects.
      */
-    private void copyAssociationProperties(Association original, Association target) {
-        target.setName(original.getName());
-        target.setDirection(original.getDirection());
-        target.setShowArrow(original.getShowArrow());
-        target.setLabelDirection(original.getLabelDirection());
-        
-        // Copy bidirectional flag (no parameter needed - it's a toggle)
-        if (original.isBidirectional()) {
-            target.setBidirectional();
+    private SDMessageGR createMessageForPastedElements(SDMessageGR originalMessage,
+                                                       RoleClassifierGR newSource,
+                                                       RoleClassifierGR newTarget) {
+        // Create appropriate message type based on the original
+        if (originalMessage instanceof CallMessageGR) {
+            CallMessageGR origCall = (CallMessageGR) originalMessage;
+            CallMessage origDomain = origCall.getCallMessage();
+            
+            // Create new domain message with new source/target and new GenericOperation
+            CallMessage newDomain = new CallMessage(
+                newSource.getRoleClassifier(),
+                newTarget.getRoleClassifier(),
+                new GenericOperation(origDomain.getName())
+            );
+            
+            // Copy properties from original using the same logic as CallMessage.clone()
+            newDomain.setIterative(origDomain.isIterative());
+            
+            for (MethodParameter p : origDomain.getParameters()) {
+                newDomain.addParameter(p.clone());
+            }
+            
+            if (origDomain.getReturnValue() != null) {
+                newDomain.setReturnValue(
+                    new edu.city.studentuml.model.domain.MessageReturnValue(
+                        origDomain.getReturnValue().getName()
+                    )
+                );
+            }
+            
+            newDomain.setReturnType(origDomain.getReturnType());
+            
+            // Create new graphical message with cloned endpoints
+            return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
+            
+        } else if (originalMessage instanceof ReturnMessageGR) {
+            ReturnMessageGR origReturn = (ReturnMessageGR) originalMessage;
+            ReturnMessage origDomain = origReturn.getReturnMessage();
+            
+            // Create new domain message with new source/target and name
+            ReturnMessage newDomain = new ReturnMessage(
+                newSource.getRoleClassifier(),
+                newTarget.getRoleClassifier(),
+                origDomain.getName()
+            );
+            
+            // Create new graphical message with cloned endpoints
+            return new ReturnMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
         }
         
-        // Copy role A properties
-        if (original.getRoleA() != null) {
-            target.getRoleA().setName(original.getRoleA().getName());
-            target.getRoleA().setMultiplicity(original.getRoleA().getMultiplicity());
-        }
-        
-        // Copy role B properties
-        if (original.getRoleB() != null) {
-            target.getRoleB().setName(original.getRoleB().getName());
-            target.getRoleB().setMultiplicity(original.getRoleB().getMultiplicity());
-        }
+        // Handle other message types as needed
+        logger.warning("Unsupported message type for paste: " + originalMessage.getClass().getName());
+        return null;
     }
+
 }
