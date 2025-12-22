@@ -1,13 +1,23 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import edu.city.studentuml.util.Colors;
 
@@ -25,7 +35,7 @@ public class GraphicsHelper {
 
         double textAngle = angle;
 
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+        if (angleGreaterThanHalfPi(angle)) {
             textAngle -= Math.PI;
         }
 
@@ -100,7 +110,7 @@ public class GraphicsHelper {
     public static void drawNameArrow(int x, int y, double angle, int offset, Graphics2D g) {
 
         // try to always draw the arrow above the association line
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+        if (angleGreaterThanHalfPi(angle)) {
             g.translate(x, y);
             g.rotate(angle);
 
@@ -157,6 +167,55 @@ public class GraphicsHelper {
         g.draw(diamond);
         g.rotate(-angle);
         g.translate(-x, -y);
+    }
+
+    public static void drawStickFigure(Graphics2D g, int x, int y, boolean isSelected, 
+    Color fillColor, Color outlineColor, Color highlightColor) {
+        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
+
+        g.setPaint(fillColor);
+        g.fill(head);
+
+        if (isSelected) {
+            g.setPaint(highlightColor);
+        } else {
+            g.setPaint(outlineColor);
+        }
+
+        g.draw(head);
+        g.drawLine(x, y + 12, x, y + 25);
+        g.drawLine(x - 10, y + 16, x + 10, y + 16);
+        g.drawLine(x - 10, y + 35, x, y + 25);
+        g.drawLine(x, y + 25, x + 10, y + 35);
+    }
+
+
+    public static void clearBorder(JComponent button) {
+        button.setBorder(new EmptyBorder(5, 5, 5, 5));
+    }
+
+    public static void highlightBorder(JComponent button) {
+        button.setBorder(new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
+    }
+
+    public static void addHightLightMouseAdapter(JComponent button) {
+        button.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                GraphicsHelper.highlightBorder(button);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                GraphicsHelper.clearBorder(button);
+            }
+        });
+    }
+
+    public static boolean angleGreaterThanHalfPi(double angle) {
+        return angle < 3 * Math.PI / 2 && angle >= Math.PI / 2;
+        
     }
 
 }

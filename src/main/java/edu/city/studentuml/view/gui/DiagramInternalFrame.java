@@ -120,8 +120,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         // create selection, draw line, and add element controllers
         selectionController = makeSelectionController(this, model);
         resizeController = makeResizeWithCoveredElementsController(this, model, selectionController);
-        drawLineController = makeDrawLineController(view, model);
-        drawRectangleController = makeDrawRectangleController(view, model);
+        drawLineController = new DrawLineController(view, model);
+        drawRectangleController = new DrawRectangleController(view, model);
         edgeController = makeEdgeController(this, model, selectionController);
 
         // pass selection controller and add element controller to view
@@ -155,20 +155,16 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
             }
         });
 
-        view.addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if (!e.isControlDown()) {
-                    e.getComponent().getParent().dispatchEvent(e);
+        view.addMouseWheelListener(e -> {
+            if (!e.isControlDown()) {
+                e.getComponent().getParent().dispatchEvent(e);
+            } else {
+                if (e.getWheelRotation() < 0) {
+                    view.zoomIn();
                 } else {
-                    if (e.getWheelRotation() < 0) {
-                        view.zoomIn();
-                    } else {
-                        view.zoomOut();
-                    }
+                    view.zoomOut();
                 }
             }
-
         });
 
         setSize(new Dimension(650, 550));
@@ -192,15 +188,6 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                         + "Shift-Ctrl click (only for messages)  selects a message and all the messages below it",
                 "Selection keystrokes", JOptionPane.INFORMATION_MESSAGE));
         helpMenu.add(selectMenuItem);
-    }
-    
-
-    private DrawRectangleController makeDrawRectangleController(DiagramView diagramView, DiagramModel model) {
-        return new DrawRectangleController(view, model);
-    }
-
-    protected DrawLineController makeDrawLineController(DiagramView diagramView, DiagramModel model) {
-        return new DrawLineController(view, model);
     }
 
     protected abstract DiagramView makeView(DiagramModel model);
@@ -230,6 +217,22 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK));
         redoMenuItem.addActionListener(e -> redo());
         editMenu.add(redoMenuItem);
+
+        editMenu.addSeparator();
+
+        JMenuItem copyMenuItem = new JMenuItem();
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+        copyMenuItem.addActionListener(e -> selectionController.copySelected());
+        editMenu.add(copyMenuItem);
+
+        JMenuItem pasteMenuItem = new JMenuItem();
+        pasteMenuItem.setText("Paste");
+        pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
+        pasteMenuItem.addActionListener(e -> selectionController.pasteClipboard());
+        editMenu.add(pasteMenuItem);
+
+        editMenu.addSeparator();
 
         JMenuItem selectAllMenuItem = new JMenuItem();
         selectAllMenuItem.setText("Select all");

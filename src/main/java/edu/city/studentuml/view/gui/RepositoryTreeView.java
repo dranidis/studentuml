@@ -310,19 +310,26 @@ public class RepositoryTreeView extends JPanel implements Observer {
 
                 node = (DefaultMutableTreeNode) (node.getChildAt(index));
             } catch (NullPointerException exc) {
+                logger.finest("Doing nothing on NullPointerException");
             }
 
             logger.fine("The user has finished editing the node.");
             logger.fine("New value: " + node.getUserObject());
         }
 
+        @Override
         public void treeNodesInserted(TreeModelEvent e) {
+            //empty
         }
 
+        @Override
         public void treeNodesRemoved(TreeModelEvent e) {
+            //empty
         }
 
+        @Override
         public void treeStructureChanged(TreeModelEvent e) {
+            //empty
         }
     }
 

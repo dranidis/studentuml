@@ -204,8 +204,7 @@ public class ADSelectionController extends SelectionController {
         // Undo/Redo
 
         // do not edit if name and type are both empty
-        if ((objectNodeEditor.getObjectName().isEmpty())
-                && (objectNodeEditor.getType() == null)) {
+        if (objectNodeEditor.getObjectName().isEmpty() && objectNodeEditor.getType() == null) {
             JOptionPane.showMessageDialog(parentComponent,
                     "Object name and/or type is missing!",
                     "Object Node Error",

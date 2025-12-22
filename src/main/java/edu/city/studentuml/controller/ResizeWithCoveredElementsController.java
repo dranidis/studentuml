@@ -18,6 +18,7 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.Resizable;
 import edu.city.studentuml.model.graphical.ResizeHandle;
+import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.Size;
 import edu.city.studentuml.util.SizeWithCoveredElements;
 import edu.city.studentuml.util.undoredo.CompoundResizeEdit;
@@ -62,7 +63,7 @@ public abstract class ResizeWithCoveredElementsController {
 
             @Override
             public void mouseReleased(MouseEvent event) {
-                myMouseReleased(event);
+                myMouseReleased();
             }
         };
 
@@ -116,7 +117,7 @@ public abstract class ResizeWithCoveredElementsController {
         }
     }
 
-    private void myMouseReleased(MouseEvent event) {
+    private void myMouseReleased() {
         if (!selectionMode) {
             return;
         }
@@ -131,10 +132,8 @@ public abstract class ResizeWithCoveredElementsController {
                 loadContextSizes(resizableElement.getResizableContext(), redoContextSizes);
             }
 
-            if (redoSize.getStartingPosition().equals(undoSize.getStartingPosition())
-                    && redoSize.getDimension().equals(undoSize.getDimension())) {
-                // nothing happens
-            } else {
+            if (!(redoSize.getStartingPosition().equals(undoSize.getStartingPosition())
+                    && redoSize.getDimension().equals(undoSize.getDimension()))) {
                 // hook method: subclasses know how to deal with
                 // adding newly covered elements after resize
                 addContainingElements();
@@ -187,8 +186,11 @@ public abstract class ResizeWithCoveredElementsController {
             return;
         }
 
+        int x = Math.max(scale(event.getX()), Constants.CANVAS_MARGIN);
+        int y = Math.max(scale(event.getY()), Constants.CANVAS_MARGIN);
+
         // resize the resizable element by moving the handle
-        handle.move(scale(event.getX()), scale(event.getY()));
+        handle.move(x, y);
         
         lastSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
         lastSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));

@@ -116,6 +116,15 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     public abstract void move(int x, int y);
 
     public abstract boolean contains(Point2D p);
+    
+    /**
+     * Creates a deep copy of this graphical element.
+     * The clone should include a cloned domain object and copied visual properties,
+     * but should not copy relationships to other elements or selection state.
+     * 
+     * @return a new GraphicalElement that is a copy of this instance
+     */
+    public abstract GraphicalElement clone();
 
     public boolean containedInArea(int x, int y, int toX, int toY) {
         Rectangle2D b = getBounds();
@@ -130,7 +139,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
         String uid = node.getAttribute("uid");
 
-        if ((uid != null) && (uid.equals(""))) {
+        if (uid != null && uid.equals("")) {
             uid = SystemWideObjectNamePool.getInstance().getUid();
         }
 

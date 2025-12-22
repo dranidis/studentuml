@@ -154,7 +154,7 @@ public final class ObjectFactory extends Observable {
                 m = Class.forName(packageName + className);
                 return newInstance(m, parent, child, streamer);
             } catch (ClassNotFoundException e) {
-                // try the next package
+                logger.finest(() -> "Not found in package: " + packageName + " Trying next package");
             } catch (NotStreamable e) {
                 logger.severe("Not streamable: " + className);
                 throw e;

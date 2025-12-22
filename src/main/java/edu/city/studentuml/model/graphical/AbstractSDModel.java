@@ -75,9 +75,8 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // hook; calls the methods in subclass that need to perform subclass specific tasks
-    protected void addToRepository(RoleClassifierGR rc) {
-    }
-
+    protected abstract void addToRepository(RoleClassifierGR rc);
+    
     // before calling the superclass add element, the message
     // is added to the project repository, then to the messages list,
     // which is validated for consistency,
@@ -121,12 +120,12 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
-    private final void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
+    private void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
     }
 
-    private final void moveMessage(SDMessageGR m, int x, int y) {
+    private void moveMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
         sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
     }
@@ -142,13 +141,13 @@ public abstract class AbstractSDModel extends DiagramModel {
         }
     }
 
-    private final void settleRoleClassifier(RoleClassifierGR rc, int x, int y) {
+    private void settleRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
         restoreRoleClassifiersDistances();
     }
 
-    private final void settleMessage(SDMessageGR m, int x, int y) {
+    private void settleMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
@@ -161,7 +160,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // called whenever role classifeirs change, by resorting the list
     // and updating the lifeline lengths
-    private final void roleClassifiersChanged() {
+    private void roleClassifiersChanged() {
         Collections.sort(roleClassifiers, (c1, c2) -> c1.getX() - c2.getX());
         updateLifelineLengths();
     }
@@ -240,7 +239,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // updates the lifeline lengths of role classifiers whenever
     // a message is added or moved
-    private final void updateLifelineLengths() {
+    private void updateLifelineLengths() {
         if (!messages.isEmpty()) {
             int highestMessageY = messages.lastElement().getY();
 
@@ -259,7 +258,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         while (iterator.hasNext()) {
             message = iterator.next();
 
-            if ((message instanceof DestroyMessageGR) && (message.getTarget() == rc)) {
+            if (message instanceof DestroyMessageGR && message.getTarget() == rc) {
                 return true;
             }
         }
@@ -269,7 +268,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // this changes the lifeline lengths of all the role classifiers,
     // except those that have been destroyed (i.e. have a determined lifeline length
-    private final void setEndingY(int y) {
+    private void setEndingY(int y) {
         Vector<RoleClassifierGR> objects = getRoleClassifiers();
         Iterator<RoleClassifierGR> iterator = objects.iterator();
 
@@ -301,7 +300,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 .collect(Collectors.toList());
     }
 
-    private final void removeRoleClassifier(RoleClassifierGR rc) {
+    private void removeRoleClassifier(RoleClassifierGR rc) {
         // Remove messages associated with the RoleClassifier
         getRoleClaffierGRMessages(rc).forEach(this::removeMessage);
 
@@ -314,7 +313,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // removes role classifiers from the repository
-    private final void removeFromRepository(RoleClassifierGR rc) {
+    private void removeFromRepository(RoleClassifierGR rc) {
         if (rc.getRoleClassifier() instanceof ActorInstance) {
             if (!umlProject.isActorReferenced(rc, ((ActorInstance) rc.getRoleClassifier()).getActor())) {
                 repository.removeActor(((ActorInstance) rc.getRoleClassifier()).getActor());
@@ -331,7 +330,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     // method template
-    private final void removeMessage(SDMessageGR e) {
+    private void removeMessage(SDMessageGR e) {
         if (e instanceof CallMessageGR) {
             removeCallMessage((CallMessageGR) e);
         } else if (e instanceof ReturnMessageGR) {

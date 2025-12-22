@@ -164,7 +164,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         }
 
         // initialize the visibility combo box
-        if ((method == null) || (method.getVisibility() == Method.PUBLIC)) {
+        if (method == null || method.getVisibility() == Method.PUBLIC) {
             visibilityComboBox.setSelectedIndex(0);
         } else if (method.getVisibility() == Method.PRIVATE) {
             visibilityComboBox.setSelectedIndex(1);
@@ -173,7 +173,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         }
 
         // initialize the scope combo box
-        if ((method == null) || (method.getScope() == Method.INSTANCE)) {
+        if (method == null || method.getScope() == Method.INSTANCE) {
             scopeComboBox.setSelectedIndex(0);
         } else if (method.getScope() == Method.CLASSIFIER) {
             scopeComboBox.setSelectedIndex(1);
@@ -214,7 +214,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
 
     public void actionPerformed(ActionEvent event) {
         if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
 
                 return;

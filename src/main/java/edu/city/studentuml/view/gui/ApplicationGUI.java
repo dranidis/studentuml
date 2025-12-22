@@ -39,14 +39,11 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.tree.TreePath;
 
-import edu.city.studentuml.applet.StudentUMLApplet;
 import edu.city.studentuml.frame.StudentUMLFrame;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -54,6 +51,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.DiagramType;
+import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SSDModel;
 import edu.city.studentuml.model.graphical.UCDModel;
@@ -77,7 +75,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
-    protected StudentUMLApplet applet = null;
+    protected StudentUMLAppletAPI applet = null;
     protected boolean repairMode = false;
     protected UMLProject umlProject = UMLProject.getInstance();
     protected CentralRepository centralRepository;
@@ -161,7 +159,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
-    protected ApplicationGUI(StudentUMLApplet applet) {
+    protected ApplicationGUI(StudentUMLAppletAPI applet) {
         isApplet = true;
         this.applet = applet;
         instance = this;
@@ -322,7 +320,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
                 if (isApplet) {
                     applet.getAppletContext().showDocument(url, "_blank");
                 } else {
-                    // do something about this
+                    logger.finest("Nothing done if not applet");
                 }
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
@@ -379,7 +377,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         panel.add(repairPanel, BorderLayout.PAGE_END);
 
         repairButton = new JButton();
-        repairButton.setBorder(new EmptyBorder(2, 5, 2, 5));
+        GraphicsHelper.clearBorder(repairButton);
         repairButton.setName("Repair selected");
         repairButton.setText(" Repair selected");
         addBorderListener(repairButton);
@@ -413,13 +411,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBorder(
-                        new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
+                GraphicsHelper.highlightBorder(null);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBorder(new EmptyBorder(5, 5, 5, 5));
+                GraphicsHelper.clearBorder(button);
             }
         });
     }
@@ -517,7 +514,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         DiagramModel model;
         String modelName = inputModelName(type);
 
-        if ((modelName != null) && (modelName.length() > 0)) {
+        if (modelName != null && modelName.length() > 0) {
             if (type == DiagramType.SSD) {
                 model = new SSDModel("SSD: " + modelName, umlProject);
             } else if (type == DiagramType.SD) {
@@ -731,6 +728,26 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         default:
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * Copies selected elements in the currently active diagram
+     */
+    public void copySelectedElements() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame instanceof DiagramInternalFrame) {
+            ((DiagramInternalFrame) selectedFrame).getSelectionController().copySelected();
+        }
+    }
+
+    /**
+     * Pastes clipboard elements into the currently active diagram
+     */
+    public void pasteElements() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame instanceof DiagramInternalFrame) {
+            ((DiagramInternalFrame) selectedFrame).getSelectionController().pasteClipboard();
+        }
     }
 
     public void setRunTimeConsistencyCheckAndShowTabbedPane(boolean b) {

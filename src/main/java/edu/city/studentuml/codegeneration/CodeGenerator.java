@@ -401,6 +401,7 @@ public class CodeGenerator {
 			sb.append("void ");
 		} else if (nameStr.equals(className)) {
 			// constructor
+			logger.fine("nameStr.equals(className)");
 		} else {
 			sb.append(op.getReturnTypeAsString()).append(' ');
 		}

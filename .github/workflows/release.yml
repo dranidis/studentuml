@@ -35,14 +35,14 @@ jobs:
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: Release ${{ steps.get_version.outputs.version }}
-          body_path: CHANGELOG.md
-          files: |
-            target/studentuml-${{ steps.get_version.outputs.version }}-jar-with-dependencies.jar
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ steps.get_version.outputs.version }}
+        body_path: CHANGELOG.md
+        files: |
+          target/studentuml-${{ steps.get_version.outputs.version }}-jar-with-dependencies.jar
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

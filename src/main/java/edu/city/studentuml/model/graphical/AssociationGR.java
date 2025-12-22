@@ -99,7 +99,7 @@ public class AssociationGR extends LinkGR {
         } else {
             angle = angleB;
         }
-        if ((name != null) && !name.equals("")) {
+        if (name != null && !name.equals("")) {
             // draw the association name with arrow from role A to role B
             drawAssociationName(centerX, centerY, angle, name, association.getShowArrow(), g);
         }
@@ -128,7 +128,7 @@ public class AssociationGR extends LinkGR {
             Graphics2D g) {
         boolean sameDirection = true;
 
-        if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+        if (GraphicsHelper.angleGreaterThanHalfPi(angle)) {
             angle -= Math.PI;
             sameDirection = false;
         }
@@ -202,6 +202,20 @@ public class AssociationGR extends LinkGR {
     @Override
     public String toString() {
         return "" + a + " ---association---> " + b + " " + super.toString();
+    }
+
+    @Override
+    public AssociationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassifierGR sameA = (ClassifierGR) a;
+        ClassifierGR sameB = (ClassifierGR) b;
+        Association sameAssociation = getAssociation();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        AssociationGR clonedGR = new AssociationGR(sameA, sameB, sameAssociation);
+        
+        return clonedGR;
     }
 
 }

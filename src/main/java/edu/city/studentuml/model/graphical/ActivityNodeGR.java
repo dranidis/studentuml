@@ -32,10 +32,6 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     private static int activityNameYOffset = 5;
     private Font activityNameFont;
     // resize handles needed in order to control activity node resizing
-    private ResizeHandle up;
-    private ResizeHandle down;
-    private ResizeHandle left;
-    private ResizeHandle right;
     private List<ResizeHandle> resizeHandles;
     private int activityNameWidth = 0; // calculated in calculateWidth()
 
@@ -49,15 +45,11 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         activityNameFont = new Font("SansSerif", Font.BOLD, 12);
 
         // resize handles
-        up = new UpResizeHandle(this);
-        down = new DownResizeHandle(this);
-        left = new LeftResizeHandle(this);
-        right = new RightResizeHandle(this);
         resizeHandles = new ArrayList<>();
-        resizeHandles.add(up);
-        resizeHandles.add(down);
-        resizeHandles.add(left);
-        resizeHandles.add(right);
+        resizeHandles.add(new UpResizeHandle(this));
+        resizeHandles.add(new DownResizeHandle(this));
+        resizeHandles.add(new LeftResizeHandle(this));
+        resizeHandles.add(new RightResizeHandle(this));
     }
 
     @Override
@@ -308,5 +300,23 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         node.setAttribute("height", Integer.toString(height));
 
         streamer.streamObjects(streamer.addChild(node, "nodes"), components.iterator());
+    }
+
+    @Override
+    public ActivityNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ActivityNode sameActivityNode = (ActivityNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ActivityNodeGR clonedGR = new ActivityNodeGR(sameActivityNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        // Note: components (child nodes) are NOT cloned - they would need to be
+        // copied separately if the user also selects them
+        
+        return clonedGR;
     }
 }

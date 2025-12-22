@@ -2,26 +2,19 @@ package edu.city.studentuml.view.gui.components;
 
 import java.awt.Image;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
 
 import edu.city.studentuml.model.graphical.DiagramType;
-import edu.city.studentuml.util.Colors;
+import edu.city.studentuml.model.graphical.GraphicsHelper;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.view.gui.ApplicationGUI;
 
 public class ProjectToolBar extends JToolBar {
-
-    // private JButton validateSD_DCDButton;
 
     private JButton createToolBarButton(String iconFileName, String toolTipText, ActionListener listener) {
         final int MAX_HEIGHT = 20;
@@ -34,10 +27,9 @@ public class ProjectToolBar extends JToolBar {
         }
 
         JButton button = new JButton(newIcon);
-
-        button.setBorder(new EmptyBorder(5, 5, 5, 5));
+        GraphicsHelper.addHightLightMouseAdapter(button);
+        GraphicsHelper.clearBorder(button);
         button.setToolTipText(toolTipText);
-        addBorderListener(button);
         button.addActionListener(listener);
         return button;
     }
@@ -62,11 +54,9 @@ public class ProjectToolBar extends JToolBar {
         }
 
         /*
-         * set to true to show button
+         * uncomment to show button
          */
-        boolean codeGenerationEnabled = false;
-        if (codeGenerationEnabled) 
-            add(codeGenerateButton);
+        // add(codeGenerateButton);
 
         addSeparator();
 
@@ -90,55 +80,16 @@ public class ProjectToolBar extends JToolBar {
         add(sdButton);
         add(dcdButton);
 
-        // Icon validateSD_DCDIcon = new
-        // ImageIcon(Application.class.getResource(imageLocation + "sd_dcd.gif"));
-        // validateSD_DCDButton = new JButton(validateSD_DCDIcon);
-        // validateSD_DCDButton.setToolTipText("Validate SD against DCD");
-        // validateSD_DCDButton.addActionListener(this);
-        // addSeparator();
-
-        // JButton reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> reloadRules());
-
         /**
-         * TODO: REMOVE TILL it is clear what it does! // add(reloadRulesButton);
+         * Unused buttons
          */
+        JButton validateSD_DCDButton = createToolBarButton("sd_dcd.gif", "Validate SD against DCD",
+        e -> {});
+        JButton reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> applicationGUI.reloadRules());
+        JButton helpButton = createToolBarButton("help.gif", "Get help on using StudentUML", e -> applicationGUI.help());
 
-
-
-
-        // ImageIcon helpIcon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + "help.gif"));
-        // Image img = helpIcon.getImage();
-        // Image imgScaled = img.getScaledInstance(-1, 19, Image.SCALE_SMOOTH);
-        // helpIcon.setImage(imgScaled);
-
-        // JButton helpButton = new JButton(helpIcon);
-        // helpButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-        // helpButton.setToolTipText("Get help on using StudentUML");
-        // addBorderListener(helpButton);
-
-        // helpButton.addActionListener(e -> help());
-
-        /**
-         * TODO: REMOVE THE HELP BUTTON TILL HELP IS IMPLEMENTED // add(helpButton);
-         */
 
         setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-    }
-
-    private void addBorderListener(JButton button) {
-        button.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBorder(
-                        new CompoundBorder(new LineBorder(Colors.getHighlightColor(), 1), new EmptyBorder(4, 4, 4, 4)));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBorder(new EmptyBorder(5, 5, 5, 5));
-            }
-        });
     }
 
 }

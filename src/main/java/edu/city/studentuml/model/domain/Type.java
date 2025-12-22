@@ -10,6 +10,6 @@ package edu.city.studentuml.model.domain;
  * @author Kristi
  */
 public interface Type {
-    public String getName();    // method returning the name of the data type
-    public String toString();   // same as getName
+    String getName();    // method returning the name of the data type
+    String toString();   // same as getName
 }

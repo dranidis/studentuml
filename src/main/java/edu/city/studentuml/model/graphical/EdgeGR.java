@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,15 +13,26 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.Edge;
+import edu.city.studentuml.util.Geometry;
+import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
+import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.XMLSyntax;
 
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public abstract class EdgeGR extends GraphicalElement {
+
+    private static final Logger logger = Logger.getLogger(EdgeGR.class.getName());
 
     protected NodeComponentGR source;
     protected NodeComponentGR target;
@@ -301,7 +313,7 @@ public abstract class EdgeGR extends GraphicalElement {
         end = getEndPoint();
         Point b = end.getMyPoint();
         Point a = getPointAt(points.size() - 2).getMyPoint();
-        double angle = getAngle(a, b);
+        double angle = Geometry.getAngle(a, b);
         drawEdgeArrowHead(b.x, b.y, angle, g);
 
         // draw string for guard and weight
@@ -329,7 +341,7 @@ public abstract class EdgeGR extends GraphicalElement {
         if (string.length() > 0) {
             double textAngle = angle;
 
-            if ((angle < 3 * Math.PI / 2) && (angle >= Math.PI / 2)) {
+            if (GraphicsHelper.angleGreaterThanHalfPi(angle)) {
                 textAngle -= Math.PI;
             }
 
@@ -348,31 +360,29 @@ public abstract class EdgeGR extends GraphicalElement {
 
     }
 
-    private double getAngle(Point2D point1, Point2D point2) {
-        double x1 = point1.getX();
-        double y1 = point1.getY();
-        double x2 = point2.getX();
-        double y2 = point2.getY();
-        double angle;
-
-        if (x2 - x1 != 0) {
-            double gradient = (y2 - y1) / (x2 - x1);
-
-            if (x2 - x1 > 0) // positive gradient
-            {
-                angle = Math.atan(gradient);
-            } else // negative gradient
-            {
-                angle = Math.atan(gradient) + Math.PI;
-            }
-        } else {
-            if (y2 - y1 > 0) {
-                angle = Math.PI / 2;
-            } else {
-                angle = -Math.PI / 2;
-            }
+    @Override
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
+        super.streamFromXML(node, streamer, instance);
+        try {
+            streamer.streamChildrenFrom(streamer.getNodeById(node, "points"), this);
+        } catch (NotStreamable e) {
+            logger.severe("Not streamable");
+            e.printStackTrace();
         }
-
-        return angle;
     }
+
+    @Override
+    public void streamToXML(Element node, XMLStreamer streamer) {
+        super.streamToXML(node, streamer);
+
+        node.setAttribute(XMLSyntax.SOURCE, SystemWideObjectNamePool.getInstance().getNameForObject(source));
+        node.setAttribute(XMLSyntax.TARGET, SystemWideObjectNamePool.getInstance().getNameForObject(target));
+
+        streamer.streamObjects(streamer.addChild(node, "points"), getPoints().iterator());
+
+        streamer.streamObject(node, getStreamName(), getEdge());
+    }
+
+    protected abstract String getStreamName();
+
 }

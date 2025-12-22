@@ -48,7 +48,7 @@ public class SSDSelectionController extends AbstractSDSelectionController {
         // conflict
         // or if the new name is blank
         if (!originalSystemInstance.getName().equals(newSystemInstance.getName())
-                && (repository.getSystemInstance(newSystemInstance.getName()) != null)
+                && repository.getSystemInstance(newSystemInstance.getName()) != null
                 && !newSystemInstance.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing system instance with the given name already.\n"

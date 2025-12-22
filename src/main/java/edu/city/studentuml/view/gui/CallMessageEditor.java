@@ -189,7 +189,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public MessageReturnValue getReturnValue() {
-        if ((returnValueField.getText() != null) && !returnValueField.getText().equals("")) {
+        if (returnValueField.getText() != null && !returnValueField.getText().equals("")) {
             return new MessageReturnValue(returnValueField.getText());
         } else {
             return null;

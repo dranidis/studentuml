@@ -5,17 +5,14 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.InitialNode;
-import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
-public class InitialNodeGR extends ControlNodeGR {
+public class InitialNodeGR extends LeafNodeGR {
 
     public static final int RADIUS = 12;
 
@@ -24,7 +21,6 @@ public class InitialNodeGR extends ControlNodeGR {
 
         width = 2 * RADIUS;
         height = width;
-
     }
 
     @Override
@@ -54,32 +50,27 @@ public class InitialNodeGR extends ControlNodeGR {
     }
 
     @Override
-    protected int calculateWidth(Graphics2D g) {
-        return width;
-    }
-
-    @Override
-    protected int calculateHeight(Graphics2D g) {
-        return height;
-    }
-
-    @Override
     public boolean contains(Point2D p) {
         return new Ellipse2D.Double(getX(), getY(), width, height).contains(p);
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
-        super.streamFromXML(node, streamer, instance);
-        startingPoint.x = Integer.parseInt(node.getAttribute("x"));
-        startingPoint.y = Integer.parseInt(node.getAttribute("y"));
+    protected String getStreamName() {
+        return "initialnode";
     }
 
     @Override
-    public void streamToXML(Element node, XMLStreamer streamer) {
-        super.streamToXML(node, streamer);
-        streamer.streamObject(node, "initialnode", getComponent());
-        node.setAttribute("x", Integer.toString(startingPoint.x));
-        node.setAttribute("y", Integer.toString(startingPoint.y));
+    public InitialNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        InitialNode sameInitialNode = (InitialNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        InitialNodeGR clonedGR = new InitialNodeGR(sameInitialNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
     }
 }

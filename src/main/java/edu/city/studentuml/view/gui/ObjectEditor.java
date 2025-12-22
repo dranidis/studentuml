@@ -174,7 +174,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     
     public String getNameOfNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
         
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return null;
@@ -195,7 +195,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
 
     public String getNameOfEditedType(DesignClass dc) {
         ClassGR classGR = new ClassGR(dc, new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR, repository);
+        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
 
         // show the class editor dialog and check whether the user has pressed cancel
         if (!classNameEditor.showDialog(this, "Class Editor")) {
@@ -207,7 +207,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!dc.getName().equals(newClass.getName())
-                && (repository.getDesignClass(newClass.getName()) != null)
+                && repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",

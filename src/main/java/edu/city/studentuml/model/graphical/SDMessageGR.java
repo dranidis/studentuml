@@ -13,7 +13,6 @@ import java.awt.geom.Rectangle2D;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.SDMessage;
 
 public abstract class SDMessageGR extends GraphicalElement {
@@ -54,16 +53,11 @@ public abstract class SDMessageGR extends GraphicalElement {
     }
 
     public int getEndingX() {
-        int endingX = target.getX() + target.getWidth() / 2;
-        if (!(message instanceof CreateMessage)) {
-            endingX += (target.acticationAtY(getY()) - 1) * barWidth/2;
-        }        
-        return endingX;
+        return target.getX() + target.getWidth() / 2;
     }
 
     @Override
     public void draw(Graphics2D g) {
-        int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
 
         Stroke originalStroke = g.getStroke();
         if (isSelected()) {
@@ -81,45 +75,9 @@ public abstract class SDMessageGR extends GraphicalElement {
             boolean forward = (endingX > startingX);
             if (!forward) 
                 startingX -= barWidth;
-            
-            if (!(message instanceof CreateMessage)) {
-                if (forward)
-                    endingX -= barWidth / 2;
-                else
-                    endingX += barWidth / 2;
-            }
 
             g.drawLine(startingX, getY(), endingX, getY());
-            
-            // the arrowhead points to the right if the target role classifier
-            // is further to the right (greater x)
-
             drawMessageArrow(endingX, getY(), forward, g);
-
-            // handle extra-rendering for destroy messages
-            if (this instanceof DestroyMessageGR) {
-                g.drawLine(endingX - 15, getY() - 20, endingX + 15, getY() + 20);
-                g.drawLine(endingX - 15, getY() + 20, endingX + 15, getY() - 20);
-            }
-
-            g.setPaint(getOutlineColor());
-
-            // draw the message string by calling the polymorphic method toString()
-            g.setFont(messageFont);
-
-            String messageText = message.toString();
-            FontRenderContext frc = g.getFontRenderContext();
-            TextLayout layout = new TextLayout(messageText, messageFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int lineWidth = Math.abs(startingX - endingX);
-            int textX = (lineWidth - (int) bounds.getWidth()) / 2 - (int) bounds.getX();
-            int messageStartX = Math.min(startingX, endingX);
-
-            g.drawString(messageText, messageStartX + textX, getY() - messageDY);
-            
-            if (errorMessage != null && errorMessage.length() > 0) {
-                g.drawString(errorMessage, messageStartX + textX, getY() - messageDY - 10);
-            }
         } else { // handle reflective message rendering 'ad-hoc'
         
             GeneralPath path = new GeneralPath();
@@ -135,17 +93,50 @@ public abstract class SDMessageGR extends GraphicalElement {
             g.draw(path);
 
             drawMessageArrow(startingX, getY() + 15, false, g);
+        }
+
+        drawMessage(g, startingX, endingX);
+        // restore the original stroke
+        g.setStroke(originalStroke);
+    }
+
+    private void drawMessage(Graphics2D g, int startingX, int endingX) {
+        int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
+
+        if (!message.isReflective()) {
             g.setPaint(getOutlineColor());
 
-            // draw the message string by calling the polymorphic method toString()
+            // draw the message string 
             g.setFont(messageFont);
 
             String messageText = message.toString();
+            FontRenderContext frc = g.getFontRenderContext();
+            TextLayout layout = new TextLayout(messageText, messageFont, frc);
+            Rectangle2D bounds = layout.getBounds();
+            int lineWidth = Math.abs(startingX - endingX);
+            int textX = (lineWidth - (int) bounds.getWidth()) / 2 - (int) bounds.getX();
+            int messageStartX = Math.min(startingX, endingX);
 
-            g.drawString(messageText, startingX + 5, getY() - messageDY);
+            int atX = messageStartX + textX;
+            int atY = getY() - messageDY;
+            g.drawString(messageText, atX, atY);
+            
+            if (errorMessage != null && errorMessage.length() > 0) {
+                g.drawString(errorMessage, atX, atY - 10);
+            }
+        } else {
+            g.setPaint(getOutlineColor());
+
+            // draw the message string 
+            int atX = startingX + 5;
+            int atY = getY() - messageDY;
+            g.setFont(messageFont);
+            g.drawString(message.toString(), atX, atY);
+
+            if (errorMessage != null && errorMessage.length() > 0) {
+                g.drawString(errorMessage, atX, atY - 10);
+            }
         }
-        // restore the original stroke
-        g.setStroke(originalStroke);
     }
 
     public boolean contains(Point2D point) {

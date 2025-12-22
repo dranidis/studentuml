@@ -2,11 +2,9 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -56,7 +54,7 @@ public class UCActorGR extends LeafUCDElementGR {
         }
 
         // draw the actor
-        drawStickFigure(startingX + (width / 2), startingY, g);
+        GraphicsHelper.drawStickFigure(g, startingX + (width / 2), startingY, isSelected(), getFillColor(), getOutlineColor(), getHighlightColor());
 
         // draw the actor description under the stick figure
         g.setPaint(getOutlineColor());
@@ -75,25 +73,6 @@ public class UCActorGR extends LeafUCDElementGR {
 
         g.setFont(actorNameFont);
         g.drawString(actorName, startingX + nameX, startingY + nameY);
-    }
-
-    public void drawStickFigure(int x, int y, Graphics2D g) {
-        Shape head = new Ellipse2D.Double(x - 6.0, y, 12, 12);
-
-        g.setPaint(getFillColor());
-        g.fill(head);
-
-        if (isSelected()) {
-            g.setPaint(getHighlightColor());
-        } else {
-            g.setPaint(getOutlineColor());
-        }
-        g.draw(head);
-        
-        g.drawLine(x, y + 12, x, y + 25);
-        g.drawLine(x - 10, y + 16, x + 10, y + 16);
-        g.drawLine(x - 10, y + 35, x, y + 25);
-        g.drawLine(x, y + 25, x + 10, y + 35);
     }
 
     public int calculateWidth(Graphics2D g) {
@@ -151,5 +130,21 @@ public class UCActorGR extends LeafUCDElementGR {
         streamer.streamObject(node, "ucActor", getComponent());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
+    }
+
+    @Override
+    public UCActorGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        Actor sameActor = (Actor) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        UCActorGR clonedGR = new UCActorGR(sameActor, 
+            this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
     }
 }

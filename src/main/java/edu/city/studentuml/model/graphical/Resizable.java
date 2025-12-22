@@ -8,45 +8,45 @@ import java.awt.Point;
  */
 public interface Resizable {
 
-    public boolean isResizeHandleSelected(int x, int y);
+    boolean isResizeHandleSelected(int x, int y);
 
-    public ResizeHandle getResizeHandle(int x, int y);
+    ResizeHandle getResizeHandle(int x, int y);
 
-    public Point getStartingPoint();
+    Point getStartingPoint();
 
-    public void setStartingPoint(Point point);
+    void setStartingPoint(Point point);
 
-    public int getWidth();
+    int getWidth();
 
-    public void setWidth(int width);
+    void setWidth(int width);
 
-    public int getHeight();
+    int getHeight();
 
-    public void setHeight(int height);
+    void setHeight(int height);
 
     /*
      * Returns the left x coordinate that the user can shrink the element to
      */
-    public int getLeftBorder();
+    int getLeftBorder();
 
     /*
      * Returns the right x coordinate that the user can shrink the element to
      */
-    public int getRightBorder();
+    int getRightBorder();
 
     /*
      * Returns the top y coordinate that the user can shrink the element to
      */
-    public int getTopBorder();
+    int getTopBorder();
 
     /*
      * Returns the bottom y coordinate that the user can shrink the element to
      */
-    public int getBottomBorder();
+    int getBottomBorder();
 
-    public boolean hasResizableContext();
+    boolean hasResizableContext();
 
-    public Resizable getResizableContext();
+    Resizable getResizableContext();
 
-    public boolean contains(Resizable resizableElement);
+    boolean contains(Resizable resizableElement);
 }

@@ -28,6 +28,10 @@ public class RealizationGR extends LinkGR {
         realization = real;
     }
 
+    public RealizationGR(ClassGR c, InterfaceGR i) {
+        this(c, i, new Realization (c.getDesignClass(), i.getInterface()));
+    }
+
     @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         drawRealizationArrowHead(bX, bY, rotationAngle, g);
@@ -82,6 +86,20 @@ public class RealizationGR extends LinkGR {
 
     public void setRealization(Realization realization) {
         this.realization = realization;
+    }
+
+    @Override
+    public RealizationGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassGR sameClass = getTheClass();
+        InterfaceGR sameInterface = getTheInterface();
+        Realization sameRealization = getRealization();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        RealizationGR clonedGR = new RealizationGR(sameClass, sameInterface, sameRealization);
+        
+        return clonedGR;
     }
 
 }

@@ -2,15 +2,12 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.FlowFinalNode;
-import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public class FlowFinalNodeGR extends FinalNodeGR {
 
@@ -46,17 +43,22 @@ public class FlowFinalNodeGR extends FinalNodeGR {
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
-        super.streamFromXML(node, streamer, instance);
-        startingPoint.x = Integer.parseInt(node.getAttribute("x"));
-        startingPoint.y = Integer.parseInt(node.getAttribute("y"));
+    protected String getStreamName() {
+        return "flowfinalnode";
     }
 
     @Override
-    public void streamToXML(Element node, XMLStreamer streamer) {
-        super.streamToXML(node, streamer);
-        streamer.streamObject(node, "flowfinalnode", getComponent());
-        node.setAttribute("x", Integer.toString(startingPoint.x));
-        node.setAttribute("y", Integer.toString(startingPoint.y));
+    public FlowFinalNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        FlowFinalNode sameFinalNode = (FlowFinalNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        FlowFinalNodeGR clonedGR = new FlowFinalNodeGR(sameFinalNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
     }
 }

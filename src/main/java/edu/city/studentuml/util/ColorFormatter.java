@@ -19,6 +19,8 @@ public class ColorFormatter extends Formatter {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
+    private boolean appendDate = false; // make true to show date
+
     // Here you can configure the format of the output and 
     // its color by using the ANSI escape codes defined above.
 
@@ -35,9 +37,11 @@ public class ColorFormatter extends Formatter {
             builder.append(ANSI_RED);
         }
 
-        // builder.append("[");
-        // builder.append(calcDate(record.getMillis()));
-        // builder.append("]");
+        if (appendDate) {
+            builder.append("[");
+            builder.append(calcDate(record.getMillis()));
+            builder.append("]");
+        }
 
         builder.append(" [");
         String[] classNameArray = record.getSourceClassName().split("\\.");

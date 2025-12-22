@@ -61,7 +61,7 @@ public class SDSelectionController extends AbstractSDSelectionController {
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!originalObject.getName().equals(newObject.getName())
-                && (repository.getObject(newObject.getName()) != null)
+                && repository.getObject(newObject.getName()) != null
                 && !newObject.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing object with the given name already.\n"
@@ -110,7 +110,7 @@ public class SDSelectionController extends AbstractSDSelectionController {
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!originalMultiObject.getName().equals(newMultiObject.getName())
-                && (repository.getMultiObject(newMultiObject.getName()) != null)
+                && repository.getMultiObject(newMultiObject.getName()) != null
                 && !newMultiObject.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing multiobject with the given name already.\n"

@@ -18,12 +18,8 @@ public class CompositeUCDGRIterator extends CompositeGRIterator<UCDComponentGR> 
         UCDComponentGR ucdComponent = iterator.next(); // get the next component
 
         // TESTED (works)
-        if (iterator instanceof CompositeUCDGRIterator) {
-            // do nothing on purpose
-        } else {
-            if (ucdComponent instanceof CompositeUCDElementGR) {
-                stack.push(ucdComponent.createIterator());
-            }
+        if (!(iterator instanceof CompositeUCDGRIterator) && ucdComponent instanceof CompositeUCDElementGR) {
+            stack.push(ucdComponent.createIterator());
         }
         return ucdComponent;
     }

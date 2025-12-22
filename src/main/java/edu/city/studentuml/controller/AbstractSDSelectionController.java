@@ -109,7 +109,7 @@ public abstract class AbstractSDSelectionController extends SelectionController 
         // conflict
         // or if the new name is blank
         if (!originalActorInstance.getName().equals(newActorInstance.getName())
-                && (repository.getActorInstance(newActorInstance.getName()) != null)
+                && repository.getActorInstance(newActorInstance.getName()) != null
                 && !newActorInstance.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing actor instance with the given name already.\n"

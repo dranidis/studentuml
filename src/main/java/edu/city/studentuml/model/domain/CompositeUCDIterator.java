@@ -16,13 +16,8 @@ public class CompositeUCDIterator extends CompositeIterator<UCDComponent> {
         Iterator<UCDComponent> iterator = stack.peek(); // get iterator
         UCDComponent ucdComponent = iterator.next(); // get the next component
 
-        // TESTED (works)
-        if (iterator instanceof CompositeUCDIterator) {
-            // do nothing on purpose
-        } else {
-            if (ucdComponent instanceof CompositeUCDElement) {
-                stack.push(ucdComponent.createIterator());
-            }
+        if (!(iterator instanceof CompositeUCDIterator) && ucdComponent instanceof CompositeUCDElement) {
+            stack.push(ucdComponent.createIterator());
         }
 
         return ucdComponent;

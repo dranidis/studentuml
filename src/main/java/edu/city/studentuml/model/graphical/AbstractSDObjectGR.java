@@ -2,6 +2,7 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
@@ -21,7 +22,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
-    private Font nameFont;
+    protected Font nameFont;
 
     protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
@@ -46,21 +47,13 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     @Override
     public void draw(Graphics2D g) {
+        Stroke originalStroke = g.getStroke();
 
-        refreshDimensions(g);
+        calculateWidth(g);
 
         int startingX = getX();
         int startingY = getY();
 
-        // determine the outline of the rectangle representing the object
-        // name box
-        Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
-
-        g.setPaint(getFillColor());
-        g.fill(shape);
-
-        Stroke originalStroke = g.getStroke();
-        
         if (isSelected()) {
             g.setStroke(GraphicsHelper.makeSelectedSolidStroke());
             g.setPaint(getHighlightColor());
@@ -69,9 +62,32 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             g.setPaint(getOutlineColor());
         }
 
-        g.draw(shape);
-        g.setPaint(getOutlineColor());
+        drawObjectShape(g, startingX, startingY);
 
+        drawObjectName(g, startingX, startingY);
+
+        drawLifeline(g, startingX, startingY);
+
+        // restore the original stroke
+        g.setStroke(originalStroke);
+        
+        drawActivationBars(g);
+    }
+
+    protected void drawObjectShape(Graphics2D g, int startingX, int startingY) {
+        // determine the outline of the rectangle representing the object
+        Shape shape = new Rectangle2D.Double(startingX, startingY, width, height);
+
+        Paint originalPaint = g.getPaint();
+
+        g.setPaint(getFillColor());
+        g.fill(shape);
+        g.setPaint(originalPaint);
+
+        g.draw(shape);
+    }
+
+    protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
         // draw the object text within the box
         String nameBoxText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
@@ -93,32 +109,22 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
                     startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
         }
-
-        // draw the dashed lifeline below the name box
-        if (isSelected()) {
-            g.setPaint(getHighlightColor());
-        } else {
-            g.setPaint(getOutlineColor());
-        }
-
-            // the pattern of dashes for drawing the realization line
-
-        g.setStroke(GraphicsHelper.makeDashedStroke());
-        g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
-
-        // restore the original stroke
-        g.setStroke(originalStroke);
-        
-        drawActivationBars(g);
     }
 
-    public void refreshDimensions(Graphics2D g) {
-        calculateWidth(g);
+    private void drawLifeline(Graphics2D g, int startingX, int startingY) {
+        // draw the dashed lifeline below the name box
+        if (isSelected()) {
+            g.setStroke(GraphicsHelper.makeSelectedDashedStroke());
+        } else {
+            g.setStroke(GraphicsHelper.makeDashedStroke());
+        }
+
+        g.drawLine(startingX + width / 2, startingY + height, startingX + width / 2, endingY);
     }
 
     // Calculates the width of the name box as it appears on the screen.
     // The width will depend on the length of the name string and the graphics context.
-    protected int calculateWidth(Graphics2D g) {
+    private int calculateWidth(Graphics2D g) {
         FontRenderContext frc = g.getFontRenderContext();
         String boxText = roleClassifier.toString();
         TextLayout layout = new TextLayout(boxText, nameFont, frc);

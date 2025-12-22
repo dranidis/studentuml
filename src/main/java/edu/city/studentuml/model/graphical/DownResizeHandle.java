@@ -55,12 +55,12 @@ public class DownResizeHandle extends ResizeHandle {
     }
 
     @Override
-    protected int getMinWidth() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public DownResizeHandle clone() {
+        // Resize handles don't have domain objects - they're purely graphical UI controls
+        // Just create a new handle referencing the same resizable element
+        DownResizeHandle clonedHandle = new DownResizeHandle(this.resizableElement);
+        
+        return clonedHandle;
     }
 
-    @Override
-    protected int getMinHeight() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

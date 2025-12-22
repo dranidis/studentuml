@@ -324,4 +324,21 @@ public class UseCaseGR extends LeafUCDElementGR {
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
+
+    @Override
+    public UseCaseGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Multiple graphical elements can reference the same domain object
+        UseCase sameUseCase = (UseCase) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        UseCaseGR clonedGR = new UseCaseGR(sameUseCase, 
+            this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
+    }
 }

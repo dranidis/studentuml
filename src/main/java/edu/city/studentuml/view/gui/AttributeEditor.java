@@ -153,7 +153,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the type combo box
-        if ((attribute == null) || (attribute.getType() == null)) {
+        if (attribute == null || (attribute.getType() == null)) {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < comboBoxStringList.size(); i++) {
@@ -166,7 +166,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the visibility combo box
-        if ((attribute == null) || (attribute.getVisibility() == Attribute.PRIVATE)) {
+        if (attribute == null || (attribute.getVisibility() == Attribute.PRIVATE)) {
             visibilityComboBox.setSelectedIndex(0);
         } else if (attribute.getVisibility() == Attribute.PUBLIC) {
             visibilityComboBox.setSelectedIndex(1);
@@ -175,7 +175,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the scope combo box
-        if ((attribute == null) || (attribute.getScope() == Attribute.INSTANCE)) {
+        if (attribute == null || (attribute.getScope() == Attribute.INSTANCE)) {
             scopeComboBox.setSelectedIndex(0);
         } else if (attribute.getScope() == Attribute.CLASSIFIER) {
             scopeComboBox.setSelectedIndex(1);
@@ -213,8 +213,8 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
-            if ((nameField.getText() == null) || nameField.getText().equals("")) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
 
                 return;

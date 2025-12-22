@@ -33,6 +33,7 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -175,27 +176,27 @@ public class RuleEditor extends JPanel {
     // And this one listens for any changes to the document.
     protected class MyDocumentListener implements DocumentListener {
 
+        @Override
         public void insertUpdate(DocumentEvent e) {
             displayEditInfo(e);
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             displayEditInfo(e);
         }
 
+        @Override
         public void changedUpdate(DocumentEvent e) {
             displayEditInfo(e);
         }
 
         private void displayEditInfo(DocumentEvent e) {
             statusLabel.setText("Rules changed. Press Ctrl+S to save, Ctrl+Z to undo, Ctrl+Y to redo.");
-            // Document document = (Document)e.getDocument();
-            // int changeLength = e.getLength();
-            // changeLog.append(e.getType().toString() + ": " +
-            // changeLength + " character" +
-            // ((changeLength == 1) ? ". " : "s. ") +
-            // " Text length = " + document.getLength() +
-            // "." + newline);
+            Document document = e.getDocument();
+            int changeLength = e.getLength();
+            logger.finer(() -> e.getType().toString() + ": " + changeLength + " character"
+                    + ((changeLength == 1) ? ". " : "s. ") + " Text length = " + document.getLength() + "." + newline);
         }
     }
 

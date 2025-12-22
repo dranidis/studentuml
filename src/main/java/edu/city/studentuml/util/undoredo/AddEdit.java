@@ -56,6 +56,7 @@ public class AddEdit extends AbstractUndoableEdit {
         return true;
     }
 
+    @Override
     public String getPresentationName() {
         return ": add";
     }

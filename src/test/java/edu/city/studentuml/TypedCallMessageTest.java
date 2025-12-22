@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Before;
@@ -25,7 +24,6 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.util.Constants;
-import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
@@ -58,8 +56,6 @@ public class TypedCallMessageTest {
 
     @Test
     public void addMessage() {
-        // new ApplicationFrame(StudentUMLFrame.getInstance());
-
         SDModel currDiagram = new SDModel("sdmodel1", umlProject);
         DesignClass dc1 = new DesignClass("Class1");
         DesignClass dc2 = new DesignClass("Class2");
@@ -83,26 +79,15 @@ public class TypedCallMessageTest {
         currDiagram.addGraphicalElement(new CreateMessageGR(sd1GR, sd2GR, cr, 10));
         currDiagram.addGraphicalElement(new CallMessageGR(sd1GR, sd2GR, cm, 20));
 
-        // Vector sds = umlProject.getCentralRepository().getSDMessages();
-        // for(Object o: sds) {
-        // CallMessage m = (CallMessage) o;
-        // if (m.getName().equals("mtd1")) {
-        // assertEquals(dc1.getName(), m.getReturnType().getName());
-        // }
-        // }
-
         umlProject.streamToXML(fullpath);
         umlProject.clear();
         umlProject.getCentralRepository().clear();
 
         try {
             umlProject.loadFromXML(fullpath);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (NotStreamable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        } 
 
         boolean found = false;
         Vector<SDMessage> sds = umlProject.getCentralRepository().getSDMessages();

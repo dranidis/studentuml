@@ -7,30 +7,30 @@ import java.awt.Point;
 
 public interface ClassifierGR {
 
-    public abstract Classifier getClassifier();
+    Classifier getClassifier();
 
-    public abstract Point getStartingPoint();
+    Point getStartingPoint();
 
-    public abstract int getX();
+    int getX();
 
-    public abstract int getY();
+    int getY();
 
-    public abstract int getHeight();
+    int getHeight();
 
-    public abstract int getWidth();
+    int getWidth();
 
     // the graphical classifer has to adjust dimensions
     // according to the graphics drawing context
-    public abstract void refreshDimensions(Graphics2D g);
+    void refreshDimensions(Graphics2D g);
 
-    public abstract Color getFillColor();
+    Color getFillColor();
 
-    public abstract Color getOutlineColor();
+    Color getOutlineColor();
 
-    public abstract Color getHighlightColor();
+    Color getHighlightColor();
 
-    public abstract void setSelected(boolean sel);
+    void setSelected(boolean sel);
 
-    public abstract boolean isSelected();
+    boolean isSelected();
     
 }

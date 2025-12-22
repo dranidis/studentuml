@@ -102,7 +102,7 @@ public class SDModel extends AbstractSDModel {
         while (iterator.hasNext()) {
             message = iterator.next();
 
-            if ((message instanceof CreateMessageGR) && !checked.contains(message)) {
+            if (message instanceof CreateMessageGR && !checked.contains(message)) {
 
                 // this method might result in direct changes to the messages list
                 // so the iterator is refreshed to be safe from inconsistencies
@@ -111,7 +111,7 @@ public class SDModel extends AbstractSDModel {
 
                 // refresh the iterator
                 iterator = messages.iterator();
-            } else if ((message instanceof DestroyMessageGR) && !checked.contains(message)) {
+            } else if (message instanceof DestroyMessageGR && !checked.contains(message)) {
                 validateDestroyMessagePosition((DestroyMessageGR) message);
                 checked.add(message);
                 iterator = messages.iterator();
@@ -127,8 +127,8 @@ public class SDModel extends AbstractSDModel {
         for (int i = 0; i < messages.size(); i++) {
             message = messages.elementAt(i);
 
-            if ((message instanceof CreateMessageGR) && (message.getTarget() == createMessage.getTarget())
-                    && (message != createMessage)) {
+            if (message instanceof CreateMessageGR && message.getTarget() == createMessage.getTarget()
+                    && message != createMessage) {
 
                 // delete the existing create message
 
@@ -153,17 +153,17 @@ public class SDModel extends AbstractSDModel {
         for (int i = 0; i < messages.size(); i++) {
             message = messages.elementAt(i);
 
-            if ((message instanceof DestroyMessageGR) && (message.getTarget() == destroyMessage.getTarget())
-                    && (message != destroyMessage)) {
+            if (message instanceof DestroyMessageGR && message.getTarget() == destroyMessage.getTarget()
+                    && message != destroyMessage) {
 
                 // delete the existing destroy message
                 messages.remove(message);
                 super.removeGraphicalElement(message);
                 destroyMessage.refreshTargetPosition();
                 i--;
-            } else if (((message.getTarget() == destroyMessage.getTarget())
-                    || (message.getSource() == destroyMessage.getTarget())) && (message != destroyMessage)
-                    && (message.getY() >= destroyMessage.getY())) {
+            } else if ((message.getTarget() == destroyMessage.getTarget()
+                    || message.getSource() == destroyMessage.getTarget()) && message != destroyMessage
+                    && message.getY() >= destroyMessage.getY()) {
 
                 // move the message up
                 message.move(0, (destroyMessage.getY() - (messages.size() - i)));

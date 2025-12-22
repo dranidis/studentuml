@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="SDModel" framex="0,0,392,399" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd" scale="1.0" selected="false" zorder="1">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="27">
+        <object class="SDObject" designclass="designclass3" id="sdobject" internalid="sdobject0" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass3" name="A" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass2" name="A"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="SDObjectGR" id="" internalid="sdobjectgr1" uid="Desktop Application User" x="241">
+        <object class="SDObject" designclass="designclass5" id="sdobject" internalid="sdobject1" name="">
+          <object class="DesignClass" id="designclass" internalid="designclass5" name="B" stereotype="">
+            <object class="GenericClass" id="generic" internalid="genericclass3" name="B"/>
+            <object id="attributes"/>
+            <object id="methods"/>
+          </object>
+        </object>
+      </object>
+      <object class="ReturnMessageGR" from="sdobjectgr1" id="" internalid="returnmessagegr0" to="sdobjectgr0" y="100">
+        <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage0" name="" to="sdobject0"/>
+      </object>
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr0" to="sdobjectgr1" y="73">
+        <object class="CallMessage" from="sdobject0" id="message" internalid="callmessage0" iterative="false" name="m" returnType="void" returns="v" to="sdobject1">
+          <object class="GenericOperation" id="operation" name="m"/>
+          <object id="parameters">
+            <object class="MethodParameter" id="" internalid="methodparameter0" name="p" type=""/>
+          </object>
+        </object>
+      </object>
+    </object>
+    <object class="SDModel" framex="386,0,650,550" iconified="false" id="" internalid="sdmodel1" maximized="false" name="SD: sd1" scale="1.0" selected="true" zorder="0"/>
+  </object>
+</uml>

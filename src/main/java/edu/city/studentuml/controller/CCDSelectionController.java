@@ -58,7 +58,7 @@ public class CCDSelectionController extends SelectionController {
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!originalClass.getName().equals(newClass.getName())
-                && (repository.getConceptualClass(newClass.getName()) != null) && !newClass.getName().equals("")) {
+                && repository.getConceptualClass(newClass.getName()) != null && !newClass.getName().equals("")) {
 
             classGR.setConceptualClass(repository.getConceptualClass(newClass.getName()));
 

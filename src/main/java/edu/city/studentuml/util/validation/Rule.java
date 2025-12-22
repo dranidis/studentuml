@@ -49,7 +49,9 @@ public class Rule {
             // HEADER takes values 'expression', 'result', 'severity', ...
             String header = t.nextToken();
             // WAIT for ':' character after header to be reached
-            while (t.hasMoreTokens() && !t.nextToken().equals(":"));
+            while (t.hasMoreTokens() && !t.nextToken().equals(":")) {
+                logger.finest("skip");
+            }
 
             // BUILD SENTENCE after ':' character, e.g.
             // "getSDClass(_,SDclass,SD),not(getDCDClass(SDclass)),
@@ -360,7 +362,7 @@ public class Rule {
      */
     public boolean executeAction(Map<String, ?> results) {
         //FIXME:TO HANDLE AT HIGHEST LEVEL BUT WITHOUT EXCEPTION
-        if (action.equals("") || action == null) {
+        if (action == null || action.equals("")) {
             JOptionPane.showMessageDialog(null, "No repair action defined for rule: " + ruleName, "", JOptionPane.INFORMATION_MESSAGE);
             return true;
         }

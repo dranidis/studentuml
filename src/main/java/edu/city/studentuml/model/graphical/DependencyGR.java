@@ -27,6 +27,10 @@ public class DependencyGR extends LinkGR {
         dependency = dep;
     }
 
+    public DependencyGR(ClassGR a, ClassGR b) {
+        this(a, b, new Dependency(a.getDesignClass(), b.getDesignClass()));
+    }
+
     @Override
     protected void drawArrowHead(int bX, int bY, double rotationAngle, Graphics2D g) {
         GraphicsHelper.drawSimpleArrowHead(bX, bY, rotationAngle, g);
@@ -78,5 +82,19 @@ public class DependencyGR extends LinkGR {
         node.setAttribute(XMLSyntax.CLASSB, SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "dependency", dependency);
+    }
+
+    @Override
+    public DependencyGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Links connect graphical elements, so we reference the same endpoints
+        ClassGR sameA = getClassA();
+        ClassGR sameB = getClassB();
+        Dependency sameDependency = getDependency();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        DependencyGR clonedGR = new DependencyGR(sameA, sameB, sameDependency);
+        
+        return clonedGR;
     }
 }

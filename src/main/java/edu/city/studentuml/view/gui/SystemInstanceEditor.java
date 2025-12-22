@@ -159,9 +159,9 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         boolean hasEmpty = false;
         while (iterator.hasNext()) {
             s = (System) iterator.next();
-            if ((s != null) && !s.getName().equals("")) {
+            if (s != null && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if ((s != null) && s.getName().equals("")) {
+            } else if (s != null && s.getName().equals("")) {
                 systemComboBox.addItem("(unnamed)");
                 hasEmpty = true;
             }
@@ -209,8 +209,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
         System newSystem = new System(systemName);
 
-        if ((repository.getSystem(newSystem.getName()) != null)
-                && !newSystem.getName().equals("")) {
+        if (repository.getSystem(newSystem.getName()) != null && !newSystem.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing System with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
@@ -240,7 +239,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         // or if there is a change in the name but the new name doesn't bring any conflict
         // or if the new name is blank
         if (!s.getName().equals(newSystem.getName())
-                && (repository.getSystem(newSystem.getName()) != null)
+                && repository.getSystem(newSystem.getName()) != null
                 && !newSystem.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing system with the given name already!\n",
@@ -258,9 +257,9 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         Iterator iterator = systems.iterator();
         while (iterator.hasNext()) {
             s = (System) iterator.next();
-            if ((s != null) && !s.getName().equals("")) {
+            if (s != null && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if ((s != null) && s.getName().equals("")) {
+            } else if (s != null && s.getName().equals("")) {
                 systemComboBox.addItem("(unnamed)");
             }
         }

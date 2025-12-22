@@ -16,13 +16,8 @@ public class CompositeNodeIterator extends CompositeIterator<NodeComponent> {
         Iterator<NodeComponent> iterator = stack.peek(); // get iterator
         NodeComponent nodeComponent = iterator.next(); // get the next component
 
-        // TESTED (works)
-        if (iterator instanceof CompositeNodeIterator) {
-            // do nothing on purpose
-        } else {
-            if (nodeComponent instanceof CompositeNode) {
-                stack.push(nodeComponent.createIterator());
-            }
+        if (!(iterator instanceof CompositeNodeIterator) && nodeComponent instanceof CompositeNode) {
+            stack.push(nodeComponent.createIterator());
         }
         
         return nodeComponent;

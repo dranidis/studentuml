@@ -30,3 +30,10 @@ mvn deploy:deploy-file -DgroupId=com.bulenkov -DartifactId=darcula -Dversion=201
 ~/.java/.userPrefs/edu/city/studentuml/util/prefs.xml
 ```
 
+### Generate a PMD report
+```
+mvn jxr:jxr
+mvn pmd:pmd
+```
+
+Open the `target/site/pmd.html` file in the browser.

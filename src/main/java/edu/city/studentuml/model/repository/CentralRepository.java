@@ -9,6 +9,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
+import edu.city.studentuml.model.domain.AbstractClass;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityFinalNode;
 import edu.city.studentuml.model.domain.ActivityNode;
@@ -296,12 +297,12 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addConceptualClass(ConceptualClass c) {
         ConceptualClass existingClass = getConceptualClass(c.getName());
 
-        if ((existingClass == null) || c.getName().equals("")) {
+        if (existingClass == null || c.getName().equals("")) {
             concepts.add(c);
 
             GenericClass gc = getGenericClass(c.getGenericClass().getName());
 
-            if ((gc == null) || gc.getName().equals("")) {
+            if (gc == null || gc.getName().equals("")) {
                 genericClasses.add(c.getGenericClass());
             } else {
                 c.setGenericClass(gc);
@@ -328,23 +329,12 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editConceptualClass(ConceptualClass originalClass, ConceptualClass newClass) {
         ConceptualClass existingClass = getConceptualClass(newClass.getName());
 
-        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
-                && !newClass.getName().equals("")) {
+        if (editAbstractClass(originalClass, newClass, existingClass)) {
+            repositoryChanged();
+            return true;
+        } else {
             return false;
         }
-
-        GenericClass existingGenericClass = getGenericClass(newClass.getName());
-
-        if ((existingGenericClass == null) || existingGenericClass.getName().equals("")) {
-            originalClass.setName(newClass.getName());
-        } else {
-            originalClass.setGenericClass(newClass.getGenericClass());
-        }
-
-        originalClass.setAttributes(newClass.getAttributes());
-        repositoryChanged();
-
-        return true;
     }
 
     public boolean removeConceptualClass(ConceptualClass c) {
@@ -369,14 +359,14 @@ public class CentralRepository extends Observable implements Serializable {
         // if a class with the same name doesn't exist, or the class hasn't been named
         // yet,
         // add it and return true; else return false
-        if ((existingClass == null) || c.getName().equals("")) {
+        if (existingClass == null || c.getName().equals("")) {
             classes.add(c);
 
             // if a generic class with the same name exists, set it as the classe's
             // generic class, otherwise add it to the repository
             GenericClass gc = getGenericClass(c.getGenericClass().getName());
 
-            if ((gc == null) || gc.getName().equals("")) {
+            if (gc == null || gc.getName().equals("")) {
                 genericClasses.add(c.getGenericClass());
             } else {
                 c.setGenericClass(gc);
@@ -396,30 +386,40 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editClass(DesignClass originalClass, DesignClass newClass) {
         DesignClass existingClass = getDesignClass(newClass.getName());
 
+        if (editAbstractClass(originalClass, newClass, existingClass)) {
+            originalClass.setStereotype(newClass.getStereotype());
+            originalClass.setMethods(newClass.getMethods());
+            repositoryChanged();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // returns true if the editing was successful
+    private boolean editAbstractClass(AbstractClass originalClass, AbstractClass newClass, AbstractClass existingClass) {
+
         // if the name of the class is changed and the new name causes conflict
         // with an existing class, and the new name is non-blank, then don't edit
         // and return false
-        if (!originalClass.getName().equals(newClass.getName()) && (existingClass != null)
+        if (!originalClass.getName().equals(newClass.getName()) && existingClass != null
                 && !newClass.getName().equals("")) {
             return false;
         }
 
         GenericClass existingGenericClass = getGenericClass(newClass.getName());
 
-        if ((existingGenericClass == null) || existingGenericClass.getName().equals("")) {
+        if (existingGenericClass == null || existingGenericClass.getName().equals("")) {
             originalClass.setName(newClass.getName());
         } else {
             originalClass.setGenericClass(newClass.getGenericClass());
         }
 
-        originalClass.setStereotype(newClass.getStereotype());
         originalClass.setAttributes(newClass.getAttributes());
-        originalClass.setMethods(newClass.getMethods());
-        repositoryChanged();
 
         return true;
     }
-
+    
     public boolean removeClass(DesignClass c) {
         if (classes.remove(c)) {
             removeGenericClass(c.getGenericClass());
@@ -455,7 +455,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addInterface(Interface i) {
         Interface existingInterface = getInterface(i.getName());
 
-        if ((existingInterface == null) || i.getName().equals("")) {
+        if (existingInterface == null || i.getName().equals("")) {
             interfaces.add(i);
             repositoryChanged();
 
@@ -470,7 +470,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editInterface(Interface originalInterface, Interface newInterface) {
         Interface existingInterface = getInterface(newInterface.getName());
 
-        if (!originalInterface.getName().equals(newInterface.getName()) && (existingInterface != null)
+        if (!originalInterface.getName().equals(newInterface.getName()) && existingInterface != null
                 && !newInterface.getName().equals("")) {
             return false;
         }
@@ -730,7 +730,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editSystemInstance(SystemInstance originalSystemInstance, SystemInstance newSystemInstance) {
         SystemInstance existingSystemInstance = getSystemInstance(newSystemInstance.getName());
 
-        if (!originalSystemInstance.getName().equals(newSystemInstance.getName()) && (existingSystemInstance != null)
+        if (!originalSystemInstance.getName().equals(newSystemInstance.getName()) && existingSystemInstance != null
                 && !newSystemInstance.getName().equals("")) {
             return false;
         }
@@ -759,7 +759,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addSystem(System s) {
         System existingSystem = getSystem(s.getName());
 
-        if ((existingSystem == null) || s.getName().equals("")) {
+        if (existingSystem == null || s.getName().equals("")) {
             systems.add(s);
             repositoryChanged();
 
@@ -781,7 +781,7 @@ public class CentralRepository extends Observable implements Serializable {
 
     public boolean editSystem(System originalSystem, System newSystem) {
         System existingSystem = getSystem(newSystem.getName());
-        if (!originalSystem.getName().equals(newSystem.getName()) && (existingSystem != null)
+        if (!originalSystem.getName().equals(newSystem.getName()) && existingSystem != null
                 && !newSystem.getName().equals("")) {
             return false;
         }
@@ -820,7 +820,7 @@ public class CentralRepository extends Observable implements Serializable {
         logger.fine(() -> "Adding object " + o.toString());
         SDObject existingObject = getObject(o.getName());
 
-        if ((existingObject == null) || o.getName().equals("")) {
+        if (existingObject == null || o.getName().equals("")) {
             sdObjects.add(o);
             repositoryChanged();
 
@@ -835,7 +835,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editObject(SDObject originalObject, SDObject newObject) {
         SDObject existingObject = getObject(newObject.getName());
 
-        if (!originalObject.getName().equals(newObject.getName()) && (existingObject != null)
+        if (!originalObject.getName().equals(newObject.getName()) && existingObject != null
                 && !newObject.getName().equals("")) {
             return false;
         }
@@ -881,7 +881,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addMultiObject(MultiObject mo) {
         MultiObject existingMultiObject = getMultiObject(mo.getName());
 
-        if ((existingMultiObject == null) || mo.getName().equals("")) {
+        if (existingMultiObject == null || mo.getName().equals("")) {
             multiObjects.add(mo);
             repositoryChanged();
 
@@ -895,7 +895,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editMultiObject(MultiObject originalObject, MultiObject newObject) {
         MultiObject existingObject = getMultiObject(newObject.getName());
 
-        if (!originalObject.getName().equals(newObject.getName()) && (existingObject != null)
+        if (!originalObject.getName().equals(newObject.getName()) && existingObject != null
                 && !newObject.getName().equals("")) {
             return false;
         }
@@ -937,7 +937,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addActor(Actor a) {
         Actor existingActor = getActor(a.getName());
 
-        if ((existingActor == null) || a.getName().equals("")) {
+        if (existingActor == null || a.getName().equals("")) {
             actors.add(a);
             repositoryChanged();
 
@@ -951,7 +951,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editActor(Actor originalActor, Actor newActor) {
         Actor existingActor = getActor(newActor.getName());
 
-        if (!originalActor.getName().equals(newActor.getName()) && (existingActor != null)
+        if (!originalActor.getName().equals(newActor.getName()) && existingActor != null
                 && !newActor.getName().equals("")) {
             return false;
         }
@@ -993,7 +993,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addActorInstance(ActorInstance a) {
         ActorInstance existingActor = getActorInstance(a.getName());
 
-        if ((existingActor == null) || a.getName().equals("")) {
+        if (existingActor == null || a.getName().equals("")) {
             actorInstances.add(a);
             repositoryChanged();
 
@@ -1007,7 +1007,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editActorInstance(ActorInstance originalActorInstance, ActorInstance newActorInstance) {
         ActorInstance existingActorInstance = getActorInstance(newActorInstance.getName());
 
-        if (!originalActorInstance.getName().equals(newActorInstance.getName()) && (existingActorInstance != null)
+        if (!originalActorInstance.getName().equals(newActorInstance.getName()) && existingActorInstance != null
                 && !newActorInstance.getName().equals("")) {
             return false;
         }
@@ -1236,7 +1236,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addUseCase(UseCase useCase) {
         UseCase uc = getUseCase(useCase.getName());
 
-        if ((uc == null) || useCase.getName().equals("")) {
+        if (uc == null || useCase.getName().equals("")) {
             useCases.add(useCase);
             repositoryChanged();
 
@@ -1259,7 +1259,7 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean editUseCase(UseCase original, UseCase other) {
         UseCase existingUseCase = getUseCase(other.getName());
 
-        if (!original.getName().equals(other.getName()) && (existingUseCase != null) && !other.getName().equals("")) {
+        if (!original.getName().equals(other.getName()) && existingUseCase != null && !other.getName().equals("")) {
             return false;
         }
 
@@ -1426,7 +1426,7 @@ public class CentralRepository extends Observable implements Serializable {
         // can add only one in an activity
         ActionNode existingActionNode = getActionNode(actionNode.getName());
 
-        if ((existingActionNode == null) || actionNode.getName().equals("")) {
+        if (existingActionNode == null || actionNode.getName().equals("")) {
             actionNodes.add(actionNode);
             repositoryChanged();
 

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
 public interface Classifier {
 
-    public String getName();
-
-    public void setName(String n);
+    String getName();
+    void setName(String n);
 }

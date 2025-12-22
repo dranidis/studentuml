@@ -22,12 +22,13 @@ public class SystemInstance extends RoleClassifier implements IXMLCustomStreamab
         return (System) classifier;
     }
 
+    @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
         streamer.streamObject(node, "system", getSystem());
-        //node.setAttribute("system", SystemWideObjectNamePool.getInstance().getNameForObject(getSystem()));
     }
 
+    @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         setName(node.getAttribute("name"));
     }

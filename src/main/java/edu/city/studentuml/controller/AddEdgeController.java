@@ -1,5 +1,9 @@
 package edu.city.studentuml.controller;
 
+import java.awt.Point;
+
+import javax.swing.JOptionPane;
+
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.FinalNodeGR;
@@ -9,10 +13,7 @@ import edu.city.studentuml.model.graphical.InitialNodeGR;
 import edu.city.studentuml.model.graphical.JoinNodeGR;
 import edu.city.studentuml.model.graphical.MergeNodeGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
-import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import java.awt.Point;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -46,7 +47,7 @@ public abstract class AddEdgeController extends AddElementController {
         }
 
         GraphicalElement element = diagramModel.getContainingGraphicalElement(x, y);
-        if ((element != null) && (element != source) && (element instanceof NodeComponentGR)) {
+        if (element != null && element != source && element instanceof NodeComponentGR) {
             NodeComponentGR target = (NodeComponentGR) element;
             Point targetPoint = new Point(x, y);
             addEdge(source, target, sourcePoint, targetPoint);
@@ -126,7 +127,7 @@ public abstract class AddEdgeController extends AddElementController {
     protected abstract void addFlow(NodeComponentGR src, NodeComponentGR trg, Point srcPoint, Point trgPoint);
 
     protected void setSelectionMode() {
-        ((ADInternalFrame) parentFrame).setSelectionMode();
+        parentFrame.setSelectionMode();
     }
 
     protected void showErrorMessage(String msg) {

@@ -296,7 +296,7 @@ public class CodePreparation {
             constructor.setParameters(constructorParameters);
         }
         if (!designClass.getCcDesignClass().getSDMethods().contains(constructor)
-                && (message.getTarget() instanceof SDObject)) {
+                && message.getTarget() instanceof SDObject) {
             designClass.getCcDesignClass().addSDMethod(constructor);
         }
 
@@ -400,7 +400,7 @@ public class CodePreparation {
             }
         }
         // check headMethod (method that contains the branched called messages)
-        if ((headMethods.size() > 1) && hasLifeline) {
+        if (headMethods.size() > 1 && hasLifeline) {
             headMethods.remove(headMethods.size() - 1);
         } else if (hasLifeline) {
             headMethods.clear();

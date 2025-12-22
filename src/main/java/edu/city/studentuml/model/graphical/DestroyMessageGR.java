@@ -33,13 +33,11 @@ public class DestroyMessageGR extends SDMessageGR {
 
     @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
-        if (forward) {
-            g.drawLine(x, y, x - 8, y - 4);
-            g.drawLine(x, y, x - 8, y + 4);
-        } else {
-            g.drawLine(x, y, x + 8, y - 4);
-            g.drawLine(x, y, x + 8, y + 4);
-        }
+        double angle = forward ? 0 : -Math.PI;
+        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
+
+        g.drawLine(x - 15, y - 20, x + 15, y + 20);
+        g.drawLine(x - 15, y + 20, x + 15, y - 20);
     }
 
     // override superclass move(), so that the target role classifier also moves
@@ -77,6 +75,20 @@ public class DestroyMessageGR extends SDMessageGR {
     @Override
     public boolean isReflective() {
         return false;
+    }
+
+    @Override
+    public DestroyMessageGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        // Messages connect graphical elements, so we reference the same endpoints
+        RoleClassifierGR sameFrom = (RoleClassifierGR) getSource();
+        RoleClassifierGR sameTo = (RoleClassifierGR) getTarget();
+        DestroyMessage sameMessage = getDestroyMessage();
+        
+        // Create new graphical wrapper referencing the SAME domain object and endpoints
+        DestroyMessageGR clonedGR = new DestroyMessageGR(sameFrom, sameTo, sameMessage, this.getY());
+        
+        return clonedGR;
     }
     
 }

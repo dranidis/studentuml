@@ -6,18 +6,14 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.w3c.dom.Element;
-
 import edu.city.studentuml.model.domain.ObjectNode;
-import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.XMLStreamer;
 
 /**
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public class ObjectNodeGR extends LeafNodeGR {
 
@@ -175,26 +171,22 @@ public class ObjectNodeGR extends LeafNodeGR {
     }
 
     @Override
-    public boolean contains(Point2D p) {
-        Rectangle2D.Double rect = new Rectangle2D.Double(
-                startingPoint.getX(), startingPoint.getY(),
-                getWidth(), getHeight());
-
-        return rect.contains(p);
+    protected String getStreamName() {
+        return "objectnode";
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
-        super.streamFromXML(node, streamer, instance);
-        startingPoint.x = Integer.parseInt(node.getAttribute("x"));
-        startingPoint.y = Integer.parseInt(node.getAttribute("y"));
-    }
-
-    @Override
-    public void streamToXML(Element node, XMLStreamer streamer) {
-        super.streamToXML(node, streamer);
-        streamer.streamObject(node, "objectnode", getComponent());
-        node.setAttribute("x", Integer.toString(startingPoint.x));
-        node.setAttribute("y", Integer.toString(startingPoint.y));
+    public ObjectNodeGR clone() {
+        // IMPORTANT: Share the domain object reference (do NOT clone it)
+        ObjectNode sameObjectNode = (ObjectNode) getComponent();
+        
+        // Create new graphical wrapper referencing the SAME domain object
+        ObjectNodeGR clonedGR = new ObjectNodeGR(sameObjectNode, this.startingPoint.x, this.startingPoint.y);
+        
+        // Copy visual properties
+        clonedGR.width = this.width;
+        clonedGR.height = this.height;
+        
+        return clonedGR;
     }
 }
