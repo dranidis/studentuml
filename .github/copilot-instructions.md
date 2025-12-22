@@ -64,6 +64,58 @@ This project uses a local Maven repo (`local-maven-repo/`) for custom JARs:
 
 This ensures issues are properly tested and prevents regressions.
 
+## Version Control and Release Management
+
+### Semantic Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
+
+-   **MAJOR** version: Incompatible API changes or major architectural changes
+-   **MINOR** version: New functionality added in a backward-compatible manner
+-   **PATCH** version: Backward-compatible bug fixes
+
+**Version Bumping Guidelines:**
+
+-   **Bug fixes only** → Increment PATCH (e.g., 1.3.0 → 1.3.1)
+-   **New features** (backward-compatible) → Increment MINOR, reset PATCH (e.g., 1.3.1 → 1.4.0)
+-   **Breaking changes** → Increment MAJOR, reset MINOR and PATCH (e.g., 1.4.0 → 2.0.0)
+
+**SNAPSHOT versions** (e.g., 1.4.0-SNAPSHOT) indicate unreleased development versions. When a release is ready:
+1. Remove -SNAPSHOT suffix
+2. Update CHANGELOG.md with release date
+3. Tag the release in git
+4. Bump to next SNAPSHOT version for continued development
+
+### CHANGELOG.md Updates
+
+**IMPORTANT: Update `CHANGELOG.md` every time a branch is merged into develop.**
+
+When merging feature branches, bug fixes, or any changes to develop:
+
+1. Add entries under the `[Unreleased]` section
+2. Follow the format: `### Added`, `### Changed`, `### Fixed`, `### Deprecated`, `### Removed`, `### Security`
+3. Include brief description of changes with issue/PR references if available
+4. Example:
+
+    ```markdown
+    ## [Unreleased]
+
+    ### Added
+
+    -   Copy/paste functionality for graphical elements in all diagram types
+
+    ### Fixed
+
+    -   Original association deleted when undoing paste operation (#123)
+
+    ### Changed
+
+    -   Upgraded from Java 8 to Java 11 for better compatibility
+    -   Upgraded JaCoCo from 0.7.7 to 0.8.8
+    ```
+
+This maintains a clear history of changes for each release and helps with version management.
+
 ## Critical Conventions
 
 ### Reflection and Naming
@@ -113,10 +165,11 @@ Use `DiagramType` constants (not magic numbers):
 
 ## Java Version and Dependencies
 
--   Target: Java 8 (`maven.compiler.source/target = 1.8`)
+-   Target: Java 11 (`maven.compiler.source/target = 11`)
 -   UI: Swing with FlatLaf themes (v3.0) for modern look-and-feel
 -   JSON handling: Jackson 2.14.1
 -   JUnit 4.13 for testing
+-   JaCoCo 0.8.8 for code coverage
 
 ## Settings and Configuration
 
