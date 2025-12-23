@@ -24,7 +24,6 @@
 
 ### Fixed
 
--   Original association deleted when undoing paste operation - now properly handles domain object reuse
 -   Test isolation issues in ConsistencyCheckTest (documented and skipped flaky test)
 
 ### Changed
