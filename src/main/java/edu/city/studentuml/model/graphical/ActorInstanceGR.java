@@ -2,7 +2,6 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -38,7 +37,7 @@ public class ActorInstanceGR extends AbstractSDObjectGR {
         Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8, getY() + height + 4.0, 16,
                 endingY - (getY() + height + 4.0));
 
-        return (rectangle1.contains(point) || rectangle2.contains(point));
+        return rectangle1.contains(point) || rectangle2.contains(point);
     }
 
     @Override
@@ -50,8 +49,7 @@ public class ActorInstanceGR extends AbstractSDObjectGR {
     protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
         String actorText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorText, nameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorText, nameFont, frc);
         int nameY = STICKFIGURE_HEIGHT/2 + ACTOR_TEXT_DISTANCE - (int) bounds.getY();
 
         super.drawObjectName(g, startingX, startingY + nameY);

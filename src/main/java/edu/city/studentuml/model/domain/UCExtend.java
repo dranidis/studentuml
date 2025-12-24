@@ -70,7 +70,7 @@ public class UCExtend extends UCLink {
 
         Iterator<ExtensionPoint> i = getExtensionPoints();
         while (i.hasNext()) {
-            copy.addExtensionPoint((i.next()).clone());
+            copy.addExtensionPoint(i.next().clone());
         }
 
         return copy;

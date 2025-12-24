@@ -34,7 +34,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
 
     private JPanel actorPanel;
     private JLabel actorLabel;
-    private JComboBox actorComboBox;
+    private JComboBox<String> actorComboBox;
     private JDialog actorInstanceDialog;
 
     private JPanel namePanel;
@@ -45,25 +45,26 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
     private final JPanel emptyPanel;
     private final JPanel nonemptyPanel;
     private final JLabel editActorLabel;
-    
+
     private JPanel centerPanel;
     private JButton editActorButton;
-    
+
     private JPanel bottomPanel;
     private JButton okButton;
-    private JButton cancelButton;    
-    
+    private JButton cancelButton;
+
     private boolean ok;
 
     private Actor actor;
-    private Vector actors;
+    private Vector<Actor> actors;
     private ActorInstanceGR actorInstance;
     private CentralRepository repository;
 
+    @SuppressWarnings("unchecked")
     public ActorInstanceEditor(ActorInstanceGR a, CentralRepository cr) {
         actorInstance = a;
         repository = cr;
-        actors = (Vector) repository.getActors().clone();
+        actors = (Vector<Actor>) repository.getActors().clone();
         setLayout(new BorderLayout());
 
         centerPanel = new JPanel(new GridLayout(3, 1));
@@ -77,7 +78,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
 
         actorPanel = new JPanel(new FlowLayout());
         actorLabel = new JLabel("Actor: ");
-        actorComboBox = new JComboBox();
+        actorComboBox = new JComboBox<String>();
         actorComboBox.setMaximumRowCount(5);
         actorComboBox.addItemListener(this);
         actorPanel.add(actorLabel);
@@ -92,8 +93,8 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         nonemptyPanel.add(editActorLabel);
         nonemptyPanel.add(editActorButton);
         cardPanel.add("empty", emptyPanel);
-        cardPanel.add("nonempty", nonemptyPanel);        
-                
+        cardPanel.add("nonempty", nonemptyPanel);
+
         centerPanel.add(namePanel);
         centerPanel.add(actorPanel);
         centerPanel.add(cardPanel);
@@ -141,7 +142,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
     public void initialize() {
         ActorInstance instance = actorInstance.getActorInstance();
         actor = instance.getActor();
-        
+
         nameField.setText(instance.getName());
 
         // initialize the actor names combo box
@@ -150,9 +151,9 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         }
 
         Actor a;
-        Iterator iterator = actors.iterator();
+        Iterator<Actor> iterator = actors.iterator();
         while (iterator.hasNext()) {
-            a = (Actor) iterator.next();
+            a = iterator.next();
 
             if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
@@ -165,12 +166,12 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         updateEditActorPanel();
     }
 
-    public boolean isInList(Actor actor, Vector list) {
-        Iterator iterator = list.iterator();
+    public boolean isInList(Actor actor, Vector<Actor> list) {
+        Iterator<Actor> iterator = list.iterator();
         Actor a;
 
         while (iterator.hasNext()) {
-            a = (Actor) iterator.next();
+            a = iterator.next();
 
             if (a == actor) {
                 return true;
@@ -193,7 +194,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         // show the actor editor dialog
         String actorName = JOptionPane.showInputDialog("Enter the Actor's Name");
 
-        if (actorName == null) {    // user has pressed cancel
+        if (actorName == null) { // user has pressed cancel
             return;
         }
 
@@ -223,9 +224,9 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         actorComboBox.removeAllItems();
 
         Actor a;
-        Iterator iterator = actors.iterator();
+        Iterator<Actor> iterator = actors.iterator();
         while (iterator.hasNext()) {
-            a = (Actor) iterator.next();
+            a = iterator.next();
 
             if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
@@ -238,7 +239,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             actorInstanceDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {

@@ -36,7 +36,7 @@ public class CodeGenerator {
 	private static final Logger logger = Logger.getLogger(CodeGenerator.class.getName());
 
 	private boolean lfBeforeCurly = false;
-	private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private static final String INDENT = "  ";
 
 	public String generateFile(boolean isInUpdateMode, Classifier classObject, String path, UMLProject umlproject) {
@@ -90,7 +90,7 @@ public class CodeGenerator {
 				String line;
 				while ((line = br2.readLine()) != null) {
 					for (Map.Entry<Integer, String> oldLine : oldLines.entrySet()) {
-						if (currLine == (oldLine.getKey())) {
+						if (currLine == oldLine.getKey()) {
 							if (line.trim().isEmpty()) {
 								line = line.replace(line, oldLine.getValue());
 							} else {
@@ -296,7 +296,7 @@ public class CodeGenerator {
 		}
 
 		// add opening brace
-		sb.append(lfBeforeCurly ? (LINE_SEPARATOR + "{") : " {");
+		sb.append(lfBeforeCurly ? LINE_SEPARATOR + "{" : " {");
 
 		return sb;
 	}

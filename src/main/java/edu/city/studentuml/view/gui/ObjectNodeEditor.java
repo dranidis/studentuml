@@ -248,8 +248,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
-        if ((repository.getDesignClass(newClass.getName()) != null)
-                && !newClass.getName().equals("")) {
+    if (repository.getDesignClass(newClass.getName()) != null
+        && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
@@ -329,8 +329,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton)
-                || (event.getSource() == objectNameField)) {
+    if (event.getSource() == okButton
+        || event.getSource() == objectNameField) {
             setSelectedType();
             objectNodeDialog.setVisible(false);
             ok = true;
@@ -377,8 +377,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
-        if ((repository.getDesignClass(newClass.getName()) != null)
-                && !newClass.getName().equals("")) {
+    if (repository.getDesignClass(newClass.getName()) != null
+        && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);

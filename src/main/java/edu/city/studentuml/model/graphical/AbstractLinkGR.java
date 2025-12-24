@@ -188,7 +188,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
             double distanceFromLine = Line2D.ptSegDist(
                     getXA(), getYA(), getXB(), getYB(), p.getX(), p.getY());
 
-            return (distanceFromLine < 7);
+            return distanceFromLine < 7;
         } else // reflective
         {
             int step = getReflectiveStep();
@@ -197,7 +197,7 @@ public abstract class AbstractLinkGR extends GraphicalElement {
             Rectangle2D definingRect3 = new Rectangle2D.Double(getXA(), getYA() - REFLECTIVE_UP * step - step/2.0, REFLECTIVE_RIGHT * step, step);
             Rectangle2D definingRect4 = new Rectangle2D.Double(getXA() + REFLECTIVE_RIGHT * step, getYA() - REFLECTIVE_UP * step - step/2.0, step, step * REFLECTIVE_UP + getYB() - getYA());
 
-            return (definingRect1.contains(p) || definingRect2.contains(p) || definingRect3.contains(p) || definingRect4.contains(p));
+            return definingRect1.contains(p) || definingRect2.contains(p) || definingRect3.contains(p) || definingRect4.contains(p);
         }
 
     }

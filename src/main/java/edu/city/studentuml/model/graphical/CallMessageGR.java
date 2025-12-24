@@ -38,7 +38,7 @@ public class CallMessageGR extends SDMessageGR {
     @Override
     public int getEndingX() {
         int endingX = super.getEndingX();
-        boolean forward = (endingX > getStartingX());
+        boolean forward = endingX > getStartingX();
         int plusBarWidth = forward ? - barWidth / 2 : barWidth / 2;
         return endingX + (target.acticationAtY(getY()) - 1) * barWidth/2 + plusBarWidth;
     }

@@ -100,7 +100,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         Vector<String> v = new Vector<>();
         Iterator<ExtensionPoint> i = getExtensionPoints();
         while (i.hasNext()) {
-            String s = (i.next()).getName();
+            String s = i.next().getName();
             v.add(s);
         }
         extensionsList.setListData(v);

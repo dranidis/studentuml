@@ -53,7 +53,7 @@ public class Aggregation extends Association {
     }
 
     public boolean isReflective() {
-        return (getWhole() == getPart());
+        return getWhole() == getPart();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {

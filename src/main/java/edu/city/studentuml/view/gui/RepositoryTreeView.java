@@ -170,7 +170,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                     Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
 
                     while (iterator2.hasNext()) {
-                        classifier = (iterator2.next()).getRoleClassifier();
+                        classifier = iterator2.next().getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }
@@ -182,7 +182,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 Iterator<ConceptualClassGR> iterator2 = concepts.iterator();
 
                 while (iterator2.hasNext()) {
-                    concept = (iterator2.next()).getConceptualClass();
+                    concept = iterator2.next().getConceptualClass();
                     addObject(dnode, concept);
                 }
 
@@ -195,7 +195,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
                     Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
 
                     while (iterator2.hasNext()) {
-                        classifier = (iterator2.next()).getRoleClassifier();
+                        classifier = iterator2.next().getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }

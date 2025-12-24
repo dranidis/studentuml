@@ -160,7 +160,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
 

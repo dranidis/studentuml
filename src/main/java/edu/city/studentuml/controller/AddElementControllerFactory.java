@@ -626,14 +626,14 @@ public class AddElementControllerFactory {
     protected boolean relationshipExists(DiagramModel model, ClassifierGR baseClass, ClassifierGR superClass) {
 
          Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
-                r -> (r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
+                r -> r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
                         || r.getBaseClass() == superClass.getClassifier()
-                                && r.getSuperClass() == baseClass.getClassifier())).findFirst();
+                                && r.getSuperClass() == baseClass.getClassifier()).findFirst();
 
         Optional<Realization> aRealization = model.getCentralRepository().getRealizations().stream().filter(
-                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
-                        || (r.getTheClass() == superClass.getClassifier()
-                                && r.getTheInterface() == baseClass.getClassifier()))
+                r -> r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier()
+                        || r.getTheClass() == superClass.getClassifier()
+                                && r.getTheInterface() == baseClass.getClassifier())
                 .findFirst();
 
         if (aRealization.isPresent() || aGeneralization.isPresent()) {
@@ -659,8 +659,8 @@ public class AddElementControllerFactory {
             UCDComponentGR superGR = (UCDComponentGR) superClass;
 
             return model.getCentralRepository().getUCLinks().stream()
-                    .anyMatch(r -> (r.getSource() == baseGR.getComponent() && r.getTarget() == superGR.getComponent()
-                            || r.getTarget() == baseGR.getComponent() && r.getSource() == superGR.getComponent()));
+                    .anyMatch(r -> r.getSource() == baseGR.getComponent() && r.getTarget() == superGR.getComponent()
+                            || r.getTarget() == baseGR.getComponent() && r.getSource() == superGR.getComponent());
         }
         return false;
     }

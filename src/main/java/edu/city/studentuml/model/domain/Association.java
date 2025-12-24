@@ -90,7 +90,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
     }
 
     public boolean isBidirectional() {
-        return (direction == BIDIRECTIONAL);
+        return direction == BIDIRECTIONAL;
     }
 
     public boolean getShowArrow() {
@@ -124,7 +124,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
     }
 
     public boolean isReflective() {
-        return (getClassA() == getClassB());
+        return getClassA() == getClassB();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {

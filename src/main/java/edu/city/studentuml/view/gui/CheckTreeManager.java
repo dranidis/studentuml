@@ -606,7 +606,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
 
         public boolean hasMoreElements() {
-            return (!stack.isEmpty() && (stack.peek()).hasMoreElements());
+            return !stack.isEmpty() && stack.peek().hasMoreElements();
         }
 
         public TreePath nextElement() {

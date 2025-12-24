@@ -140,7 +140,7 @@ public class UMLNoteGR extends GraphicalElement {
         for(int i=0; i < lines.length; i++) {
             height += calculateLineHeight(g, lines[i]);
         }
-        return (height + 2 * paddingVertical);
+        return height + 2 * paddingVertical;
     }
 
     private int calculateLineHeight(Graphics2D g, String noteText) {
@@ -192,10 +192,9 @@ public class UMLNoteGR extends GraphicalElement {
         // java.lang.IllegalArgumentException: Can't add attribute to 0-length text      
         noteText += " ";
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(noteText, nameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+    Rectangle2D bounds = GraphicsHelper.getTextBounds(noteText, nameFont, frc);
 
-        return (int) ((bounds.getWidth()) + 2 * paddingHorizontal);
+    return (int) bounds.getWidth() + 2 * paddingHorizontal;
     }
 
     public void move(int x, int y) {

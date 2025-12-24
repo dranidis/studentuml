@@ -135,7 +135,7 @@ public class UCDSelectionController extends SelectionController {
                 (UseCase) originalUCExtend.getTarget());
         Iterator<ExtensionPoint> i = ucExtendEditor.getExtensionPoints();
         while (i.hasNext()) {
-            newUCExtend.addExtensionPoint((i.next()).clone());
+            newUCExtend.addExtensionPoint(i.next().clone());
         }
 
         // Undo/Redo [edit]

@@ -145,8 +145,8 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
             ConceptualClass concept = repository.getConceptualClass(getClassName());
             if (concept != null) {
                 concept.getAttributes().forEach(conceptualAttribute -> {
-                    if ((!isAttributeInList(conceptualAttribute, getAttributes()))
-                            && (!isAttributeInList(conceptualAttribute, attributesFromConceptualClass))) {
+                    if (!isAttributeInList(conceptualAttribute, getAttributes())
+                            && !isAttributeInList(conceptualAttribute, attributesFromConceptualClass)) {
                         attributesFromConceptualClass.add(conceptualAttribute.clone());
                     }
                 });

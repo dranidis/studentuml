@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -90,11 +89,10 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         if (!coreInterface.getName().equals("")) {
             String name = coreInterface.getName();
-            TextLayout layout = new TextLayout(name, nameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, nameFont, frc);
 
             // center the name text
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = nameFieldYOffset - (int) bounds.getY();
 
             g.setFont(nameFont);
@@ -108,8 +106,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         for (Method m : coreInterface.getMethods()) {
             String name = m.toString();
-            TextLayout layout = new TextLayout(name, methodFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, methodFont, frc);
             int methodX = methodFieldXOffset - (int) bounds.getX();
             int methodY = currentY + methodFieldYOffset - (int) bounds.getY();
             g.drawString(name, startingX + methodX, startingY + methodY);
@@ -135,8 +132,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         // consider name text dimensions
         if (!coreInterface.getName().equals("")) {
-            TextLayout layout = new TextLayout(coreInterface.getName(), nameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), nameFont, frc);
 
             height = height + (int) bounds.getHeight() + (2 * nameFieldYOffset);
         }
@@ -153,8 +149,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         for (Method m : coreInterface.getMethods()) {
             String method = m.toString();
-            TextLayout layout = new TextLayout(method, methodFont, g.getFontRenderContext());
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, methodFont, g.getFontRenderContext());
             height += (int) bounds.getHeight() + methodFieldYOffset;
         }
 
@@ -174,9 +169,8 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         // consider name text dimensions
         if (coreInterface.getName().length() != 0) {
-            TextLayout layout = new TextLayout(coreInterface.getName(), nameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int nameWidth = (int) bounds.getWidth() + (2 * nameFieldXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), nameFont, frc);
+            int nameWidth = (int) bounds.getWidth() + 2 * nameFieldXOffset;
 
             newWidth = Math.max(nameWidth, newWidth);
         }
@@ -184,9 +178,8 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         // consider method text dimensions
         for (Method m : coreInterface.getMethods()) {
             String method = m.toString();
-            TextLayout layout = new TextLayout(method, methodFont, g.getFontRenderContext());
-            Rectangle2D bounds = layout.getBounds();
-            int methodWidth = (int) bounds.getWidth() + (2 * methodFieldXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, methodFont, g.getFontRenderContext());
+            int methodWidth = (int) bounds.getWidth() + 2 * methodFieldXOffset;
             newWidth = Math.max(methodWidth, newWidth);
         }
 

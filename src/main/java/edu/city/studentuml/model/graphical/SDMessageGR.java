@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -72,7 +71,7 @@ public abstract class SDMessageGR extends GraphicalElement {
         int endingX = getEndingX();
         
         if (!message.isReflective()) {
-            boolean forward = (endingX > startingX);
+            boolean forward = endingX > startingX;
             if (!forward) 
                 startingX -= barWidth;
 
@@ -111,10 +110,9 @@ public abstract class SDMessageGR extends GraphicalElement {
 
             String messageText = message.toString();
             FontRenderContext frc = g.getFontRenderContext();
-            TextLayout layout = new TextLayout(messageText, messageFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(messageText, messageFont, frc);
             int lineWidth = Math.abs(startingX - endingX);
-            int textX = (lineWidth - (int) bounds.getWidth()) / 2 - (int) bounds.getX();
+            int textX = GraphicsHelper.calculateCenteredTextX(lineWidth, bounds);
             int messageStartX = Math.min(startingX, endingX);
 
             int atX = messageStartX + textX;

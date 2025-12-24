@@ -296,7 +296,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     public List<SDMessageGR> getRoleClaffierGRMessages(RoleClassifierGR rc) {
-        return messages.stream().filter(message -> ((message.getSource() == rc) || (message.getTarget() == rc)))
+        return messages.stream().filter(message -> message.getSource() == rc || message.getTarget() == rc)
                 .collect(Collectors.toList());
     }
 
@@ -319,7 +319,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 repository.removeActor(((ActorInstance) rc.getRoleClassifier()).getActor());
 
             }
-            repository.removeActorInstance(((ActorInstance) rc.getRoleClassifier()));
+            repository.removeActorInstance((ActorInstance) rc.getRoleClassifier());
         }
 
         removeClassifiersFromRepository(rc);

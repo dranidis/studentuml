@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -86,10 +85,9 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         // draw system name
         if (!component.toString().equals("")) {
             String systemName = component.toString();
-            TextLayout layout = new TextLayout(systemName, systemNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(systemName, systemNameFont, frc);
 
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = systemNameYOffset + (int) bounds.getHeight();
 
             g.setFont(systemNameFont);
@@ -104,9 +102,8 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), systemNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            systemNameWidth = (int) bounds.getWidth() + (2 * systemNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), systemNameFont, frc);
+            systemNameWidth = (int) bounds.getWidth() + 2 * systemNameXOffset;
 
             newWidth = Math.max(newWidth, systemNameWidth);
         } else {
@@ -258,7 +255,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         if (context == UCDComponentGR.DEFAULT_CONTEXT) {
             return false;
         } else {
-            return (context instanceof Resizable);
+            return context instanceof Resizable;
         }
     }
 

@@ -329,8 +329,8 @@ public abstract class SelectionController {
             setRedoCoordinates();
 
             if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {
-                logger.finest(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
-                logger.finest(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
+                logger.finest(() -> "Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY());
+                logger.finest(() -> "Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY());
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }
@@ -484,7 +484,7 @@ public abstract class SelectionController {
         for (GraphicalElement selectedElement : selectedElements) {
             // check if element was not already deleted by a link to another element
             if (inModel(selectedElement)) {
-                logger.fine(() -> ("DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString()));
+                logger.fine(() -> "DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString());
 
                 NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
                 int i = 0;
@@ -618,7 +618,7 @@ public abstract class SelectionController {
         }
         
         ClipboardManager.getInstance().copy(expandedSelection, model);
-        logger.info(() -> "Copied " + expandedSelection.size() + " elements to clipboard (including child components)");
+        logger.fine(() -> "Copied " + expandedSelection.size() + " elements to clipboard (including child components)");
     }
     
     /**
@@ -658,7 +658,7 @@ public abstract class SelectionController {
             return;
         }
         
-        logger.info("Pasting " + clipboardElements.size() + " elements from clipboard");
+        logger.fine("Pasting " + clipboardElements.size() + " elements from clipboard");
         
         // Calculate the bounding box of the original elements (find top-left corner)
         int minX = Integer.MAX_VALUE;
@@ -815,7 +815,7 @@ public abstract class SelectionController {
                             UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newMessage, model);
                             compoundEdit.addEdit(addEdit);
                             
-                            logger.info("Pasted SD message: " + newMessage.getClass().getSimpleName() + 
+                            logger.fine("Pasted SD message: " + newMessage.getClass().getSimpleName() + 
                                        " connecting " + clonedSource.getClass().getSimpleName() + 
                                        " to " + clonedTarget.getClass().getSimpleName());
                         }
@@ -888,7 +888,7 @@ public abstract class SelectionController {
             selectedElements.add(pastedElement);
         }
         
-        logger.info("Successfully pasted " + pastedElements.size() + " elements");
+        logger.fine("Successfully pasted " + pastedElements.size() + " elements");
     }
     
     /**
@@ -922,29 +922,26 @@ public abstract class SelectionController {
             // REUSE the same domain Generalization object
             return new GeneralizationGR(newA, newB, origDomain);
             
-        } else if (originalLink instanceof DependencyGR) {
+        } else if (originalLink instanceof DependencyGR &&
             // Dependency requires both to be DesignClass (not interfaces)
-            if (newA instanceof ClassGR && newB instanceof ClassGR) {
+             newA instanceof ClassGR && newB instanceof ClassGR) {
                 Dependency origDomain = ((DependencyGR) originalLink).getDependency();
                 // REUSE the same domain Dependency object
                 return new DependencyGR((ClassGR) newA, (ClassGR) newB, origDomain);
-            }
             
-        } else if (originalLink instanceof RealizationGR) {
+        } else if (originalLink instanceof RealizationGR &&
             // Realization requires DesignClass and Interface
-            if (newA instanceof ClassGR && newB instanceof InterfaceGR) {
+             newA instanceof ClassGR && newB instanceof InterfaceGR) {
                 Realization origDomain = ((RealizationGR) originalLink).getRealization();
                 // REUSE the same domain Realization object
                 return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, origDomain);
-            }
             
-        } else if (originalLink instanceof UCAssociationGR) {
+        } else if (originalLink instanceof UCAssociationGR &&
             // Use Case Association requires UCActorGR and UseCaseGR
-            if (newA instanceof UCActorGR && newB instanceof UseCaseGR) {
+             newA instanceof UCActorGR && newB instanceof UseCaseGR) {
                 UCAssociation origDomain = (UCAssociation) ((UCAssociationGR) originalLink).getLink();
                 // REUSE the same domain UCAssociation object
                 return new UCAssociationGR((UCActorGR) newA, (UseCaseGR) newB, origDomain);
-            }
         }
         
         // Handle other link types as needed

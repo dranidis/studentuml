@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -90,8 +89,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // draw acticity node name
         if (!component.toString().equals("")) {
             String activityName = component.toString();
-            TextLayout layout = new TextLayout(activityName, activityNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(activityName, activityNameFont, frc);
 
             int nameX = activityNameXOffset;
             int nameY = activityNameYOffset + (int) bounds.getHeight();
@@ -108,9 +106,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), activityNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            activityNameWidth = (int) bounds.getWidth() + (2 * activityNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), activityNameFont, frc);
+            activityNameWidth = (int) bounds.getWidth() + 2 * activityNameXOffset;
 
             if (activityNameWidth > newWidth) {
                 newWidth = activityNameWidth;
@@ -258,7 +255,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         if (context == NodeComponentGR.DEFAULT_CONTEXT) {
             return false;
         } else {
-            return (context instanceof Resizable);
+            return context instanceof Resizable;
         }
     }
 

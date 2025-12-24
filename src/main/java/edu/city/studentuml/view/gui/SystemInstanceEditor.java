@@ -271,7 +271,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             setSelectedSystem();
             systemInstanceDialog.setVisible(false);
             ok = true;

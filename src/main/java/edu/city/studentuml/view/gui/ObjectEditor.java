@@ -180,7 +180,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
             return null;
         }
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
-        if ((repository.getDesignClass(newClass.getName()) != null)
+        if (repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
@@ -235,7 +235,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     
     private DesignClass getTypeofSelectedItem() {
         Optional<DesignClass> a = types.stream().filter(dc -> dc.getName().equals(typeComboBox.getSelectedItem())
-                || (typeComboBox.getSelectedItem().equals(UNNAMED) && dc.getName().equals(""))).findAny();
+                || typeComboBox.getSelectedItem().equals(UNNAMED) && dc.getName().equals("")).findAny();
         if (a.isPresent()) {
             return a.get();
         } else {
@@ -244,7 +244,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     } 
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             objectType = getTypeofSelectedItem();
             objectDialog.setVisible(false);
             ok = true;

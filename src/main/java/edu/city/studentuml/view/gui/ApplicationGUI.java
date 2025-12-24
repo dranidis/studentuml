@@ -337,14 +337,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if ((e.isPopupTrigger())) {
+                if (e.isPopupTrigger()) {
                     showMenu(e);
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if ((e.isPopupTrigger())) {
+                if (e.isPopupTrigger()) {
                     showMenu(e);
                 }
             }
@@ -455,7 +455,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             objString = object.getClass().getSimpleName();
         }
         final String objStringFinal = objString;
-        logger.finest(() -> ("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal));
+        logger.finest(() -> "UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal);
 
         if (object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
@@ -982,9 +982,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         try {
             UIManager.setLookAndFeel(className);
-        } 
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-        | UnsupportedLookAndFeelException | NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException | NoClassDefFoundError e) {
             try {
                 UIManager.setLookAndFeel(oldFeel);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -993,7 +992,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
             logger.severe(e.getMessage());
             JOptionPane.showMessageDialog(this, "Could not change theme to: " + className, "Error",
-            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1081,7 +1080,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void aboutStudentUML() {
-        final String  ISSUES_URL = "https://bitbucket.org/studentuml/studentuml-public/issues?status=new&status=open";
+        final String ISSUES_URL = "https://bitbucket.org/studentuml/studentuml-public/issues?status=new&status=open";
 
         StringBuilder sb = new StringBuilder();
 

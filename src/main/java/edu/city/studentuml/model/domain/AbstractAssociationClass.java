@@ -95,7 +95,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
     }
 
     public boolean isReflective() {
-        return (getClassA() == getClassB());
+        return getClassA() == getClassB();
     }
 
     // need for undo/redo

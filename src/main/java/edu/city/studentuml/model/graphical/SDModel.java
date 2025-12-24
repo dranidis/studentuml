@@ -37,7 +37,7 @@ public class SDModel extends AbstractSDModel {
                 ((SDObject) rc.getRoleClassifier()).getDesignClass().clear();
                 repository.removeClass(((SDObject) rc.getRoleClassifier()).getDesignClass());
             }
-            repository.removeObject(((SDObject) rc.getRoleClassifier()));
+            repository.removeObject((SDObject) rc.getRoleClassifier());
         }
 
         if (rc.getRoleClassifier() instanceof MultiObject) {
@@ -137,10 +137,11 @@ public class SDModel extends AbstractSDModel {
                 createMessage.refreshTargetPosition();
                 i--;
             } else if ((message.getTarget() == createMessage.getTarget()
-                    || message.getSource() == createMessage.getTarget()) && message != createMessage
+                    || message.getSource() == createMessage.getTarget())
+                    && message != createMessage
                     && message.getY() <= createMessage.getY()) {
                 // move the message down
-                message.move(0, (createMessage.getY() + i + 1));
+                message.move(0, createMessage.getY() + i + 1);
             }
         }
     }
@@ -162,11 +163,12 @@ public class SDModel extends AbstractSDModel {
                 destroyMessage.refreshTargetPosition();
                 i--;
             } else if ((message.getTarget() == destroyMessage.getTarget()
-                    || message.getSource() == destroyMessage.getTarget()) && message != destroyMessage
+                    || message.getSource() == destroyMessage.getTarget())
+                    && message != destroyMessage
                     && message.getY() >= destroyMessage.getY()) {
 
                 // move the message up
-                message.move(0, (destroyMessage.getY() - (messages.size() - i)));
+                message.move(0, destroyMessage.getY() - (messages.size() - i));
             }
         }
     }

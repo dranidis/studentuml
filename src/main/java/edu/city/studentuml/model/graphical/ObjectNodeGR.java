@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import edu.city.studentuml.model.domain.ObjectNode;
@@ -88,10 +87,9 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type in the center
         if (!name.equals("")) {
-            TextLayout layout = new TextLayout(name, objectNameFont, frc);
-            Rectangle2D nameBounds = layout.getBounds();
-            int nameX = ((width - (int) nameBounds.getWidth()) / 2) - (int) nameBounds.getX();
-            int nameY = ((height - (int) nameBounds.getHeight()) / 2) - (int) nameBounds.getY();
+            Rectangle2D nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
+            int nameY = GraphicsHelper.calculateCenteredTextY(height, nameBounds);
 
             g.setFont(objectNameFont);
             g.drawString(name, getX() + nameX, getY() + nameY);
@@ -104,9 +102,8 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type
         if (!name.equals("")) {
-            TextLayout layout = new TextLayout(name, objectNameFont, frc);
-            nameBounds = layout.getBounds();
-            int nameX = ((width - (int) nameBounds.getWidth()) / 2) - (int) nameBounds.getX();
+            nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
             int nameY = objectNameYOffset - (int) nameBounds.getY();
 
             g.setFont(objectNameFont);
@@ -118,9 +115,8 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // draw object node states
         if (!states.equals("")) {
-            TextLayout layout = new TextLayout(states, objectStatesFont, frc);
-            statesBounds = layout.getBounds();
-            int nameX = ((width - (int) statesBounds.getWidth()) / 2) - (int) statesBounds.getX();
+            statesBounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, statesBounds);
             int nameY = objectStatesYOffset + objectNameYOffset - (int) nameBounds.getY() - (int) statesBounds.getY();
 
             g.setFont(objectStatesFont);
@@ -135,9 +131,8 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // consider object name and type text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), objectNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int objectNameWidth = (int) bounds.getWidth() + (2 * objectNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), objectNameFont, frc);
+            int objectNameWidth = (int) bounds.getWidth() + 2 * objectNameXOffset;
 
             if (objectNameWidth > newWidth) {
                 newWidth = objectNameWidth;
@@ -151,9 +146,8 @@ public class ObjectNodeGR extends LeafNodeGR {
         // consider object states text dimensions
         String states = ((ObjectNode) component).getStatesAsString();
         if (states.length() != 0) {
-            TextLayout layout = new TextLayout(states, objectStatesFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int objectStatesWidth = (int) bounds.getWidth() + (2 * objectStatesXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            int objectStatesWidth = (int) bounds.getWidth() + 2 * objectStatesXOffset;
 
             if (objectStatesWidth > newWidth) {
                 newWidth = objectStatesWidth;

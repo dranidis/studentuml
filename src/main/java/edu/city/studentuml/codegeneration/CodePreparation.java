@@ -49,7 +49,7 @@ import edu.city.studentuml.model.graphical.SDObjectGR;
 public class CodePreparation {
 
     private UMLProject umlProject = UMLProject.getInstance();
-    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private int genFilesCount;
     private DesignClass designClass;
     private List<DesignClass> dcToGenerate;

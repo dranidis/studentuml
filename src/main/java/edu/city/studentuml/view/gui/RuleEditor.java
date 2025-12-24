@@ -59,7 +59,7 @@ public class RuleEditor extends JPanel {
     protected UndoManager undo = new UndoManager();
 
     public RuleEditor(String currentRuleFile) {
-        super(new java.awt.BorderLayout());
+        super(new BorderLayout());
         this.currentRuleFile = currentRuleFile;
         // Create the text pane and configure it.
         textPane = new JTextPane() {

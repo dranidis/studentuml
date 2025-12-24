@@ -154,7 +154,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         } else {
             nameField.setText(method.getName());
             for (int i = 0; i < types.size(); i++) {
-                if (((types.get(i)).toString()).equals(method.getReturnType().getName())) {
+                if (types.get(i).toString().equals(method.getReturnType().getName())) {
                     typeComboBox.setSelectedIndex(i);
 
                     break;
@@ -213,7 +213,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
 

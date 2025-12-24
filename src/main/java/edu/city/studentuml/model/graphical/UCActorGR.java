@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -64,11 +63,10 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorName, actorNameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
 
         // draw the actor name under the figure and center it
-        int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+        int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         int nameY = stickFigureHeight + actorTextDistance - (int) bounds.getY();
 
         g.setFont(actorNameFont);
@@ -81,8 +79,7 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorName, actorNameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
         int newWidth = stickFigureWidth;
 
         if (bounds.getWidth() > newWidth) {
@@ -100,8 +97,7 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(actorName, actorNameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
 
         height = stickFigureHeight + actorTextDistance + (int) bounds.getHeight();
 

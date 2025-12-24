@@ -158,68 +158,68 @@ public class DCDModel extends AbstractCDModel {
 
     public List<GraphicalElement> getClassGRDependencyGRs(ClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof DependencyGR
+                .filter(grElement -> grElement instanceof DependencyGR
                         // Check graphical endpoints, not domain classifiers
                         && (((DependencyGR) grElement).getClassA() == c
-                                || ((DependencyGR) grElement).getClassB() == c)))
+                                || ((DependencyGR) grElement).getClassB() == c))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getClassGRAssociationGRs(ClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof AssociationGR
+                .filter(grElement -> grElement instanceof AssociationGR
                         // Check graphical endpoints, not domain classifiers
                         // This ensures we only remove associations graphically connected to this specific ClassGR
                         && (((AssociationGR) grElement).getA() == c
-                                || ((AssociationGR) grElement).getB() == c)))
+                                || ((AssociationGR) grElement).getB() == c))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getClassGRAssociationClassGRs(ClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof AssociationClassGR
+                .filter(grElement -> grElement instanceof AssociationClassGR
                         // Check graphical endpoints, not domain classifiers
                         && (((AssociationClassGR) grElement).getClassB() == c
-                                || ((AssociationClassGR) grElement).getClassA() == c)))
+                                || ((AssociationClassGR) grElement).getClassA() == c))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getClassGRRealizationGRs(ClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof RealizationGR
+                .filter(grElement -> grElement instanceof RealizationGR
                         // Check graphical endpoints, not domain classifiers
-                        && ((RealizationGR) grElement).getTheClass() == c))
+                        && ((RealizationGR) grElement).getTheClass() == c)
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getClassGRGeneralizationGRs(ClassGR c) {
         return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
                 // Check graphical endpoints, not domain classifiers
-                && ((((GeneralizationGR) grElement).getClassifierA() == c)
+                && (((GeneralizationGR) grElement).getClassifierA() == c
                         || ((GeneralizationGR) grElement).getClassifierB() == c))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getInterfaceGRRealizationGRs(InterfaceGR interf) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof RealizationGR
+                .filter(grElement -> grElement instanceof RealizationGR
                         // Check graphical endpoints, not domain classifiers
-                        && ((RealizationGR) grElement).getTheInterface() == interf))
+                        && ((RealizationGR) grElement).getTheInterface() == interf)
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getInterfaceGRAssociationGRs(InterfaceGR interf) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof AssociationGR
+                .filter(grElement -> grElement instanceof AssociationGR
                         // Check graphical endpoints, not domain classifiers
-                        && ((AssociationGR) grElement).getB() == interf))
+                        && ((AssociationGR) grElement).getB() == interf)
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getInterfaceGRGeneralizationGRs(InterfaceGR interf) {
         return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
                 // Check graphical endpoints, not domain classifiers
-                && ((((GeneralizationGR) grElement).getClassifierA() == interf)
+                && (((GeneralizationGR) grElement).getClassifierA() == interf
                         || ((GeneralizationGR) grElement).getClassifierB() == interf))
                 .collect(Collectors.toList());
     }

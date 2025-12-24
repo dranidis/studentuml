@@ -83,17 +83,17 @@ public class CCDModel extends AbstractCDModel {
 
     public List<GraphicalElement> getClassGRAssociationGRs(ConceptualClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof AssociationGR
+                .filter(grElement -> grElement instanceof AssociationGR
                         && (((AssociationGR) grElement).getAssociation().getClassB() == c.getAbstractClass()
-                                || ((AssociationGR) grElement).getAssociation().getClassA() == c.getAbstractClass())))
+                                || ((AssociationGR) grElement).getAssociation().getClassA() == c.getAbstractClass()))
                 .collect(Collectors.toList());
     }
 
     public List<GraphicalElement> getClassGRAssociationClassGRs(ConceptualClassGR c) {
         return graphicalElements.stream()
-                .filter(grElement -> (grElement instanceof AssociationClassGR
+                .filter(grElement -> grElement instanceof AssociationClassGR
                         && (((AssociationClassGR) grElement).getAssociationClass().getClassB() == c.getAbstractClass()
-                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getAbstractClass())))
+                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getAbstractClass()))
                 .collect(Collectors.toList());
     } 
 

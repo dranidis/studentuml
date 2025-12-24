@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -98,9 +97,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // draw class name
         if (!abstractClass.getName().equals("")) {
             String name = abstractClass.getName();
-            TextLayout layout = new TextLayout(name, nameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, nameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = currentY + NAMEFIELDYOFFSET - (int) bounds.getY();
 
             g.setFont(nameFont);
@@ -114,8 +112,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         for(Attribute a: abstractClass.getAttributes()) {
             String name = a.toString();
-            TextLayout layout = new TextLayout(name, attributeFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, attributeFont, frc);
             int attributeX = ATTRIBUTEFIELDXOFFSET - (int) bounds.getX();
             int attributeY = currentY + ATTRIBUTEFIELDYOFFSET - (int) bounds.getY();
             g.drawString(name, startingX + attributeX, startingY + attributeY);
@@ -158,9 +155,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider name text dimensions
         if (abstractClass.getName().length() != 0) {
-            TextLayout layout = new TextLayout(abstractClass.getName(), nameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int nameWidth = (int) bounds.getWidth() + (2 * NAMEFIELDXOFFSET);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont, frc);
+            int nameWidth = (int) bounds.getWidth() + 2 * NAMEFIELDXOFFSET;
 
             if (nameWidth > newWidth) {
                 newWidth = nameWidth;
@@ -172,9 +168,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider attribute text dimensions
         for(Attribute a: abstractClass.getAttributes()) {
-            TextLayout layout = new TextLayout(a.toString(), attributeFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int attributeWidth = (int) bounds.getWidth() + (2 * ATTRIBUTEFIELDXOFFSET);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, frc);
+            int attributeWidth = (int) bounds.getWidth() + 2 * ATTRIBUTEFIELDXOFFSET;
 
             if (attributeWidth > newWidth) {
                 newWidth = attributeWidth;
@@ -212,8 +207,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider name text dimensions
         if (!abstractClass.getName().equals("")) {
-            TextLayout layout = new TextLayout(abstractClass.getName(), nameFont, g.getFontRenderContext());
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont, g.getFontRenderContext());
 
             height = height + (int) bounds.getHeight() + (2 * NAMEFIELDYOFFSET);
         }
@@ -234,8 +228,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         int height = 0;
 
         for(Attribute a: abstractClass.getAttributes()) {
-            TextLayout layout = new TextLayout(a.toString(), attributeFont, g.getFontRenderContext());
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, g.getFontRenderContext());
 
             height += (int) bounds.getHeight() + ATTRIBUTEFIELDYOFFSET; 
         }

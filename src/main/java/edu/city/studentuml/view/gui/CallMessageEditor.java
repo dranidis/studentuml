@@ -169,7 +169,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < types.size(); i++) {
-                if (((types.get(i)).toString()).equals(message.getReturnType().getName())) {
+                if (types.get(i).toString().equals(message.getReturnType().getName())) {
                     typeComboBox.setSelectedIndex(i);
                     break;
                 }
@@ -205,7 +205,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             messageDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {

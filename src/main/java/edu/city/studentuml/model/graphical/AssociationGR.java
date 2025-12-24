@@ -3,7 +3,6 @@ package edu.city.studentuml.model.graphical;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
@@ -142,8 +141,7 @@ public class AssociationGR extends LinkGR {
         g.rotate(angle);
 
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(sb.toString(), roleFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(sb.toString(), roleFont, frc);
         int xOffset = (int) bounds.getX();
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();

@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -69,10 +68,9 @@ public class ActionNodeGR extends LeafNodeGR  {
         // draw action node name
         if (!component.toString().equals("")) {
             String actionName = component.toString();
-            TextLayout layout = new TextLayout(actionName, actionNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            int nameY = ((height - (int) bounds.getHeight()) / 2) - (int) bounds.getY();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(actionName, actionNameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
+            int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
 
             g.setFont(actionNameFont);
             g.drawString(actionName, startingX + nameX, startingY + nameY);
@@ -86,9 +84,8 @@ public class ActionNodeGR extends LeafNodeGR  {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), actionNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int actionNameWidth = (int) bounds.getWidth() + (2 * actionNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), actionNameFont, frc);
+            int actionNameWidth = (int) bounds.getWidth() + 2 * actionNameXOffset;
 
             if (actionNameWidth > newWidth) {
                 newWidth = actionNameWidth;

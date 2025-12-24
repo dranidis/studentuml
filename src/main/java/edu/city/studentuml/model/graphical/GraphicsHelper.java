@@ -40,8 +40,7 @@ public class GraphicsHelper {
         }
 
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(s, font, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = getTextBounds(s, font, frc);
         int textWidth = (int) bounds.getWidth();
 
         g.setFont(font);
@@ -216,6 +215,67 @@ public class GraphicsHelper {
     public static boolean angleGreaterThanHalfPi(double angle) {
         return angle < 3 * Math.PI / 2 && angle >= Math.PI / 2;
         
+    }
+
+    /**
+     * Calculates the X offset to center text horizontally within a given width.
+     * 
+     * @param containerWidth The width of the container
+     * @param textBounds The bounds of the text to be centered
+     * @return The X offset for centered text
+     */
+    public static int calculateCenteredTextX(int containerWidth, Rectangle2D textBounds) {
+        return (containerWidth - (int) textBounds.getWidth()) / 2 - (int) textBounds.getX();
+    }
+
+    /**
+     * Calculates the Y offset to center text vertically within a given height.
+     * 
+     * @param containerHeight The height of the container
+     * @param textBounds The bounds of the text to be centered
+     * @return The Y offset for centered text
+     */
+    public static int calculateCenteredTextY(int containerHeight, Rectangle2D textBounds) {
+        return (containerHeight - (int) textBounds.getHeight()) / 2 - (int) textBounds.getY();
+    }
+
+    /**
+     * Draws text centered horizontally within a container.
+     * 
+     * @param g Graphics context
+     * @param text The text to draw
+     * @param font The font to use
+     * @param containerX The X coordinate of the container
+     * @param containerY The Y coordinate where text should be drawn
+     * @param containerWidth The width of the container for centering
+     */
+    public static void drawCenteredText(Graphics2D g, String text, Font font, 
+                                       int containerX, int containerY, int containerWidth) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        
+        FontRenderContext frc = g.getFontRenderContext();
+        Rectangle2D bounds = getTextBounds(text, font, frc);
+        
+        int textX = calculateCenteredTextX(containerWidth, bounds);
+        g.setFont(font);
+        g.drawString(text, containerX + textX, containerY);
+    }
+
+    /**
+     * Gets the bounding rectangle for text rendered with the specified font.
+     * This is a convenience method that encapsulates the common pattern of
+     * creating a TextLayout and getting its bounds.
+     * 
+     * @param text The text to measure
+     * @param font The font to use
+     * @param frc The FontRenderContext
+     * @return The bounds of the rendered text
+     */
+    public static Rectangle2D getTextBounds(String text, Font font, FontRenderContext frc) {
+        TextLayout layout = new TextLayout(text, font, frc);
+        return layout.getBounds();
     }
 
 }

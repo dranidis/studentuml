@@ -206,7 +206,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
             return "fail";
         }
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
-        if ((repository.getDesignClass(newClass.getName()) != null)
+        if (repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
@@ -274,7 +274,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     }
 
     public void actionPerformed(ActionEvent event) {
-        if ((event.getSource() == okButton) || (event.getSource() == nameField)) {
+        if (event.getSource() == okButton || event.getSource() == nameField) {
             setSelectedType();
             multiObjectDialog.setVisible(false);
             ok = true;

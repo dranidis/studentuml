@@ -1281,8 +1281,8 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean addUCLink(UCLink link) {
-        if ((getUCLink(link.getSource(), link.getTarget()) == null)
-                && getUCLink(link.getTarget(), link.getSource()) == null) {
+    if (getUCLink(link.getSource(), link.getTarget()) == null
+        && getUCLink(link.getTarget(), link.getSource()) == null) {
             ucLinks.add(link);
             repositoryChanged();
 
@@ -1321,7 +1321,7 @@ public class CentralRepository extends Observable implements Serializable {
         originalUCExtend.clearPoints();
         Iterator<ExtensionPoint> i = newUCExtend.getExtensionPoints();
         while (i.hasNext()) {
-            originalUCExtend.addExtensionPoint((i.next()).clone());
+            originalUCExtend.addExtensionPoint(i.next().clone());
         }
     }
 

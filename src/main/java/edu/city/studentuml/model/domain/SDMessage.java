@@ -51,7 +51,7 @@ public abstract class SDMessage implements Serializable {
     }
 
     public boolean isReflective() {
-        return (source == target);
+        return source == target;
     }
     
     
