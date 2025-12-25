@@ -68,7 +68,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         setTitle.addParameter(new MethodParameter("title", DataType.STRING));
         book.addMethod(setTitle);
 
-        ClassGR bookGR = new ClassGR(book, new Point(100, 100));
+        ClassGR bookGR = new ClassGR(book, new Point(50, 50));
         model.addGraphicalElement(bookGR);
 
         DesignClass member = new DesignClass("Member");
@@ -88,7 +88,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         returnBook.addParameter(new MethodParameter("book", book));
         member.addMethod(returnBook);
 
-        ClassGR memberGR = new ClassGR(member, new Point(400, 100));
+        ClassGR memberGR = new ClassGR(member, new Point(500, 50));
         model.addGraphicalElement(memberGR);
 
         DesignClass library = new DesignClass("Library");
@@ -101,7 +101,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         addMember.addParameter(new MethodParameter("member", member));
         library.addMethod(addMember);
 
-        ClassGR libraryGR = new ClassGR(library, new Point(250, 300));
+        ClassGR libraryGR = new ClassGR(library, new Point(250, 400));
         model.addGraphicalElement(libraryGR);
 
         // Create Interface
@@ -116,7 +116,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         getBorrowPeriod.setVisibility(Method.PUBLIC);
         borrowable.addMethod(getBorrowPeriod);
 
-        InterfaceGR borrowableGR = new InterfaceGR(borrowable, new Point(100, 300));
+        InterfaceGR borrowableGR = new InterfaceGR(borrowable, new Point(50, 250));
         model.addGraphicalElement(borrowableGR);
 
         // Create Interface realization (Book implements Borrowable)
@@ -133,7 +133,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         search.addParameter(new MethodParameter("query", DataType.STRING));
         searchable.addMethod(search);
 
-        InterfaceGR searchableGR = new InterfaceGR(searchable, new Point(400, 300));
+        InterfaceGR searchableGR = new InterfaceGR(searchable, new Point(500, 400));
         model.addGraphicalElement(searchableGR);
 
         // Create third Interface that extends Searchable (interface generalization)
@@ -145,7 +145,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         advancedSearch.addParameter(new MethodParameter("filters", DataType.STRING));
         advancedSearchable.addMethod(advancedSearch);
 
-        InterfaceGR advancedSearchableGR = new InterfaceGR(advancedSearchable, new Point(400, 450));
+        InterfaceGR advancedSearchableGR = new InterfaceGR(advancedSearchable, new Point(500, 600));
         model.addGraphicalElement(advancedSearchableGR);
 
         // Create Interface generalization (AdvancedSearchable extends Searchable)
@@ -159,21 +159,54 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
                 libraryImplementsSearchable);
         model.addGraphicalElement(libraryImplementsSearchableGR);
 
-        // Create Association (Member <-> Book through "borrows")
+        // Create Association (Member <-> Book through "borrows") - bidirectional
         Association memberBookAssoc = new Association(member, book);
         memberBookAssoc.setDirection(Association.BIDIRECTIONAL);
         memberBookAssoc.setName("borrows");
+        memberBookAssoc.setLabelDirection(Association.FROM_A_TO_B); // Label points A to B
+        memberBookAssoc.setShowArrow(true); // Show label direction arrow
         memberBookAssoc.getRoleA().setMultiplicity("0..*");
+        memberBookAssoc.getRoleA().setName("borrower");
         memberBookAssoc.getRoleB().setMultiplicity("0..*");
+        memberBookAssoc.getRoleB().setName("borrowedItem");
         AssociationGR memberBookAssocGR = new AssociationGR(memberGR, bookGR, memberBookAssoc);
         model.addGraphicalElement(memberBookAssocGR);
+
+        // Create unidirectional Association (Book -> Member) - one way from A to B
+        Association bookToMemberAssoc = new Association(book, member);
+        bookToMemberAssoc.setDirection(Association.AB); // Direction: A to B
+        bookToMemberAssoc.setName("reservedBy");
+        bookToMemberAssoc.setLabelDirection(Association.FROM_A_TO_B); // Label points A to B
+        bookToMemberAssoc.setShowArrow(true); // Show label direction arrow
+        bookToMemberAssoc.getRoleA().setMultiplicity("0..*");
+        bookToMemberAssoc.getRoleA().setName("reserved");
+        bookToMemberAssoc.getRoleB().setMultiplicity("0..1");
+        bookToMemberAssoc.getRoleB().setName("reserver");
+        AssociationGR bookToMemberAssocGR = new AssociationGR(bookGR, memberGR, bookToMemberAssoc);
+        model.addGraphicalElement(bookToMemberAssocGR);
+
+        // Create unidirectional Association (Library -> Library) - self-association
+        Association librarySelfAssoc = new Association(library, library);
+        librarySelfAssoc.setDirection(Association.BA); // Direction: B to A
+        librarySelfAssoc.setName("parentOf");
+        librarySelfAssoc.setLabelDirection(Association.FROM_B_TO_A); // Label points B to A
+        librarySelfAssoc.setShowArrow(true); // Show label direction arrow
+        librarySelfAssoc.getRoleA().setMultiplicity("0..1");
+        librarySelfAssoc.getRoleA().setName("parent");
+        librarySelfAssoc.getRoleB().setMultiplicity("0..*");
+        librarySelfAssoc.getRoleB().setName("branches");
+        AssociationGR librarySelfAssocGR = new AssociationGR(libraryGR, libraryGR, librarySelfAssoc);
+        model.addGraphicalElement(librarySelfAssocGR);
 
         // Create Aggregation (Library <>- Book)
         Aggregation libraryBookAggr = new Aggregation(library, book, false);
         libraryBookAggr.setDirection(Association.BIDIRECTIONAL);
         libraryBookAggr.setName("contains");
+        libraryBookAggr.setLabelDirection(Association.FROM_A_TO_B);
         libraryBookAggr.getRoleA().setMultiplicity("1");
+        libraryBookAggr.getRoleA().setName("container");
         libraryBookAggr.getRoleB().setMultiplicity("0..*");
+        libraryBookAggr.getRoleB().setName("items");
         AggregationGR libraryBookAggrGR = new AggregationGR(libraryGR, bookGR, libraryBookAggr);
         model.addGraphicalElement(libraryBookAggrGR);
 
@@ -181,8 +214,11 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         Aggregation libraryMemberComp = new Aggregation(library, member, true);
         libraryMemberComp.setDirection(Association.BIDIRECTIONAL);
         libraryMemberComp.setName("has");
+        libraryMemberComp.setLabelDirection(Association.FROM_B_TO_A);
         libraryMemberComp.getRoleA().setMultiplicity("1");
+        libraryMemberComp.getRoleA().setName("owner");
         libraryMemberComp.getRoleB().setMultiplicity("0..*");
+        libraryMemberComp.getRoleB().setName("members");
         AggregationGR libraryMemberCompGR = new AggregationGR(libraryGR, memberGR, libraryMemberComp);
         model.addGraphicalElement(libraryMemberCompGR);
 
@@ -200,7 +236,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         getDiscount.setVisibility(Method.PUBLIC);
         premiumMember.addMethod(getDiscount);
 
-        ClassGR premiumMemberGR = new ClassGR(premiumMember, new Point(550, 100));
+        ClassGR premiumMemberGR = new ClassGR(premiumMember, new Point(750, 50));
         model.addGraphicalElement(premiumMemberGR);
 
         // Create Generalization (PremiumMember extends Member)
@@ -213,7 +249,9 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         loan.setName("Loan");
         loan.setDirection(Association.BIDIRECTIONAL);
         loan.getRoleA().setMultiplicity("1");
+        loan.getRoleA().setName("borrower");
         loan.getRoleB().setMultiplicity("1..*");
+        loan.getRoleB().setName("loanedBooks");
         loan.addAttribute(new Attribute("loanDate", DataType.STRING));
         loan.addAttribute(new Attribute("dueDate", DataType.STRING));
         loan.addAttribute(new Attribute("returned", DataType.BOOLEAN));
@@ -228,7 +266,7 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
 
         // Create Note
         UMLNoteGR noteGR = new UMLNoteGR("Design follows Repository and Service patterns", libraryGR,
-                new Point(50, 50));
+                new Point(50, 550));
         model.addGraphicalElement(noteGR);
 
         // ============================================================
@@ -236,10 +274,6 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         // ============================================================
         assertEquals("Should have 1 diagram before save", 1, project.getDiagramModels().size());
         saveProject();
-
-        // Clear the project before loading to simulate a fresh load
-        project.clear();
-        assertEquals("Should have 0 diagrams after clear", 0, project.getDiagramModels().size());
 
         // ============================================================
         // 3. LOAD - Deserialize from XML file
@@ -259,12 +293,10 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         assertNotNull("Elements list should not be null", elements);
 
         // Count elements by type
-        // 4 classes + 3 interfaces + 4 associations/aggregations + 1 association class + 
-        // 2 realizations (interface implementations) + 2 generalizations (1 class + 1 interface inheritance) +
-        // 1 dependency + 1 note = 18 elements total
-        // BUT: The association class links contain the association itself, so we don't count it separately
-        // Final count: 4 + 3 + 3 + 1 + 2 + 2 + 1 + 1 = 17 elements
-        assertEquals("Should have 17 graphical elements", 17, elements.size());
+        // 4 classes + 3 interfaces + 3 associations (1 bidirectional + 1 unidirectional + 1 self) + 
+        // 2 aggregations + 1 association class + 2 realizations + 2 generalizations + 
+        // 1 dependency + 1 note = 19 elements total
+        assertEquals("Should have 19 graphical elements", 19, elements.size());
 
         // Verify Classes
         long classCount = countElementsByType(elements, ClassGR.class);
@@ -272,8 +304,8 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
 
         ClassGR loadedBook = findClassByName(elements, "Book");
         assertNotNull("Book class should exist", loadedBook);
-        assertEquals("Book x position", 100, loadedBook.getX());
-        assertEquals("Book y position", 100, loadedBook.getY());
+        assertEquals("Book x position", 50, loadedBook.getX());
+        assertEquals("Book y position", 50, loadedBook.getY());
         DesignClass loadedBookClass = loadedBook.getDesignClass();
         assertEquals("Book should have 3 attributes", 3, loadedBookClass.getAttributes().size());
         assertEquals("Book should have 2 methods", 2, loadedBookClass.getMethods().size());
@@ -307,11 +339,17 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
                 loadedAdvancedSearchable.getInterface().getMethods().size());
 
         // Verify Links (associations, aggregations, dependencies, generalizations, realizations)
-        // Links: 1 association + 2 aggregations + 1 dependency + 2 generalizations + 2 realizations + 1 association class = 9 links
+        // Links: 3 associations + 2 aggregations + 1 dependency + 2 generalizations + 
+        // 2 realizations + 1 association class = 11 links total
         long linkCount = countElementsByType(elements, LinkGR.class);
-        assertEquals("Should have 9 links total", 9, linkCount);
+        assertEquals("Should have 11 links total", 11, linkCount);
 
         // Verify specific link types
+        // Note: AggregationGR extends AssociationGR, so we need to filter carefully
+        long associationCount = elements.stream()
+                .filter(e -> e.getClass() == AssociationGR.class) // Exact class match, not subclasses
+                .count();
+        assertEquals("Should have 3 associations (including self-association)", 3, associationCount);
         long dependencyCount = countElementsByType(elements, DependencyGR.class);
         assertEquals("Should have 1 dependency", 1, dependencyCount);
 
@@ -332,6 +370,93 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         assertEquals("Loan should have name", "Loan", loanClass.getName());
         assertEquals("Loan should have 3 attributes", 3, loanClass.getAttributes().size());
         assertEquals("Loan should have 1 method", 1, loanClass.getMethods().size());
+        assertEquals("Loan roleA should be 'borrower'", "borrower", loanClass.getRoleA().getName());
+        assertEquals("Loan roleB should be 'loanedBooks'", "loanedBooks", loanClass.getRoleB().getName());
+
+        // Verify specific associations with roles and directions
+        // Note: AggregationGR extends AssociationGR, so filter for exact class
+        List<AssociationGR> associations = elements.stream()
+                .filter(e -> e.getClass() == AssociationGR.class) // Exact class match
+                .map(e -> (AssociationGR) e)
+                .collect(java.util.stream.Collectors.toList());
+        assertEquals("Should have 3 associations", 3, associations.size());
+
+        // Find bidirectional Member-Book association with role names
+        AssociationGR borrowsAssoc = associations.stream()
+                .filter(a -> "borrows".equals(a.getAssociation().getName()))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("Borrows association should exist", borrowsAssoc);
+        assertEquals("Borrows should be bidirectional", Association.BIDIRECTIONAL,
+                borrowsAssoc.getAssociation().getDirection());
+        assertEquals("Borrows label direction should be FROM_A_TO_B", Association.FROM_A_TO_B,
+                borrowsAssoc.getAssociation().getLabelDirection());
+        assertTrue("Borrows should show label arrow", borrowsAssoc.getAssociation().getShowArrow());
+        assertEquals("Borrows roleA should be 'borrower'", "borrower",
+                borrowsAssoc.getAssociation().getRoleA().getName());
+        assertEquals("Borrows roleB should be 'borrowedItem'", "borrowedItem",
+                borrowsAssoc.getAssociation().getRoleB().getName());
+
+        // Find unidirectional Book->Member association
+        AssociationGR reservedByAssoc = associations.stream()
+                .filter(a -> "reservedBy".equals(a.getAssociation().getName()))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("ReservedBy association should exist", reservedByAssoc);
+        assertEquals("ReservedBy should be unidirectional AB (A to B)", Association.AB,
+                reservedByAssoc.getAssociation().getDirection());
+        assertEquals("ReservedBy label direction should be FROM_A_TO_B", Association.FROM_A_TO_B,
+                reservedByAssoc.getAssociation().getLabelDirection());
+        assertTrue("ReservedBy should show label arrow", reservedByAssoc.getAssociation().getShowArrow());
+        assertEquals("ReservedBy roleA should be 'reserved'", "reserved",
+                reservedByAssoc.getAssociation().getRoleA().getName());
+        assertEquals("ReservedBy roleB should be 'reserver'", "reserver",
+                reservedByAssoc.getAssociation().getRoleB().getName());
+
+        // Find self-association Library->Library
+        AssociationGR parentOfAssoc = associations.stream()
+                .filter(a -> "parentOf".equals(a.getAssociation().getName()))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("ParentOf self-association should exist", parentOfAssoc);
+        assertEquals("ParentOf should be unidirectional BA (B to A)", Association.BA,
+                parentOfAssoc.getAssociation().getDirection());
+        assertEquals("ParentOf label direction should be FROM_B_TO_A", Association.FROM_B_TO_A,
+                parentOfAssoc.getAssociation().getLabelDirection());
+        assertTrue("ParentOf should show label arrow", parentOfAssoc.getAssociation().getShowArrow());
+        assertTrue("ParentOf should be a self-association (reflective)",
+                parentOfAssoc.getAssociation().isReflective());
+        assertEquals("ParentOf roleA should be 'parent'", "parent",
+                parentOfAssoc.getAssociation().getRoleA().getName());
+        assertEquals("ParentOf roleB should be 'branches'", "branches",
+                parentOfAssoc.getAssociation().getRoleB().getName());
+
+        // Verify aggregations also have role names
+        List<AggregationGR> aggregations = elements.stream()
+                .filter(e -> e instanceof AggregationGR)
+                .map(e -> (AggregationGR) e)
+                .collect(java.util.stream.Collectors.toList());
+        assertEquals("Should have 2 aggregations", 2, aggregations.size());
+
+        AggregationGR containsAggr = aggregations.stream()
+                .filter(a -> "contains".equals(a.getAggregation().getName()))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("Contains aggregation should exist", containsAggr);
+        assertEquals("Contains roleA should be 'container'", "container",
+                containsAggr.getAggregation().getRoleA().getName());
+        assertEquals("Contains roleB should be 'items'", "items",
+                containsAggr.getAggregation().getRoleB().getName());
+
+        AggregationGR hasComp = aggregations.stream()
+                .filter(a -> "has".equals(a.getAggregation().getName()))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("Has composition should exist", hasComp);
+        assertEquals("Has roleA should be 'owner'", "owner",
+                hasComp.getAggregation().getRoleA().getName());
+        assertEquals("Has roleB should be 'members'", "members",
+                hasComp.getAggregation().getRoleB().getName());
 
         // Verify Note
         long noteCount = countElementsByType(elements, UMLNoteGR.class);

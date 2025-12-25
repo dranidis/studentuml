@@ -132,10 +132,6 @@ public class UCDSaveLoadTest extends SaveLoadTestBase {
         assertEquals("Should have 1 diagram before save", 1, project.getDiagramModels().size());
         saveProject();
 
-        // Clear the project before loading to simulate a fresh load
-        project.clear();
-        assertEquals("Should have 0 diagrams after clear", 0, project.getDiagramModels().size());
-
         // ============================================================
         // 3. LOAD - Deserialize from XML file
         // ============================================================

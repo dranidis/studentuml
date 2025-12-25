@@ -21,7 +21,7 @@ public class SSDSaveLoadTest extends SaveLoadTestBase {
     @Test
     public void testSSDSaveLoad() throws Exception {
         // ============================================================
-        // 1. CREATE - Build SSD with actors and system
+        //  CREATE - Build SSD with actors and system
         // ============================================================
         SSDModel model = new SSDModel("Library System SSD", project);
 
@@ -71,23 +71,17 @@ public class SSDSaveLoadTest extends SaveLoadTestBase {
         model.addGraphicalElement(noteGR);
 
         // ============================================================
-        // 2. SAVE - Persist diagram to XML
+        //  SAVE - Persist diagram to XML
         // ============================================================
         saveProject();
 
         // ============================================================
-        // 3. CLEAR - Reset everything
-        // ============================================================
-        project.clear();
-        project.getCentralRepository().clear();
-
-        // ============================================================
-        // 4. LOAD - Restore from XML
+        //  LOAD - Restore from XML
         // ============================================================
         loadProject();
 
         // ============================================================
-        // 5. VERIFY - Check all elements were restored correctly
+        //  VERIFY - Check all elements were restored correctly
         // ============================================================
 
         // Verify diagram exists

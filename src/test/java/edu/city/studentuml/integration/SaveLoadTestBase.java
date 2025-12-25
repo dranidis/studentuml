@@ -88,6 +88,12 @@ public abstract class SaveLoadTestBase {
      * @throws NotStreamable
      */
     protected UMLProject loadProject() throws IOException, NotStreamable {
+        // Clear the project before loading to simulate a fresh load
+        project.clear();
+        project.getCentralRepository().clear();
+
+        assertEquals("Should have 0 diagrams after clear", 0, project.getDiagramModels().size());
+
         UMLProject loadedProject = UMLProject.getInstance();
         loadedProject.clear();
 
