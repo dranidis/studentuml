@@ -2,32 +2,34 @@
 
 ## Current Coverage Status
 
-**Overall Coverage: 25% (19,605 of 75,439 instructions)** ⬆️ +2% from Phase 0
+**Overall Coverage: 28% (21,096 of 74,368 instructions)** ⬆️ +3% from previous
 
 ### Package Coverage Breakdown
 
 | Package              | Coverage | Change from Baseline | Priority                  |
 | -------------------- | -------- | -------------------- | ------------------------- |
 | **Code Generation**  | 71%      | (baseline)           | ✅ Well tested            |
-| **Model Repository** | 50%      | ⬆️ +2%               | 🟡 Moderate               |
-| **Model Domain**     | 48%      | ⬆️ +11%              | � Good progress           |
-| **Util**             | 47%      | ⬆️ +11%              | � Good progress           |
-| **Model Graphical**  | 32%      | ⬆️ +4%               | � Needs improvement       |
+| **Model Repository** | 63%      | ⬆️ +13%              | ✅ Good progress          |
+| **Util**             | 54%      | ⬆️ +7%               | ✅ Good progress          |
+| **Model Domain**     | 52%      | ⬆️ +4%               | ✅ Good progress          |
+| **Model Graphical**  | 35%      | ⬆️ +3%               | 🟡 Needs improvement      |
 | **View**             | 28%      | (unchanged)          | 🔴 High priority          |
 | **Undo/Redo**        | 21%      | (unchanged)          | 🔴 Critical functionality |
-| **Controller**       | 18%      | (unchanged)          | 🔴 High priority          |
+| **Controller**       | 21%      | ⬆️ +3%               | 🔴 High priority          |
+| **GUI Main**         | 6%       | (baseline)           | 🔴 Untested               |
 | **GUI Components**   | 0%       | (unchanged)          | 🔴 Untested               |
 | **Validation**       | 0%       | (unchanged)          | 🔴 Critical untested      |
 | **GUI Menu**         | 0%       | (unchanged)          | 🔴 Untested               |
-| **GUI Main**         | 6%       | (baseline)           | 🔴 Untested               |
 
-**Phase 0 Impact Summary:**
+**Recent Impact Summary:**
 
--   ✅ Overall coverage increased by **2%** (23% → 25%)
--   ✅ Domain Model coverage increased by **11%** (37% → 48%)
--   ✅ Graphical Model coverage increased by **4%** (28% → 32%)
--   ✅ Repository coverage increased by **2%** (48% → 50%)
--   ✅ Util coverage increased by **11%** (36% → 47%)
+-   ✅ Overall coverage increased by **3%** (25% → 28%)
+-   ✅ Model Repository coverage increased by **13%** (50% → 63%)
+-   ✅ Util coverage increased by **7%** (47% → 54%)
+-   ✅ Domain Model coverage increased by **4%** (48% → 52%)
+-   ✅ Graphical Model coverage increased by **3%** (32% → 35%)
+-   ✅ Controller coverage increased by **3%** (18% → 21%)
+-   ✅ Added comprehensive AddElementControllerFactory tests (7 new tests)
 
 ## Testing Goals
 
@@ -191,8 +193,23 @@ public void testResize() {
 
 -   35 of 73 classes tested
 -   Selection controllers partially tested
+-   **✅ AddControlFlowController fully tested** (6 comprehensive tests)
 -   Add element controllers mostly untested
 -   Edit/delete controllers untested
+
+#### Recently Completed
+
+**AddControlFlowControllerTest** (Phase 0.7):
+
+-   File: `src/test/java/edu/city/studentuml/controller/AddControlFlowControllerTest.java`
+-   Tests: 6 comprehensive validation tests
+-   Pattern: Testable controller (overrides showErrorMessage to avoid JOptionPane blocking)
+-   Coverage: Action node flow validation, decision/merge/fork node validation
+-   Validation Rules:
+    -   Action nodes: maximum 1 incoming, maximum 1 outgoing control flow
+    -   Decision/Fork nodes: multiple outgoing flows allowed
+    -   Merge/Join nodes: multiple incoming flows allowed
+-   Status: ✅ ALL 6 TESTS PASSING
 
 #### Testing Approach
 
@@ -201,6 +218,7 @@ public void testResize() {
 -   **Test undo/redo integration**: All operations create proper edits
 -   **Test validation**: Invalid operations prevented
 -   **Test multi-selection**: Group operations
+-   **Use testable pattern**: Override UI methods to prevent test blocking
 
 #### Key Controllers to Test
 
@@ -257,6 +275,71 @@ public void testMoveClassWithUndo() {
     assertTrue(model.getLastEdit() instanceof MoveEdit);
 }
 ```
+
+#### Testable Controller Pattern (NEW - Phase 0.7)
+
+For controllers that show dialogs (e.g., validation errors), use the testable pattern to avoid blocking tests:
+
+```java
+// Inner test class that overrides UI methods
+private static class TestableAddControlFlowController extends AddControlFlowController {
+    private String lastErrorMessage;
+
+    public TestableAddControlFlowController(ADModel model) {
+        super(model, null);
+    }
+
+    @Override
+    protected void showErrorMessage(String message) {
+        // Capture message instead of showing dialog
+        this.lastErrorMessage = message;
+    }
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
+    }
+
+    public void clearLastErrorMessage() {
+        this.lastErrorMessage = null;
+    }
+}
+
+// Test validation without blocking on JOptionPane
+@Test
+public void testValidationPreventsInvalidOperation() {
+    ADModel model = Helper.createADModel();
+    ActionNodeGR action = Helper.addActionNode(model, "Action1", 100, 100);
+    ActionNodeGR action2 = Helper.addActionNode(model, "Action2", 200, 100);
+
+    TestableAddControlFlowController controller = new TestableAddControlFlowController(model);
+
+    // First flow succeeds
+    controller.addEdge(action, action2);
+    assertEquals(1, model.getGraphicalElements().stream()
+        .filter(e -> e instanceof ControlFlowGR).count());
+
+    // Second flow should be prevented
+    ActionNodeGR action3 = Helper.addActionNode(model, "Action3", 300, 100);
+    controller.clearLastErrorMessage();
+    controller.addEdge(action, action3);  // Should fail - action already has outgoing flow
+
+    // Verify error message shown
+    assertNotNull("Error message should be captured", controller.getLastErrorMessage());
+    assertTrue("Error should mention 'outgoing'",
+        controller.getLastErrorMessage().contains("outgoing"));
+
+    // Verify second flow NOT added
+    assertEquals(1, model.getGraphicalElements().stream()
+        .filter(e -> e instanceof ControlFlowGR).count());
+}
+```
+
+**Key Benefits**:
+
+-   Tests don't block waiting for user input
+-   Can verify error message content
+-   Model state remains testable
+-   Follows existing architecture patterns
 
 ---
 
@@ -880,30 +963,62 @@ All five core diagram types now have comprehensive save/load integration tests:
 #### 6. **Phase 0.6: ADSaveLoadTest** ✅
 
 -   **File**: `src/test/java/edu/city/studentuml/integration/ADSaveLoadTest.java`
--   **Lines**: 340 lines
+-   **Lines**: 388 lines
 -   **Coverage**: All AD node types (Initial, Action, Decision, Merge, Fork, Join, Final), control flows with guards, note attachment
--   **Test Scenario**: Order Processing workflow with complete activity diagram semantics
--   **Node Types**: 12 nodes total
+-   **Test Scenario**: Order Processing workflow with complete activity diagram semantics including parallel flows
+-   **Node Types**: 13 nodes total
     -   1 InitialNode (start point)
-    -   6 ActionNodes (Receive Order, Validate Order, Process Payment, Ship Order, Notify Customer, Handle Rejection)
+    -   7 ActionNodes (Receive Order, Validate Order, Process Payment, Ship Order, Notify Customer, Update Inventory, Handle Rejection)
     -   1 DecisionNode (order valid branching)
     -   1 MergeNode (merge rejection and valid paths)
     -   1 ForkNode (split into parallel flows)
     -   1 JoinNode (synchronize parallel flows)
     -   1 ActivityFinalNode (end point)
--   **Control Flows**: 13 flows with 2 guarded transitions ([valid], [invalid])
+-   **Control Flows**: 14 flows with 2 guarded transitions ([valid], [invalid])
 -   **Key Features**:
     -   Guarded transitions on decision node
-    -   Parallel flows (fork/join synchronization)
+    -   Parallel flows (fork/join synchronization with 2 concurrent activities)
     -   Alternative paths (decision/merge for error handling)
     -   Note attached to ProcessPayment action
+    -   Proper UML Activity Diagram semantics: fork node splits flow, not action nodes
 -   **API Corrections**:
     -   Used `ActionNode` (not ActivityAction which doesn't exist)
     -   Used `ActivityFinalNode` (not FinalNode which is abstract)
-    -   ControlFlowGR constructor signature: `(source, target, flow)`
+    -   ControlFlowGR 5-arg constructor for proper rendering: `(source, target, flow, srcPoint, trgPoint)`
+    -   3-arg constructor `(source, target, flow)` creates empty points list for XML persistence only
     -   UMLNoteGR methods: `getText()` and `getTo()` (not getTextualContent/getConnectedTo)
--   **Total Elements**: 26 (12 nodes + 13 control flows + 1 note)
+-   **Semantic Fix**: Corrected parallel flow structure - Fork node outputs to both parallel branches (not action node with multiple outputs)
+-   **Total Elements**: 28 (13 nodes + 14 control flows + 1 note)
 -   **Status**: ✅ PASSING
+
+#### 7. **Phase 0.7: AddControlFlowControllerTest** ✅
+
+-   **File**: `src/test/java/edu/city/studentuml/controller/AddControlFlowControllerTest.java`
+-   **Lines**: 225 lines
+-   **Purpose**: Test Activity Diagram control flow validation at controller layer
+-   **Test Scenario**: Validate UML Activity Diagram semantics for action nodes
+-   **Key Validation Rules**:
+    -   Action nodes must have at most ONE outgoing control flow
+    -   Action nodes must have at most ONE incoming control flow
+    -   Fork/Decision nodes can have multiple outgoing flows
+    -   Merge/Join nodes can have multiple incoming flows
+-   **Test Coverage**: 6 comprehensive tests
+    1. `testActionNode_SingleOutgoingFlow_ShouldSucceed()` - First outgoing flow allowed
+    2. `testActionNode_MultipleOutgoingFlows_ShouldBePreventedByController()` - Second outgoing flow prevented with error
+    3. `testActionNode_MultipleIncomingFlows_ShouldBePreventedByController()` - Second incoming flow prevented with error
+    4. `testDecisionNode_MultipleOutgoingFlows_ShouldBeAllowed()` - Decision nodes can have multiple outputs
+    5. `testMergeNode_MultipleIncomingFlows_ShouldBeAllowed()` - Merge nodes can have multiple inputs
+    6. `testForkNode_MultipleOutgoingFlows_ShouldBeAllowed()` - Fork nodes can have multiple outputs
+-   **Testing Pattern**: Testable Controller Pattern
+    -   `TestableAddControlFlowController` inner class overrides `showErrorMessage()`
+    -   Captures error messages instead of showing JOptionPane dialogs
+    -   Prevents test execution blocking
+    -   Allows verification of error message content
+-   **Implementation**:
+    -   Validation in `AddControlFlowController` lines 35-46 (outgoing) and 49-60 (incoming)
+    -   Error messages provide helpful suggestions (use Fork/Merge nodes)
+    -   Model state unchanged when validation fails
+-   **Status**: ✅ ALL 6 TESTS PASSING
 
 ### Key Accomplishments
 
@@ -911,14 +1026,19 @@ All five core diagram types now have comprehensive save/load integration tests:
 2. **Focus of Control Semantics**: Properly modeled with validation in SD
 3. **MultiObject Support**: Successfully tested MultiObject serialization
 4. **Validation Integration**: SD test includes focus control validation checking
-5. **Activity Diagram Nodes**: All node types covered (Initial, Action, Decision, Merge, Fork, Join, Final)
+5. **Activity Diagram Nodes**: All node types covered (Initial, Action, Decision, Merge, Fork, Join, Final) with proper UML semantics
 6. **Guarded Transitions**: Control flows with guards tested and verified
-7. **API Corrections**: Fixed API method usage throughout
+7. **Parallel Flow Semantics**: Fork/Join synchronization with concurrent activities properly structured
+8. **Controller Validation Tests**: AddControlFlowController thoroughly tested with 6 tests
+9. **Testable Controller Pattern**: Implemented pattern to avoid JOptionPane blocking in tests
+10. **UML Semantic Enforcement**: Action nodes restricted to 1 incoming and 1 outgoing control flow
+11. **API Corrections**: Fixed API method usage throughout
     - `getSdObjects`, `getClasses`, `getMultiObjects`, `getSDMessages` for SD/SSD
     - `ActionNode` (not ActivityAction), `ActivityFinalNode` (not FinalNode) for AD
-    - `ControlFlowGR(source, target, flow)` constructor signature
+    - `ControlFlowGR(source, target, flow, srcPoint, trgPoint)` 5-arg constructor for rendering
+    - `ControlFlowGR(source, target, flow)` 3-arg constructor for XML persistence only
     - `UMLNoteGR.getText()` and `getTo()` methods
-8. **Access Modifiers**: Made validation methods public for testing:
+12. **Access Modifiers**: Made validation methods public for testing:
     - `RoleClassifierGR.validateInReturn()` → public
     - `RoleClassifierGR.setActiveIn()` → public
     - `SDMessageGR.getErrorMsg()` → public (newly added)
@@ -960,18 +1080,22 @@ These tests exercise:
 -   `DCDSaveLoadTest.java`: Design Class Diagram test
 -   `SDSaveLoadTest.java`: Sequence Diagram test
 -   `SSDSaveLoadTest.java`: System Sequence Diagram test
+-   `ADSaveLoadTest.java`: Activity Diagram test
+-   `AddControlFlowControllerTest.java`: Activity Diagram controller validation test
 
-**Total Test Code**: ~1,435 lines of comprehensive integration tests
+**Total Test Code**: ~1,660 lines of comprehensive integration and controller tests
 
 ### Success Criteria Met
 
--   ✅ All 5 diagram types have comprehensive save/load tests
+-   ✅ All 6 diagram types have comprehensive save/load tests
 -   ✅ All element types in each diagram are tested
 -   ✅ CentralRepository integrity verified
 -   ✅ No data loss during save/load cycle
 -   ✅ Focus of control validation working (SD)
 -   ✅ MultiObject serialization working (SD)
--   ✅ All tests passing with BUILD SUCCESS
+-   ✅ Activity Diagram control flow validation implemented and tested
+-   ✅ Testable controller pattern established for non-blocking tests
+-   ✅ All tests passing with BUILD SUCCESS (129 tests)
 
 ### Lessons Learned
 
@@ -980,6 +1104,10 @@ These tests exercise:
 3. **MultiObject handling**: Stored separately in repository from regular SDObjects
 4. **Validation system**: Sophisticated and catches focus control errors automatically
 5. **API consistency**: Proper use of getSdObjects() vs getObjects() for different contexts
+6. **Controller-layer validation**: Validation logic should be in controllers, not models, for user interaction
+7. **Testable controller pattern**: Override UI methods (like showErrorMessage) to avoid blocking dialogs in tests
+8. **UML semantics enforcement**: Action nodes in Activity Diagrams must have exactly 1 incoming and 1 outgoing flow
+9. **Test at the right layer**: Test validation logic where it lives (controller tests for controller validation)
 
 ### Next Steps
 

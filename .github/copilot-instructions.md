@@ -1,13 +1,3 @@
-# Editor File Opening Guidelines
-
-When a file is being opened in the editor:
-
--   All linting errors should be removed.
--   All usages of `Iterator` should be refactored to enhanced for-loops or other modern constructs, if possible.
--   The code should be checked for other cases where it can be simplified without changing the logic.
-
-These steps ensure that code is clean, modern, and easy to maintain whenever it is actively edited.
-
 # StudentUML AI Coding Agent Instructions
 
 ## Project Overview

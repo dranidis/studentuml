@@ -475,6 +475,8 @@ public class AddElementControllerFactory {
 
                     if (baseClass instanceof AbstractClassGR && superClass instanceof InterfaceGR
                             || superClass instanceof AbstractClassGR && baseClass instanceof InterfaceGR) {
+                        showErrorMessage(frame,
+                                "Interfaces and Classes cannot participate in Generalizations with each other!");
                         return null;
                     }
                     if (baseClass instanceof UCDComponentGR && superClass instanceof UCDComponentGR) {
@@ -608,7 +610,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     DestroyMessage message = new DestroyMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier());
-                    return new DestroyMessageGR(roleA, roleB, message, y);                    
+                    return new DestroyMessageGR(roleA, roleB, message, y);
                 }
 
             };
@@ -625,10 +627,11 @@ public class AddElementControllerFactory {
 
     protected boolean relationshipExists(DiagramModel model, ClassifierGR baseClass, ClassifierGR superClass) {
 
-         Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
+        Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
                 r -> r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
                         || r.getBaseClass() == superClass.getClassifier()
-                                && r.getSuperClass() == baseClass.getClassifier()).findFirst();
+                                && r.getSuperClass() == baseClass.getClassifier())
+                .findFirst();
 
         Optional<Realization> aRealization = model.getCentralRepository().getRealizations().stream().filter(
                 r -> r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier()
@@ -645,7 +648,7 @@ public class AddElementControllerFactory {
                 }
             }
             if (aGeneralization.isPresent()) {
-                 Generalization generalization = aGeneralization.get();
+                Generalization generalization = aGeneralization.get();
                 // it is the same relationship; allow
                 if (generalization.getBaseClass() == baseClass.getClassifier()) {
                     return false;

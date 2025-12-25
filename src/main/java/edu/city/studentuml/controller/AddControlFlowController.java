@@ -6,6 +6,7 @@ import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.Edge;
+import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
@@ -27,6 +28,32 @@ public class AddControlFlowController extends AddEdgeController {
     }
 
     protected void addFlow(NodeComponentGR src, NodeComponentGR trg, Point srcPoint, Point trgPoint) {
+
+        // UML Semantic validation: Action nodes should have at most one outgoing flow
+        if (src instanceof ActionNodeGR) {
+            int outgoingCount = src.getComponent().getNumberOfOutgoingEdges();
+            if (outgoingCount >= 1) {
+                showErrorMessage("Action node '" + src.getComponent().getName() +
+                        "' already has " + outgoingCount +
+                        " outgoing control flow(s).\n\n" +
+                        "Use a Fork node if you need parallel flows.");
+                setSelectionMode();
+                return;
+            }
+        }
+
+        // UML Semantic validation: Action nodes should have at most one incoming flow
+        if (trg instanceof ActionNodeGR) {
+            int incomingCount = trg.getComponent().getNumberOfIncomingEdges();
+            if (incomingCount >= 1) {
+                showErrorMessage("Action node '" + trg.getComponent().getName() +
+                        "' already has " + incomingCount +
+                        " incoming control flow(s).\n\n" +
+                        "Use a Merge node if you need to merge multiple flows.");
+                setSelectionMode();
+                return;
+            }
+        }
 
         if (src instanceof ObjectNodeGR || trg instanceof ObjectNodeGR) {
             // cannot have ObjectNode at either end
