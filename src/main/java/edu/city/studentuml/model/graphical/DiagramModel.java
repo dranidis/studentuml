@@ -278,7 +278,7 @@ public abstract class DiagramModel implements Serializable, IXMLCustomStreamable
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        logger.info(() -> "PropertyChangeListener added: " + l.toString());
+        logger.fine(() -> "PropertyChangeListener added: " + l.toString());
         pcs.addPropertyChangeListener(l);
     }
 

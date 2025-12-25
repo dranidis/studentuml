@@ -34,19 +34,19 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCreation() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
         assertNotNull(selectionController);
     }
 
-    @Test 
+    @Test
     public void testDeleteActorWithRelationshipToUC() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
 
         UCActorGR a = h.addActor("A");
         UseCaseGR u = h.addUseCase("U");
         h.addUcAssociation(a, u);
         assertEquals(3, model.getGraphicalElements().size());
-        
+
         selectionController.addElementToSelection(a);
 
         // System.out.println("DELETE");
@@ -57,16 +57,16 @@ public class UCDSelectionControllerTest {
 
         // System.out.println("UNDO");
         internalFrame.getUndoManager().undo();
-        
+
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(3, model.getGraphicalElements().size());
     }
 
     @Test
     public void testDeleteSystemWithUseCase() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
 
-        SystemGR s = h.addSystem("System");  
+        SystemGR s = h.addSystem("System");
         UseCaseGR uc = new UseCaseGR(new UseCase("U"), 0, 0);
         s.add(uc);
         // if this is not acced, it does not terminate
@@ -74,8 +74,8 @@ public class UCDSelectionControllerTest {
 
         model.getGraphicalElements().forEach(e -> System.out.println(e));
         // System.out.println(s.getNumberOfElements());
-        
-        s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
+
+        // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         selectionController.addElementToSelection(s);
 
@@ -86,21 +86,21 @@ public class UCDSelectionControllerTest {
         internalFrame.getUndoManager().undo();
 
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
-        System.out.println(s.getNumberOfElements());
+        // System.out.println(s.getNumberOfElements());
 
         // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((SystemGR) model.getGraphicalElements().get(0)).getNumberOfElements());
-             
+
     }
 
     @Test
     public void testDeleteSystemWithinSystem() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
 
-        SystemGR s1 = h.addSystem("System1");  
-        SystemGR s2 = h.addSystem("System2");  
+        SystemGR s1 = h.addSystem("System1");
+        SystemGR s2 = h.addSystem("System2");
 
         model.removeGraphicalElement(s2);
         s1.add(s2);
@@ -120,16 +120,16 @@ public class UCDSelectionControllerTest {
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, s1.getNumberOfElements());
-             
+
     }
 
     @Test
     public void testDeleteSystemWithinSystemWithinSystem() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
 
-        SystemGR s1 = h.addSystem("System1");  
-        SystemGR s2 = h.addSystem("System2");  
-        SystemGR s3 = h.addSystem("System3");  
+        SystemGR s1 = h.addSystem("System1");
+        SystemGR s2 = h.addSystem("System2");
+        SystemGR s3 = h.addSystem("System3");
 
         model.removeGraphicalElement(s2);
         s1.add(s2);
@@ -153,7 +153,7 @@ public class UCDSelectionControllerTest {
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, s1.getNumberOfElements());
         assertEquals(0, s2.getNumberOfElements());
-             
+
     }
 
     @Test
@@ -164,7 +164,7 @@ public class UCDSelectionControllerTest {
         SystemGR system = h.addSystem("System");
         UseCaseGR uc1 = h.addUseCase("UseCase1");
         UseCaseGR uc2 = h.addUseCase("UseCase2");
-        
+
         // Move use cases inside system
         model.removeGraphicalElement(uc1);
         model.removeGraphicalElement(uc2);
@@ -172,20 +172,20 @@ public class UCDSelectionControllerTest {
         uc1.setContext(system);
         system.add(uc2);
         uc2.setContext(system);
-        
+
         assertEquals(1, model.getGraphicalElements().size()); // Just the system
         assertEquals(2, system.getNumberOfElements()); // 2 use cases inside
-        
+
         // Select only the system (not individual use cases)
         selectionController.addElementToSelection(system);
-        
+
         // Copy and paste
         selectionController.copySelected();
         selectionController.pasteClipboard();
-        
+
         // Should now have 2 systems, each with 2 use cases
         assertEquals(2, model.getGraphicalElements().size());
-        
+
         // Find the pasted system (should be the second one)
         SystemGR pastedSystem = null;
         for (int i = 0; i < model.getGraphicalElements().size(); i++) {
@@ -193,10 +193,10 @@ public class UCDSelectionControllerTest {
                 pastedSystem = (SystemGR) model.getGraphicalElements().get(i);
             }
         }
-        
+
         assertNotNull("Pasted system should exist", pastedSystem);
         assertEquals("Pasted system should have 2 use cases", 2, pastedSystem.getNumberOfElements());
-        
+
         // Verify the use cases are properly connected to the pasted system
         final SystemGR finalPastedSystem = pastedSystem;
         pastedSystem.createIterator().forEachRemaining(child -> {
@@ -212,7 +212,7 @@ public class UCDSelectionControllerTest {
         SystemGR system = h.addSystem("System");
         UseCaseGR uc1 = h.addUseCase("UseCase1");
         UseCaseGR uc2 = h.addUseCase("UseCase2");
-        
+
         // Move use cases inside system
         model.removeGraphicalElement(uc1);
         model.removeGraphicalElement(uc2);
@@ -220,25 +220,24 @@ public class UCDSelectionControllerTest {
         uc1.setContext(system);
         system.add(uc2);
         uc2.setContext(system);
-        
+
         int initialCount = model.getGraphicalElements().size();
         assertEquals(1, initialCount); // Just the system
-        
+
         // Select and paste the system
         selectionController.addElementToSelection(system);
         selectionController.copySelected();
         selectionController.pasteClipboard();
-        
+
         // Should now have 2 systems
         assertEquals(2, model.getGraphicalElements().size());
-        
+
         // Single undo should remove all pasted elements (1 system + 2 use cases)
         internalFrame.getUndoManager().undo();
-        
+
         // Should be back to original state with single undo
-        assertEquals("Single undo should remove entire paste operation", 
-                     initialCount, model.getGraphicalElements().size());
+        assertEquals("Single undo should remove entire paste operation",
+                initialCount, model.getGraphicalElements().size());
     }
 
 }
-

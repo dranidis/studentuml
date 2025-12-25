@@ -55,7 +55,7 @@ public class SystemWideObjectNamePool {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        logger.info(() -> "PropertyChangeListener added: " + l.toString());
+        logger.fine(() -> "PropertyChangeListener added: " + l.toString());
         pcs.addPropertyChangeListener(l);
     }
 
@@ -207,7 +207,7 @@ public class SystemWideObjectNamePool {
             objectMap.put(o, name);
 
             objectCountChanged();
-            logger.info(
+            logger.finest(
                     () -> "ADDED object :" + o.getClass() + " NAMED: " + name + " toString: " + o.toString());
         } else {
             logger.finest(() -> "ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: "
@@ -253,7 +253,7 @@ public class SystemWideObjectNamePool {
 
         objectMap.put(object, name);
         namedMap.put(name, object);
-        logger.info(() -> "RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name
+        logger.finest(() -> "RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name
                 + " toString: " + object.toString());
     }
 

@@ -166,7 +166,7 @@ public final class ObjectFactory {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        logger.info(() -> "PropertyChangeListener added: " + l.toString());
+        logger.fine(() -> "PropertyChangeListener added: " + l.toString());
         pcs.addPropertyChangeListener(l);
     }
 
@@ -300,7 +300,7 @@ public final class ObjectFactory {
                 .map(l -> l.getClass().getName())
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        logger.info(() -> "Notifying listeners: [" + listenersStr + "]");
+        logger.fine(() -> "Notifying listeners: [" + listenersStr + "]");
         pcs.firePropertyChange("framePropertiesChanged", null, frameProperties);
     }
 

@@ -27,7 +27,6 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
- *
  * @author dimitris
  */
 public class TypedCallMessageTest {
@@ -45,9 +44,9 @@ public class TypedCallMessageTest {
         File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
-                System.out.println("Directory is created!");
+                // System.out.println("Directory is created!");
             } else {
-                System.out.println("Directory cannot be Created!");
+                // System.out.println("Directory cannot be Created!");
             }
         }
         umlProject.setFilepath(fullpath);
@@ -87,7 +86,7 @@ public class TypedCallMessageTest {
             umlProject.loadFromXML(fullpath);
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
 
         boolean found = false;
         Vector<SDMessage> sds = umlProject.getCentralRepository().getSDMessages();
