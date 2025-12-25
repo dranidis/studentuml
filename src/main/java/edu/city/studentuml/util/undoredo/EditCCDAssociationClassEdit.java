@@ -1,19 +1,14 @@
 package edu.city.studentuml.util.undoredo;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
- *
  * @author draganbisercic
  */
 public class EditCCDAssociationClassEdit extends AbstractUndoableEdit {
@@ -56,13 +51,7 @@ public class EditCCDAssociationClassEdit extends AbstractUndoableEdit {
         originalAssociationClass.setRoleB(a.getRoleB().clone());
 
         originalAssociationClass.getAttributes().clear();
-        Attribute attribute;
-        Vector attributes = a.getAttributes();
-        Iterator i = attributes.iterator();
-        while (i.hasNext()) {
-            attribute = (Attribute) i.next();
-            originalAssociationClass.addAttribute(attribute.clone());
-        }
+        a.getAttributes().forEach(attribute -> originalAssociationClass.addAttribute(attribute.clone()));
     }
 
     public boolean canUndo() {

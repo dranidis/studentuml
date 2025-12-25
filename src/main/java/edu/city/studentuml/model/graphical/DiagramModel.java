@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -30,14 +30,15 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
  * Class DiagramModel is a Model component of the MVC architecture It stores the
  * graphical representation of UML concepts that are part of a UML diagram. This
  * class is abstract with known subclasses including SSD/SD/CCD/DCDModel. It
- * extends Observable to notify the views of any changes that occur.
+ * uses PropertyChangeSupport to notify the views of any changes that occur.
  */
 @JsonIncludeProperties({ "name", "internalid", "graphicalElements" })
-public abstract class DiagramModel extends Observable implements Serializable, IXMLCustomStreamable {
+public abstract class DiagramModel implements Serializable, IXMLCustomStreamable {
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private static final long serialVersionUID = 1L;
 
-    private static final  Logger logger = Logger.getLogger(DiagramModel.class.getName());
+    private static final Logger logger = Logger.getLogger(DiagramModel.class.getName());
 
     @JsonProperty("name")
     protected String name;
@@ -87,12 +88,13 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         graphicalElements.add(e);
 
         changeViewSize();
-        
+
         modelChanged();
     }
 
     public void insertGraphicalElementAt(GraphicalElement e, int index) {
-        logger.fine(() -> "Inserting Element e: " + e.toString() + " " + e.getClass().getSimpleName() + " at index: " + index);
+        logger.fine(() -> "Inserting Element e: " + e.toString() + " " + e.getClass().getSimpleName() + " at index: "
+                + index);
         e.objectAdded(e);
         graphicalElements.insertElementAt(e, index);
 
@@ -120,7 +122,6 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         modelChanged();
     }
 
-
     /**
      * This method moves a graphical element in the drawing area, by changing its
      * coordinates. The method is usually triggered by a drag event caused by the
@@ -140,7 +141,6 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
         modelChanged();
     }
-
 
     /**
      * This method moves a graphical element in the drawing area, but in difference
@@ -189,7 +189,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-     */    
+     */
     public NotifierVector<GraphicalElement> getGraphicalElements() {
         return graphicalElements;
     }
@@ -209,11 +209,10 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
     /**
      * Retrieves the graphical element in the diagram that contains a given 2D point
-     * Usually triggered by a select, drag-and-drop, and addition event.
-     * 
-     * Get the first element that contains the point, starting from the end of the
-     * list, i.e. from the most recently drawn grapical element, so that the
-     * uppermost is returned in case elements are overlayed one on top of the other.
+     * Usually triggered by a select, drag-and-drop, and addition event. Get the
+     * first element that contains the point, starting from the end of the list,
+     * i.e. from the most recently drawn grapical element, so that the uppermost is
+     * returned in case elements are overlayed one on top of the other.
      * 
      * @param point
      * @return
@@ -244,7 +243,7 @@ public abstract class DiagramModel extends Observable implements Serializable, I
 
         while (listIterator.hasPrevious()) {
             GraphicalElement element = listIterator.previous();
-            if (element.containedInArea(x, y, toX, toY) ) {
+            if (element.containedInArea(x, y, toX, toY)) {
                 contained.add(element);
             }
         }
@@ -253,7 +252,8 @@ public abstract class DiagramModel extends Observable implements Serializable, I
     }
 
     public List<GraphicalElement> getContainedGraphicalElements(Rectangle2D r) {
-        return getContainedGraphicalElements((int) r.getMinX(), (int) r.getMinY(), (int) r.getMaxX(), (int) r.getMaxY());
+        return getContainedGraphicalElements((int) r.getMinX(), (int) r.getMinY(), (int) r.getMaxX(),
+                (int) r.getMaxY());
     }
 
     // clears the drawing area of a diagram by setting all graphical elements to
@@ -264,7 +264,6 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         }
         graphicalElements.clear();
         graphicalElements = new NotifierVector<>();
-        modelChanged();
     }
 
     public void setName(String name) {
@@ -278,18 +277,21 @@ public abstract class DiagramModel extends Observable implements Serializable, I
         return name;
     }
 
-    @Override
-    public synchronized void addObserver(Observer o) {
-        logger.fine(() -> "OBSERVER added: " + o.toString());
-        super.addObserver(o);
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+        logger.info(() -> "PropertyChangeListener added: " + l.toString());
+        pcs.addPropertyChangeListener(l);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener l) {
+        logger.fine(() -> "PropertyChangeListener removed: " + l.toString());
+        pcs.removePropertyChangeListener(l);
     }
 
     // this custom method is called whenever a change in the diagram occurs to
-    // notify observers
+    // notify listeners
     public void modelChanged() {
-        logger.finest(() -> "Notifying observers: " + this.countObservers());
-        setChanged();
-        notifyObservers();
+        logger.fine(() -> "Notifying listeners");
+        pcs.firePropertyChange("diagramChanged", null, null);
     }
 
     public void setRect(String rect) {

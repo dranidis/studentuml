@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.Iterator;
-
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Association;
@@ -139,10 +137,7 @@ public class CCDSelectionController extends SelectionController {
 
         // add the attributes to the new association class
         NotifierVector<Attribute> attributes = new NotifierVector<>();
-        Iterator<Attribute> attributeIterator = associationClassEditor.getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            attributes.add(attributeIterator.next());
-        }
+        attributes.addAll(associationClassEditor.getAttributes());
         associationClass.setAttributes(attributes);
 
         // Undo/Redo [edit]

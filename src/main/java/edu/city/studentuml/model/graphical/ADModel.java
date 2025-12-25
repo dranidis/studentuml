@@ -1,7 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.geom.Point2D;
-import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
@@ -9,12 +9,11 @@ import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
- *
  * @author Biser
  */
 public class ADModel extends DiagramModel {
 
-    private static final  Logger logger = Logger.getLogger(ADModel.class.getName());
+    private static final Logger logger = Logger.getLogger(ADModel.class.getName());
 
     public ADModel(String title, UMLProject project) {
         super(title, project);
@@ -103,20 +102,22 @@ public class ADModel extends DiagramModel {
         }
 
         // remove all the edges to the node
-        Iterator<EdgeGR> incomingEdges = nodeComponentGR.getIncomingRelations();
-        while (incomingEdges.hasNext()) {
-            EdgeGR edge = incomingEdges.next();
-            removeEdge(edge);
-            // need to update iterator
-            incomingEdges = nodeComponentGR.getIncomingRelations();
+        // Keep removing incoming edges while they exist (removeEdge modifies the collection)
+        while (nodeComponentGR.getNumberOfIncomingEdges() > 0) {
+            List<EdgeGR> incomingEdges = nodeComponentGR.getIncomingRelations();
+            if (!incomingEdges.isEmpty()) {
+                EdgeGR edge = incomingEdges.get(0);
+                removeEdge(edge);
+            }
         }
 
-        Iterator<EdgeGR> outgoingEdges = nodeComponentGR.getOutgoingRelations();
-        while (outgoingEdges.hasNext()) {
-            EdgeGR edge = outgoingEdges.next();
-            removeEdge(edge);
-            // need to update iterator
-            outgoingEdges = nodeComponentGR.getOutgoingRelations();
+        // remove all the edges from the node
+        while (nodeComponentGR.getNumberOfOutgoingEdges() > 0) {
+            List<EdgeGR> outgoingEdges = nodeComponentGR.getOutgoingRelations();
+            if (!outgoingEdges.isEmpty()) {
+                EdgeGR edge = outgoingEdges.get(0);
+                removeEdge(edge);
+            }
         }
 
         // and lastly remove the node
@@ -163,12 +164,7 @@ public class ADModel extends DiagramModel {
      */
     public NodeComponentGR findContext(NodeComponentGR node) {
 
-        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
-        GraphicalElement element = null;
-
-        while (iterator.hasNext()) {
-            element = iterator.next();
-
+        for (GraphicalElement element : graphicalElements) {
             if (element instanceof NodeComponentGR) {
                 NodeComponentGR myNode = (NodeComponentGR) element;
                 if (myNode.contains(node)) {
@@ -191,11 +187,7 @@ public class ADModel extends DiagramModel {
     // Override: needed because of the composite structure
     @Override
     public void clearSelected() {
-        Iterator<GraphicalElement> iterator = graphicalElements.iterator();
-        GraphicalElement element;
-
-        while (iterator.hasNext()) {
-            element = iterator.next();
+        for (GraphicalElement element : graphicalElements) {
             if (element instanceof NodeComponentGR) {
                 NodeComponentGR node = (NodeComponentGR) element;
                 node.clearSelected();
@@ -247,13 +239,11 @@ public class ADModel extends DiagramModel {
     }
 
     private int getFirstEdgeIndex() {
-        int index;
-        for (index = 0; index < graphicalElements.size(); index++) {
-            GraphicalElement el = graphicalElements.get(index);
-            if (el instanceof EdgeGR) {
-                return index;
+        for (int i = 0; i < graphicalElements.size(); i++) {
+            if (graphicalElements.get(i) instanceof EdgeGR) {
+                return i;
             }
         }
-        return index;
+        return graphicalElements.size();
     }
 }

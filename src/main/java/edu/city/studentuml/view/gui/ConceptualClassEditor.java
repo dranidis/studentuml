@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -61,9 +60,8 @@ public class ConceptualClassEditor extends ClassifierEditor {
         ConceptualClass newClass = new ConceptualClass(getClassName());
 
         // add the attributes to the new class
-        Iterator<Attribute> attributeIterator = getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            newClass.addAttribute(attributeIterator.next());
+        for (Attribute attribute : getAttributes()) {
+            newClass.addAttribute(attribute);
         }
         return newClass;
     }

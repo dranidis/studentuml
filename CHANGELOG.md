@@ -4,15 +4,10 @@
 
 ### Added
 
-### Changed
-
-### Fixed
-
-### Deprecated
-
-### Removed
-
-### Security
+-   Integration test infrastructure for save/load operations (`SaveLoadTestBase`)
+-   Comprehensive UCD save/load test with system boundary containment (`UCDSaveLoadTest`)
+-   Automatic XML file preservation in `xml-test-files/` directory for manual inspection
+-   Automatic frame property injection for UI-viewable test XML files
 
 ## [1.4.0] - 2025-12-22
 

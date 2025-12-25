@@ -1,14 +1,11 @@
 package edu.city.studentuml.model.domain;
 
-import java.util.Iterator;
-
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public class ConceptualClass extends AbstractClass {
@@ -23,7 +20,7 @@ public class ConceptualClass extends AbstractClass {
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         clear();
-            streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {
@@ -36,12 +33,8 @@ public class ConceptualClass extends AbstractClass {
     public ConceptualClass clone() {
         ConceptualClass copyClass = new ConceptualClass(this.getName());
 
-        Iterator<Attribute> attributeIterator = attributes.iterator();
-        while (attributeIterator.hasNext()) {
-            Attribute attribute = attributeIterator.next();
-            copyClass.addAttribute(attribute.clone());
-        }
+        attributes.forEach(attribute -> copyClass.addAttribute(attribute.clone()));
 
         return copyClass;
-    }   
+    }
 }

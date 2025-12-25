@@ -5,14 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
  * @author Biser
  */
 public abstract class NodeComponent {
 
     public static final NodeComponent DEFAULT_CONTEXT = null;
     protected String name;
-    protected NodeComponent context;    //containing activity
+    protected NodeComponent context; //containing activity
     protected List<Edge> incomingEdges;
     protected List<Edge> outgoingEdges;
 
@@ -37,7 +36,7 @@ public abstract class NodeComponent {
     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
     *
     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-    */    
+    */
     public String getName() {
         throw new UnsupportedOperationException("getName() not supported");
     }
@@ -66,8 +65,8 @@ public abstract class NodeComponent {
         return incomingEdges.size();
     }
 
-    public Iterator<Edge> getIncomingEdges() {
-        return incomingEdges.iterator();
+    public List<Edge> getIncomingEdges() {
+        return incomingEdges;
     }
 
     public void addOutgoingEdge(Edge edge) {
@@ -82,8 +81,8 @@ public abstract class NodeComponent {
         return outgoingEdges.size();
     }
 
-    public Iterator<Edge> getOutgoingEdges() {
-        return outgoingEdges.iterator();
+    public List<Edge> getOutgoingEdges() {
+        return outgoingEdges;
     }
 
     /*
@@ -120,7 +119,7 @@ public abstract class NodeComponent {
     * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
     *
     * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-    */  
+    */
     public String getContextHash() {
         if (context == DEFAULT_CONTEXT) {
             return "HashNULL";

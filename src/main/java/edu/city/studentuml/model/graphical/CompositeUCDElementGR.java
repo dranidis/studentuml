@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import edu.city.studentuml.model.domain.CompositeUCDElement;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class CompositeUCDElementGR extends UCDComponentGR {
@@ -118,9 +117,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public UCDComponentGR findContext(UCDComponentGR comp) {
-        Iterator<UCDComponentGR> iterator = components.iterator();
-        while (iterator.hasNext()) {
-            UCDComponentGR myComp = iterator.next();
+        for (UCDComponentGR myComp : components) {
             if (myComp.contains(comp)) {
                 return myComp.findContext(comp);
             }
@@ -130,9 +127,7 @@ public abstract class CompositeUCDElementGR extends UCDComponentGR {
     }
 
     public void clearSelected() {
-        Iterator<UCDComponentGR> iterator = components.iterator();
-        while (iterator.hasNext()) {
-            UCDComponentGR comp = iterator.next();
+        for (UCDComponentGR comp : components) {
             comp.clearSelected();
         }
 

@@ -1,3 +1,13 @@
+# Editor File Opening Guidelines
+
+When a file is being opened in the editor:
+
+-   All linting errors should be removed.
+-   All usages of `Iterator` should be refactored to enhanced for-loops or other modern constructs, if possible.
+-   The code should be checked for other cases where it can be simplified without changing the logic.
+
+These steps ensure that code is clean, modern, and easy to maintain whenever it is actively edited.
+
 # StudentUML AI Coding Agent Instructions
 
 ## Project Overview
@@ -81,6 +91,7 @@ This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PAT
 -   **Breaking changes** → Increment MAJOR, reset MINOR and PATCH (e.g., 1.4.0 → 2.0.0)
 
 **SNAPSHOT versions** (e.g., 1.4.0-SNAPSHOT) indicate unreleased development versions. When a release is ready:
+
 1. Remove -SNAPSHOT suffix
 2. Update CHANGELOG.md with release date
 3. Tag the release in git

@@ -11,17 +11,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 /**
@@ -44,7 +34,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
     private JToggleButton changeReadLabelButton;
     private JPanel directionPanel;
     private JLabel directionLabel;
-    private JComboBox directionComboBox;
+    private JComboBox<String> directionComboBox;
     private JPanel rolesPanel;
     private JPanel roleAPanel;
     private JPanel roleANamePanel;
@@ -52,20 +42,20 @@ public class AssociationEditor extends JPanel implements ActionListener {
     private JTextField roleANameField;
     private JPanel roleAMultiplicityPanel;
     private JLabel roleAMultiplicityLabel;
-    private JComboBox roleAMultiplicityComboBox;
+    private JComboBox<String> roleAMultiplicityComboBox;
     private JPanel roleBPanel;
     private JPanel roleBNamePanel;
     private JLabel roleBNameLabel;
     private JTextField roleBNameField;
     private JPanel roleBMultiplicityPanel;
     private JLabel roleBMultiplicityLabel;
-    private JComboBox roleBMultiplicityComboBox;
+    private JComboBox<String> roleBMultiplicityComboBox;
     private boolean ok;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JButton okButton;
-    public static String FROM_A_TO_B = "A to B";
-    public static String FROM_B_TO_A = "B to A";
+    public static final String FROM_A_TO_B = "A to B";
+    public static final String FROM_B_TO_A = "B to A";
     int readLabelDirection;
 
     public AssociationEditor(AssociationGR assoc) {
@@ -108,7 +98,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         directionPanel = new JPanel();
         directionPanel.setLayout(new FlowLayout());
         directionLabel = new JLabel("Direction of Association: ");
-        directionComboBox = new JComboBox(directions);
+    directionComboBox = new JComboBox<>(directions);
         directionPanel.add(directionLabel);
         directionPanel.add(directionComboBox);
 
@@ -132,7 +122,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         roleAMultiplicityPanel = new JPanel();
         roleAMultiplicityPanel.setLayout(new FlowLayout());
         roleAMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleAMultiplicityComboBox = new JComboBox(multiplicities);
+    roleAMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleAMultiplicityComboBox.setEditable(true);
         roleAMultiplicityPanel.add(roleAMultiplicityLabel);
         roleAMultiplicityPanel.add(roleAMultiplicityComboBox);
@@ -151,7 +141,7 @@ public class AssociationEditor extends JPanel implements ActionListener {
         roleBMultiplicityPanel = new JPanel();
         roleBMultiplicityPanel.setLayout(new FlowLayout());
         roleBMultiplicityLabel = new JLabel("Multiplicity: ");
-        roleBMultiplicityComboBox = new JComboBox(multiplicities);
+    roleBMultiplicityComboBox = new JComboBox<>(multiplicities);
         roleBMultiplicityComboBox.setEditable(true);
         roleBMultiplicityPanel.add(roleBMultiplicityLabel);
         roleBMultiplicityPanel.add(roleBMultiplicityComboBox);

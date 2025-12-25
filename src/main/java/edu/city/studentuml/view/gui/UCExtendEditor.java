@@ -10,7 +10,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -24,7 +23,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- *
  * @author draganbisercic
  */
 public class UCExtendEditor extends JPanel implements ActionListener {
@@ -41,7 +39,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     private JPanel bottomPanel;
     private JDialog ucExtendDialog;
     private UCExtendGR ucExtendGR;
-    private boolean ok;         // stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
 
     public UCExtendEditor(UCExtendGR uc) {
         ucExtendGR = uc;
@@ -88,9 +86,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         extensionPoints = new ArrayList<>();
 
         // if extensions modified and then canceled
-        Iterator<ExtensionPoint> i = ucExtendGR.getExtensionPoints();
-        while (i.hasNext()) {
-            ExtensionPoint extension = i.next();
+        for (ExtensionPoint extension : ucExtendGR.getExtensionPoints()) {
             extensionPoints.add(extension);
         }
         updateExtensionsList();
@@ -98,14 +94,13 @@ public class UCExtendEditor extends JPanel implements ActionListener {
 
     private void updateExtensionsList() {
         Vector<String> v = new Vector<>();
-        Iterator<ExtensionPoint> i = getExtensionPoints();
-        while (i.hasNext()) {
-            String s = i.next().getName();
+        for (ExtensionPoint ep : getExtensionPoints()) {
+            String s = ep.getName();
             v.add(s);
         }
         extensionsList.setListData(v);
     }
-    
+
     public boolean showDialog(Component parent, String title) {
         ok = false;
 
@@ -130,8 +125,8 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         return ok;
     }
 
-    public Iterator<ExtensionPoint> getExtensionPoints() {
-        return extensionPoints.iterator();
+    public List<ExtensionPoint> getExtensionPoints() {
+        return extensionPoints;
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -175,7 +170,7 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         String str = (String) JOptionPane.showInputDialog(this, "Enter extension point name : ",
                 "Edit extension name", JOptionPane.QUESTION_MESSAGE,
                 null, null, ext.getName());
-        if (str == null ) {
+        if (str == null) {
             return;
         } else if (str.isEmpty()) {
             JOptionPane.showMessageDialog(this, "You entered invalid extension point name.",

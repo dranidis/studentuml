@@ -13,7 +13,6 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.RoleClassifier;
 import edu.city.studentuml.model.domain.SDObject;
 
-
 /**
  * The inherited startingPoint refers to the x coordinate of the center and to
  * the y coordinate of the top most point
@@ -39,7 +38,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
      * the role classifier concept this graphical element refers to
      */
     protected RoleClassifier roleClassifier;
-    
+
     /**
      * stacks keeping ingoing and outgoing messages for SD validation
      */
@@ -48,16 +47,17 @@ public abstract class RoleClassifierGR extends GraphicalElement {
 
     /**
      * store all the Ys of messages
-    */
+     */
     protected List<Integer> messageYs = new ArrayList<>();
-    
+
     /**
      * Stores the activation depth at Y
      */
-    protected Map<Integer, Integer> activationAt =  new HashMap<>();
+    protected Map<Integer, Integer> activationAt = new HashMap<>();
 
     /**
      * of the x and y coordinates, x is significant
+     * 
      * @param roleClassifier
      * @param x
      */
@@ -93,7 +93,8 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     /**
-     * all role classifiers respond to drag and drop events by moving only horizontally
+     * all role classifiers respond to drag and drop events by moving only
+     * horizontally
      */
     @Override
     public void move(int x, int y) {
@@ -101,7 +102,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     public String validateOut(RoleClassifierGR target) {
-        if( in.size() > out.size()) {
+        if (in.size() > out.size()) {
             out.push(target);
             return "";
         } else {
@@ -111,7 +112,7 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     public String validateIn(RoleClassifierGR source) {
-        if( in.size() == out.size()) {
+        if (in.size() == out.size()) {
             in.push(source);
             return "";
         } else {
@@ -121,14 +122,15 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     public String validateOutReturn(RoleClassifierGR target) {
-        if( in.size() > out.size() ) {
+        if (in.size() > out.size()) {
             RoleClassifierGR origFrom = in.peek();
             if (origFrom == target) {
                 in.pop();
                 return "";
             } else {
                 logger.finer(this::stacksToString);
-                return this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName() + ". " +
+                return this.getRoleClassifier().getName() + " Cannot return to " + target.getRoleClassifier().getName()
+                        + ". " +
                         origFrom.getRoleClassifier().getName() + " was the original caller.";
             }
         } else {
@@ -137,18 +139,19 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     String validateInReturn(RoleClassifierGR source) {
-        if(out.isEmpty()) {
+        if (out.isEmpty()) {
             logger.finer(this::stacksToString);
             return this.getRoleClassifier().getName() + " Cannot accept return messages. Did not send any messages";
         }
-        if( in.size() == out.size() ) {
+        if (in.size() == out.size()) {
             RoleClassifierGR origTo = out.peek();
             if (origTo == source) {
                 out.pop();
                 return "";
             } else {
                 logger.finer(this::stacksToString);
-                return this.getRoleClassifier().getName() + " Cannot accept return from " + source.getRoleClassifier().getName() + ". " +
+                return this.getRoleClassifier().getName() + " Cannot accept return from "
+                        + source.getRoleClassifier().getName() + ". " +
                         " Expecting from " + origTo.getRoleClassifier().getName();
             }
         } else {
@@ -160,11 +163,11 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     private String stacksToString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Stack: [");
-        for(RoleClassifierGR m: in) {
+        for (RoleClassifierGR m : in) {
             sb.append(m.getRoleClassifier().getName());
         }
         sb.append("] - [");
-        for(RoleClassifierGR m: out) {
+        for (RoleClassifierGR m : out) {
             sb.append(m.getRoleClassifier().getName());
         }
         sb.append("]\n");
@@ -179,8 +182,8 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     }
 
     /**
-     * Adds a dummy object in the in stack to make the object have the focus
-     * and avoid error in the validation
+     * Adds a dummy object in the in stack to make the object have the focus and
+     * avoid error in the validation
      */
     void setActiveIn() {
         in.push(new SDObjectGR(new SDObject("void", new DesignClass("Void")), 0));
@@ -197,8 +200,8 @@ public abstract class RoleClassifierGR extends GraphicalElement {
     int acticationAtY(int y) {
         if (activationAt.get(y) != null)
             return activationAt.get(y);
-        for(int i=0; i< messageYs.size() - 1; i++) {
-            if (y >= messageYs.get(i) && y < messageYs.get(i+1))
+        for (int i = 0; i < messageYs.size() - 1; i++) {
+            if (y >= messageYs.get(i) && y < messageYs.get(i + 1))
                 return activationAt.get(messageYs.get(i));
         }
         return 0;

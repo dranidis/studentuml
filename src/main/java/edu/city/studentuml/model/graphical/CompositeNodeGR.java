@@ -10,7 +10,6 @@ import java.util.ListIterator;
 import edu.city.studentuml.model.domain.CompositeNode;
 
 /**
- *
  * @author Biser
  */
 public abstract class CompositeNodeGR extends NodeComponentGR {
@@ -111,9 +110,7 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public NodeComponentGR findContext(NodeComponentGR node) {
-        Iterator<NodeComponentGR> iterator = components.iterator();
-        while (iterator.hasNext()) {
-            NodeComponentGR myNode = iterator.next();
+        for (NodeComponentGR myNode : components) {
             if (myNode.contains(node)) {
                 return myNode.findContext(node);
             }
@@ -123,9 +120,7 @@ public abstract class CompositeNodeGR extends NodeComponentGR {
     }
 
     public void clearSelected() {
-        Iterator<NodeComponentGR> iterator = components.iterator();
-        while (iterator.hasNext()) {
-            NodeComponentGR node = iterator.next();
+        for (NodeComponentGR node : components) {
             node.clearSelected();
         }
 

@@ -1,6 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,7 +26,7 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.MultiObjectEditor;
 import edu.city.studentuml.view.gui.ObjectEditor;
 
-//handles all events when the "selection" button in the SD toolbar is pressed
+// handles all events when the "selection" button in the SD toolbar is pressed
 public class SDSelectionController extends AbstractSDSelectionController {
 
     private static final String WARNING = "Warning";
@@ -65,7 +64,7 @@ public class SDSelectionController extends AbstractSDSelectionController {
                 && !newObject.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing object with the given name already.\n"
-                    + "Do you want this diagram object to refer to the existing one?",
+                            + "Do you want this diagram object to refer to the existing one?",
                     WARNING,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -103,7 +102,8 @@ public class SDSelectionController extends AbstractSDSelectionController {
             return;
         }
 
-        MultiObject newMultiObject = new MultiObject(multiObjectEditor.getMultiObjectName(), multiObjectEditor.getDesignClass());
+        MultiObject newMultiObject = new MultiObject(multiObjectEditor.getMultiObjectName(),
+                multiObjectEditor.getDesignClass());
         MultiObjectEdit originalEdit;
 
         // edit the multiobject if there is no change in the name,
@@ -114,7 +114,8 @@ public class SDSelectionController extends AbstractSDSelectionController {
                 && !newMultiObject.getName().equals("")) {
             int response = JOptionPane.showConfirmDialog(null,
                     "There is an existing multiobject with the given name already.\n"
-                    + "Do you want this diagram object to refer to the existing one?", WARNING,
+                            + "Do you want this diagram object to refer to the existing one?",
+                    WARNING,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if (response == JOptionPane.YES_OPTION) {
@@ -150,13 +151,9 @@ public class SDSelectionController extends AbstractSDSelectionController {
             return;
         }
 
-
         List<MethodParameter> parameters = createMessageEditor.getParameters();
-        Iterator<MethodParameter> iterator = parameters.iterator();
         message.setParameters(new Vector<>());
-        while (iterator.hasNext()) {
-            message.addParameter(iterator.next());
-        }
+        message.getParameters().addAll(parameters);
 
         // UNDO/REDO
         UndoableEdit edit = new EditCreateMessageEdit(message, undoCreateMessage, model);
@@ -165,5 +162,5 @@ public class SDSelectionController extends AbstractSDSelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
+
 }

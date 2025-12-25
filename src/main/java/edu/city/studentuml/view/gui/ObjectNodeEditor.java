@@ -20,7 +20,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -39,7 +38,6 @@ import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
 /**
- *
  * @author Biser
  */
 public class ObjectNodeEditor extends JPanel implements ActionListener, ItemListener {
@@ -73,7 +71,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JButton okButton;
-    private boolean ok;         // stores whether the user has pressed ok
+    private boolean ok; // stores whether the user has pressed ok
     private CentralRepository repository;
     private Vector<Type> types;
     private Type type;
@@ -230,7 +228,10 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
             // make a copy of the states for editing purposes
             // which may be discarded if the user presses <<Cancel>>
-            states = cloneStates(objectNode.getStates());
+            states = new Vector<>();
+            for (State originalState : objectNode.getStates()) {
+                states.add(new State(originalState.getName()));
+            }
 
             // show the states in the list
             updateStatesList();
@@ -248,8 +249,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
-    if (repository.getDesignClass(newClass.getName()) != null
-        && !newClass.getName().equals("")) {
+        if (repository.getDesignClass(newClass.getName()) != null
+                && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
@@ -259,21 +260,6 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
             repository.addClass(newClass);
             return newClass.getName();
         }
-    }
-
-    // make an exact copy of the states
-    public Vector<State> cloneStates(Iterator<State> iterator) {
-        Vector<State> copyOfStates = new Vector<>();
-        State originalState;
-        State copyOfState;
-
-        while (iterator.hasNext()) {
-            originalState = iterator.next();
-            copyOfState = new State(originalState.getName());
-            copyOfStates.add(copyOfState);
-        }
-
-        return copyOfStates;
     }
 
     public void updateStatesList() {
@@ -329,8 +315,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public void actionPerformed(ActionEvent event) {
-    if (event.getSource() == okButton
-        || event.getSource() == objectNameField) {
+        if (event.getSource() == okButton
+                || event.getSource() == objectNameField) {
             setSelectedType();
             objectNodeDialog.setVisible(false);
             ok = true;
@@ -377,8 +363,8 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
 
-    if (repository.getDesignClass(newClass.getName()) != null
-        && !newClass.getName().equals("")) {
+        if (repository.getDesignClass(newClass.getName()) != null
+                && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
                     "There is an existing class with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
@@ -420,7 +406,7 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     // updates the combo box according to the list of classes
     private void updateComboBox(String index) {
         objectTypeComboBox.removeAllItems();
-        for(Type t :  types) {
+        for (Type t : types) {
             if (t != null && !t.getName().equals("")) {
                 objectTypeComboBox.addItem(t.getName());
             }

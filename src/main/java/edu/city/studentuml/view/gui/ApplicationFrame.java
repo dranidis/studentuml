@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,9 +64,10 @@ public class ApplicationFrame extends ApplicationGUI {
         return xmlFileChooser;
     }
 
+
     @Override
-    public void update(Observable observable, Object object) {
-        super.update(observable, object);
+    public void propertyChange(PropertyChangeEvent evt) {
+        super.propertyChange(evt);
         updateFrameTitle();
     }
 
@@ -152,7 +153,7 @@ public class ApplicationFrame extends ApplicationGUI {
         }
 
         repositoryTreeView.expandDiagrams();
-        repositoryTreeView.update(null, null);
+        // repositoryTreeView.update(null, null); // No longer needed; repositoryTreeView should listen via PropertyChangeListener
 
         umlProject.setFilepath(fileName);
 

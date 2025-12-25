@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
@@ -116,10 +116,43 @@ import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
 
 /**
- * A singleton class responsible for creating all the objects read from an XML
- * file.
+ * ObjectFactory is a singleton responsible for dynamic instantiation of UML
+ * model, graphical, and view objects during XML deserialization and diagram
+ * loading. It uses Java reflection to locate and invoke appropriate
+ * constructors or factory methods for classes in the model, graphical, and view
+ * packages, based on class names found in XML. Responsibilities:
+ * <ul>
+ * <li>Dynamically create instances of domain, graphical, and view classes from
+ * XML using reflection.</li>
+ * <li>Fire property change events to notify listeners (e.g., ApplicationGUI)
+ * about diagram/frame properties during loading.</li>
+ * <li>Maintain a central point for all object creation logic, supporting
+ * extensibility and decoupling from concrete types.</li>
+ * <li>Communicate with SystemWideObjectNamePool to register or rename objects
+ * for global reference tracking.</li>
+ * <li>Interact with UMLProject, DiagramModel, and XMLStreamer for model
+ * construction and streaming.</li>
+ * </ul>
+ * Communication:
+ * <ul>
+ * <li>Uses PropertyChangeSupport to notify listeners (typically ApplicationGUI)
+ * about frame/diagram property changes.</li>
+ * <li>Calls SystemWideObjectNamePool for object registration and lookup.</li>
+ * <li>Works with UMLProject and DiagramModel as parents for new model/view
+ * objects.</li>
+ * <li>Receives XMLStreamer and org.w3c.dom.Element for XML-based
+ * instantiation.</li>
+ * </ul>
+ * Reflection:
+ * <ul>
+ * <li>Uses Class.forName to locate classes in known packages.</li>
+ * <li>Uses reflection to invoke factory methods (e.g., newucdmodel,
+ * newccdmodel) for custom instantiation logic.</li>
+ * </ul>
+ * Note: Many methods are called by reflection and must not be renamed.
  */
-public final class ObjectFactory extends Observable {
+public final class ObjectFactory {
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private static final Logger logger = Logger.getLogger(ObjectFactory.class.getName());
 
@@ -132,10 +165,9 @@ public final class ObjectFactory extends Observable {
         return instance;
     }
 
-    @Override
-    public synchronized void addObserver(Observer o) {
-        logger.fine(() -> "OBSERVER added: " + o.toString());
-        super.addObserver(o);
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+        logger.info(() -> "PropertyChangeListener added: " + l.toString());
+        pcs.addPropertyChangeListener(l);
     }
 
     public IXMLCustomStreamable newInstance(String className, Object parent, Element child, XMLStreamer streamer)
@@ -199,7 +231,7 @@ public final class ObjectFactory extends Observable {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.getTargetException().printStackTrace(pw);
-            logger.finer(sw.toString());
+            logger.severe(sw.toString());
             return null;
         }
 
@@ -263,9 +295,13 @@ public final class ObjectFactory extends Observable {
 
         FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum,
                 zOrder);
-        logger.fine(() -> "Notifying observers: " + this.countObservers());
-        setChanged();
-        notifyObservers(frameProperties);
+        PropertyChangeListener[] listeners = pcs.getPropertyChangeListeners();
+        String listenersStr = java.util.Arrays.stream(listeners)
+                .map(l -> l.getClass().getName())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        logger.info(() -> "Notifying listeners: [" + listenersStr + "]");
+        pcs.firePropertyChange("framePropertiesChanged", null, frameProperties);
     }
 
     /********************************************************************
@@ -978,7 +1014,7 @@ public final class ObjectFactory extends Observable {
     public IXMLCustomStreamable newmethodparameter(Object parent, Element stream, XMLStreamer streamer) {
         MethodParameter m = new MethodParameter(stream.getAttribute("name"));
         if (parent instanceof edu.city.studentuml.model.domain.Method) {
-            ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);// FIXME: PACKAGE
+            ((edu.city.studentuml.model.domain.Method) parent).addParameter(m);
         } else if (parent instanceof CallMessage) {
             ((CallMessage) parent).addParameter(m);
         } else if (parent instanceof CreateMessage) {

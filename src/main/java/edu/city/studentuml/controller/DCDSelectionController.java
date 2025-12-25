@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.Iterator;
-
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Association;
@@ -32,8 +30,6 @@ import edu.city.studentuml.view.gui.InterfaceEditor;
 
 public class DCDSelectionController extends SelectionController {
 
-
-    
     public DCDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
         super(parent, model);
 
@@ -187,18 +183,12 @@ public class DCDSelectionController extends SelectionController {
 
         // add the attributes to the new association class
         NotifierVector<Attribute> attributes = new NotifierVector<>();
-        Iterator<Attribute> attributeIterator = associationClassEditor.getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            attributes.add(attributeIterator.next());
-        }
+        attributes.addAll(associationClassEditor.getAttributes());
         associationClass.setAttributes(attributes);
 
         // add the methods to the new association class
         NotifierVector<Method> methods = new NotifierVector<>();
-        Iterator<Method> methodIterator = associationClassEditor.getMethods().iterator();
-        while (methodIterator.hasNext()) {
-            methods.add(methodIterator.next());
-        }
+        methods.addAll(associationClassEditor.getMethods());
         associationClass.setMethods(methods);
 
         // Undo/Redo [edit]

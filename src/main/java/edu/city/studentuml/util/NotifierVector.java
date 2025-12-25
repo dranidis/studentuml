@@ -44,10 +44,4 @@ public class NotifierVector<T> extends Vector<T> {
             }
         }
     }
-
-    protected void finalize() throws Throwable {
-        //do finalization here
-        clear();
-        super.finalize(); //not necessary if extending Object.
-    }
 }

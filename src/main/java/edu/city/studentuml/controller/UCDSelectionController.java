@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -133,9 +131,8 @@ public class UCDSelectionController extends SelectionController {
 
         UCExtend newUCExtend = new UCExtend((UseCase) originalUCExtend.getSource(),
                 (UseCase) originalUCExtend.getTarget());
-        Iterator<ExtensionPoint> i = ucExtendEditor.getExtensionPoints();
-        while (i.hasNext()) {
-            newUCExtend.addExtensionPoint(i.next().clone());
+        for (ExtensionPoint ep : ucExtendEditor.getExtensionPoints()) {
+            newUCExtend.addExtensionPoint(ep.clone());
         }
 
         // Undo/Redo [edit]

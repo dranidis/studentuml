@@ -35,7 +35,7 @@ import javax.swing.WindowConstants;
 public class ObjectEditor extends JPanel implements ActionListener, ItemListener {
 
     private static final String UNNAMED = "(unnamed)";
-    
+
     private JDialog objectDialog;
     private JPanel namePanel;
     private JLabel nameLabel;
@@ -58,7 +58,8 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     private DesignClass objectType;
     private Vector<DesignClass> types;
     private CentralRepository repository;
-    
+
+    @SuppressWarnings("unchecked")
     public ObjectEditor(SDObjectGR obj, CentralRepository cr) {
         objectGR = obj;
         repository = cr;
@@ -95,7 +96,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         centerPanel.add(namePanel);
         centerPanel.add(typePanel);
         centerPanel.add(cardPanel);
-        
+
         bottomPanel = new JPanel();
         FlowLayout bottomLayout = new FlowLayout();
         bottomLayout.setHgap(20);
@@ -106,24 +107,24 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         cancelButton.addActionListener(this);
         bottomPanel.add(okButton);
         bottomPanel.add(cancelButton);
-        
+
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
         initialize();
     }
-    
+
     public boolean showDialog(Component parent, String title) {
         ok = false;
 
         // find the owner frame
         Frame owner = null;
-        
+
         if (parent instanceof Frame) {
             owner = (Frame) parent;
         } else {
             owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         }
-        
+
         objectDialog = new JDialog(owner, true);
         objectDialog.getContentPane().add(this);
         objectDialog.setTitle(title);
@@ -132,13 +133,13 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         objectDialog.setResizable(false);
         objectDialog.setLocationRelativeTo(owner);
         objectDialog.setVisible(true);
-        
+
         return ok;
     }
-    
+
     public void initialize() {
         SDObject object = objectGR.getSDObject();
-        
+
         nameField.setText(object.getName());
         objectType = object.getDesignClass();
 
@@ -148,13 +149,12 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         }
         types.add(new DesignClass(""));
         typeComboBox.addItem(UNNAMED);
-        
-        for (DesignClass dc: types) {
+
+        for (DesignClass dc : types) {
             if (!dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } 
+            }
         }
-
 
         if (objectType.getName().equals("")) {
             typeComboBox.setSelectedItem(UNNAMED);
@@ -167,15 +167,15 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
     public String getObjectName() {
         return nameField.getText();
     }
-    
+
     public DesignClass getDesignClass() {
         return objectType;
     }
-    
+
     public String getNameOfNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
         ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
-        
+
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return null;
         }
@@ -201,7 +201,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         if (!classNameEditor.showDialog(this, "Class Editor")) {
             return null;
         }
-        
+
         DesignClass newClass = new DesignClass(classNameEditor.getClassName());
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict
@@ -232,7 +232,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
 
         typeComboBox.setSelectedItem(index);
     }
-    
+
     private DesignClass getTypeofSelectedItem() {
         Optional<DesignClass> a = types.stream().filter(dc -> dc.getName().equals(typeComboBox.getSelectedItem())
                 || typeComboBox.getSelectedItem().equals(UNNAMED) && dc.getName().equals("")).findAny();
@@ -241,7 +241,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         } else {
             return null;
         }
-    } 
+    }
 
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == okButton || event.getSource() == nameField) {
@@ -267,7 +267,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
             updateComboBox(UNNAMED);
         }
     }
-    
+
     private void deleteType() {
         if (typeComboBox.getSelectedItem().equals(UNNAMED)) {
             return;
@@ -284,14 +284,14 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
         types.remove(t);
         repository.removeClass(repository.getDesignClass(t.getName()));
     }
-    
+
     public void itemStateChanged(ItemEvent e) {
         updateAddTypePanel();
     }
-    
+
     private void updateAddTypePanel() {
         String s = getSelectedItem();
-        
+
         if (s.equals(UNNAMED)) {
             editTypeButton.setEnabled(false);
             deleteTypeButton.setEnabled(false);
@@ -300,7 +300,7 @@ public class ObjectEditor extends JPanel implements ActionListener, ItemListener
             deleteTypeButton.setEnabled(true);
         }
     }
-    
+
     private String getSelectedItem() {
         String s = (String) typeComboBox.getSelectedItem();
         if (s == null) {

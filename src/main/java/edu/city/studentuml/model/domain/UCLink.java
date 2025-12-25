@@ -1,7 +1,7 @@
 package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -11,7 +11,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class UCLink implements Serializable, IXMLCustomStreamable {
@@ -53,7 +52,7 @@ public abstract class UCLink implements Serializable, IXMLCustomStreamable {
         throw new UnsupportedOperationException("Not supported!");
     }
 
-    public Iterator<ExtensionPoint> getExtensionPoints() {
+    public List<ExtensionPoint> getExtensionPoints() {
         throw new UnsupportedOperationException("Not supported!");
     }
 
