@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <uml>
   <object class="UMLProject" id="project">
-    <object class="DCDModel" framex="168,17,1098,562" iconified="false" id="" internalid="dcdmodel0" maximized="false" name="DCD: dcd" scale="1.0" selected="false" zorder="4">
-      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="61" y="50">
+    <object class="DCDModel" framex="168,17,1098,744" iconified="false" id="" internalid="dcdmodel0" maximized="false" name="DCD: dcd" scale="1.0" selected="false" zorder="2">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="68" y="58">
         <object class="DesignClass" id="designclass" internalid="designclass0" name="Register" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass0" name="Register"/>
           <object id="attributes">
@@ -52,7 +52,7 @@
           </object>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="317" y="224">
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="10" y="408">
         <object class="DesignClass" id="designclass" internalid="designclass2" name="ProductCatalog" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass2" name="ProductCatalog"/>
           <object id="attributes">
@@ -76,7 +76,7 @@
           </object>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="633" y="335">
+      <object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="689" y="413">
         <object class="DesignClass" id="designclass" internalid="designclass3" name="ProductSpecification" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass3" name="ProductSpecification"/>
           <object id="attributes">
@@ -95,7 +95,7 @@
           </object>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr4" uid="Desktop Application User" x="837" y="41">
+      <object class="ClassGR" id="" internalid="classgr4" uid="Desktop Application User" x="749" y="52">
         <object class="DesignClass" id="designclass" internalid="designclass4" name="SalesLineItem" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass4" name="SalesLineItem"/>
           <object id="attributes">
@@ -150,7 +150,7 @@
           <object class="Role" classifier="designclass2" id="roleb" multiplicity="1" name="pc"/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr5" uid="Desktop Application User" x="855" y="220">
+      <object class="ClassGR" id="" internalid="classgr5" uid="Desktop Application User" x="939" y="244">
         <object class="DesignClass" id="designclass" internalid="designclass6" name="Payment" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass5" name="Payment"/>
           <object id="attributes">
@@ -171,7 +171,7 @@
           <object class="Role" classifier="designclass6" id="roleb" multiplicity="1" name="payment"/>
         </object>
       </object>
-      <object class="ClassGR" id="" internalid="classgr6" uid="Desktop Application User" x="106" y="353">
+      <object class="ClassGR" id="" internalid="classgr6" uid="Desktop Application User" x="397" y="344">
         <object class="DesignClass" id="designclass" internalid="designclass7" name="Store" stereotype="">
           <object class="GenericClass" id="generic" internalid="genericclass6" name="Store"/>
           <object id="attributes">
@@ -208,7 +208,7 @@
         </object>
       </object>
     </object>
-    <object class="SDModel" framex="428,80,895,668" iconified="false" id="" internalid="sdmodel1" maximized="false" name="SD: sd2" scale="1.0" selected="false" zorder="3">
+    <object class="SDModel" framex="656,11,895,668" iconified="false" id="" internalid="sdmodel1" maximized="false" name="SD: sd2" scale="1.0" selected="true" zorder="0">
       <object class="SDObjectGR" id="" internalid="sdobjectgr4" uid="Desktop Application User" x="149">
         <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="register">
           <object class="DesignClass" id="designclass" internalid="designclass0" name="Register" stereotype="">
@@ -295,13 +295,13 @@
           </object>
         </object>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr5" id="" internalid="callmessagegr7" to="multiobjectgr2" y="300">
+      <object class="CallMessageGR" from="sdobjectgr5" id="" internalid="callmessagegr7" to="multiobjectgr2" y="324">
         <object class="CallMessage" from="sdobject2" id="message" internalid="callmessage7" iterative="true" name="getTotal" returnType="" returns="int t" to="multiobject1">
           <object class="GenericOperation" id="operation" name="getTotal"/>
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="multiobjectgr2" id="" internalid="returnmessagegr6" to="sdobjectgr5" y="345">
+      <object class="ReturnMessageGR" from="multiobjectgr2" id="" internalid="returnmessagegr6" to="sdobjectgr5" y="349">
         <object class="ReturnMessage" from="multiobject1" id="message" internalid="returnmessage6" name="" to="sdobject2"/>
       </object>
       <object class="CallMessageGR" from="actorinstancegr1" id="" internalid="callmessagegr9" to="sdobjectgr4" y="125">
@@ -316,7 +316,7 @@
           <object id="parameters"/>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr6" uid="Desktop Application User" x="695">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr6" uid="Desktop Application User" x="705">
         <object class="SDObject" designclass="designclass6" id="sdobject" internalid="sdobject4" name="p">
           <object class="DesignClass" id="designclass" internalid="designclass6" name="Payment" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass5" name="Payment"/>
@@ -333,7 +333,7 @@
           </object>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr5" id="" internalid="createmessagegr3" to="sdobjectgr6" y="222">
+      <object class="CreateMessageGR" from="sdobjectgr5" id="" internalid="createmessagegr3" to="sdobjectgr6" y="193">
         <object class="CreateMessage" from="sdobject2" id="message" internalid="createmessage3" to="sdobject4">
           <object id="parameters"/>
         </object>
@@ -344,20 +344,20 @@
       <object class="ReturnMessageGR" from="sdobjectgr4" id="" internalid="returnmessagegr10" to="actorinstancegr1" y="547">
         <object class="ReturnMessage" from="sdobject0" id="message" internalid="returnmessage10" name="" to="actorinstance0"/>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr6" id="" internalid="returnmessagegr17" to="sdobjectgr5" y="255">
+      <object class="ReturnMessageGR" from="sdobjectgr6" id="" internalid="returnmessagegr17" to="sdobjectgr5" y="221">
         <object class="ReturnMessage" from="sdobject4" id="message" internalid="returnmessage17" name="" to="sdobject2"/>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr5" id="" internalid="callmessagegr5" to="sdobjectgr6" y="398">
+      <object class="CallMessageGR" from="sdobjectgr5" id="" internalid="callmessagegr5" to="sdobjectgr6" y="385">
         <object class="CallMessage" from="sdobject2" id="message" internalid="callmessage5" iterative="false" name="payTotal" returnType="" returns="" to="sdobject4">
           <object class="GenericOperation" id="operation" name="payTotal"/>
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr6" id="" internalid="returnmessagegr5" to="sdobjectgr5" y="449">
+      <object class="ReturnMessageGR" from="sdobjectgr6" id="" internalid="returnmessagegr5" to="sdobjectgr5" y="423">
         <object class="ReturnMessage" from="sdobject4" id="message" internalid="returnmessage5" name="" to="sdobject2"/>
       </object>
     </object>
-    <object class="SDModel" framex="164,135,1219,675" iconified="false" id="" internalid="sdmodel2" maximized="false" name="SD: sd3" scale="1.0" selected="false" zorder="2">
+    <object class="SDModel" framex="164,135,1219,675" iconified="false" id="" internalid="sdmodel2" maximized="false" name="SD: sd3" scale="1.0" selected="false" zorder="1">
       <object class="SDObjectGR" id="" internalid="sdobjectgr7" uid="Desktop Application User" x="167">
         <object class="SDObject" designclass="designclass7" id="sdobject" internalid="sdobject5" name="store">
           <object class="DesignClass" id="designclass" internalid="designclass7" name="Store" stereotype="">
@@ -383,7 +383,7 @@
           <object class="Actor" id="actor" internalid="actor0" name="User"/>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr8" uid="Desktop Application User" x="304">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr8" uid="Desktop Application User" x="308">
         <object class="SDObject" designclass="designclass2" id="sdobject" internalid="sdobject6" name="pc">
           <object class="DesignClass" id="designclass" internalid="designclass2" name="ProductCatalog" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass2" name="ProductCatalog"/>
@@ -415,12 +415,12 @@
           <object id="parameters"/>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr7" id="" internalid="createmessagegr4" to="sdobjectgr8" y="118">
+      <object class="CreateMessageGR" from="sdobjectgr7" id="" internalid="createmessagegr4" to="sdobjectgr8" y="114">
         <object class="CreateMessage" from="sdobject5" id="message" internalid="createmessage4" to="sdobject6">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="MultiObjectGR" id="" internalid="multiobjectgr3" uid="Desktop Application User" x="493">
+      <object class="MultiObjectGR" id="" internalid="multiobjectgr3" uid="Desktop Application User" x="518">
         <object class="MultiObject" designclass="designclass3" id="multiobject" internalid="multiobject0" name="specifications">
           <object class="DesignClass" id="designclass" internalid="designclass3" name="ProductSpecification" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass3" name="ProductSpecification"/>
@@ -441,7 +441,7 @@
           </object>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr9" uid="Desktop Application User" x="730">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr9" uid="Desktop Application User" x="728">
         <object class="SDObject" designclass="designclass3" id="sdobject" internalid="sdobject7" name="ps">
           <object class="DesignClass" id="designclass" internalid="designclass3" name="ProductSpecification" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass3" name="ProductSpecification"/>
@@ -462,7 +462,7 @@
           </object>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr10" uid="Desktop Application User" x="970">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr10" uid="Desktop Application User" x="972">
         <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject0" name="register">
           <object class="DesignClass" id="designclass" internalid="designclass0" name="Register" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass0" name="Register"/>
@@ -487,29 +487,29 @@
           </object>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr8" id="" internalid="createmessagegr5" to="multiobjectgr3" y="159">
+      <object class="CreateMessageGR" from="sdobjectgr8" id="" internalid="createmessagegr5" to="multiobjectgr3" y="200">
         <object class="CreateMessage" from="sdobject6" id="message" internalid="createmessage5" to="multiobject0">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="multiobjectgr3" id="" internalid="returnmessagegr11" to="sdobjectgr8" y="187">
+      <object class="ReturnMessageGR" from="multiobjectgr3" id="" internalid="returnmessagegr11" to="sdobjectgr8" y="229">
         <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage11" name="" to="sdobject6"/>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr8" id="" internalid="callmessagegr12" to="sdobjectgr8" y="213">
+      <object class="CallMessageGR" from="sdobjectgr8" id="" internalid="callmessagegr12" to="sdobjectgr8" y="147">
         <object class="CallMessage" from="sdobject6" id="message" internalid="callmessage12" iterative="false" name="loadProdSpecs" returnType="" returns="" to="sdobject6">
           <object class="GenericOperation" id="operation" name="loadProdSpecs"/>
           <object id="parameters"/>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr8" id="" internalid="createmessagegr6" to="sdobjectgr9" y="251">
+      <object class="CreateMessageGR" from="sdobjectgr8" id="" internalid="createmessagegr6" to="sdobjectgr9" y="266">
         <object class="CreateMessage" from="sdobject6" id="message" internalid="createmessage6" to="sdobject7">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr9" id="" internalid="returnmessagegr12" to="sdobjectgr8" y="279">
+      <object class="ReturnMessageGR" from="sdobjectgr9" id="" internalid="returnmessagegr12" to="sdobjectgr8" y="289">
         <object class="ReturnMessage" from="sdobject7" id="message" internalid="returnmessage12" name="" to="sdobject6"/>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr8" id="" internalid="callmessagegr13" to="multiobjectgr3" y="304">
+      <object class="CallMessageGR" from="sdobjectgr8" id="" internalid="callmessagegr13" to="multiobjectgr3" y="319">
         <object class="CallMessage" from="sdobject6" id="message" internalid="callmessage13" iterative="false" name="add" returnType="void" returns="" to="multiobject0">
           <object class="GenericOperation" id="operation" name="add"/>
           <object id="parameters">
@@ -517,28 +517,28 @@
           </object>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="multiobjectgr3" id="" internalid="returnmessagegr13" to="sdobjectgr8" y="327">
+      <object class="ReturnMessageGR" from="multiobjectgr3" id="" internalid="returnmessagegr13" to="sdobjectgr8" y="336">
         <object class="ReturnMessage" from="multiobject0" id="message" internalid="returnmessage13" name="" to="sdobject6"/>
       </object>
       <object class="ReturnMessageGR" from="sdobjectgr8" id="" internalid="returnmessagegr18" to="sdobjectgr7" y="383">
         <object class="ReturnMessage" from="sdobject6" id="message" internalid="returnmessage18" name="" to="sdobject5"/>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr7" id="" internalid="createmessagegr7" to="sdobjectgr10" y="416">
+      <object class="CreateMessageGR" from="sdobjectgr7" id="" internalid="createmessagegr7" to="sdobjectgr10" y="442">
         <object class="CreateMessage" from="sdobject5" id="message" internalid="createmessage7" to="sdobject0">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr10" id="" internalid="returnmessagegr19" to="sdobjectgr7" y="456">
+      <object class="ReturnMessageGR" from="sdobjectgr10" id="" internalid="returnmessagegr19" to="sdobjectgr7" y="472">
         <object class="ReturnMessage" from="sdobject0" id="message" internalid="returnmessage19" name="" to="sdobject5"/>
       </object>
       <object class="ReturnMessageGR" from="sdobjectgr7" id="" internalid="returnmessagegr20" to="actorinstancegr2" y="518">
         <object class="ReturnMessage" from="sdobject5" id="message" internalid="returnmessage20" name="" to="actorinstance0"/>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr8" id="" internalid="returnmessagegr3" to="sdobjectgr8" y="348">
+      <object class="ReturnMessageGR" from="sdobjectgr8" id="" internalid="returnmessagegr3" to="sdobjectgr8" y="170">
         <object class="ReturnMessage" from="sdobject6" id="message" internalid="returnmessage3" name="" to="sdobject6"/>
       </object>
     </object>
-    <object class="SDModel" framex="249,80,1033,513" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd4" scale="1.0" selected="false" zorder="1">
+    <object class="SDModel" framex="561,2,1033,513" iconified="false" id="" internalid="sdmodel0" maximized="false" name="SD: sd4" scale="1.0" selected="false" zorder="3">
       <object class="SDObjectGR" id="" internalid="sdobjectgr0" uid="Desktop Application User" x="248">
         <object class="SDObject" designclass="designclass0" id="sdobject" internalid="sdobject1" name="register">
           <object class="DesignClass" id="designclass" internalid="designclass0" name="Register" stereotype="">
@@ -569,7 +569,7 @@
           <object class="Actor" id="actor" internalid="actor1" name="User"/>
         </object>
       </object>
-      <object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="533">
+      <object class="SDObjectGR" id="" internalid="sdobjectgr2" uid="Desktop Application User" x="537">
         <object class="SDObject" designclass="designclass1" id="sdobject" internalid="sdobject8" name="sale">
           <object class="DesignClass" id="designclass" internalid="designclass1" name="Sale" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass1" name="Sale"/>
@@ -598,7 +598,7 @@
           </object>
         </object>
       </object>
-      <object class="MultiObjectGR" id="" internalid="multiobjectgr1" uid="Desktop Application User" x="692">
+      <object class="MultiObjectGR" id="" internalid="multiobjectgr1" uid="Desktop Application User" x="698">
         <object class="MultiObject" designclass="designclass4" id="multiobject" internalid="multiobject3" name="salesLine">
           <object class="DesignClass" id="designclass" internalid="designclass4" name="SalesLineItem" stereotype="">
             <object class="GenericClass" id="generic" internalid="genericclass4" name="SalesLineItem"/>
@@ -631,23 +631,23 @@
           <object id="parameters"/>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr0" id="" internalid="createmessagegr8" to="sdobjectgr2" y="124">
+      <object class="CreateMessageGR" from="sdobjectgr0" id="" internalid="createmessagegr8" to="sdobjectgr2" y="138">
         <object class="CreateMessage" from="sdobject1" id="message" internalid="createmessage8" to="sdobject8">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr21" to="sdobjectgr0" y="154">
+      <object class="ReturnMessageGR" from="sdobjectgr2" id="" internalid="returnmessagegr21" to="sdobjectgr0" y="160">
         <object class="ReturnMessage" from="sdobject8" id="message" internalid="returnmessage21" name="" to="sdobject1"/>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr2" id="" internalid="createmessagegr9" to="multiobjectgr1" y="214">
+      <object class="CreateMessageGR" from="sdobjectgr2" id="" internalid="createmessagegr9" to="multiobjectgr1" y="208">
         <object class="CreateMessage" from="sdobject8" id="message" internalid="createmessage9" to="multiobject3">
           <object id="parameters"/>
         </object>
       </object>
-      <object class="ReturnMessageGR" from="multiobjectgr1" id="" internalid="returnmessagegr22" to="sdobjectgr2" y="244">
+      <object class="ReturnMessageGR" from="multiobjectgr1" id="" internalid="returnmessagegr22" to="sdobjectgr2" y="242">
         <object class="ReturnMessage" from="multiobject3" id="message" internalid="returnmessage22" name="" to="sdobject8"/>
       </object>
-      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr15" to="sdobjectgr2" y="184">
+      <object class="CallMessageGR" from="sdobjectgr0" id="" internalid="callmessagegr15" to="sdobjectgr2" y="194">
         <object class="CallMessage" from="sdobject1" id="message" internalid="callmessage15" iterative="false" name="createSaleLine" returnType="" returns="" to="sdobject8">
           <object class="GenericOperation" id="operation" name="createSaleLine"/>
           <object id="parameters"/>
@@ -660,7 +660,7 @@
         <object class="ReturnMessage" from="sdobject1" id="message" internalid="returnmessage24" name="" to="actorinstance1"/>
       </object>
     </object>
-    <object class="SDModel" framex="29,154,1628,698" iconified="false" id="" internalid="sdmodel3" maximized="false" name="SD: sd6" scale="1.0" selected="true" zorder="0">
+    <object class="SDModel" framex="22,218,1628,698" iconified="false" id="" internalid="sdmodel3" maximized="false" name="SD: sd6" scale="1.0" selected="false" zorder="4">
       <object class="ActorInstanceGR" id="" internalid="actorinstancegr3" uid="Desktop Application User" x="20">
         <object class="ActorInstance" id="actor" internalid="actorinstance0" name="cashier">
           <object class="Actor" id="actor" internalid="actor0" name="User"/>
@@ -908,7 +908,7 @@
           </object>
         </object>
       </object>
-      <object class="CreateMessageGR" from="sdobjectgr13" id="" internalid="createmessagegr0" to="sdobjectgr3" y="236">
+      <object class="CreateMessageGR" from="sdobjectgr13" id="" internalid="createmessagegr0" to="sdobjectgr3" y="256">
         <object class="CreateMessage" from="sdobject2" id="message" internalid="createmessage0" to="sdobject9">
           <object id="parameters">
             <object class="MethodParameter" id="" internalid="methodparameter24" name="spec" type="ProductSpecification"/>

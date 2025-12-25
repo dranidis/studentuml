@@ -33,7 +33,7 @@ public class ADSelectionControllerTest {
         model = new ADModel("ad", umlProject);
         internalFrame = new ADInternalFrame(model);
         h = new Helper(model);
-        selectionController  = new ADSelectionController(internalFrame, model);
+        selectionController = new ADSelectionController(internalFrame, model);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ADSelectionControllerTest {
         assertNotNull(selectionController);
     }
 
-    @Test 
+    @Test
     public void testDeleteInitialNodeWithinActivityNode() {
         ActivityNodeGR an = h.addActivityNode("an");
         InitialNodeGR i = h.addInitialNodeInActivityNode(an);
@@ -71,13 +71,13 @@ public class ADSelectionControllerTest {
         assertEquals(1, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
 
         // REDO
-        System.out.println("REDO");
+        // System.out.println("REDO");
         internalFrame.getUndoManager().redo();
 
         // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, ((ActivityNodeGR) model.getGraphicalElements().get(0)).getComponents().size());
-   }
+    }
 
     @Test
     public void testDeleteActivityNodeWithAnInitialNodeInside() {
@@ -117,7 +117,7 @@ public class ADSelectionControllerTest {
         // model.getGraphicalElements().forEach(e -> System.out.println("In model: " + e));
         // an.createIterator().forEachRemaining(e -> System.out.println("IN an: " + e));
         assertEquals(0, model.getGraphicalElements().size());
-             
+
     }
 
 }

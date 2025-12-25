@@ -8,7 +8,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -18,7 +17,6 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public class UseCaseGR extends LeafUCDElementGR {
@@ -31,8 +29,8 @@ public class UseCaseGR extends LeafUCDElementGR {
     private static final int VGAP_BETWEEN_EXTENSION_POINTS = 6;
     private static final int VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS = 20;
     private static final int HEIGHT_OF_LINE = 2;
-    private static final int VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS =
-            VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS / 2
+    private static final int VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS = VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS
+            / 2
             - HEIGHT_OF_LINE / 2;
     private static final String EXTENSION_POINTS_LABEL = "Extension Points";
 
@@ -95,7 +93,7 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
                 counter = counter + extend.getNumberOfExtensionPoints();
-            }            
+            }
         }
 
         return counter;
@@ -141,9 +139,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = j.next().getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
                         if (bounds.getWidth() > largest) {
@@ -161,9 +158,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = j.next().getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
 
@@ -228,9 +224,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = j.next().getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
 
@@ -281,9 +276,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = j.next().getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
                         newHeight += bounds.getHeight() + VGAP_BETWEEN_EXTENSION_POINTS;
@@ -328,15 +322,15 @@ public class UseCaseGR extends LeafUCDElementGR {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         UseCase sameUseCase = (UseCase) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        UseCaseGR clonedGR = new UseCaseGR(sameUseCase, 
-            this.startingPoint.x, this.startingPoint.y);
-        
+        UseCaseGR clonedGR = new UseCaseGR(sameUseCase,
+                this.startingPoint.x, this.startingPoint.y);
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
     }
 }

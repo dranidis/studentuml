@@ -195,3 +195,84 @@
 -   Automated test coverage: SDSelectionControllerTest (4 tests, all passing)
 
 ---
+
+## Activity Diagram Semantic Validation
+
+### Issue: Multiple Control Flows to/from Action Nodes
+
+**Date**: December 25, 2025
+**Status**: ✅ **FIXED**
+
+**Description**:
+The system was allowing action nodes to have multiple outgoing and incoming control flows, which violates UML Activity Diagram semantics. According to UML specification:
+
+-   Action nodes should have **at most one** outgoing control flow
+-   Action nodes should have **at most one** incoming control flow
+-   Only control flow nodes (Decision, Fork) can have multiple outgoing flows
+-   Only control flow nodes (Merge, Join) can have multiple incoming flows
+
+**RESOLUTION** (December 25, 2025):
+✅ **FIXED** - Full validation implemented in the controller layer for both incoming and outgoing flows.
+
+**Implementation Details**:
+
+-   **File**: `src/main/java/edu/city/studentuml/controller/AddControlFlowController.java`
+-   **Location**: `addFlow()` method (lines 32-60)
+
+**Validation Logic**:
+
+1. **Outgoing Flow Validation** (lines 35-46):
+
+    - Checks if source is ActionNodeGR and already has outgoing edges
+    - Shows error dialog if trying to add second outgoing flow
+    - Suggests using Fork node for parallel flows
+
+2. **Incoming Flow Validation** (lines 49-60):
+    - Checks if target is ActionNodeGR and already has incoming edges
+    - Shows error dialog if trying to add second incoming flow
+    - Suggests using Merge node for merging multiple flows
+
+**Architecture Decision**:
+
+-   Validation placed in **controller layer** (not model layer) for consistency
+-   Follows same pattern as other AD validations in `AddEdgeController` and subclasses
+-   Provides immediate user feedback through error dialogs
+-   Model layer remains focused on data management
+-   Prevents invalid diagrams from being created through the UI
+
+**Test Coverage**:
+
+-   `AddControlFlowControllerTest.testActionNode_SingleOutgoingFlow_ShouldSucceed()` - Verifies first outgoing flow is allowed
+-   `AddControlFlowControllerTest.testActionNode_MultipleOutgoingFlows_ShouldBePreventedByController()` - Confirms second outgoing flow is prevented
+-   `AddControlFlowControllerTest.testActionNode_MultipleIncomingFlows_ShouldBePreventedByController()` - Confirms second incoming flow is prevented
+-   `AddControlFlowControllerTest.testCreation()` - Basic controller instantiation
+-   All tests use `TestableAddControlFlowController` that overrides `showErrorMessage()` to avoid blocking JOptionPane dialogs during tests
+
+**Error Messages**:
+
+For **outgoing** flows:
+
+```
+Action node '[name]' already has 1 outgoing control flow(s).
+
+UML Activity Diagram semantics allow at most ONE outgoing flow from action nodes.
+Use a Fork node if you need parallel flows.
+```
+
+For **incoming** flows:
+
+```
+Action node '[name]' already has 1 incoming control flow(s).
+
+UML Activity Diagram semantics allow at most ONE incoming flow to action nodes.
+Use a Merge node if you need to merge multiple flows.
+```
+
+**Impact**:
+
+-   ✅ Users prevented from creating invalid Activity Diagrams through the UI
+-   ✅ Clear error dialogs guide users to use proper control flow nodes (Fork/Merge)
+-   ✅ Maintains UML Activity Diagram semantic correctness
+-   ✅ Consistent user experience with other AD validation errors
+-   ✅ No JOptionPane blocking during automated tests (testable controller pattern)
+-   ✅ Complete enforcement of UML semantics for action nodes

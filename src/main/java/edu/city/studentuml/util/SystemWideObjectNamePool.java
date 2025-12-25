@@ -3,10 +3,9 @@ package edu.city.studentuml.util;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.util.validation.ConsistencyChecker;
@@ -15,15 +14,14 @@ import edu.city.studentuml.view.gui.CollectionTreeModel;
 
 /**
  * SystemWideObjectNamePool keeps maps with objects and their unique names.
- * 
- * Unique names are generated every time a new object is added.
- * 
- * When reading from an XML file the unique names are the internalid attributes
- * in the XML file.
+ * Unique names are generated every time a new object is added. When reading
+ * from an XML file the unique names are the internalid attributes in the XML
+ * file.
  * <p>
  * Also responsible for consistency checking (to be documented).
  */
-public class SystemWideObjectNamePool extends Observable {
+public class SystemWideObjectNamePool {
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private static final Logger logger = Logger.getLogger(SystemWideObjectNamePool.class.getName());
 
@@ -56,10 +54,9 @@ public class SystemWideObjectNamePool extends Observable {
         setRuleFile(ruleFile);
     }
 
-    @Override
-    public synchronized void addObserver(Observer o) {
-        logger.fine(() -> "OBSERVER added: " + o.toString());
-        super.addObserver(o);
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+        logger.fine(() -> "PropertyChangeListener added: " + l.toString());
+        pcs.addPropertyChangeListener(l);
     }
 
     // Get runtime consistency checking
@@ -130,18 +127,15 @@ public class SystemWideObjectNamePool extends Observable {
         }
 
         messages.setName("<html><b>Messages</b></html>");
-        Iterator<String> it = messageTypes.iterator();
-        while (it.hasNext()) {
-            String messageType = it.next();
+        messageTypes.forEach(messageType -> {
             int countMessages = messages.getChildCount(messageType);
             messages.replace(messageType, countMessages + " " + messageType + "(s)");
-        }
+        });
 
         facts.setName("<html><b>Facts</b>" + " [" + facts.size() + "]</html>");
 
-        logger.fine(() -> "Notifying observers: " + this.countObservers());
-        setChanged();
-        notifyObservers(this);
+        logger.fine(() -> "Notifying listeners");
+        pcs.firePropertyChange("objectNamePoolChanged", null, this);
     }
 
     public void reload() {
@@ -213,10 +207,11 @@ public class SystemWideObjectNamePool extends Observable {
             objectMap.put(o, name);
 
             objectCountChanged();
-            logger.finer(() -> "ADDED in objectMap :" + o.getClass() + " named: " + name + " toString: " + o.toString());
+            logger.finest(
+                    () -> "ADDED object :" + o.getClass() + " NAMED: " + name + " toString: " + o.toString());
         } else {
-            logger.finest(() -> 
-                    "ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: " + o.toString());
+            logger.finest(() -> "ALREADY in objectMap :" + o.getClass() + ": " + objectMap.get(o) + " toString: "
+                    + o.toString());
         }
     }
 
@@ -244,11 +239,9 @@ public class SystemWideObjectNamePool extends Observable {
 
     /**
      * Called by ObjectFactory newinstance that provides the internalid for the name
-     * 
      * Usually the object does not exist in the maps (oldName = null) and it behaves
-     * like adding the object and its name (internalid) in the maps.
-     * 
-     * used for XML streaming
+     * like adding the object and its name (internalid) in the maps. used for XML
+     * streaming
      *
      * @param object the instance created by ObjectFactory
      * @param name   the internalid from the XML file
@@ -260,7 +253,8 @@ public class SystemWideObjectNamePool extends Observable {
 
         objectMap.put(object, name);
         namedMap.put(name, object);
-        logger.finer(() -> "RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name);
+        logger.finest(() -> "RENAMED object: " + object.getClass() + " from oldname: " + oldName + " to: " + name
+                + " toString: " + object.toString());
     }
 
     public void clear() {
@@ -269,8 +263,6 @@ public class SystemWideObjectNamePool extends Observable {
         loading = 0; // Reset loading counter for test isolation
         messageTypes.clear(); // Clear message types for test isolation
     }
-
-
 
     public void setRuleFile(String ruleFile) {
         this.ruleFile = ruleFile;

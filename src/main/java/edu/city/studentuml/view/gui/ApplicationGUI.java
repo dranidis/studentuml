@@ -18,8 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -69,13 +69,15 @@ import edu.city.studentuml.view.gui.components.HTMLEditorPane;
 import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
-public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
+/**
+ * Main application GUI panel. Contains legacy applet support that is
+ * deprecated.
+ */
+public abstract class ApplicationGUI extends JPanel implements KeyListener, PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
-    public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
-    protected StudentUMLAppletAPI applet = null;
     protected boolean repairMode = false;
     protected UMLProject umlProject = UMLProject.getInstance();
     protected CentralRepository centralRepository;
@@ -112,7 +114,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         loadLookAndFeel();
 
-        isApplet = false;
         this.frame = frame;
         instance = this;
         initialize();
@@ -126,8 +127,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         frame.setVisible(true);
 
-        ObjectFactory.getInstance().addObserver(this);
-        umlProject.addObserver(this);
+        ObjectFactory.getInstance().addPropertyChangeListener(this);
+        umlProject.addPropertyChangeListener(this);
 
         setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
         showFactsTab(Settings.showFacts());
@@ -159,16 +160,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
-    protected ApplicationGUI(StudentUMLAppletAPI applet) {
-        isApplet = true;
-        this.applet = applet;
-        instance = this;
-        initialize();
-        applet.getContentPane().add(this);
-        applet.setVisible(true);
-        setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
-    }
-
     // NEED FOR BACKWARD COMPATIBILITY
     public static ApplicationGUI getInstance() {
         return instance;
@@ -176,7 +167,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void initialize() {
         initializeRules();
-        SystemWideObjectNamePool.getInstance().addObserver(this);
+        SystemWideObjectNamePool.getInstance().addPropertyChangeListener(this);
         setUserId();
         addKeyListener(this);
         createInterface();
@@ -196,11 +187,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * sets the user id for coloring purposes (when drawing graphical elements)
      */
     private void setUserId() {
-        if (isApplet) {
-            SystemWideObjectNamePool.getInstance().setUid(applet.getUsername());
-        } else {
-            SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
-        }
+        SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
     }
 
     private void createInterface() {
@@ -208,7 +195,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createMenuBar();
         createToolBar();
         createDesktopPane();
-        update(umlProject, this);
+        propertyChange(new java.beans.PropertyChangeEvent(umlProject, "manualUpdate", null, this));
         createFactsAndMessageTree();
         createDiagramAndConsistencyArea();
         createRepairPopupMenu();
@@ -217,12 +204,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createMenuBar() {
-        if (!isApplet) {
-            menuBar = new MenuBar(this);
-            frame.setJMenuBar(menuBar.getjMenuBar());
-        } else {
-            applet.setJMenuBar(new MenuBar(this).getjMenuBar());
-        }
+        menuBar = new MenuBar(this);
+        frame.setJMenuBar(menuBar.getjMenuBar());
     }
 
     private void createToolBar() {
@@ -317,11 +300,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             try {
                 URL url = new URL(helpString);
-                if (isApplet) {
-                    applet.getAppletContext().showDocument(url, "_blank");
-                } else {
-                    logger.finest("Nothing done if not applet");
-                }
+                // Desktop application - help URLs would need to be opened in a browser
+                logger.finest("Help URL: " + url);
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
                         JOptionPane.ERROR_MESSAGE);
@@ -411,7 +391,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                GraphicsHelper.highlightBorder(null);
+                GraphicsHelper.highlightBorder(button); // why is this null?
             }
 
             @Override
@@ -449,13 +429,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.finest(() -> "" + e);
     }
 
-    public void update(Observable observable, Object object) {
-        String objString = "null";
-        if (object != null) {
-            objString = object.getClass().getSimpleName();
-        }
-        final String objStringFinal = objString;
-        logger.finest(() -> "UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        Object object = evt.getNewValue();
+        // String objString = "null";
+        // if (object != null) {
+        //     objString = object.getClass().getSimpleName();
+        // }
+        // final String objStringFinal = objString;
+        //     // logger.info(() -> "propertyChange: from: " + evt.getSource().getClass().getSimpleName() + " property: " + evt.getPropertyName()
+        // + evt.getNewValue() != null ? " newValue: " + evt.getNewValue().getClass().getSimpleName() : " newValue: null");
 
         if (object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
@@ -949,9 +932,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return repairPanel;
     }
 
-    public static boolean isApplet() {
-        return isApplet;
-    }
     /*
      * Below methods are used for remembering the tree expansion state for
      * messageTree is path1 descendant of path2
@@ -1019,7 +999,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         /*
          * create again the repositoryTreeView
          */
-        umlProject.deleteObserver(repositoryTreeView);
+        umlProject.removePropertyChangeListener(repositoryTreeView);
         RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
         JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
 

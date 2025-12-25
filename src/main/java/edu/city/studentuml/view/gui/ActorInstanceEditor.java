@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -146,15 +145,11 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
         nameField.setText(instance.getName());
 
         // initialize the actor names combo box
-        if (!isInList(actor, actors)) {
+        if (!actors.contains(actor)) {
             actors.add(0, actor);
         }
 
-        Actor a;
-        Iterator<Actor> iterator = actors.iterator();
-        while (iterator.hasNext()) {
-            a = iterator.next();
-
+        for (Actor a : actors) {
             if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
             } else {
@@ -164,21 +159,6 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
 
         actorComboBox.setSelectedIndex(actors.indexOf(actor));
         updateEditActorPanel();
-    }
-
-    public boolean isInList(Actor actor, Vector<Actor> list) {
-        Iterator<Actor> iterator = list.iterator();
-        Actor a;
-
-        while (iterator.hasNext()) {
-            a = iterator.next();
-
-            if (a == actor) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public String getActorInstanceName() {
@@ -223,11 +203,7 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
 
         actorComboBox.removeAllItems();
 
-        Actor a;
-        Iterator<Actor> iterator = actors.iterator();
-        while (iterator.hasNext()) {
-            a = iterator.next();
-
+        for (Actor a : actors) {
             if (a != null && !a.getName().equals("")) {
                 actorComboBox.addItem(a.getName());
             } else {

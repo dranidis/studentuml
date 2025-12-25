@@ -1,6 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -10,7 +10,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class UCLinkGR extends LinkGR {
@@ -63,7 +62,7 @@ public abstract class UCLinkGR extends LinkGR {
         link.removeExtensionPoint(extensionPoint);
     }
 
-    public Iterator<ExtensionPoint> getExtensionPoints() {
+    public List<ExtensionPoint> getExtensionPoints() {
         return link.getExtensionPoints();
     }
 

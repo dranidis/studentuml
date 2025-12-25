@@ -59,7 +59,7 @@ public class IgnoreJSONTest {
     public void designClass() {
         DesignClass dc = new DesignClass("A");
         String jsonString = getJSON(dc);
-        System.out.println(jsonString);
+        // System.out.println(jsonString);
         assertFalse(jsonString.contains("sdmethods"));
         assertTrue(jsonString.contains("\"name\" : \"A\""));
         assertTrue(jsonString.contains("attributes"));
@@ -130,7 +130,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void diagramClass() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
         UMLProject umlProject = UMLProject.getInstance();
         umlProject.clear();
@@ -148,7 +148,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void diagramClassWithAssociation() {
-       
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -175,7 +175,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void diagramClassWithAggregation() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -201,7 +201,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void emptyDiagram() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -216,7 +216,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void emptyProject() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -229,7 +229,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void projectWithTwoDiagrams() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -246,7 +246,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void projectWithTwoDiagramsTwoClassesAndGeneralizations() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -290,7 +290,7 @@ public class IgnoreJSONTest {
 
     @Test
     public void projectWithTwoDiagramsAClassAnInterfaceAndRealizations() {
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -388,7 +388,7 @@ public class IgnoreJSONTest {
     @Test
     public void readXML() {
         String filename = "diagrams" + File.separator + "tests" + File.separator + "classes.xml";
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();
@@ -410,7 +410,7 @@ public class IgnoreJSONTest {
     @Test
     public void readStudentXML() {
         String filename = "diagrams" + File.separator + "studentuml.xml";
-        
+
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
         UMLProject umlProject = UMLProject.getInstance();

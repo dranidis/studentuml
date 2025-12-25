@@ -2,10 +2,10 @@ package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -205,41 +205,41 @@ public class RuleEditor extends JPanel {
         InputMap inputMap = textPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // Ctrl-b to go backward one character
-        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.backwardAction);
 
         // Ctrl-f to go forward one character
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.forwardAction);
 
         // Ctrl-p to go up one line
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.upAction);
 
         // Ctrl-n to go down one line
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.downAction);
 
         // Ctrl-z undo
         undoAction = new UndoAction();
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, undoAction);
 
         // Ctrl-y redo
         redoAction = new RedoAction();
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, redoAction);
 
         // Ctrl-x cut
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.cutAction);
 
         // Ctrl-c copy
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.copyAction);
 
         // Ctrl-v paste
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, DefaultEditorKit.pasteAction);
 
         // Ctrl-s save
@@ -253,12 +253,12 @@ public class RuleEditor extends JPanel {
                     bw.write(textPane.getText());
                     bw.flush();
                     statusLabel.setText("Rules saved.");
-                } catch (IOException  e) {
+                } catch (IOException e) {
                     e.printStackTrace();
-                } 
+                }
             }
         };
-        key = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
         inputMap.put(key, save);
 
     }

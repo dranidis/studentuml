@@ -1,7 +1,5 @@
 package edu.city.studentuml.controller;
 
-import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -38,7 +36,6 @@ import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
 
 /**
- *
  * @author Biser
  */
 public class ADSelectionController extends SelectionController {
@@ -54,7 +51,7 @@ public class ADSelectionController extends SelectionController {
         editElementMapper.put(ActivityNodeGR.class, el -> editActivityNode((ActivityNodeGR) el));
         editElementMapper.put(DecisionNodeGR.class, el -> editDecisionNode((DecisionNodeGR) el));
     }
-    
+
     private void editControlFlow(ControlFlowGR controlFlowGR) {
         ControlFlowEditor controlFlowEditor = new ControlFlowEditor(controlFlowGR);
         ControlFlow controlFlow = (ControlFlow) controlFlowGR.getEdge();
@@ -66,7 +63,7 @@ public class ADSelectionController extends SelectionController {
 
         // Undo/Redo
         ControlFlow undoControlFlow = (ControlFlow) controlFlow.clone();
-        
+
         String guard = controlFlowEditor.getGuard();
         // check that the guard is ok before moving on
         // the outgoing edge from the Decision Node must have a guard (different than other guards)
@@ -78,10 +75,8 @@ public class ADSelectionController extends SelectionController {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Iterator<Edge> it = sourceNode.getOutgoingEdges();
-        while (it.hasNext()) {
-            Edge edge = it.next();
+
+        for (Edge edge : sourceNode.getOutgoingEdges()) {
             if (edge != controlFlow) {
                 String s = edge.getGuard();
                 if (s.equals(guard) && !s.isEmpty()) {
@@ -103,7 +98,7 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
+
     private void editObjectFlow(ObjectFlowGR objectFlowGR) {
         ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor(objectFlowGR);
         ObjectFlow objectFlow = (ObjectFlow) objectFlowGR.getEdge();
@@ -115,7 +110,7 @@ public class ADSelectionController extends SelectionController {
 
         // Undo/Redo
         ObjectFlow undoObjectFlow = (ObjectFlow) objectFlow.clone();
-        
+
         String weight = objectFlowEditor.getWeight();
         String guard = objectFlowEditor.getGuard();
         // check that the guard is ok before moving on
@@ -128,10 +123,8 @@ public class ADSelectionController extends SelectionController {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Iterator<Edge> it = sourceNode.getOutgoingEdges();
-        while (it.hasNext()) {
-            Edge edge = it.next();
+
+        for (Edge edge : sourceNode.getOutgoingEdges()) {
             if (edge != objectFlow) {
                 String s = edge.getGuard();
                 if (s.equals(guard) && !s.isEmpty()) {
@@ -143,7 +136,7 @@ public class ADSelectionController extends SelectionController {
                 }
             }
         }
-        
+
         try {
             objectFlow.setWeight(weight);
         } catch (RuntimeException e) {
@@ -153,7 +146,7 @@ public class ADSelectionController extends SelectionController {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         objectFlow.setGuard(guard);
 
         // Undo/Redo
@@ -164,9 +157,7 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
 
-    
     private void editActionNode(ActionNodeGR actionNodeGR) {
         ActionNodeEditor actionNodeEditor = new ActionNodeEditor(actionNodeGR);
         ActionNode actionNode = (ActionNode) actionNodeGR.getComponent();
@@ -178,7 +169,7 @@ public class ADSelectionController extends SelectionController {
 
         // Undo/Redo
         ActionNode undoActionNode = (ActionNode) actionNode.clone();
-        
+
         String actionName = actionNodeEditor.getActionName();
         actionNode.setName(actionName);
 
@@ -190,7 +181,7 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
+
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
         ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(objectNodeGR, repository);
@@ -216,9 +207,8 @@ public class ADSelectionController extends SelectionController {
             newObjectNode.setType(objectNodeEditor.getType());
 
             // add the states to the new object node
-            Iterator<State> stateIterator = objectNodeEditor.getStates().iterator();
-            while (stateIterator.hasNext()) {
-                newObjectNode.addState(stateIterator.next());
+            for (State state : objectNodeEditor.getStates()) {
+                newObjectNode.addState(state);
             }
 
             // Undo/Redo [edit]
@@ -231,7 +221,7 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
+
     private void editActivityNode(ActivityNodeGR activityNodeGR) {
         ActivityNodeEditor activityNodeEditor = new ActivityNodeEditor(activityNodeGR);
         ActivityNode activityNode = (ActivityNode) activityNodeGR.getComponent();
@@ -243,7 +233,7 @@ public class ADSelectionController extends SelectionController {
 
         // Undo/Redo
         ActivityNode undoActivityNode = (ActivityNode) activityNode.clone();
-        
+
         String activityName = activityNodeEditor.getActivityName();
         activityNode.setName(activityName);
 
@@ -255,7 +245,6 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-    
 
     private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
         DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);

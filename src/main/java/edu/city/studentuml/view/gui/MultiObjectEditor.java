@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -42,7 +41,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     private JTextField nameField;
     private JPanel centerPanel;
     private JPanel typePanel;
-    private JComboBox typeComboBox;
+    private JComboBox<String> typeComboBox;
     private JLabel typeLabel;
     private JPanel cardPanel;
     private JPanel nonemptyPanel;
@@ -56,13 +55,14 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     private boolean ok;
     private MultiObjectGR multiObjectGR;
     private DesignClass objectType;
-    private Vector types;
+    private Vector<DesignClass> types;
     private CentralRepository repository;
 
+    @SuppressWarnings("unchecked")
     public MultiObjectEditor(MultiObjectGR obj, CentralRepository cr) {
         multiObjectGR = obj;
         repository = cr;
-        types = (Vector) repository.getClasses().clone();
+        types = (Vector<DesignClass>) repository.getClasses().clone();
 
         setLayout(new BorderLayout());
 
@@ -77,7 +77,7 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
 
         typePanel = new JPanel(new FlowLayout());
         typeLabel = new JLabel("Select objects' type: ");
-        typeComboBox = new JComboBox();
+        typeComboBox = new JComboBox<>();
         typeComboBox.setMaximumRowCount(5);
         typeComboBox.addItemListener(this);
         typePanel.add(typeLabel);
@@ -150,19 +150,15 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
         nameField.setText(multiObject.getName());
 
         // initialize the class names combo box
-        if (!isInList(objectType, types)) {
+        if (!types.contains(objectType)) {
             types.add(objectType);
         }
 
-        DesignClass dc;
         boolean hasEmpty = false;
-        Iterator iterator = types.iterator();
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-
+        for (DesignClass dc : types) {
             if (dc != null && !dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } else if (dc != null && dc.getName().equals("")) {
+            } else if (dc != null) {
                 typeComboBox.addItem("(unnamed)");
                 hasEmpty = true;
             }
@@ -177,21 +173,6 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
             typeComboBox.setSelectedItem(objectType.getName());
         }
         updateAddTypePanel();
-    }
-
-    public boolean isInList(DesignClass designClass, Vector list) {
-        Iterator iterator = list.iterator();
-        DesignClass dc;
-
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
-
-            if (dc == designClass) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public String getMultiObjectName() {
@@ -256,13 +237,10 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     // updates the combo box according to the list of classes
     public void updateComboBox(String index) {
         typeComboBox.removeAllItems();
-        DesignClass dc;
-        Iterator iterator = types.iterator();
-        while (iterator.hasNext()) {
-            dc = (DesignClass) iterator.next();
+        for (DesignClass dc : types) {
             if (dc != null && !dc.getName().equals("")) {
                 typeComboBox.addItem(dc.getName());
-            } else if (dc != null && dc.getName().equals("")) {
+            } else if (dc != null) {
                 typeComboBox.addItem("(unnamed)");
             }
         }

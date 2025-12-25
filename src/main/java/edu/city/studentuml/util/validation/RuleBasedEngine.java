@@ -1,16 +1,13 @@
 package edu.city.studentuml.util.validation;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import edu.city.studentuml.view.gui.CollectionTreeModel;
 
-
 /**
  * A class for performing a high level interface with the prolog engine.
- *
  */
 public class RuleBasedEngine {
 
@@ -33,7 +30,7 @@ public class RuleBasedEngine {
                 modifyDatabase("assert", clause);
                 clauseTable.put(clause, true);
             } catch (Exception e) {
-                logger.severe("Exception caught: clause");
+                logger.severe("Exception caught: clause:" + clause);
                 e.printStackTrace();
             }
         }
@@ -51,7 +48,7 @@ public class RuleBasedEngine {
 
     private void modifyDatabase(String action, String clause) {
         String queryString = action + "(" + clause + ").";
-            prolog.query(queryString);
+        prolog.query(queryString);
 
     }
 
@@ -64,15 +61,11 @@ public class RuleBasedEngine {
 
     public void printSolution(Map<String, Map<String, String>> result) {
         if (result != null) {
-            Iterator<String> i = result.keySet().iterator();
             logger.finest(() -> "Rule has (" + result.size() + ") solution: ");
-            while (i.hasNext()) {
-                String solution = i.next();
+            for (String solution : result.keySet()) {
                 Map<String, String> solutionMap = result.get(solution);
-                Iterator<String> b = solutionMap.keySet().iterator();
                 logger.finest(() -> " " + solution);
-                while (b.hasNext()) {
-                    String name = b.next();
+                for (String name : solutionMap.keySet()) {
                     String variableValue = solutionMap.get(name);
                     logger.finest(() -> "        " + name + "->" + variableValue);
                 }
@@ -80,28 +73,27 @@ public class RuleBasedEngine {
         }
     }
 
-
     /**
-     * WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE
-     * IF A RULE FIRES FOR X,Y !!! THEN WE HAVE AN INVALD UML!!!
+     * WE ARE LOOKING FOR ONLY ONE OCCURANCE OF THE RULE IF A RULE FIRES FOR X,Y !!!
+     * THEN WE HAVE AN INVALD UML!!!
      * 
      * @param rule
      * @param allSolutions
      * @return
      */
-    public synchronized Map<String,  Map<String, ?>> checkRule(String rule, boolean allSolutions) {
+    public synchronized Map<String, Map<String, ?>> checkRule(String rule, boolean allSolutions) {
         if (!rule.substring(rule.length() - 1).equals(".")) {
             rule = rule + ".";
         }
 
         try {
             logger.finer("PROLOG Query: " + rule);
-            Map<String,  Map<String, ?>> ht = prolog.query(rule);
+            Map<String, Map<String, ?>> ht = prolog.query(rule);
             if (ht == null) {
                 return null;
             }
 
-            Map<String,  Map<String, ?>> results = new HashMap<>();
+            Map<String, Map<String, ?>> results = new HashMap<>();
 
             int index = 0;
 

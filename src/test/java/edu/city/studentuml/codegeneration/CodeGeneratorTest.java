@@ -41,9 +41,9 @@ public class CodeGeneratorTest {
         File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
-                System.out.println("Directory is created!");
+                // System.out.println("Directory is created!");
             } else {
-                System.out.println("Directory cannot be Created!");
+                // System.out.println("Directory cannot be Created!");
             }
         }
         umlProject.setFilepath(fullpath);
@@ -336,7 +336,7 @@ public class CodeGeneratorTest {
                 FileReader fr = new FileReader(f);
                 BufferedReader br = new BufferedReader(fr);
                 while ((line = br.readLine()) != null) {
-                    System.out.println(line);
+                    // System.out.println(line);
                     if (line.contains("x = sd2.mtd1(x)")) {
                         calledBranchedMethodExists = true;
                     }

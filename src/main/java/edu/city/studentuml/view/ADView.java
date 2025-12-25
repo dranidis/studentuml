@@ -27,14 +27,14 @@ public class ADView extends DiagramView {
                 NodeComponentGR comp = (NodeComponentGR) element;
                 comp.draw(g);
 
-                comp.getIncomingRelations().forEachRemaining(link -> link.draw(g));
+                comp.getIncomingRelations().forEach(link -> link.draw(g));
 
                 comp.createIterator().forEachRemaining(el -> {
                     el.draw(g);
-                    el.getIncomingRelations().forEachRemaining(link -> link.draw(g));
+                    el.getIncomingRelations().forEach(link -> link.draw(g));
                 });
 
-            } else if (!(element instanceof EdgeGR)){ // already drawn
+            } else if (!(element instanceof EdgeGR)) { // already drawn
                 element.draw(g);
             }
         }

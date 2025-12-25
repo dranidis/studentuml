@@ -4,14 +4,12 @@ import edu.city.studentuml.model.graphical.AbstractPointGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- *
  * @author Biser
  */
 public class MoveEdgeEdit extends AbstractUndoableEdit {
@@ -21,7 +19,8 @@ public class MoveEdgeEdit extends AbstractUndoableEdit {
     private List<AbstractPointGR> redoPoints;
     private DiagramModel model;
 
-    public MoveEdgeEdit(EdgeGR edge, List<AbstractPointGR> undoPoints, List<AbstractPointGR> redoPoints, DiagramModel model) {
+    public MoveEdgeEdit(EdgeGR edge, List<AbstractPointGR> undoPoints, List<AbstractPointGR> redoPoints,
+            DiagramModel model) {
         this.edge = edge;
         this.undoPoints = undoPoints;
         this.redoPoints = redoPoints;
@@ -40,9 +39,8 @@ public class MoveEdgeEdit extends AbstractUndoableEdit {
 
     private void move(List<AbstractPointGR> points) {
         edge.clearPoints();
-        Iterator<AbstractPointGR> it = points.iterator();
-        while (it.hasNext()) {
-            edge.addPoint(it.next());
+        for (AbstractPointGR point : points) {
+            edge.addPoint(point);
         }
 
         // set observable model to changed in order to notify its views

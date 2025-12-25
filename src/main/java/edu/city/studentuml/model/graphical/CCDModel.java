@@ -2,13 +2,11 @@ package edu.city.studentuml.model.graphical;
 
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author draganbisercic
  */
 public class CCDModel extends AbstractCDModel {
@@ -93,27 +91,22 @@ public class CCDModel extends AbstractCDModel {
         return graphicalElements.stream()
                 .filter(grElement -> grElement instanceof AssociationClassGR
                         && (((AssociationClassGR) grElement).getAssociationClass().getClassB() == c.getAbstractClass()
-                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c.getAbstractClass()))
+                                || ((AssociationClassGR) grElement).getAssociationClass().getClassA() == c
+                                        .getAbstractClass()))
                 .collect(Collectors.toList());
-    } 
+    }
 
     public List<GraphicalElement> getClassGRGeneralizationGRs(ConceptualClassGR c) {
         return graphicalElements.stream().filter(grElement -> grElement instanceof GeneralizationGR
                 && (((GeneralizationGR) grElement).getClassifierA().getClassifier() == c.getAbstractClass()
                         || ((GeneralizationGR) grElement).getClassifierB().getClassifier() == c.getAbstractClass()))
                 .collect(Collectors.toList());
-    }    
+    }
 
     public Vector<ConceptualClassGR> getConceptualClasses() {
-        Vector<ConceptualClassGR> v = new Vector<>();
-        Iterator<GraphicalElement> i = getGraphicalElements().iterator();
-        while (i.hasNext()) {
-            GraphicalElement e = i.next();
-            if (e instanceof ConceptualClassGR) {
-                v.add((ConceptualClassGR) e);
-            }
-        }
-
-        return v;
+        return getGraphicalElements().stream()
+                .filter(e -> e instanceof ConceptualClassGR)
+                .map(e -> (ConceptualClassGR) e)
+                .collect(Collectors.toCollection(Vector::new));
     }
 }

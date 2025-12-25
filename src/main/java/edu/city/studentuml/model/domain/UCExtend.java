@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.domain;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -10,7 +9,6 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public class UCExtend extends UCLink {
@@ -45,8 +43,8 @@ public class UCExtend extends UCLink {
     }
 
     @Override
-    public Iterator<ExtensionPoint> getExtensionPoints() {
-        return extensionPoints.iterator();
+    public List<ExtensionPoint> getExtensionPoints() {
+        return extensionPoints;
     }
 
     @Override
@@ -68,9 +66,8 @@ public class UCExtend extends UCLink {
     public UCExtend clone() {
         UCExtend copy = new UCExtend((UseCase) this.getSource(), (UseCase) this.getTarget());
 
-        Iterator<ExtensionPoint> i = getExtensionPoints();
-        while (i.hasNext()) {
-            copy.addExtensionPoint(i.next().clone());
+        for (ExtensionPoint ep : getExtensionPoints()) {
+            copy.addExtensionPoint(ep.clone());
         }
 
         return copy;
@@ -85,6 +82,6 @@ public class UCExtend extends UCLink {
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
         super.streamToXML(node, streamer);
-        streamer.streamObjects(streamer.addChild(node, "extensionpoints"), getExtensionPoints());
+        streamer.streamObjects(streamer.addChild(node, "extensionpoints"), getExtensionPoints().iterator());
     }
 }

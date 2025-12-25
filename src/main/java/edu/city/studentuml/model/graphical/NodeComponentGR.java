@@ -11,7 +11,6 @@ import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.util.Coverable;
 
 /**
- *
  * @author Biser
  */
 public abstract class NodeComponentGR extends GraphicalElement implements Coverable {
@@ -65,8 +64,8 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
         return incomingRelations.size();
     }
 
-    public Iterator<EdgeGR> getIncomingRelations() {
-        return incomingRelations.iterator();
+    public List<EdgeGR> getIncomingRelations() {
+        return incomingRelations;
     }
 
     public void addOutgoingEdge(EdgeGR edge) {
@@ -83,8 +82,8 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
         return outgoingRelations.size();
     }
 
-    public Iterator<EdgeGR> getOutgoingRelations() {
-        return outgoingRelations.iterator();
+    public List<EdgeGR> getOutgoingRelations() {
+        return outgoingRelations;
     }
 
     /*
@@ -119,6 +118,6 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
 
     @Override
     public String toString() {
-        return component.getName() + " : " +  component.getClass().getSimpleName();
-    }   
+        return component.getName() + " : " + component.getClass().getSimpleName();
+    }
 }

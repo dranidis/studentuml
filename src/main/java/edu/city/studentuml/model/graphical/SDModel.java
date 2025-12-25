@@ -3,7 +3,6 @@ package edu.city.studentuml.model.graphical;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -96,25 +95,24 @@ public class SDModel extends AbstractSDModel {
     public void validateMessages() {
         // keeps track of messages that have been checked already
         Vector<SDMessageGR> checked = new Vector<>();
-        Iterator<SDMessageGR> iterator = messages.iterator();
-        SDMessageGR message;
 
-        while (iterator.hasNext()) {
-            message = iterator.next();
+        // Use index-based iteration to handle list modifications during iteration
+        for (int i = 0; i < messages.size(); i++) {
+            SDMessageGR message = messages.get(i);
 
             if (message instanceof CreateMessageGR && !checked.contains(message)) {
 
                 // this method might result in direct changes to the messages list
-                // so the iterator is refreshed to be safe from inconsistencies
+                // so we restart from the beginning after validation
                 validateCreateMessagePosition((CreateMessageGR) message);
                 checked.add(message);
 
-                // refresh the iterator
-                iterator = messages.iterator();
+                // restart iteration to account for list modifications
+                i = -1; // Will be incremented to 0 in next loop iteration
             } else if (message instanceof DestroyMessageGR && !checked.contains(message)) {
                 validateDestroyMessagePosition((DestroyMessageGR) message);
                 checked.add(message);
-                iterator = messages.iterator();
+                i = -1; // Restart iteration
             }
         }
     }

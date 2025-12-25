@@ -1,7 +1,6 @@
 package edu.city.studentuml.util.undoredo;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -28,7 +27,6 @@ import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 
 /**
- *
  * @author draganbisercic
  */
 public class CompositeDeleteEdit extends DeleteEditComponent {
@@ -63,9 +61,10 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
                 clone = ((SDObjectGR) element).getSDObject().clone();
             } else if (element instanceof MultiObjectGR) {
                 clone = ((MultiObjectGR) element).getMultiObject().clone();
-            } 
+            }
         } else {
-            logger.fine(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : " + element.toString());
+            logger.fine(() -> "setClone: unhandled element:" + element.getClass().getSimpleName() + " : "
+                    + element.toString());
         }
     }
 
@@ -93,12 +92,7 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
 
     @Override
     public void undo() throws CannotUndoException {
-        DeleteEditComponent comp;
-        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
-        while (i.hasNext()) {
-            comp = i.next();
-            comp.undo();
-        }
+        deleteEditComponents.forEach(DeleteEditComponent::undo);
 
         // need to edit element after it's been cleared at deletion time
         rebuildElement();
@@ -142,11 +136,6 @@ public class CompositeDeleteEdit extends DeleteEditComponent {
 
     @Override
     public void redo() throws CannotRedoException {
-        DeleteEditComponent comp;
-        Iterator<DeleteEditComponent> i = deleteEditComponents.iterator();
-        while (i.hasNext()) {
-            comp = i.next();
-            comp.redo();
-        }
+        deleteEditComponents.forEach(DeleteEditComponent::redo);
     }
 }

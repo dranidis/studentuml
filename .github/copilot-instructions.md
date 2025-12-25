@@ -81,6 +81,7 @@ This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PAT
 -   **Breaking changes** → Increment MAJOR, reset MINOR and PATCH (e.g., 1.4.0 → 2.0.0)
 
 **SNAPSHOT versions** (e.g., 1.4.0-SNAPSHOT) indicate unreleased development versions. When a release is ready:
+
 1. Remove -SNAPSHOT suffix
 2. Update CHANGELOG.md with release date
 3. Tag the release in git

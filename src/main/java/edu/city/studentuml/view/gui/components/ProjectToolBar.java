@@ -43,15 +43,11 @@ public class ProjectToolBar extends JToolBar {
         JButton exportButton = createToolBarButton("export.gif", "Export to image", e -> applicationGUI.exportImage());
         // JButton codeGenerateButton = createToolBarButton("code.gif", "Generate Code", e -> applicationGUI.forwardEngineer());
 
-        if (!ApplicationGUI.isApplet()) { // applet version does not allow creation of new project
-            add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
-        }
+        add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
         add(openButton);
         add(saveButton);
-        if (!ApplicationGUI.isApplet()) {
-            add(saveAsButton);
-            add(exportButton);
-        }
+        add(saveAsButton);
+        add(exportButton);
 
         /*
          * uncomment to show button

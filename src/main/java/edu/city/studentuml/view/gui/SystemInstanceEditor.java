@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -34,7 +33,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
     private JPanel systemPanel;
     private JLabel systemLabel;
-    private JComboBox systemComboBox;
+    private JComboBox<String> systemComboBox;
     private JDialog systemInstanceDialog;
 
     private JPanel namePanel;
@@ -57,14 +56,15 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     private boolean ok;
 
     private System system;
-    private Vector systems;
+    private Vector<System> systems;
     private SystemInstanceGR systemInstance;
     private CentralRepository repository;
 
+    @SuppressWarnings("unchecked")
     public SystemInstanceEditor(SystemInstanceGR s, CentralRepository cr) {
         systemInstance = s;
         repository = cr;
-        systems = (Vector) repository.getSystems().clone();
+        systems = (Vector<System>) repository.getSystems().clone();
         setLayout(new BorderLayout());
 
         centerPanel = new JPanel(new GridLayout(3, 1));
@@ -78,7 +78,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
         systemPanel = new JPanel(new FlowLayout());
         systemLabel = new JLabel("System: ");
-        systemComboBox = new JComboBox();
+        systemComboBox = new JComboBox<>();
         systemComboBox.setMaximumRowCount(5);
         systemComboBox.addItemListener(this);
         systemPanel.add(systemLabel);
@@ -150,18 +150,15 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         nameField.setText(instance.getName());
 
         // initialize the system names combo box
-        if (!isInList(system, systems)) {
+        if (!systems.contains(system)) {
             systems.add(system);
         }
 
-        System s;
-        Iterator iterator = systems.iterator();
         boolean hasEmpty = false;
-        while (iterator.hasNext()) {
-            s = (System) iterator.next();
+        for (System s : systems) {
             if (s != null && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if (s != null && s.getName().equals("")) {
+            } else if (s != null) {
                 systemComboBox.addItem("(unnamed)");
                 hasEmpty = true;
             }
@@ -176,21 +173,6 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
             systemComboBox.setSelectedItem(system.getName());
         }
         updateAddSystemPanel();
-    }
-
-    public boolean isInList(System system, Vector list) {
-        Iterator iterator = list.iterator();
-        System s;
-
-        while (iterator.hasNext()) {
-            s = (System) iterator.next();
-
-            if (s == system) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public String getSystemName() {
@@ -253,13 +235,10 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
     public void updateComboBox(String index) {
         systemComboBox.removeAllItems();
-        System s;
-        Iterator iterator = systems.iterator();
-        while (iterator.hasNext()) {
-            s = (System) iterator.next();
+        for (System s : systems) {
             if (s != null && !s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if (s != null && s.getName().equals("")) {
+            } else if (s != null) {
                 systemComboBox.addItem("(unnamed)");
             }
         }

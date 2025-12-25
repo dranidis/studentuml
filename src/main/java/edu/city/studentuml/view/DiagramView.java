@@ -9,8 +9,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
@@ -24,7 +24,7 @@ import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.ScaleRound;
 import edu.city.studentuml.util.Theme;
 
-public abstract class DiagramView extends JPanel implements Observer {
+public abstract class DiagramView extends JPanel implements PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(DiagramView.class.getName());
 
@@ -35,8 +35,8 @@ public abstract class DiagramView extends JPanel implements Observer {
     private double scale = 1.0;
 
     /**
-     * Necessary for remembering the necessary max width and height of the view area in
-     * order not to unnecessarily update the size of the panel. Unfortunately
+     * Necessary for remembering the necessary max width and height of the view area
+     * in order not to unnecessarily update the size of the panel. Unfortunately
      * getSize() of the panel does not serve because the size changes outside of the
      * program and the values almost never match.
      */
@@ -44,16 +44,16 @@ public abstract class DiagramView extends JPanel implements Observer {
     private int maxHeight;
 
     protected ReentrantLock lock = new ReentrantLock();
-    
+
     protected DiagramView(DiagramModel m) {
         model = m;
 
         if (m != null) {
-            m.addObserver(this);
+            m.addPropertyChangeListener(this);
         }
 
         setDoubleBuffered(true);
-   }
+    }
 
     public double getScale() {
         return scale;
@@ -68,7 +68,7 @@ public abstract class DiagramView extends JPanel implements Observer {
     public void zoomIn() {
         setScale(scale * 1.1);
     }
-    
+
     public void zoomOut() {
         setScale(scale * 0.9);
     }
@@ -79,10 +79,6 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public Line2D getDragLine() {
         return dragLine;
-    }
-
-    public void setDragLine(Line2D dragLine) {
-        this.dragLine = dragLine;
     }
 
     public Rectangle2D getDragRectangle() {
@@ -138,7 +134,7 @@ public abstract class DiagramView extends JPanel implements Observer {
     // Image scaled by a factors of "scalex" and "scaley"
     // to maintain aspect ratio, scalex = scaley
     public BufferedImage getImageByScale(double scalex, double scaley) {
-        
+
         Point2D.Double maxPoint = getMaxPositionOfElements();
 
         int imageWidth = (int) (maxPoint.getX() * scalex);
@@ -168,7 +164,6 @@ public abstract class DiagramView extends JPanel implements Observer {
         // maintain aspect ratio by using the same scale for x and y
         g.scale(scalex, scaley);
 
-
         // call method drawDiagram to draw the uml elements on the image
         drawDiagram(g);
 
@@ -191,7 +186,7 @@ public abstract class DiagramView extends JPanel implements Observer {
         model.getGraphicalElements().stream()
                 .filter(ge -> !(ge instanceof LinkGR) && !(ge instanceof UMLNoteGR))
                 .forEach(ge -> ge.draw(g));
-        
+
         // ... finally draw the dragline and rectangle
         drawLineAndRectangle(g);
 
@@ -205,20 +200,22 @@ public abstract class DiagramView extends JPanel implements Observer {
     public void changeSizeToFitAllElements() {
 
         Point2D.Double maxPoint = getMaxPositionOfElements();
-        int maxX = Math.max( scaleTo(maxPoint.getX()), model.getFrame().getDrawingAreaWidth());
-        int maxY = Math.max( scaleTo(maxPoint.getY()), model.getFrame().getDrawingAreaHeight());
+        int maxX = Math.max(scaleTo(maxPoint.getX()), model.getFrame().getDrawingAreaWidth());
+        int maxY = Math.max(scaleTo(maxPoint.getY()), model.getFrame().getDrawingAreaHeight());
 
         if (maxX != this.maxWidth || maxY != this.maxHeight) {
             maxWidth = maxX;
             maxHeight = maxY;
-            logger.fine(() -> "Scale: " + scale + " New View size: "+ maxWidth + ", " + maxHeight);   
-           
-            this.setSize(new Dimension(maxWidth, maxHeight));     
+            logger.fine(() -> "Scale: " + scale + " New View size: " + maxWidth + ", " + maxHeight);
+
+            this.setSize(new Dimension(maxWidth, maxHeight));
             revalidate();
         }
     }
 
     protected void drawLineAndRectangle(Graphics2D g) {
+        g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, new float[] { 2 }, 0));
+
         g.draw(dragLine);
 
         float[] rectangularDashes = { 2 };
@@ -229,13 +226,13 @@ public abstract class DiagramView extends JPanel implements Observer {
 
     public void setModel(DiagramModel m) {
         if (model != null) {
-            model.deleteObserver(this);
+            model.removePropertyChangeListener(this);
         }
 
         model = m;
 
         if (m != null) {
-            m.addObserver(this);
+            m.addPropertyChangeListener(this);
             repaint();
         }
     }
@@ -249,19 +246,20 @@ public abstract class DiagramView extends JPanel implements Observer {
         return new Dimension(getWidth(), getHeight());
     }
 
-    public void update(Observable observable, Object object) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         repaint();
     }
 
     public Point2D.Double getMaxPositionOfElements() {
         double maxX = 0;
         double maxY = 0;
-        for(GraphicalElement ge: model.getGraphicalElements()) {
+        for (GraphicalElement ge : model.getGraphicalElements()) {
             Rectangle2D bounds = ge.getBounds();
-            maxX = Math.max(maxX, bounds.getMaxX());            
-            maxY = Math.max(maxY, bounds.getMaxY());            
-        } 
+            maxX = Math.max(maxX, bounds.getMaxX());
+            maxY = Math.max(maxY, bounds.getMaxY());
+        }
         return new Point2D.Double(maxX + 20, maxY + 20);
     }
-         
+
 }

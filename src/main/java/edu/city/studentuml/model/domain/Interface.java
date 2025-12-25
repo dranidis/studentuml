@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -49,11 +48,7 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     }
 
     public Method getMethodByName(String n) {
-        Iterator<Method> iterator = methods.iterator();
-
-        while (iterator.hasNext()) {
-            Method meth = iterator.next();
-
+        for (Method meth : methods) {
             if (meth.getName().equals(n)) {
                 return meth;
             }
@@ -90,12 +85,7 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     public Interface clone() {
         Interface copyInterface = new Interface(this.getName());
 
-        Method method;
-        Iterator<Method> methodIterator = methods.iterator();
-        while (methodIterator.hasNext()) {
-            method = methodIterator.next();
-            copyInterface.addMethod(method.clone());
-        }
+        methods.forEach(method -> copyInterface.addMethod(method.clone()));
 
         return copyInterface;
     }

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.city.studentuml.model.domain.SDMessage;
 
 public abstract class SDMessageGR extends GraphicalElement {
-    
+
     protected int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
 
     // the message concept this graphical element refers to
@@ -47,7 +47,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     public int getStartingX() {
         int startingX = source.getX() + source.getWidth() / 2;
-        startingX += (source.acticationAtY(getY())) * barWidth/2;
+        startingX += (source.acticationAtY(getY())) * barWidth / 2;
         return startingX;
     }
 
@@ -69,23 +69,23 @@ public abstract class SDMessageGR extends GraphicalElement {
 
         int startingX = getStartingX();
         int endingX = getEndingX();
-        
+
         if (!message.isReflective()) {
             boolean forward = endingX > startingX;
-            if (!forward) 
+            if (!forward)
                 startingX -= barWidth;
 
             g.drawLine(startingX, getY(), endingX, getY());
             drawMessageArrow(endingX, getY(), forward, g);
         } else { // handle reflective message rendering 'ad-hoc'
-        
+
             GeneralPath path = new GeneralPath();
 
-            if(this instanceof CallMessageGR)
-                path.moveTo(startingX - barWidth/2.0, getY());
+            if (this instanceof CallMessageGR)
+                path.moveTo(startingX - barWidth / 2.0, getY());
             else
-                path.moveTo(startingX + barWidth/2.0, getY());
-            
+                path.moveTo(startingX + barWidth / 2.0, getY());
+
             path.lineTo(startingX + 40.0, getY());
             path.lineTo(startingX + 40.0, getY() + 15.0);
             path.lineTo(startingX, getY() + 15.0);
@@ -118,7 +118,7 @@ public abstract class SDMessageGR extends GraphicalElement {
             int atX = messageStartX + textX;
             int atY = getY() - messageDY;
             g.drawString(messageText, atX, atY);
-            
+
             if (errorMessage != null && errorMessage.length() > 0) {
                 g.drawString(errorMessage, atX, atY - 10);
             }
@@ -189,6 +189,10 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     void setErrorMsg(String validatedStr) {
         errorMessage = validatedStr;
+    }
+
+    public String getErrorMsg() {
+        return errorMessage;
     }
 
     public abstract boolean isReflective();
