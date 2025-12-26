@@ -16,9 +16,13 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import edu.city.studentuml.controller.SelectionController;
+import edu.city.studentuml.model.graphical.AbstractLinkGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.EndpointType;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.LinkGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.ScaleRound;
@@ -222,6 +226,73 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
 
         g.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, rectangularDashes, 0));
         g.draw(dragRectangle);
+
+        // Draw endpoint drag line if currently dragging an endpoint
+        drawEndpointDragLine(g);
+    }
+
+    /**
+     * Draws a temporary line from the fixed endpoint to the drag point when
+     * dragging a link endpoint.
+     * 
+     * @param g the graphics context
+     */
+    protected void drawEndpointDragLine(Graphics2D g) {
+        SelectionController selectionController = model.getFrame().getSelectionController();
+
+        if (selectionController == null || !selectionController.isDraggingEndpoint()) {
+            return;
+        }
+
+        GraphicalElement element = selectionController.getDraggingLink();
+        EndpointType draggingEndpoint = selectionController.getDraggingEndpoint();
+        Point2D dragPoint = selectionController.getDragPoint();
+
+        if (element == null || dragPoint == null) {
+            return;
+        }
+
+        // Determine the fixed endpoint (the one not being dragged)
+        Point2D fixedEndpoint = null;
+
+        if (element instanceof AbstractLinkGR) {
+            AbstractLinkGR link = (AbstractLinkGR) element;
+            if (draggingEndpoint == EndpointType.SOURCE) {
+                // Dragging source, so target is fixed
+                fixedEndpoint = link.getEndPointRoleB();
+            } else {
+                // Dragging target, so source is fixed
+                fixedEndpoint = link.getEndPointRoleA();
+            }
+        } else if (element instanceof SDMessageGR) {
+            SDMessageGR message = (SDMessageGR) element;
+            int y = message.getY();
+            if (draggingEndpoint == EndpointType.SOURCE) {
+                // Dragging source, so target is fixed
+                int endingX = message.getEndingX();
+                if (!message.getMessage().isReflective()) {
+                    fixedEndpoint = new Point2D.Double(endingX, y);
+                } else {
+                    // For reflective messages, target is at the end of the loop
+                    fixedEndpoint = new Point2D.Double(message.getStartingX(), y + 15);
+                }
+            } else {
+                // Dragging target, so source is fixed
+                int startingX = message.getStartingX();
+                fixedEndpoint = new Point2D.Double(startingX, y);
+            }
+        }
+
+        if (fixedEndpoint == null) {
+            return;
+        }
+
+        // Draw dashed line from fixed endpoint to current drag position
+        g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10,
+                new float[] { 5, 5 }, 0));
+        g.setPaint(Colors.getHighlightColor());
+        g.drawLine((int) fixedEndpoint.getX(), (int) fixedEndpoint.getY(),
+                (int) dragPoint.getX(), (int) dragPoint.getY());
     }
 
     public void setModel(DiagramModel m) {

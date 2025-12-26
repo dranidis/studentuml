@@ -20,7 +20,6 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public class SystemGR extends CompositeUCDElementGR implements Resizable {
@@ -50,7 +49,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         resizeHandles.add(new LeftResizeHandle(this));
         resizeHandles.add(new RightResizeHandle(this));
     }
-    
+
     @Override
     public void draw(Graphics2D g) {
 
@@ -94,7 +93,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
             g.drawString(systemName, startingX + nameX, startingY + nameY);
         }
     }
-    
+
     @Override
     protected int calculateWidth(Graphics2D g) {
         int newWidth = width;
@@ -128,22 +127,22 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         return rect.contains(p);
     }
-    
+
     public boolean isResizeHandleSelected(int x, int y) {
-        for (ResizeHandle handle: resizeHandles) {
+        for (ResizeHandle handle : resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return true;
-            }            
+            }
         }
         return false;
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        for (ResizeHandle handle: resizeHandles) {
+        for (ResizeHandle handle : resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return handle;
-            }            
-        }        
+            }
+        }
         return null;
     }
 
@@ -252,7 +251,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     }
 
     public boolean hasResizableContext() {
-        if (context == UCDComponentGR.DEFAULT_CONTEXT) {
+        if (context == DEFAULT_CONTEXT) {
             return false;
         } else {
             return context instanceof Resizable;
@@ -313,18 +312,18 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     public SystemGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         System sameSystem = (System) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        SystemGR clonedGR = new SystemGR(sameSystem, 
-            this.startingPoint.x, this.startingPoint.y);
-        
+        SystemGR clonedGR = new SystemGR(sameSystem,
+                this.startingPoint.x, this.startingPoint.y);
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         // Note: components (child elements) are NOT cloned - they would need to be
         // copied separately if the user also selects them
-        
+
         return clonedGR;
     }
 }

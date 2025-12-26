@@ -5,11 +5,9 @@ import java.awt.Point;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ConceptualClass;
-import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public class ConceptualClassGR extends AbstractClassGR {
@@ -26,14 +24,9 @@ public class ConceptualClassGR extends AbstractClassGR {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public ConceptualClass getConceptualClass() {
         return (ConceptualClass) abstractClass;
-    }
-
-    @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
-        super.streamFromXML(node, streamer, instance);
     }
 
     @Override
@@ -49,15 +42,15 @@ public class ConceptualClassGR extends AbstractClassGR {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         ConceptualClass sameClass = getConceptualClass();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
         ConceptualClassGR clonedGR = new ConceptualClassGR(sameClass,
-            new Point(this.startingPoint.x, this.startingPoint.y));
-        
+                new Point(this.startingPoint.x, this.startingPoint.y));
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
     }
 }

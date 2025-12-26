@@ -41,7 +41,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     public void setContext(UCDComponentGR context) {
         this.context = context;
-        if (context != UCDComponentGR.DEFAULT_CONTEXT) {
+        if (context != DEFAULT_CONTEXT) {
             component.setContext(context.getComponent());
         } else {
             component.setContext(UCDComponent.DEFAULT_CONTEXT);

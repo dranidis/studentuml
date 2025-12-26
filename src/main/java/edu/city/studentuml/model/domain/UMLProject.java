@@ -88,7 +88,7 @@ public class UMLProject implements Serializable, PropertyChangeListener, IXMLCus
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
-        logger.fine(() -> "Notifying listeners");
+        // logger.fine(() -> "Notifying listeners");
         setSaved(true);
         pcs.firePropertyChange("projectCleared", null, null);
     }
@@ -139,7 +139,7 @@ public class UMLProject implements Serializable, PropertyChangeListener, IXMLCus
     public void projectChanged() {
         logger.fine("Project changed");
         setSaved(false);
-        logger.fine(() -> "Notifying listeners");
+        // logger.fine(() -> "Notifying listeners");
         pcs.firePropertyChange("projectChanged", null, null);
     }
 
@@ -158,7 +158,7 @@ public class UMLProject implements Serializable, PropertyChangeListener, IXMLCus
      * @throws NotStreamable
      */
     public List<String> loadFromXML(String filename) throws IOException, NotStreamable {
-        logger.info(() -> "Loading from XML: " + filename);
+        logger.fine(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
 
@@ -170,7 +170,7 @@ public class UMLProject implements Serializable, PropertyChangeListener, IXMLCus
 
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.info(() -> ".......end from XML: " + filename);
+        logger.fine(() -> ".......end from XML: " + filename);
         setSaved(true);
 
         return streamer.getErrorStrings();

@@ -3,7 +3,6 @@ package edu.city.studentuml.model.graphical;
 import java.awt.Point;
 
 /**
- *
  * @author Biser
  */
 public class UpResizeHandle extends ResizeHandle {
@@ -35,7 +34,7 @@ public class UpResizeHandle extends ResizeHandle {
     @Override
     protected void resizeContext(Resizable context, Resizable element) {
         int oldContextY = context.getStartingPoint().y;
-        int elementY = element.getStartingPoint().y - ResizeHandle.SIZE;
+        int elementY = element.getStartingPoint().y - SIZE;
         int heightDifference = oldContextY - elementY;
 
         Point p = new Point(context.getStartingPoint().x, elementY);
@@ -64,7 +63,7 @@ public class UpResizeHandle extends ResizeHandle {
         // Resize handles don't have domain objects - they're purely graphical UI controls
         // Just create a new handle referencing the same resizable element
         UpResizeHandle clonedHandle = new UpResizeHandle(this.resizableElement);
-        
+
         return clonedHandle;
     }
 

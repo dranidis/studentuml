@@ -22,11 +22,10 @@ import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 
 /**
- *
  * @author draganbisercic
  */
 public class AssociationClassGR extends LinkGR {
-    
+
     private static final Logger logger = Logger.getLogger(AssociationClassGR.class.getName());
 
     private AbstractAssociationClass associationClass;
@@ -56,16 +55,16 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        if (!AbstractLinkGR.linkInstances.contains(obj) && obj instanceof AssociationClassGR) {
-            AbstractLinkGR.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
+        if (!linkInstances.contains(obj) && obj instanceof AssociationClassGR) {
+            linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
         associationElement.objectAdded(associationElement);
     }
 
     @Override
     public void objectRemoved(GraphicalElement obj) {
-        if (AbstractLinkGR.linkInstances.contains(obj)) {
-            AbstractLinkGR.linkInstances.remove(obj);
+        if (linkInstances.contains(obj)) {
+            linkInstances.remove(obj);
         }
         associationElement.objectRemoved(associationElement);
     }
@@ -126,12 +125,11 @@ public class AssociationClassGR extends LinkGR {
         Ray d = new Ray(associationCenterPoint, n.multiply((double) length + MINIMUM_DISTANCE));
         Point p = d.getDirection().add(d.getOrigin());
 
-        int x1 = (int) (associationCenterPoint.getX());
+        int x1 = (int) associationCenterPoint.getX();
         int y1 = (int) associationCenterPoint.getY();
         int x2 = (int) p.getX();
         int y2 = (int) p.getY();
 
-        
         if (isSelected()) {
             g.setStroke(GraphicsHelper.makeSelectedDashedStroke());
             g.setPaint(getHighlightColor());
@@ -202,16 +200,38 @@ public class AssociationClassGR extends LinkGR {
     }
 
     @Override
+    public Point2D getEndPointRoleA() {
+        return associationElement.getEndPointRoleA();
+    }
+
+    @Override
+    public Point2D getEndPointRoleB() {
+        return associationElement.getEndPointRoleB();
+    }
+
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        // Delegate to the internal association element
+        return associationElement.reconnectSource(newSource);
+    }
+
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        // Delegate to the internal association element
+        return associationElement.reconnectTarget(newTarget);
+    }
+
+    @Override
     public AssociationClassGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Links connect graphical elements, so we reference the same endpoints
         ClassifierGR sameA = (ClassifierGR) a;
         ClassifierGR sameB = (ClassifierGR) b;
         AbstractAssociationClass sameAssociationClass = getAssociationClass();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         AssociationClassGR clonedGR = new AssociationClassGR(sameA, sameB, sameAssociationClass);
-        
+
         return clonedGR;
-    }      
+    }
 }

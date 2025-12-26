@@ -23,7 +23,7 @@ public class InterfaceEditor extends ClassifierEditor {
     private MethodsPanel methodsPanel;
 
     public InterfaceEditor(Interface coreInterface, CentralRepository cr) {
-        super(coreInterface, cr, ClassifierEditor.AUTO_COMPLETE);
+        super(coreInterface, cr, AUTO_COMPLETE);
 
         repository = cr;
 

@@ -383,9 +383,9 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
                 loadedProcessPaymentGR, loadedNoteGR.getTo());
 
         // ===== SUCCESS =====
-        java.lang.System.out.println("✅ Phase 0.6: AD Save/Load Test - All verifications passed!");
-        java.lang.System.out.println("   ✓ All 12 node types correctly saved and loaded");
-        java.lang.System.out.println("   ✓ All 13 control flows with guards correctly saved and loaded");
-        java.lang.System.out.println("   ✓ Note attachment correctly saved and loaded");
+        // java.lang.System.out.println("✅ Phase 0.6: AD Save/Load Test - All verifications passed!");
+        // java.lang.System.out.println("   ✓ All 12 node types correctly saved and loaded");
+        // java.lang.System.out.println("   ✓ All 13 control flows with guards correctly saved and loaded");
+        // java.lang.System.out.println("   ✓ Note attachment correctly saved and loaded");
     }
 }

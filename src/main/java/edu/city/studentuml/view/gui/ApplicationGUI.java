@@ -195,7 +195,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Prop
         createMenuBar();
         createToolBar();
         createDesktopPane();
-        propertyChange(new java.beans.PropertyChangeEvent(umlProject, "manualUpdate", null, this));
+        propertyChange(new PropertyChangeEvent(umlProject, "manualUpdate", null, this));
         createFactsAndMessageTree();
         createDiagramAndConsistencyArea();
         createRepairPopupMenu();

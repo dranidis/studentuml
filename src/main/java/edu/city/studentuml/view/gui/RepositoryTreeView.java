@@ -238,7 +238,7 @@ public class RepositoryTreeView extends JPanel implements PropertyChangeListener
         if (parentPath == null) {
             parentNode = rootNode;
         } else {
-            parentNode = (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
+            parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
         }
 
         return addObject(parentNode, child, true);
@@ -287,7 +287,7 @@ public class RepositoryTreeView extends JPanel implements PropertyChangeListener
         public void treeNodesChanged(TreeModelEvent e) {
             DefaultMutableTreeNode node;
 
-            node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
+            node = (DefaultMutableTreeNode) e.getTreePath().getLastPathComponent();
 
             /*
              * If the event lists children, then the changed node is the child of the node
@@ -297,7 +297,7 @@ public class RepositoryTreeView extends JPanel implements PropertyChangeListener
             try {
                 int index = e.getChildIndices()[0];
 
-                node = (DefaultMutableTreeNode) (node.getChildAt(index));
+                node = (DefaultMutableTreeNode) node.getChildAt(index);
             } catch (NullPointerException exc) {
                 logger.finest("Doing nothing on NullPointerException");
             }

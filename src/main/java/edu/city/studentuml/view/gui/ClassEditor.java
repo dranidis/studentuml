@@ -47,7 +47,7 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
     private JPanel centerPanel;
 
     public ClassEditor(DesignClass designClass, CentralRepository cr) {
-        super(designClass, cr, ClassifierEditor.AUTO_COMPLETE);
+        super(designClass, cr, AUTO_COMPLETE);
 
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
@@ -102,8 +102,8 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
             methodsPanel.setElements(designClass.getMethods());
 
             setAttributesFromConceptualClass();
-        }   
-     }
+        }
+    }
 
     public DesignClass getDesignClass() {
         DesignClass newClass = new DesignClass(getClassName());

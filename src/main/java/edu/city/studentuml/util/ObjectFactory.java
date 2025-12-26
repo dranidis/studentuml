@@ -295,12 +295,12 @@ public final class ObjectFactory {
 
         FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum,
                 zOrder);
-        PropertyChangeListener[] listeners = pcs.getPropertyChangeListeners();
-        String listenersStr = java.util.Arrays.stream(listeners)
-                .map(l -> l.getClass().getName())
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("");
-        logger.fine(() -> "Notifying listeners: [" + listenersStr + "]");
+        // PropertyChangeListener[] listeners = pcs.getPropertyChangeListeners();
+        // String listenersStr = java.util.Arrays.stream(listeners)
+        //         .map(l -> l.getClass().getName())
+        //         .reduce((a, b) -> a + ", " + b)
+        //         .orElse("");
+        // logger.fine(() -> "Notifying listeners: [" + listenersStr + "]");
         pcs.firePropertyChange("framePropertiesChanged", null, frameProperties);
     }
 
@@ -484,8 +484,10 @@ public final class ObjectFactory {
 
     public IXMLCustomStreamable newucgeneralization(Object parent, Element stream, XMLStreamer streamer)
             throws NotStreamable {
-        UCDComponent from = (UCDComponent) streamer.readObjectByID(stream, "from", null);
-        UCDComponent to = (UCDComponent) streamer.readObjectByID(stream, "to", null);
+        UCDComponent from = (UCDComponent) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(stream.getAttribute("from"));
+        UCDComponent to = (UCDComponent) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(stream.getAttribute("to"));
 
         UCGeneralization generalization;
         if (from instanceof UseCase && to instanceof UseCase) {

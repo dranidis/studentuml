@@ -28,7 +28,7 @@ public class AddUMLNoteController extends AddElementController {
         } else {
             JOptionPane.showMessageDialog(null, MESSAGE,
                     "Error", JOptionPane.ERROR_MESSAGE);
-        }        
+        }
         UndoableEdit edit;
 
         if (selectedElement != null && !(selectedElement instanceof UMLNoteGR)) {
@@ -45,10 +45,10 @@ public class AddUMLNoteController extends AddElementController {
     }
 
     public void dragged(int x, int y) {
-        logger.info(() -> "dragged XY: " + x + y);
+        /** Intentionally empty */
     }
 
     public void released(int x, int y) {
-        logger.info(() -> "released XY: " + x + y);
+        /** Intentionally empty */
     }
 }

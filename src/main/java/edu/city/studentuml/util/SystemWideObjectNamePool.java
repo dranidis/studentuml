@@ -134,7 +134,7 @@ public class SystemWideObjectNamePool {
 
         facts.setName("<html><b>Facts</b>" + " [" + facts.size() + "]</html>");
 
-        logger.fine(() -> "Notifying listeners");
+        // logger.fine(() -> "Notifying listeners");
         pcs.firePropertyChange("objectNamePoolChanged", null, this);
     }
 

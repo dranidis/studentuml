@@ -290,7 +290,7 @@ public abstract class DiagramModel implements Serializable, IXMLCustomStreamable
     // this custom method is called whenever a change in the diagram occurs to
     // notify listeners
     public void modelChanged() {
-        logger.fine(() -> "Notifying listeners");
+        // logger.fine(() -> "Notifying listeners");
         pcs.firePropertyChange("diagramChanged", null, null);
     }
 

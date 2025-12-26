@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -12,12 +13,15 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 
 @JsonIncludeProperties({ "from", "to", "internalid", "association" })
 public class AssociationGR extends LinkGR {
+
+    private static final Logger logger = Logger.getLogger(AssociationGR.class.getName());
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
@@ -172,9 +176,17 @@ public class AssociationGR extends LinkGR {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Association getAssociation() {
         return association;
+    }
+
+    /**
+     * Protected setter to allow subclasses (like AggregationGR) to update the
+     * association.
+     */
+    protected void setAssociation(Association association) {
+        this.association = association;
     }
 
     @JsonProperty("from")
@@ -203,16 +215,93 @@ public class AssociationGR extends LinkGR {
     }
 
     @Override
+    public boolean canReconnect(EndpointType endpoint, GraphicalElement newElement) {
+        // Must pass base validation
+        if (!super.canReconnect(endpoint, newElement)) {
+            return false;
+        }
+
+        // Associations require classifiers (classes, conceptual classes, or interfaces)
+        if (!(newElement instanceof ClassifierGR)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        // Note: LinkGR fields 'a' and 'b' are final, so we cannot update them directly.
+        // The caller (SelectionController) must remove this link and create a new one.
+        // Here we just prepare the domain model for the new link.
+
+        // Create a new Role with the new classifier, preserving name and multiplicity
+        Role oldRoleA = association.getRoleA();
+        Role newRoleA = new Role(newSource.getClassifier());
+        newRoleA.setName(oldRoleA.getName());
+        newRoleA.setMultiplicity(oldRoleA.getMultiplicity());
+
+        // Create a new association with the updated role
+        Association newAssoc = new Association(newRoleA, association.getRoleB());
+        newAssoc.setName(association.getName());
+        newAssoc.setDirection(association.getDirection());
+        newAssoc.setShowArrow(association.getShowArrow());
+        newAssoc.setLabelDirection(association.getLabelDirection());
+
+        this.association = newAssoc;
+
+        logger.fine(() -> "Prepared association source reconnection to: " + newSource.getClassifier().getName());
+        return true;
+    }
+
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        // Note: LinkGR fields 'a' and 'b' are final, so we cannot update them directly.
+        // The caller (SelectionController) must remove this link and create a new one.
+        // Here we just prepare the domain model for the new link.
+
+        // Create a new Role with the new classifier, preserving name and multiplicity
+        Role oldRoleB = association.getRoleB();
+        Role newRoleB = new Role(newTarget.getClassifier());
+        newRoleB.setName(oldRoleB.getName());
+        newRoleB.setMultiplicity(oldRoleB.getMultiplicity());
+
+        // Create a new association with the updated role
+        Association newAssoc = new Association(association.getRoleA(), newRoleB);
+        newAssoc.setName(association.getName());
+        newAssoc.setDirection(association.getDirection());
+        newAssoc.setShowArrow(association.getShowArrow());
+        newAssoc.setLabelDirection(association.getLabelDirection());
+
+        this.association = newAssoc;
+
+        logger.fine(() -> "Prepared association target reconnection to: " + newTarget.getClassifier().getName());
+        return true;
+    }
+
+    /**
+     * Creates a new AssociationGR with updated endpoints. Used for reconnection
+     * since LinkGR endpoints are final.
+     * 
+     * @param newA the new source classifier
+     * @param newB the new target classifier
+     * @return new AssociationGR with same domain model but new endpoints
+     */
+    public AssociationGR createWithNewEndpoints(ClassifierGR newA, ClassifierGR newB) {
+        return new AssociationGR(newA, newB, this.association);
+    }
+
+    @Override
     public AssociationGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Links connect graphical elements, so we reference the same endpoints
         ClassifierGR sameA = (ClassifierGR) a;
         ClassifierGR sameB = (ClassifierGR) b;
         Association sameAssociation = getAssociation();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         AssociationGR clonedGR = new AssociationGR(sameA, sameB, sameAssociation);
-        
+
         return clonedGR;
     }
 

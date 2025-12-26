@@ -244,7 +244,7 @@ public abstract class EdgeGR extends GraphicalElement {
 
         // get angle
         b = new Vector2D(end.getX() - start.getX(), end.getY() - start.getY());
-        double angle = Math.acos((a.dot(b)) / (a.getLength() * b.getLength()));
+        double angle = Math.acos(a.dot(b) / (a.getLength() * b.getLength()));
 
         if (start.getY() < end.getY()) {
             angle = -angle;

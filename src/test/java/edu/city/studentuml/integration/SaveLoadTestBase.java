@@ -28,6 +28,8 @@ public abstract class SaveLoadTestBase {
     protected File tempFile;
     private static final String XML_TEST_FILES_DIR = "xml-test-files";
 
+    private boolean copyTestFilesToXmlDir = false;
+
     @Before
     public void setUp() throws IOException {
         // Get the singleton and clear any existing state
@@ -48,7 +50,7 @@ public abstract class SaveLoadTestBase {
     @After
     public void tearDown() {
         // Copy the XML file to xml-test-files directory before deleting
-        if (tempFile != null && tempFile.exists()) {
+        if (copyTestFilesToXmlDir && tempFile != null && tempFile.exists()) {
             try {
                 // Create a descriptive filename based on the test class name
                 String testClassName = this.getClass().getSimpleName();

@@ -642,19 +642,20 @@ public class AddElementControllerFactory {
         if (aRealization.isPresent() || aGeneralization.isPresent()) {
             if (aRealization.isPresent()) {
                 Realization realization = aRealization.get();
-                // it is the same relationship; allow
-                if (realization.getTheClass() == baseClass.getClassifier()) {
-                    return false;
+                // Check if it's the reverse direction (still a conflict)
+                if (realization.getTheClass() != baseClass.getClassifier()) {
+                    return true; // Reverse direction exists, don't allow
                 }
+                return true; // Same direction exists, don't allow duplicate
             }
             if (aGeneralization.isPresent()) {
                 Generalization generalization = aGeneralization.get();
-                // it is the same relationship; allow
-                if (generalization.getBaseClass() == baseClass.getClassifier()) {
-                    return false;
+                // Check if it's the reverse direction (still a conflict)
+                if (generalization.getBaseClass() != baseClass.getClassifier()) {
+                    return true; // Reverse direction exists, don't allow
                 }
+                return true; // Same direction exists, don't allow duplicate
             }
-            return true;
         }
 
         if (baseClass instanceof UCDComponentGR && superClass instanceof UCDComponentGR) {

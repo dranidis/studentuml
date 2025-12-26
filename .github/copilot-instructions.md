@@ -51,6 +51,7 @@ This project uses a local Maven repo (`local-maven-repo/`) for custom JARs:
 -   Tests use JUnit 4 (`@Test`, `@Before`, `@After` annotations)
 -   Test helpers create models without GUI: see `src/test/java/edu/city/studentuml/controller/Helper.java` for examples
 -   Models can exist independently of frames/views for testing
+-   **Follow the DRY principle**: Tests should call actual production methods (e.g., via controller instances) rather than duplicating implementation logic. If a method is `protected` or `public` in the production code, access it directly in tests instead of creating helper duplicates
 
 ### Test-Driven Bug Fixes
 

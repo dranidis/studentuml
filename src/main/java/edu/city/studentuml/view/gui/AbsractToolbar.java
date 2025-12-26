@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,7 +11,6 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import edu.city.studentuml.controller.EdgeController;
@@ -32,7 +30,8 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
     private JToggleButton undoButton;
     private JToggleButton redoButton;
 
-    protected JToggleButton addToolBarButton(String gif, String actionCommand, String text, ActionListener actionListener) {
+    protected JToggleButton addToolBarButton(String gif, String actionCommand, String text,
+            ActionListener actionListener) {
         Icon icon = new MyImageIcon(this.getClass().getResource(Constants.IMAGES_DIR + gif));
         JToggleButton button = new JToggleButton(icon);
         button.addMouseListener(new MouseAdapter() {
@@ -59,7 +58,7 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
         // add the toggle buttons to the toolbar component
         add(button);
 
-        return button;            
+        return button;
     }
 
     protected AbsractToolbar(DiagramInternalFrame parentFr) {
@@ -69,16 +68,17 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
 
         selectionButton = addToolBarButton("selection.gif", "Selection", "Select/Edit/Drag & Drop", this);
         addSeparator();
-        
+
         // hook for diagram specific buttons
         addDiagramButtons();
-        
+
         addSeparator();
 
-        addToolBarButton("note.gif", "UMLNoteGR", "UML Note: select an element, then click this button and then at the place of the comment", this);
+        addToolBarButton("note.gif", "UMLNoteGR",
+                "UML Note: select an element, then click this button and then at the place of the comment", this);
         addSeparator();
 
-        setOrientation(SwingConstants.VERTICAL);
+        setOrientation(VERTICAL);
         setSelectedButton(selectionButton);
         undoButton = addToolBarButton("undo.gif", "SDUndo", "Undo", e -> {
             parentFrame.getUndoManager().undo();
@@ -91,17 +91,17 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
         });
 
         refreshUndoRedoButtons();
-        
+
         this.setFloatable(false);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.setAlignmentX(CENTER_ALIGNMENT);
     }
 
     protected abstract void addDiagramButtons();
 
     // this method ensures that only one toggle button is pressed at a time
     public void setSelectedButton(JToggleButton button) {
-        for(JToggleButton b: buttons) {
+        for (JToggleButton b : buttons) {
             b.setSelected(false);
             b.setBackground(UIManager.getColor("Button.background"));
         }
@@ -138,11 +138,12 @@ public abstract class AbsractToolbar extends JToolBar implements ActionListener 
 
         if (command.equals("Selection")) {
             actionPerfomedOnSelection();
-        } else {    // the rest of the buttons are for adding UML elements
+        } else { // the rest of the buttons are for adding UML elements
 
             // Factory Method hides instantiation details and the variety of subclasses
             // of AddElementController that may exist
-            parentFrame.setAddElementController(parentFrame.getAddElementControllerFactory().newAddElementController(parentFrame.getModel(), parentFrame, command));
+            parentFrame.setAddElementController(parentFrame.getAddElementControllerFactory()
+                    .newAddElementController(parentFrame.getModel(), parentFrame, command));
             parentFrame.setDrawLineController(parentFrame.getDrawLineController());//TK draw line
             if (!command.equals("UMLNoteGR")) {
                 parentFrame.getModel().clearSelected();

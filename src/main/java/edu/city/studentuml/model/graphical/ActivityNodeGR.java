@@ -20,7 +20,6 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author Biser
  */
 public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
@@ -140,7 +139,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        Optional<ResizeHandle> resizeHandle = resizeHandles.stream().filter(handle -> handle.contains(new Point2D.Double(x, y))).findFirst();
+        Optional<ResizeHandle> resizeHandle = resizeHandles.stream()
+                .filter(handle -> handle.contains(new Point2D.Double(x, y))).findFirst();
         if (resizeHandle.isPresent()) {
             return resizeHandle.get();
         }
@@ -252,7 +252,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     public boolean hasResizableContext() {
-        if (context == NodeComponentGR.DEFAULT_CONTEXT) {
+        if (context == DEFAULT_CONTEXT) {
             return false;
         } else {
             return context instanceof Resizable;
@@ -303,17 +303,17 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     public ActivityNodeGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         ActivityNode sameActivityNode = (ActivityNode) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
         ActivityNodeGR clonedGR = new ActivityNodeGR(sameActivityNode, this.startingPoint.x, this.startingPoint.y);
-        
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         // Note: components (child nodes) are NOT cloned - they would need to be
         // copied separately if the user also selects them
-        
+
         return clonedGR;
     }
 }

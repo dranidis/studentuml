@@ -141,28 +141,34 @@
         <version>2.22.2</version>
       </plugin>
 
+      <!-- JXR Plugin - Generate cross-references in target/reports/xref -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>3.6.0</version>
+        <configuration>
+          <destDir>${project.build.directory}/reports/xref</destDir>
+        </configuration>
+      </plugin>
+
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-pmd-plugin</artifactId>
-              <version>3.13.0</version>
-          </plugin>
-      </plugins>
-  </pluginManagement>
-
   </build>
 
   <reporting>
     <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jxr-plugin</artifactId>
-            <version>3.3.0</version>
-        </plugin>
+      <!-- PMD plugin for code analysis -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.28.0</version>
+        <configuration>
+          <linkXRef>true</linkXRef>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+          <targetJdk>11</targetJdk>
+        </configuration>
+      </plugin>
     </plugins>
-</reporting>
+  </reporting>
 
 </project>

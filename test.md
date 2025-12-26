@@ -29,6 +29,7 @@
 -   ✅ Domain Model coverage increased by **4%** (48% → 52%)
 -   ✅ Graphical Model coverage increased by **3%** (32% → 35%)
 -   ✅ Controller coverage increased by **3%** (18% → 21%)
+-   ✅ Added comprehensive link reconnection tests (40 new tests)
 -   ✅ Added comprehensive AddElementControllerFactory tests (7 new tests)
 
 ## Testing Goals
@@ -198,6 +199,41 @@ public void testResize() {
 -   Edit/delete controllers untested
 
 #### Recently Completed
+
+**DCDLinkReconnectionTest** (Phase 0.8):
+
+-   File: `src/test/java/edu/city/studentuml/controller/DCDLinkReconnectionTest.java`
+-   Tests: 21 comprehensive link reconnection tests for Design Class Diagrams
+-   Pattern: Controller + Model level testing (no GUI dependencies)
+-   Coverage: All class diagram link types
+    -   **Association**: reconnect source, reconnect target, self-association, interface connection
+    -   **Aggregation**: reconnect source/target, preserves composition flag
+    -   **Dependency**: reconnect source/target, type validation (ClassGR only)
+    -   **Realization**: reconnect source/target, strict validation (ClassGR→InterfaceGR)
+    -   **Generalization**: reconnect source/target, interface generalization, prevent self-inheritance, prevent cross-type mixing
+-   Validation Rules:
+    -   Type compatibility enforced (e.g., Realization requires class→interface)
+    -   Self-inheritance prevented for Generalization
+    -   Domain model properly updated after reconnection
+    -   Link properties preserved (composition flag, role names, multiplicities)
+-   Status: ✅ ALL 21 TESTS PASSING
+
+**UCDLinkReconnectionTest** (Phase 0.8):
+
+-   File: `src/test/java/edu/city/studentuml/controller/UCDLinkReconnectionTest.java`
+-   Tests: 19 comprehensive link reconnection tests for Use Case Diagrams
+-   Pattern: Controller + Model level testing (no GUI dependencies)
+-   Coverage: All use case diagram link types
+    -   **UCAssociation**: reconnect source/target, type validation (Actor↔UseCase)
+    -   **UCInclude**: reconnect source/target, type validation (UseCase→UseCase)
+    -   **UCExtend**: reconnect source/target, preserves extension points
+    -   **UCGeneralization**: Actor→Actor and UseCase→UseCase, prevent cross-type, prevent self-inheritance
+-   Validation Rules:
+    -   Type compatibility enforced (e.g., Include/Extend only between use cases)
+    -   Self-inheritance prevented for Generalization
+    -   Cross-type generalization prevented (Actor can't inherit from UseCase)
+    -   Extension points preserved in UCExtend
+-   Status: ✅ ALL 19 TESTS PASSING
 
 **AddControlFlowControllerTest** (Phase 0.7):
 
@@ -1318,7 +1354,12 @@ mvn test jacoco:report
 
 ---
 
-**Last Updated:** December 24, 2025
-**Current Coverage:** 23%
+**Last Updated:** December 25, 2025
+**Current Coverage:** 28%
 **Target Coverage:** 70%+
 **Estimated Timeline:** 7 weeks (Phase 0-3)
+**Latest Additions:**
+
+-   ✅ DCDLinkReconnectionTest: 21 tests for class diagram link reconnection
+-   ✅ UCDLinkReconnectionTest: 19 tests for use case diagram link reconnection
+-   ✅ Helper class extended with methods for creating all link types

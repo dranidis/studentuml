@@ -2,6 +2,7 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -18,6 +19,8 @@ import edu.city.studentuml.util.XMLSyntax;
  */
 @JsonIncludeProperties({ "internalid", "from", "to", "dependency" })
 public class DependencyGR extends LinkGR {
+
+    private static final Logger logger = Logger.getLogger(DependencyGR.class.getName());
 
     // the graphical classes that the dependency line connects in the diagram
     private Dependency dependency;
@@ -56,7 +59,7 @@ public class DependencyGR extends LinkGR {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Dependency getDependency() {
         return dependency;
     }
@@ -91,10 +94,67 @@ public class DependencyGR extends LinkGR {
         ClassGR sameA = getClassA();
         ClassGR sameB = getClassB();
         Dependency sameDependency = getDependency();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         DependencyGR clonedGR = new DependencyGR(sameA, sameB, sameDependency);
-        
+
         return clonedGR;
+    }
+
+    @Override
+    public boolean canReconnect(EndpointType endpoint, GraphicalElement newElement) {
+        // Must pass base validation
+        if (!super.canReconnect(endpoint, newElement)) {
+            return false;
+        }
+
+        // Dependencies can only connect classes (not interfaces)
+        if (!(newElement instanceof ClassGR)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        if (!(newSource instanceof ClassGR)) {
+            return false;
+        }
+
+        ClassGR newClass = (ClassGR) newSource;
+
+        // Create a new Dependency with the new source
+        this.dependency = new Dependency(newClass.getDesignClass(), dependency.getTo());
+
+        logger.fine(() -> "Prepared dependency source reconnection to: " + newClass.getDesignClass().getName());
+        return true;
+    }
+
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        if (!(newTarget instanceof ClassGR)) {
+            return false;
+        }
+
+        ClassGR newClass = (ClassGR) newTarget;
+
+        // Create a new Dependency with the new target
+        this.dependency = new Dependency(dependency.getFrom(), newClass.getDesignClass());
+
+        logger.fine(() -> "Prepared dependency target reconnection to: " + newClass.getDesignClass().getName());
+        return true;
+    }
+
+    /**
+     * Creates a new DependencyGR with updated endpoints. Used for reconnection
+     * since LinkGR endpoints are final.
+     * 
+     * @param newA the new source class
+     * @param newB the new target class
+     * @return new DependencyGR with same domain model but new endpoints
+     */
+    public DependencyGR createWithNewEndpoints(ClassGR newA, ClassGR newB) {
+        return new DependencyGR(newA, newB, this.dependency);
     }
 }

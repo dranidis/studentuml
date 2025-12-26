@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.InputMap;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -202,7 +201,7 @@ public class RuleEditor extends JPanel {
 
     // Add a couple of key bindings.
     protected void addBindings() {
-        InputMap inputMap = textPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        InputMap inputMap = textPane.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // Ctrl-b to go backward one character
         KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK);
@@ -323,10 +322,10 @@ public class RuleEditor extends JPanel {
         protected void updateUndoState() {
             if (undo.canUndo()) {
                 setEnabled(true);
-                putValue(Action.NAME, undo.getUndoPresentationName());
+                putValue(NAME, undo.getUndoPresentationName());
             } else {
                 setEnabled(false);
-                putValue(Action.NAME, "Undo");
+                putValue(NAME, "Undo");
             }
         }
     }
@@ -352,10 +351,10 @@ public class RuleEditor extends JPanel {
         protected void updateRedoState() {
             if (undo.canRedo()) {
                 setEnabled(true);
-                putValue(Action.NAME, undo.getRedoPresentationName());
+                putValue(NAME, undo.getRedoPresentationName());
             } else {
                 setEnabled(false);
-                putValue(Action.NAME, "Redo");
+                putValue(NAME, "Redo");
             }
         }
     }

@@ -43,7 +43,7 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
 
     public void setContext(NodeComponentGR context) {
         this.context = context;
-        if (context != NodeComponentGR.DEFAULT_CONTEXT) {
+        if (context != DEFAULT_CONTEXT) {
             component.setContext(context.getComponent());
         } else {
             component.setContext(NodeComponent.DEFAULT_CONTEXT);

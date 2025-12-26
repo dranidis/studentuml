@@ -72,7 +72,7 @@ public class UCDSelectionControllerTest {
         // if this is not acced, it does not terminate
         uc.setContext(s);
 
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         // System.out.println(s.getNumberOfElements());
 
         // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
