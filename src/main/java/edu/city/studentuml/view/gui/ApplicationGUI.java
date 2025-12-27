@@ -59,12 +59,14 @@ import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
-import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.util.version.GitHubVersionProvider;
+import edu.city.studentuml.util.version.VersionChecker;
+import edu.city.studentuml.util.version.PomVersionLoader;
 import edu.city.studentuml.view.gui.components.HTMLEditorPane;
 import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
@@ -1056,16 +1058,38 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Prop
     }
 
     public void checkForUpdates() {
-        NewversionChecker.checkForNewVersion(frame);
+        String latestVersion = new GitHubVersionProvider(
+                "https://api.github.com/repos/dranidis/studentuml/releases/latest").getLatestVersion();
+        String currentVersion = new PomVersionLoader().getCurrentVersion();
+
+        VersionChecker checker = new VersionChecker(latestVersion, currentVersion);
+
+        if (checker.shouldNotify()) {
+            showNewVersionDialog(checker);
+        } else {
+            showUpToDateDialog(checker);
+        }
+    }
+
+    private void showNewVersionDialog(VersionChecker checker) {
+        final String DOWNLOAD_URL = "https://github.com/dranidis/studentuml/releases";
+        HTMLEditorPane.showHTMLbody(frame,
+                "A new version (" + checker.getLatestVersion() + ") is available for download at <a href=\""
+                        + DOWNLOAD_URL + "\">" + DOWNLOAD_URL + "</a>");
+    }
+
+    private void showUpToDateDialog(VersionChecker checker) {
+        HTMLEditorPane.showHTMLbody(frame,
+                "You are already using the latest version (" + checker.getCurrentVersion() + ").");
     }
 
     public void aboutStudentUML() {
-        final String ISSUES_URL = "https://bitbucket.org/studentuml/studentuml-public/issues?status=new&status=open";
+        final String ISSUES_URL = "https://github.com/dranidis/studentuml/issues";
 
         StringBuilder sb = new StringBuilder();
 
         sb.append("<h1>StudentUML</h1>");
-        sb.append("<p>" + "Version: " + NewversionChecker.getCurrentVersion() + "</p>");
+        sb.append("<p>" + "Version: " + new PomVersionLoader().getCurrentVersion() + "</p>");
         sb.append("<p>Report issues at:</p>");
         sb.append("<p><a href=\"" + ISSUES_URL + "\">" + ISSUES_URL + "</a></p>");
 
