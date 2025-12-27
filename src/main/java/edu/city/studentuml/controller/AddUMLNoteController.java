@@ -6,13 +6,11 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.awt.Point;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 public class AddUMLNoteController extends AddElementController {
-    private static final Logger logger = Logger.getLogger(AddUMLNoteController.class.getName());
 
     private static final String MESSAGE = "To create a note you must select an element first, then click the note button and anywhere on the diagram.";
     GraphicalElement selectedElement;

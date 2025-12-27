@@ -90,24 +90,6 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** Projects using generic types (List<T>, Map<K,V>, etc.) cause consistency checking to fail with Prolog syntax errors.
 
-## Command-Line Interface
-
-### Open Diagram from Command Line
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Add support for opening a diagram file directly from the command line when launching StudentUML (e.g., `java -jar studentuml.jar path/to/diagram.xml`).
-
-**Technical Notes:**
-
--   Main class needs to check for command-line arguments in `main(String[] args)`
--   If a file path argument is provided, validate it exists and is readable
--   After ApplicationGUI initialization, automatically open the specified file
--   Should handle both absolute and relative paths
--   May need to handle errors gracefully (file not found, invalid format, etc.)
-
-**Use Case:** Quickly open a specific diagram for review or editing without navigating through the File menu. Useful for automation, scripts, and integration with other tools.
-
 ## Class Diagram Features
 
 ### Support Package Visibility for Methods and Attributes

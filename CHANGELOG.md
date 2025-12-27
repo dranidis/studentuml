@@ -4,6 +4,7 @@
 
 ### Added
 
+-   Command-line file opening support - StudentUML can now open diagram files directly from command line (e.g., `java -jar studentuml.jar diagram.xml`)
 -   Integration test infrastructure for save/load operations (`SaveLoadTestBase`)
 -   Comprehensive UCD save/load test with system boundary containment (`UCDSaveLoadTest`)
 -   Automatic XML file preservation in `xml-test-files/` directory for manual inspection

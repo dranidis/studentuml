@@ -269,3 +269,138 @@ Use `DiagramType` constants (not magic numbers):
 
 User preferences stored at: `~/.java/.userPrefs/edu/city/studentuml/util/prefs.xml`
 Includes default paths, fill colors for themes, recent files, etc.
+
+## Feature Development Workflow
+
+**When the user requests to START development of a feature from `features.md`, follow this workflow:**
+
+### 1. Create Feature Branch
+
+Create a new feature branch from `develop` with an appropriate descriptive name:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/XXXX-descriptive-name
+```
+
+Branch naming convention: `feature/XXXX-descriptive-name` where XXXX is a short identifier related to the feature.
+
+### 2. Create Plan File
+
+Create a plan file `plan-XXXX.md` in the project root to document:
+
+-   **Investigation**: Explore the current codebase to understand how the feature fits into existing architecture
+-   **Affected Components**: List classes, methods, and files that need modification
+-   **Design Decisions**: Document architectural choices and rationale
+-   **Implementation Tasks**: Break down the feature into actionable TODO items
+
+Example structure:
+
+```markdown
+# Plan: Feature Name
+
+## Investigation
+
+[Document findings from codebase exploration]
+
+## Affected Components
+
+-   Class: `ClassName` - Reason for modification
+-   File: `path/to/file` - Changes needed
+
+## Design Decisions
+
+[Document architectural choices]
+
+## TODO Tasks
+
+-   [ ] Task 1: Description
+-   [ ] Task 2: Description
+-   [ ] Task 3: Description
+
+## Implementation Summary
+
+[To be filled at completion]
+
+## Design Documentation
+
+[Reference to StudentUML diagram file]
+```
+
+### 3. Implement Feature Using Test-First Approach
+
+For each task in the plan:
+
+1. **Write failing test first**:
+    - Create test that demonstrates the desired functionality
+    - Test should compile but FAIL initially
+    - Use descriptive test names following pattern: `test<FeatureName>_<scenario>()`
+2. **Implement minimal code** to make the test pass
+3. **Verify test passes** - Run `mvn test` or `mvn test -Dtest=ClassName`
+4. **Refactor if needed** while keeping tests green
+5. **Mark task as completed** in plan file: `- [x] Task completed`
+
+**Test-First Principles:**
+
+-   Write test BEFORE implementation code
+-   Test should fail initially (Red phase)
+-   Implement just enough to pass (Green phase)
+-   Refactor for quality (Refactor phase)
+-   Never skip the failing test step - it proves the test actually validates the feature
+
+### 4. Iterate Through All Tasks
+
+Continue implementing tasks sequentially:
+
+-   Mark each task as completed: `- [x]` in plan file
+-   Commit changes frequently with descriptive messages
+-   Keep all tests passing before moving to next task
+-   Update plan file if new tasks are discovered during implementation
+
+### 5. Create Implementation Summary
+
+At completion, add to the plan file:
+
+-   **Implementation Summary**: Describe the final design and how it was implemented
+-   **Key Changes**: Highlight important modifications
+-   **Testing Coverage**: Note what tests were added
+-   **Known Limitations**: Document any constraints or future improvements
+
+### 6. Create StudentUML Documentation Diagram
+
+Create a StudentUML XML file (e.g., `diagrams/feature-XXXX.xml`) containing:
+
+1. **Design Class Diagram (DCD)**:
+
+    - Show new/modified classes
+    - Include attributes and methods with visibility
+    - Show relationships (dependencies, associations, inheritance)
+    - Use appropriate stereotypes if applicable
+
+2. **Sequence Diagram (SD)**:
+    - Illustrate the main interaction flow for the feature
+    - Show message exchanges between objects
+    - Include self-calls for important internal logic
+    - Use proper return messages
+
+**Diagram Guidelines:**
+
+-   Keep diagrams focused on the feature changes, not entire codebase
+-   Position classes logically (top-to-bottom, left-to-right flow)
+-   Use consistent naming matching actual code
+-   Include method signatures that changed/were added
+-   Verify diagram loads correctly in StudentUML application
+
+### 7. Final Steps
+
+Before considering the feature complete:
+
+1. **Run full test suite**: `mvn clean test`
+2. **Check code coverage**: `mvn jacoco:report`
+3. **Update CHANGELOG.md**: Add entry under `[Unreleased]` section with brief description
+4. **Remove feature from features.md**: Delete the completed feature section from `features.md` (including title, description, technical notes, and use case)
+5. **Review plan file**: Ensure all sections are complete
+6. **Commit all changes**: Including plan file, diagram, CHANGELOG.md, and features.md updates
+
+The feature branch is now ready for review and merging into `develop`.
