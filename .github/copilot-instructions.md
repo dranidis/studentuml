@@ -51,7 +51,99 @@ This project uses a local Maven repo (`local-maven-repo/`) for custom JARs:
 -   Tests use JUnit 4 (`@Test`, `@Before`, `@After` annotations)
 -   Test helpers create models without GUI: see `src/test/java/edu/city/studentuml/controller/Helper.java` for examples
 -   Models can exist independently of frames/views for testing
--   **Follow the DRY principle**: Tests should call actual production methods (e.g., via controller instances) rather than duplicating implementation logic. If a method is `protected` or `public` in the production code, access it directly in tests instead of creating helper duplicates
+
+#### CRITICAL: Never Duplicate Production Code in Tests (Non-Negotiable)
+
+**Tests MUST call actual production code, not copy it.** This is a fundamental principle that cannot be compromised.
+
+-   ❌ **WRONG**: Copying production logic into test methods to execute it
+-   ✅ **CORRECT**: Calling production methods directly from tests
+-   ❌ **WRONG**: Reimplementing algorithms in test code to verify behavior
+-   ✅ **CORRECT**: Invoking the actual production methods and asserting on their results
+-   ❌ **WRONG**: Creating "test helper" methods that duplicate production logic
+-   ✅ **CORRECT**: Using production methods directly, making them `protected` or package-private if needed for testing
+
+**Why this matters:**
+
+1. Duplicated code masks bugs: if the test copies buggy logic, it will pass even when production code is wrong
+2. Double maintenance burden: changes require updating both production and test code
+3. Tests become unreliable: they test the copy, not the actual production behavior
+4. Violates DRY principle: reduces code quality and maintainability
+
+**If production code is not accessible for testing (e.g., `private` methods with hardcoded dependencies):**
+
+1. Refactor production code to be testable (extract methods, use dependency injection)
+2. Make methods package-private (`static` without modifier) for testing
+3. Extract logic into separate testable classes if needed
+
+**Examples:**
+
+```java
+// ❌ WRONG: Copying version parsing logic into test
+@Test
+public void testVersionParsing() {
+    String tagName = "v1.3.1";
+    String version = tagName.substring(1); // DUPLICATING PRODUCTION LOGIC
+    assertEquals("1.3.1", version);
+}
+
+// ✅ CORRECT: Testing actual production method with mock
+@Test
+public void testParseVersionFromJSON_withVPrefix() {
+    GitHubVersionProvider provider = new GitHubVersionProvider(mockUrl);
+    String json = "{\"tag_name\":\"v1.3.1\"}";
+    String version = provider.parseVersionFromJSON(json);
+    assertEquals("1.3.1", version);
+}
+```
+
+This principle applies to ALL tests without exception. If you find yourself copying production code into a test, STOP and refactor the production code to be testable instead.
+
+#### Design for Testability
+
+**When creating new classes or refactoring existing ones, follow these principles:**
+
+1. **Separate Concerns**: Utility classes should not handle UI concerns (dialogs, HTML rendering). Extract UI logic to caller or separate view classes.
+2. **Dependency Injection**: Avoid static methods with hardcoded dependencies. Use constructor injection or method parameters.
+3. **Interface Extraction**: Create interfaces for external dependencies (HTTP clients, file systems) to enable mocking.
+4. **Avoid Static State**: Prefer instance methods over static methods for better testability.
+5. **Package-Private Methods**: Make methods package-private (no modifier) instead of `private` when they need to be tested directly.
+
+**Example: Refactoring for Testability**
+
+```java
+// ❌ BEFORE: Not testable - static methods, hardcoded HTTP, UI responsibility
+public class NewversionChecker {
+    private static final String URL = "https://api.github.com/...";
+
+    public static void checkForNewVersion(JFrame frame) {
+        String version = getFromURL(); // Hardcoded HTTP call
+        if (isNewer(version)) {
+            JOptionPane.showMessageDialog(frame, "New version!"); // UI responsibility
+        }
+    }
+}
+
+// ✅ AFTER: Testable - DI, separated concerns, mockable dependencies
+public class VersionChecker {
+    private final VersionProvider versionProvider;
+    private final String currentVersion;
+
+    public VersionChecker(VersionProvider versionProvider, String currentVersion) {
+        this.versionProvider = versionProvider;
+        this.currentVersion = currentVersion;
+    }
+
+    public VersionCheckResult checkForNewVersion() {
+        String latest = versionProvider.getLatestVersion();
+        return new VersionCheckResult(currentVersion, latest, isNewer(latest));
+    }
+
+    // Caller handles UI:
+    // VersionCheckResult result = checker.checkForNewVersion();
+    // if (result.isNewerAvailable()) { showDialog(result); }
+}
+```
 
 ### Test-Driven Bug Fixes
 
