@@ -240,15 +240,15 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
     public String addNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this, "Class Editor", "Class Name:",
+                classGR.getDesignClass().getName());
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classNameEditor.showDialog(this, "Class Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return "fail";
         }
 
-        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
-
+        DesignClass newClass = new DesignClass(stringEditorDialog.getText());
         if (repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
@@ -267,13 +267,13 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
     }
 
     public void addState() {
-        StateEditor stateEditor = new StateEditor(new State(""));
+        StringEditorDialog stateEditor = new StringEditorDialog(this, "State Editor", "State name: ", "");
 
-        if (!stateEditor.showDialog(this, "State Editor")) {
+        if (!stateEditor.showDialog()) {
             return;
         }
 
-        State state = new State(stateEditor.getStateName());
+        State state = new State(stateEditor.getText());
         states.add(state);
         updateStatesList();
     }
@@ -285,13 +285,13 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
         }
 
         State state = states.elementAt(statesList.getSelectedIndex());
-        StateEditor stateEditor = new StateEditor(state);
+        StringEditorDialog stateEditor = new StringEditorDialog(this, "State Editor", "State name: ", state.getName());
 
-        if (!stateEditor.showDialog(this, "State Editor")) {
+        if (!stateEditor.showDialog()) {
             return;
         }
 
-        state.setName(stateEditor.getStateName());
+        state.setName(stateEditor.getText());
         updateStatesList();
     }
 
@@ -354,15 +354,15 @@ public class ObjectNodeEditor extends JPanel implements ActionListener, ItemList
 
         Type t = repository.getDesignClass(objectTypeComboBox.getSelectedItem().toString());
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this, "Class Editor", "Class Name:",
+                classGR.getDesignClass().getName());
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classNameEditor.showDialog(this, "Class Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return "fail";
         }
 
-        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
-
+        DesignClass newClass = new DesignClass(stringEditorDialog.getText());
         if (repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,

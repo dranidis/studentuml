@@ -27,7 +27,7 @@ import edu.city.studentuml.util.undoredo.EditDependencyEdit;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
 import edu.city.studentuml.view.gui.ClassEditor;
-import edu.city.studentuml.view.gui.DependencyEditor;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 import edu.city.studentuml.view.gui.DesignAssociationClassEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.InterfaceEditor;
@@ -169,17 +169,18 @@ public class DCDSelectionController extends SelectionController {
      * @param dependencyGR The graphical representation of the dependency to edit
      */
     private void editDependency(DependencyGR dependencyGR) {
-        DependencyEditor dependencyEditor = new DependencyEditor(dependencyGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Dependency Editor",
+                "Stereotype: ", dependencyGR.getDependency().getStereotype());
         Dependency dependency = dependencyGR.getDependency();
 
         // show the dependency editor dialog and check whether the user has pressed cancel
-        if (!dependencyEditor.showDialog(parentComponent, "Dependency Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo - capture state before editing
         String undoStereotype = dependency.getStereotype();
-        String newStereotype = dependencyEditor.getStereotype();
+        String newStereotype = stringEditorDialog.getText();
 
         // Only create undo edit if the value actually changed
         if ((undoStereotype == null && newStereotype != null) ||

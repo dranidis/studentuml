@@ -30,7 +30,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- * 
  * @author Ervin Ramollari
  */
 public class MultiObjectEditor extends JPanel implements ActionListener, ItemListener {
@@ -181,12 +180,13 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
 
     public String addNewType() {
         ClassGR classGR = new ClassGR(new DesignClass(""), new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this, "Class Editor", "Class Name:",
+                classGR.getDesignClass().getName());
 
-        if (!classNameEditor.showDialog(this, "Class Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return "fail";
         }
-        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
+        DesignClass newClass = new DesignClass(stringEditorDialog.getText());
         if (repository.getDesignClass(newClass.getName()) != null
                 && !newClass.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
@@ -207,16 +207,17 @@ public class MultiObjectEditor extends JPanel implements ActionListener, ItemLis
     // edits the class of object o
     public String editTypeName(DesignClass dc) {
         ClassGR classGR = new ClassGR(dc, new Point(0, 0));
-        ClassNameEditor classNameEditor = new ClassNameEditor(classGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this, "Class Editor", "Class Name:",
+                classGR.getDesignClass().getName());
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classNameEditor.showDialog(this, "Class Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return "fail";
         }
 
         repository.addClass(dc);
 
-        DesignClass newClass = new DesignClass(classNameEditor.getClassName());
+        DesignClass newClass = new DesignClass(stringEditorDialog.getText());
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict

@@ -28,7 +28,6 @@ import edu.city.studentuml.view.gui.components.StringSearchable;
 public abstract class ClassifierEditor extends JPanel implements ActionListener {
 
     public static final boolean AUTO_COMPLETE = true;
-    public static final boolean TEXTFIELD = false;
     private AutocompleteJComboBox autoNameField;
     private JTextField nameField;
 

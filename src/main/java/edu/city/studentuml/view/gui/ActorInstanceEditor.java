@@ -172,16 +172,17 @@ public class ActorInstanceEditor extends JPanel implements ActionListener, ItemL
     // edits the given actor
     public void editActor(Actor a) {
         // show the actor editor dialog
-        String actorName = JOptionPane.showInputDialog("Enter the Actor's Name");
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this, "Actor Editor", "Actor Name:",
+                a.getName());
 
-        if (actorName == null) { // user has pressed cancel
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // ensure that the to-be-edited actor exists in the repository
         repository.addActor(a);
 
-        Actor newActor = new Actor(actorName);
+        Actor newActor = new Actor(stringEditorDialog.getText());
 
         // edit the actor if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict
