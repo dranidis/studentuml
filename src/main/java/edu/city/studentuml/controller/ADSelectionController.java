@@ -27,8 +27,6 @@ import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
-import edu.city.studentuml.view.gui.ControlFlowEditor;
-import edu.city.studentuml.view.gui.DecisionNodeEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
@@ -52,18 +50,18 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editControlFlow(ControlFlowGR controlFlowGR) {
-        ControlFlowEditor controlFlowEditor = new ControlFlowEditor(controlFlowGR);
         ControlFlow controlFlow = (ControlFlow) controlFlowGR.getEdge();
-
+        StringEditorDialog controlFlowEditor = new StringEditorDialog(parentComponent, "Control Flow Editor", "Guard",
+                controlFlow.getGuard());
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!controlFlowEditor.showDialog(parentComponent, "Control Flow Editor")) {
+        if (!controlFlowEditor.showDialog()) {
             return;
         }
 
         // Undo/Redo
         ControlFlow undoControlFlow = (ControlFlow) controlFlow.clone();
 
-        String guard = controlFlowEditor.getGuard();
+        String guard = controlFlowEditor.getText();
         // check that the guard is ok before moving on
         // the outgoing edge from the Decision Node must have a guard (different than other guards)
         NodeComponent sourceNode = controlFlow.getSource();
@@ -251,18 +249,20 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
-        DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);
         DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getComponent();
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Decision Node Editor",
+                "Decision name: ",
+                decisionNode.getName());
 
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!decisionNodeEditor.showDialog(parentComponent, "Decision Node Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo
         DecisionNode undoDecisionNode = (DecisionNode) decisionNode.clone();
 
-        String decisionName = decisionNodeEditor.getActionName();
+        String decisionName = stringEditorDialog.getText();
         decisionNode.setName(decisionName);
 
         // Undo/Redo

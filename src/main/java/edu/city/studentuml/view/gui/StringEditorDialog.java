@@ -12,21 +12,22 @@ import javax.swing.JTextField;
 public class StringEditorDialog extends OkCancelDialog {
 
     protected JTextField textField;
-    private String label;
+    protected JLabel labelField;
 
-    public StringEditorDialog(Component parent, String title, String label, String name) {
-        super(parent, title);
-        this.label = label;
+    public StringEditorDialog(Component parent, String dialogTitle, String label, String initialText) {
+        super(parent, dialogTitle);
         textField.addActionListener(this);
-        textField.setText(name);
+        textField.setText(initialText);
+        labelField.setText(label);
     }
 
     @Override
     protected JPanel makeCenterPanel() {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new FlowLayout());
-        centerPanel.add(new JLabel(label));
+        labelField = new JLabel();
         textField = new JTextField(15);
+        centerPanel.add(labelField);
         centerPanel.add(textField);
         return centerPanel;
     }

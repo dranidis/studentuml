@@ -145,16 +145,18 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public void addExtensionPoint() {
-        String str = JOptionPane.showInputDialog(this, "Enter extension point name : ");
-        if (str == null) {
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
+                "Extension Point Editor", "Extension Point Name:", "");
+        if (!stringEditorDialog.showDialog()) {
             return;
-        } else if (str.isEmpty()) {
+        }
+        if (stringEditorDialog.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You entered invalid extension point name.",
                     "Invalid extension name", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        extensionPoints.add(new ExtensionPoint(str));
+        extensionPoints.add(new ExtensionPoint(stringEditorDialog.getText()));
         updateExtensionsList();
     }
 
@@ -167,18 +169,17 @@ public class UCExtendEditor extends JPanel implements ActionListener {
         int index = extensionsList.getSelectedIndex();
         ExtensionPoint ext = extensionPoints.get(index);
 
-        String str = (String) JOptionPane.showInputDialog(this, "Enter extension point name : ",
-                "Edit extension name", JOptionPane.QUESTION_MESSAGE,
-                null, null, ext.getName());
-        if (str == null) {
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
+                "Extension Point Editor", "Extension Point Name:", ext.getName());
+        if (!stringEditorDialog.showDialog()) {
             return;
-        } else if (str.isEmpty()) {
+        } else if (stringEditorDialog.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You entered invalid extension point name.",
                     "Invalid extension name", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        extensionPoints.set(index, new ExtensionPoint(str));
+        extensionPoints.set(index, new ExtensionPoint(stringEditorDialog.getText()));
         updateExtensionsList();
     }
 

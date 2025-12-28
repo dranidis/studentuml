@@ -18,7 +18,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- *
  * @author Biser
  */
 public class ObjectFlowEditor extends JPanel implements ActionListener {
@@ -44,12 +43,12 @@ public class ObjectFlowEditor extends JPanel implements ActionListener {
         centerPanel = new JPanel(new GridLayout(2, 0));
         weightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         guardPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        weightLabel = new JLabel("Weight: ");
+        weightLabel = new JLabel("Weight");
         weightField = new JTextField(15);
         weightField.addActionListener(this);
         weightPanel.add(weightLabel);
         weightPanel.add(weightField);
-        guardLabel = new JLabel("Object flow Guard: ");
+        guardLabel = new JLabel("Object flow Guard");
         guardField = new JTextField(15);
         guardField.addActionListener(this);
         guardPanel.add(guardLabel);

@@ -552,7 +552,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Prop
             throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
         }
         // modelName
-        return JOptionPane.showInputDialog(dialogText, initialName);
+        StringEditorDialog dialog = new StringEditorDialog(this,
+                "Diagram Name", dialogText, initialName);
+        if (!dialog.showDialog()) {
+            return null;
+        }
+        return dialog.getText();
     }
 
     public abstract void help();

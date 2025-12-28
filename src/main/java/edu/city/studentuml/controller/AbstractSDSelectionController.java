@@ -25,6 +25,7 @@ import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * Overrides the methods for setting the undo and redo coordinates for the
@@ -164,16 +165,14 @@ public abstract class AbstractSDSelectionController extends SelectionController 
     }
 
     private void editReturnMessage(ReturnMessageGR messageGR) {
-        String newName = JOptionPane.showInputDialog("Enter the return message string",
-                messageGR.getReturnMessage().getName());
-
-        if (newName == null) { // user pressed cancel
+        StringEditorDialog dialog = new StringEditorDialog(parentComponent,
+                "Return Message Editor", "Return Message String:", messageGR.getReturnMessage().getName());
+        if (!dialog.showDialog()) {
             return;
         }
-
         ReturnMessage undoReturnMessage = messageGR.getReturnMessage().clone();
         ReturnMessage originalReturnMessage = messageGR.getReturnMessage();
-        originalReturnMessage.setName(newName);
+        originalReturnMessage.setName(dialog.getText());
 
         // UNDO/REDO
         UndoableEdit edit = new EditReturnMessageEdit(originalReturnMessage, undoReturnMessage, model);

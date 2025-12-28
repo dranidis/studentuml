@@ -32,15 +32,16 @@ public class ReturnMessageGR extends SDMessageGR {
     @Override
     protected void drawMessageArrow(int x, int y, boolean forward, Graphics2D g) {
         double angle = forward ? 0 : -Math.PI;
-        GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
+        // GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
+        GraphicsHelper.drawBlackArrowHead(x, y, angle, g);
     }
 
     @Override
     public int getEndingX() {
         int endingX = super.getEndingX();
         boolean forward = endingX > getStartingX();
-        int plusBarWidth = forward ? - barWidth / 2 : barWidth / 2;
-        return endingX + (target.acticationAtY(getY()) - 1) * barWidth/2 + plusBarWidth;
+        int plusBarWidth = forward ? -barWidth / 2 : barWidth / 2;
+        return endingX + (target.acticationAtY(getY()) - 1) * barWidth / 2 + plusBarWidth;
     }
 
     @Override
@@ -117,10 +118,10 @@ public class ReturnMessageGR extends SDMessageGR {
         RoleClassifierGR sameFrom = (RoleClassifierGR) getSource();
         RoleClassifierGR sameTo = (RoleClassifierGR) getTarget();
         ReturnMessage sameMessage = (ReturnMessage) getMessage();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         ReturnMessageGR clonedGR = new ReturnMessageGR(sameFrom, sameTo, sameMessage, this.getY());
-        
+
         return clonedGR;
     }
 }

@@ -184,12 +184,14 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     }
 
     public String addNewSystem() {
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name");
-        if (systemName == null) {    // user has pressed cancel
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
+                "System Editor", "System Name:", "");
+
+        if (!stringEditorDialog.showDialog()) {
             return "fail";
         }
 
-        System newSystem = new System(systemName);
+        System newSystem = new System(stringEditorDialog.getText());
 
         if (repository.getSystem(newSystem.getName()) != null && !newSystem.getName().equals("")) {
             JOptionPane.showMessageDialog(null,
@@ -206,16 +208,17 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
     // edits the given system
     public String editSystem(System s) {
         // show the system editor dialog
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name");
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
+                "System Editor", "System Name:", s.getName());
 
-        if (systemName == null) {    // user has pressed cancel
+        if (!stringEditorDialog.showDialog()) { // user has pressed cancel
             return "fail";
         }
 
         // ensure that the to-be-edited system exists in the repository
         repository.addSystem(s);
 
-        System newSystem = new System(systemName);
+        System newSystem = new System(stringEditorDialog.getText());
 
         // edit the system if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict

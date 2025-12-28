@@ -21,6 +21,7 @@ import edu.city.studentuml.util.undoredo.EditUCExtendEdit;
 import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 import edu.city.studentuml.view.gui.ActorEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 import edu.city.studentuml.view.gui.UCExtendEditor;
 
 /**
@@ -69,14 +70,15 @@ public class UCDSelectionController extends SelectionController {
         CentralRepository repository = model.getCentralRepository();
         UseCase originalUseCase = (UseCase) useCaseGR.getComponent();
 
-        String useCaseName = JOptionPane.showInputDialog("Enter the Use Case's Name", originalUseCase.getName());
+        StringEditorDialog dialog = new StringEditorDialog(parentComponent,
+                "Use Case Editor", "Use Case Name:", originalUseCase.getName());
 
-        if (useCaseName == null) {
+        if (!dialog.showDialog()) {
             // cancel clicked
             return;
         }
 
-        UseCase newUseCase = new UseCase(useCaseName);
+        UseCase newUseCase = new UseCase(dialog.getText());
 
         if (!originalUseCase.getName().equals(newUseCase.getName())
                 && repository.getUseCase(newUseCase.getName()) != null && !newUseCase.getName().equals("")) {
@@ -98,13 +100,15 @@ public class UCDSelectionController extends SelectionController {
         CentralRepository repository = model.getCentralRepository();
         System originalSystem = (System) systemGR.getComponent();
 
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name", systemGR.getComponent().getName());
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent,
+                "System Editor", "System Name:", originalSystem.getName());
 
-        if (systemName == null) { // user canceled
+        if (!stringEditorDialog.showDialog()) {
+            // cancel clicked
             return;
         }
 
-        System newSystem = new System(systemName);
+        System newSystem = new System(stringEditorDialog.getText());
 
         if (!originalSystem.getName().equals(newSystem.getName()) && repository.getSystem(newSystem.getName()) != null
                 && !newSystem.getName().equals("")) {
