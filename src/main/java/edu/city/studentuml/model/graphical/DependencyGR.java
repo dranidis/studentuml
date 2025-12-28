@@ -55,6 +55,17 @@ public class DependencyGR extends LinkGR {
         return false;
     }
 
+    @Override
+    protected void drawStereoType(int aX, int aY, int bX, int bY, double rotationAngle, Graphics2D g) {
+        String stereotype = dependency.getStereotype();
+        if (stereotype != null && !stereotype.isEmpty()) {
+            String label = "«" + stereotype + "»";
+            int midX = (aX + bX) / 2;
+            int midY = (aY + bY) / 2;
+            GraphicsHelper.drawString(label, midX, midY, rotationAngle, false, g);
+        }
+    }
+
     /*
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *

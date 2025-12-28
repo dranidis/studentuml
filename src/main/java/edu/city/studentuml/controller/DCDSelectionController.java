@@ -4,6 +4,7 @@ import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
+import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
@@ -13,6 +14,7 @@ import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
+import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -21,9 +23,11 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditAssociationEdit;
 import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
 import edu.city.studentuml.util.undoredo.EditDCDClassEdit;
+import edu.city.studentuml.util.undoredo.EditDependencyEdit;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
 import edu.city.studentuml.view.gui.ClassEditor;
+import edu.city.studentuml.view.gui.DependencyEditor;
 import edu.city.studentuml.view.gui.DesignAssociationClassEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.InterfaceEditor;
@@ -37,6 +41,7 @@ public class DCDSelectionController extends SelectionController {
         editElementMapper.put(AssociationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(AggregationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(ClassGR.class, e -> editClass((ClassGR) e));
+        editElementMapper.put(DependencyGR.class, e -> editDependency((DependencyGR) e));
         editElementMapper.put(InterfaceGR.class, e -> editInterface((InterfaceGR) e));
     }
 
@@ -155,6 +160,41 @@ public class DCDSelectionController extends SelectionController {
         // set observable model to changed in order to notify its views
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
+    }
+
+    /**
+     * Edit the stereotype of a dependency. Opens a dialog allowing the user to set
+     * or modify the dependency stereotype.
+     * 
+     * @param dependencyGR The graphical representation of the dependency to edit
+     */
+    private void editDependency(DependencyGR dependencyGR) {
+        DependencyEditor dependencyEditor = new DependencyEditor(dependencyGR);
+        Dependency dependency = dependencyGR.getDependency();
+
+        // show the dependency editor dialog and check whether the user has pressed cancel
+        if (!dependencyEditor.showDialog(parentComponent, "Dependency Editor")) {
+            return;
+        }
+
+        // Undo/Redo - capture state before editing
+        String undoStereotype = dependency.getStereotype();
+        String newStereotype = dependencyEditor.getStereotype();
+
+        // Only create undo edit if the value actually changed
+        if ((undoStereotype == null && newStereotype != null) ||
+                (undoStereotype != null && !undoStereotype.equals(newStereotype))) {
+
+            dependency.setStereotype(newStereotype);
+
+            // Undo/Redo
+            UndoableEdit edit = new EditDependencyEdit(dependency, undoStereotype, newStereotype, model);
+            parentComponent.getUndoSupport().postEdit(edit);
+
+            // set observable model to changed in order to notify its views
+            model.modelChanged();
+            SystemWideObjectNamePool.getInstance().reload();
+        }
     }
 
     private void editAssociationClass(AssociationClassGR associationClassGR) {

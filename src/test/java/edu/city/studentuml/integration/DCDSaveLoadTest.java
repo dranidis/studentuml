@@ -222,8 +222,9 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         AggregationGR libraryMemberCompGR = new AggregationGR(libraryGR, memberGR, libraryMemberComp);
         model.addGraphicalElement(libraryMemberCompGR);
 
-        // Create Dependency (Member depends on Library)
+        // Create Dependency (Member depends on Library) with stereotype
         Dependency memberLibraryDep = new Dependency(member, library);
+        memberLibraryDep.setStereotype("use");
         DependencyGR memberLibraryDepGR = new DependencyGR(memberGR, libraryGR, memberLibraryDep);
         model.addGraphicalElement(memberLibraryDepGR);
 
@@ -352,6 +353,12 @@ public class DCDSaveLoadTest extends SaveLoadTestBase {
         assertEquals("Should have 3 associations (including self-association)", 3, associationCount);
         long dependencyCount = countElementsByType(elements, DependencyGR.class);
         assertEquals("Should have 1 dependency", 1, dependencyCount);
+
+        // Verify Dependency with stereotype
+        DependencyGR loadedDependency = findElementByType(elements, DependencyGR.class);
+        assertNotNull("Dependency should exist", loadedDependency);
+        assertEquals("Dependency stereotype should be 'use'", "use",
+                loadedDependency.getDependency().getStereotype());
 
         long generalizationCount = countElementsByType(elements, GeneralizationGR.class);
         assertEquals("Should have 2 generalizations (1 class inheritance + 1 interface inheritance)", 2,

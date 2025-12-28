@@ -4,11 +4,23 @@
 
 ### Added
 
+-   Stereotype labels support for Dependency relationships in Design Class Diagrams (DCDs)
+    -   Dependencies can now display UML stereotypes (e.g., «use», «create», «call», «instantiate», «import», «access»)
+    -   Stereotypes render in standard UML guillemets format (« ») at the dependency line midpoint
+    -   Properties dialog for editing dependency stereotypes via double-click
+    -   XML serialization support with full backward compatibility for existing diagrams
+    -   Undo/redo support for stereotype editing operations
+    -   12 new unit tests for Dependency stereotype functionality
 -   Command-line file opening support - StudentUML can now open diagram files directly from command line (e.g., `java -jar studentuml.jar diagram.xml`)
 -   Integration test infrastructure for save/load operations (`SaveLoadTestBase`)
 -   Comprehensive UCD save/load test with system boundary containment (`UCDSaveLoadTest`)
 -   Automatic XML file preservation in `xml-test-files/` directory for manual inspection
 -   Automatic frame property injection for UI-viewable test XML files
+
+### Fixed
+
+-   Application crash when double-clicking on non-editable graphical elements (e.g., UC Include relationships)
+    -   SelectionController now gracefully ignores elements without registered editors instead of throwing UnsupportedOperationException
 
 ## [1.4.0] - 2025-12-22
 

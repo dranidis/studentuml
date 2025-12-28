@@ -19,21 +19,6 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** When documenting that a class depends on an interface (e.g., VersionChecker depends on VersionProvider interface), currently this causes a ClassCastException.
 
-### Stereotype Labels on Dependencies
-
-**Status:** Not implemented  
-**Priority:** Low  
-**Description:** Add support for stereotype labels on Dependency relationships (e.g., «use», «create», «call», «instantiate»).
-
-**Technical Notes:**
-
--   Dependency class likely needs a `stereotype` attribute
--   DependencyGR needs to render the stereotype label above/below the dashed arrow
--   XML serialization needs to include stereotype attribute
--   UI needs a way to set/edit the stereotype (probably in properties dialog)
-
-**Use Case:** Provide more semantic information about the nature of dependencies between classes, making diagrams more expressive and aligned with UML standards.
-
 ### Distinction Between Navigability and End Ownership in Associations
 
 **Status:** Not implemented  

@@ -253,8 +253,11 @@ public abstract class SelectionController {
         if (editElementConsumer != null) {
             editElementConsumer.accept(element);
         } else {
-            logger.severe("No edit function in the mapper for " + element.getClass().getName());
-            throw new UnsupportedOperationException("not implemented yet!!!");
+            // Some elements (like UCIncludeGR, UCExtendGR) don't have editors
+            // because their properties are fixed or not editable.
+            // Silently ignore double-clicks on these elements.
+            logger.fine("No edit function registered for " + element.getClass().getSimpleName() +
+                    " - element is not editable");
         }
     }
 

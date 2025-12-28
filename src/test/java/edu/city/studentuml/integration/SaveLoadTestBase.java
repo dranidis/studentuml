@@ -28,7 +28,7 @@ public abstract class SaveLoadTestBase {
     protected File tempFile;
     private static final String XML_TEST_FILES_DIR = "xml-test-files";
 
-    private boolean copyTestFilesToXmlDir = false;
+    private boolean copyTestFilesToXmlDir = true;
 
     @Before
     public void setUp() throws IOException {
