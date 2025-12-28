@@ -2,122 +2,89 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 /**
- * @author Biser
+ * Editor dialog for ObjectFlow properties (weight and guard). Extends
+ * OkCancelDialog to provide standard dialog behavior.
+ * 
+ * @author StudentUML Team
  */
-public class ObjectFlowEditor extends JPanel implements ActionListener {
+public class ObjectFlowEditor extends OkCancelDialog {
 
-    private ObjectFlowGR objectFlowGR;
-    private JDialog objectFlowDialog;
-    private JPanel centerPanel;
-    private JPanel guardPanel;
-    private JPanel weightPanel;
-    private JLabel guardLabel;
     private JTextField guardField;
-    private JLabel weightLabel;
     private JTextField weightField;
-    private boolean ok;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
-    private JButton okButton;
 
-    public ObjectFlowEditor(ObjectFlowGR objectFlowGR) {
-        this.objectFlowGR = objectFlowGR;
-        setLayout(new BorderLayout());
+    /**
+     * Creates a new ObjectFlowEditorDialog.
+     * 
+     * @param parent       The parent component for positioning the dialog
+     * @param objectFlowGR The graphical object flow element to edit
+     */
+    public ObjectFlowEditor(Component parent, ObjectFlowGR objectFlowGR) {
+        super(parent, "Object Flow Editor");
 
-        centerPanel = new JPanel(new GridLayout(2, 0));
-        weightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        guardPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        weightLabel = new JLabel("Weight");
-        weightField = new JTextField(15);
+        // Initialize fields with current values
+        ObjectFlow flow = (ObjectFlow) objectFlowGR.getEdge();
+        weightField.setText(flow.getWeight());
+        guardField.setText(flow.getGuard());
+
+        // Allow Enter key to submit the dialog
         weightField.addActionListener(this);
-        weightPanel.add(weightLabel);
-        weightPanel.add(weightField);
-        guardLabel = new JLabel("Object flow Guard");
-        guardField = new JTextField(15);
         guardField.addActionListener(this);
-        guardPanel.add(guardLabel);
+    }
+
+    @Override
+    protected JPanel makeCenterPanel() {
+        JPanel centerPanel = new JPanel(new GridLayout(2, 0));
+
+        // Weight panel
+        JPanel weightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        weightPanel.add(new JLabel("Weight"));
+        weightField = new JTextField(15);
+        weightPanel.add(weightField);
+
+        // Guard panel
+        JPanel guardPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        guardPanel.add(new JLabel("Object flow Guard"));
+        guardField = new JTextField(15);
         guardPanel.add(guardField);
+
         centerPanel.add(weightPanel);
         centerPanel.add(guardPanel);
 
-        bottomPanel = new JPanel();
-        FlowLayout bottomLayout = new FlowLayout();
-        bottomLayout.setHgap(30);
-        bottomPanel.setLayout(bottomLayout);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+        return centerPanel;
     }
 
-    public boolean showDialog(Component parent, String title) {
-        ok = false;
-
-        // find the owner frame
-        Frame owner = null;
-
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        }
-
-        objectFlowDialog = new JDialog(owner, true);
-        objectFlowDialog.getContentPane().add(this);
-        objectFlowDialog.setTitle(title);
-        objectFlowDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        objectFlowDialog.pack();
-        objectFlowDialog.setResizable(false);
-        objectFlowDialog.setLocationRelativeTo(owner);
-        objectFlowDialog.setVisible(true);
-
-        return ok;
-    }
-
-    public void initialize() {
-        ObjectFlow flow = (ObjectFlow) objectFlowGR.getEdge();
-
-        weightField.setText(flow.getWeight());
-        guardField.setText(flow.getGuard());
-    }
-
+    /**
+     * Get the weight value from the weight field.
+     * 
+     * @return The weight text entered by the user
+     */
     public String getWeight() {
         return weightField.getText();
     }
 
+    /**
+     * Get the guard value from the guard field.
+     * 
+     * @return The guard text entered by the user
+     */
     public String getGuard() {
         return guardField.getText();
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == okButton || e.getSource() == guardField
-                || e.getSource() == weightField) {
-            objectFlowDialog.setVisible(false);
-            ok = true;
-        } else if (e.getSource() == cancelButton) {
-            objectFlowDialog.setVisible(false);
+    @Override
+    protected void actionRest(ActionEvent event) {
+        // Handle Enter key press in either text field
+        if (event.getSource() == weightField || event.getSource() == guardField) {
+            actionOK(event);
         }
     }
 }

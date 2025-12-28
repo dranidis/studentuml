@@ -18,14 +18,17 @@ This document analyzes all GUI `*Editor` classes in the StudentUML project to id
 
 **Pattern**: Single text field + OK/Cancel buttons + standard dialog behavior
 
-| Editor             | Field Name  | Getter Method | Status            | LOC  | Duplicate Code |
-| ------------------ | ----------- | ------------- | ----------------- | ---- | -------------- |
-| ControlFlowEditor  | guardField  | getGuard()    | ❌ Not refactored | ~102 | ~80 lines      |
-| DecisionNodeEditor | guardField  | getGuard()    | ❌ Not refactored | ~90  | ~75 lines      |
-| ObjectFlowEditor   | weightField | getWeight()   | ❌ Not refactored | ~100 | ~75 lines      |
+| Editor             | Field Name            | Getter Method           | Status                                 | LOC | Duplicate Code |
+| ------------------ | --------------------- | ----------------------- | -------------------------------------- | --- | -------------- |
+| ControlFlowEditor  | guardField            | getGuard()              | ✅ Refactored (StringEditorDialog)     | ~35 | Eliminated     |
+| DecisionNodeEditor | guardField            | getGuard()              | ✅ Refactored (StringEditorDialog)     | ~35 | Eliminated     |
+| ObjectFlowEditor   | weight + guard fields | getWeight(), getGuard() | ✅ Refactored (ObjectFlowEditorDialog) | ~90 | Eliminated     |
 
 **Duplication**: Nearly identical structure - label, text field, dialog handling, action listener
-**Recommendation**: These should extend `DialogEditor` or a specialized `SingleFieldEditor<T>`
+**Status**: ✅ **COMPLETED** - All three editors refactored using `OkCancelDialog` base class
+
+-   ControlFlowEditor & DecisionNodeEditor → `StringEditorDialog` (single field)
+-   ObjectFlowEditor → `ObjectFlowEditorDialog` (two fields: weight + guard)
 
 ---
 
@@ -453,6 +456,7 @@ new TypedEntityEditor.Builder<DesignClass, SDObject>()
 
 **Duration**: 2-3 hours
 **Impact**: Eliminate ~240 lines of duplicate code
+**Status**: ✅ **COMPLETED**
 
 1. ✅ Already done (on feature branch):
 
@@ -461,12 +465,13 @@ new TypedEntityEditor.Builder<DesignClass, SDObject>()
     - ActivityNodeEditor
     - StateEditor
 
-2. **TODO**: Extend `DialogEditor` to remaining simple editors:
-    - ControlFlowEditor
-    - DecisionNodeEditor
-    - ObjectFlowEditor
+2. ✅ **COMPLETED**: Extended `OkCancelDialog` base to remaining simple editors:
+    - ControlFlowEditor → `StringEditorDialog`
+    - DecisionNodeEditor → `StringEditorDialog`
+    - ObjectFlowEditor → `ObjectFlowEditorDialog` (multi-field variant)
 
-**Estimated Savings**: 3 editors × 80 lines = **240 lines**
+**Actual Savings**: 3 editors × 80 lines = **~240 lines eliminated**
+**Test Results**: All 212 tests passing ✅
 
 ---
 

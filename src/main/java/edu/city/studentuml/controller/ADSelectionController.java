@@ -97,11 +97,11 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editObjectFlow(ObjectFlowGR objectFlowGR) {
-        ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor(objectFlowGR);
+        ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor(parentComponent, objectFlowGR);
         ObjectFlow objectFlow = (ObjectFlow) objectFlowGR.getEdge();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!objectFlowEditor.showDialog(parentComponent, "Object Flow Editor")) {
+        if (!objectFlowEditor.showDialog()) {
             return;
         }
 
