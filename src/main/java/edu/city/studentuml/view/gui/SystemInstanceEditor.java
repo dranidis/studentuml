@@ -31,33 +31,29 @@ import javax.swing.WindowConstants;
  */
 public class SystemInstanceEditor extends JPanel implements ActionListener, ItemListener {
 
-    private JPanel systemPanel;
-    private JLabel systemLabel;
-    private JComboBox<String> systemComboBox;
-    private JDialog systemInstanceDialog;
+    private static final String UNNAMED = "(unnamed)";
 
+    private JDialog systemInstanceDialog;
     private JPanel namePanel;
     private JLabel nameLabel;
     private JTextField nameField;
-
-    private final JPanel cardPanel;
-    private final JPanel nonemptyPanel;
-    private final JLabel addSystemLabel;
-
     private JPanel centerPanel;
+    private JPanel systemPanel;
+    private JComboBox<String> systemComboBox;
+    private JLabel systemLabel;
+    private JPanel cardPanel;
+    private JPanel nonemptyPanel;
+    private JLabel addSystemLabel;
     private JButton addSystemButton;
     private JButton editSystemButton;
     private JButton deleteSystemButton;
-
     private JPanel bottomPanel;
-    private JButton okButton;
     private JButton cancelButton;
-
+    private JButton okButton;
     private boolean ok;
-
+    private SystemInstanceGR systemInstance;
     private System system;
     private Vector<System> systems;
-    private SystemInstanceGR systemInstance;
     private CentralRepository repository;
 
     @SuppressWarnings("unchecked")
@@ -103,14 +99,14 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         centerPanel.add(systemPanel);
         centerPanel.add(cardPanel);
 
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
         bottomPanel = new JPanel();
         FlowLayout bottomLayout = new FlowLayout();
         bottomLayout.setHgap(20);
         bottomPanel.setLayout(bottomLayout);
+        okButton = new JButton("OK");
+        okButton.addActionListener(this);
+        cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(this);
         bottomPanel.add(okButton);
         bottomPanel.add(cancelButton);
 
@@ -153,22 +149,17 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         if (!systems.contains(system)) {
             systems.add(system);
         }
+        systems.add(new System(""));
+        systemComboBox.addItem(UNNAMED);
 
-        boolean hasEmpty = false;
         for (System s : systems) {
-            if (s != null && !s.getName().equals("")) {
+            if (!s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if (s != null) {
-                systemComboBox.addItem("(unnamed)");
-                hasEmpty = true;
             }
         }
-        if (!hasEmpty) {
-            systems.add(new System(""));
-            systemComboBox.addItem("(unnamed)");
-        }
+
         if (system.getName().equals("")) {
-            systemComboBox.setSelectedItem("(unnamed)");
+            systemComboBox.setSelectedItem(UNNAMED);
         } else {
             systemComboBox.setSelectedItem(system.getName());
         }
@@ -188,7 +179,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
                 "System Editor", "System Name:", "");
 
         if (!stringEditorDialog.showDialog()) {
-            return "fail";
+            return null;
         }
 
         System newSystem = new System(stringEditorDialog.getText());
@@ -197,7 +188,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
             JOptionPane.showMessageDialog(null,
                     "There is an existing System with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
+            return null;
         } else {
             systems.add(newSystem);
             repository.addSystem(newSystem);
@@ -212,7 +203,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
                 "System Editor", "System Name:", s.getName());
 
         if (!stringEditorDialog.showDialog()) { // user has pressed cancel
-            return "fail";
+            return null;
         }
 
         // ensure that the to-be-edited system exists in the repository
@@ -229,7 +220,7 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
             JOptionPane.showMessageDialog(null,
                     "There is an existing system with the given name already!\n",
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
+            return null;
         } else {
             repository.editSystem(s, newSystem);
             return newSystem.getName();
@@ -238,47 +229,63 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
 
     public void updateComboBox(String index) {
         systemComboBox.removeAllItems();
+
+        systemComboBox.addItem(UNNAMED);
         for (System s : systems) {
-            if (s != null && !s.getName().equals("")) {
+            if (!s.getName().equals("")) {
                 systemComboBox.addItem(s.getName());
-            } else if (s != null) {
-                systemComboBox.addItem("(unnamed)");
             }
         }
+
         systemComboBox.setSelectedItem(index);
     }
 
-    private void setSelectedSystem() {
-        system = (System) systems.get(systemComboBox.getSelectedIndex());
+    private System getSystemOfSelectedItem() {
+        String selectedName = (String) systemComboBox.getSelectedItem();
+        if (selectedName == null || selectedName.equals(UNNAMED)) {
+            // Find the empty system
+            for (System s : systems) {
+                if (s.getName().equals("")) {
+                    return s;
+                }
+            }
+        }
+        // Find system by name
+        for (System s : systems) {
+            if (s.getName().equals(selectedName)) {
+                return s;
+            }
+        }
+        return null;
     }
 
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == okButton || event.getSource() == nameField) {
-            setSelectedSystem();
+            system = getSystemOfSelectedItem();
             systemInstanceDialog.setVisible(false);
             ok = true;
         } else if (event.getSource() == cancelButton) {
             systemInstanceDialog.setVisible(false);
         } else if (event.getSource() == addSystemButton) {
-            String index = addNewSystem();
-            if (!index.equals("fail")) {
-                updateComboBox(index);
+            String systemName = addNewSystem();
+            if (systemName != null) {
+                updateComboBox(systemName);
                 updateAddSystemPanel();
             }
         } else if (event.getSource() == editSystemButton) {
-            String index = editSystem((System) systems.elementAt(systemComboBox.getSelectedIndex()));
-            if (!index.equals("fail")) {
-                updateComboBox(index);
+            String systemName = editSystem(getSystemOfSelectedItem());
+            if (systemName != null) {
+                updateComboBox(systemName);
                 updateAddSystemPanel();
             }
         } else if (event.getSource() == deleteSystemButton) {
             deleteSystem();
-            updateComboBox("(unnamed)");
+            updateComboBox(UNNAMED);
         }
     }
 
     private void deleteSystem() {
-        if (systemComboBox.getSelectedItem().equals("(unnamed)")) {
+        if (systemComboBox.getSelectedItem().equals(UNNAMED)) {
             return;
         }
         int n = JOptionPane.showConfirmDialog(
@@ -294,19 +301,19 @@ public class SystemInstanceEditor extends JPanel implements ActionListener, Item
         repository.removeSystem(repository.getSystem(s.getName()));
     }
 
+    public void itemStateChanged(ItemEvent e) {
+        updateAddSystemPanel();
+    }
+
     private void updateAddSystemPanel() {
         String s = getSelectedItem();
-        if (s.equals("(unnamed)")) {
+        if (s.equals(UNNAMED)) {
             editSystemButton.setEnabled(false);
             deleteSystemButton.setEnabled(false);
         } else {
             editSystemButton.setEnabled(true);
             deleteSystemButton.setEnabled(true);
         }
-    }
-
-    public void itemStateChanged(ItemEvent e) {
-        updateAddSystemPanel();
     }
 
     private String getSelectedItem() {
