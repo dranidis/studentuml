@@ -126,6 +126,8 @@ public class CCDSelectionController extends SelectionController {
         ConceptualAssociationClass undoAssociationClass = (ConceptualAssociationClass) associationClass.clone();
 
         associationClass.setName(associationClassEditor.getAssociationClassName());
+        associationClass.setShowArrow(associationClassEditor.isShowArrow());
+        associationClass.setLabelDirection(associationClassEditor.getLabelDirection());
 
         Role roleA = associationClass.getRoleA();
         roleA.setName(associationClassEditor.getRoleAName());

@@ -213,6 +213,8 @@ public class DCDSelectionController extends SelectionController {
 
         associationClass.setName(associationClassEditor.getAssociationClassName());
         associationClass.setDirection(associationClassEditor.getDirection());
+        associationClass.setShowArrow(associationClassEditor.isShowArrow());
+        associationClass.setLabelDirection(associationClassEditor.getLabelDirection());
 
         Role roleA = associationClass.getRoleA();
         roleA.setName(associationClassEditor.getRoleAName());
