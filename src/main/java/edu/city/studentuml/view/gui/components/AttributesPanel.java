@@ -10,8 +10,8 @@ public class AttributesPanel extends ListPanel<Attribute> {
         super(title, repository);
     }
 
-       @Override
-    protected ElementEditor<Attribute> createElementEditor(Attribute attribute, CentralRepository repository) {
-        return new AttributeEditor(attribute, repository);
+    @Override
+    protected ElementEditor<Attribute> createElementEditor(CentralRepository repository) {
+        return new AttributeEditor(repository);
     }
 }

@@ -48,8 +48,7 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
     private JPanel typePanel;
     CentralRepository repository;
 
-    public MethodParameterEditor(MethodParameter param, CentralRepository cr) {
-        parameter = param;
+    public MethodParameterEditor(CentralRepository cr) {
         repository = cr;
 
         setLayout(new BorderLayout());
@@ -98,10 +97,13 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
         bottomPanel.add(cancelButton);
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+        // Note: initialize() will be called in showDialog()
     }
 
-    public boolean showDialog(Component parent) {
+    @Override
+    public MethodParameter editDialog(MethodParameter parameter, Component parent) {
+        this.parameter = parameter;
+        initialize();
         ok = false;
 
         // find the owner frame
@@ -122,7 +124,18 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
         parameterDialog.setLocationRelativeTo(owner);
         parameterDialog.setVisible(true);
 
-        return ok;
+        if (!ok) {
+            return null;
+        }
+
+        // Create new parameter if needed, then set properties
+        if (parameter == null) {
+            parameter = new MethodParameter(getParameterName(), getType());
+        } else {
+            parameter.setName(getParameterName());
+            parameter.setType(getType());
+        }
+        return parameter;
     }
 
     public void initialize() {
@@ -174,14 +187,5 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
         }
     }
 
-    @Override
-    public MethodParameter createElement() {
-        return new MethodParameter(getParameterName(), getType());
-    }
-
-    @Override
-    public void editElement() {
-        parameter.setName(getParameterName());
-        parameter.setType(getType());
-    }
+    // createElement and editElement removed: handled by showDialog
 }

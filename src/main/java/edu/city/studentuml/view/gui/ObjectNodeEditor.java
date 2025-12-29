@@ -9,7 +9,9 @@ import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.ElementEditor;
 import edu.city.studentuml.view.gui.components.ListPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 
 /**
  * Editor for Object Nodes in Activity Diagrams. Extends TypedEntityEditor to
@@ -29,11 +31,50 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
         // Create states management panel as anonymous inner class
         statesPanel = new ListPanel<State>("Object States", cr) {
             @Override
-            protected ElementEditor<State> createElementEditor(State state, CentralRepository repository) {
-                StateEditor editor = new StateEditor(state, repository);
-                // Pass all states for duplicate checking
-                editor.setAllStates(getElements());
-                return editor;
+            protected ElementEditor<State> createElementEditor(CentralRepository repository) {
+                // Return anonymous ElementEditor implementation for State editing
+                return new ElementEditor<State>() {
+                    @Override
+                    public State editDialog(State state, Component parent) {
+                        String initialValue = (state != null) ? state.getName() : "";
+                        StringEditorDialog stringEditorDialog = new StringEditorDialog(parent,
+                                "State Editor", "State Name:", initialValue);
+
+                        if (!stringEditorDialog.showDialog()) {
+                            return null; // Cancelled
+                        }
+
+                        String stateName = stringEditorDialog.getText();
+                        if (stateName == null || stateName.trim().isEmpty()) {
+                            JOptionPane.showMessageDialog(parent,
+                                    "State name cannot be empty!",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                            return null;
+                        }
+
+                        // Check for duplicate names in the current list
+                        Vector<State> allStates = getElements();
+                        if (allStates != null) {
+                            for (State s : allStates) {
+                                if (s != state && s.getName().equals(stateName)) {
+                                    JOptionPane.showMessageDialog(parent,
+                                            "A state with this name already exists!",
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+                                    return null;
+                                }
+                            }
+                        }
+
+                        if (state == null) {
+                            // Create new state
+                            return new State(stateName);
+                        } else {
+                            // Edit existing state
+                            state.setName(stateName);
+                            return state;
+                        }
+                    }
+                };
             }
         };
 

@@ -29,14 +29,13 @@ import javax.swing.WindowConstants;
 
 public class MethodEditor extends JPanel implements ActionListener, ElementEditor<Method> {
 
-    private static final String[] scopes = {"instance", "classifier"};
-    private static final String[] visibilities = {"public", "private", "protected"};
+    private static final String[] scopes = { "instance", "classifier" };
+    private static final String[] visibilities = { "public", "private", "protected" };
     private Vector<Type> types;
     private JPanel bottomPanel;
     private JButton cancelButton;
     private JPanel centerPanel;
     private JPanel fieldsPanel;
-    private Method method;
     private JDialog methodDialog;
     private JTextField nameField;
     private JLabel nameLabel;
@@ -57,8 +56,7 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
     private CentralRepository repository;
     private static final String TITLE = "Method Editor";
 
-    public MethodEditor(Method meth, CentralRepository cr) {
-        method = meth;
+    public MethodEditor(CentralRepository cr) {
         repository = cr;
 
         types = repository.getTypes();
@@ -114,13 +112,15 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // initialize with the method data to be edited, if any
-        initialize();
+        // Note: initialize() will be called in showDialog()
     }
 
     @Override
-    public boolean showDialog(Component parent) {
+    public Method editDialog(Method method, Component parent) {
         ok = false;
+
+        // Initialize fields based on method (null for new, object for edit)
+        initialize(method);
 
         // find the owner frame
         Frame owner = null;
@@ -140,10 +140,24 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         methodDialog.setLocationRelativeTo(owner);
         methodDialog.setVisible(true);
 
-        return ok;
+        if (!ok) {
+            return null;
+        }
+
+        // Create new method if needed, then set properties
+        if (method == null) {
+            method = new Method(this.getMethodName());
+        } else {
+            method.setName(this.getMethodName());
+        }
+        method.setReturnType(this.getReturnType());
+        method.setVisibility(this.getVisibility());
+        method.setScope(this.getScope());
+        method.setParameters(this.getParameters());
+        return method;
     }
 
-    private void initialize() {
+    private void initialize(Method method) {
         Vector<MethodParameter> methodParameters;
 
         if (method == null) {
@@ -224,26 +238,8 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
             ok = true;
         } else if (event.getSource() == cancelButton) {
             methodDialog.setVisible(false);
-        } 
+        }
     }
 
-    @Override
-    public Method createElement() {
-        Method newMethod = new Method(this.getMethodName());
-
-        newMethod.setReturnType(this.getReturnType());
-        newMethod.setVisibility(this.getVisibility());
-        newMethod.setScope(this.getScope());
-        newMethod.setParameters(this.getParameters());    
-        return newMethod;
-    }
-
-    @Override
-    public void editElement() {
-        method.setName(this.getMethodName());
-        method.setReturnType(this.getReturnType());
-        method.setVisibility(this.getVisibility());
-        method.setScope(this.getScope());
-        method.setParameters(this.getParameters());
-    }
+    // createElement and editElement removed: handled by showDialog
 }

@@ -27,11 +27,10 @@ import javax.swing.WindowConstants;
 
 public class AttributeEditor extends JPanel implements ActionListener, ElementEditor<Attribute> {
 
-    private static final String[] scopes = {"instance", "classifier"};
-    private static final String[] visibilities = {"private", "public", "protected"};
+    private static final String[] scopes = { "instance", "classifier" };
+    private static final String[] visibilities = { "private", "public", "protected" };
     private Vector<String> comboBoxStringList;
     private Vector<DataType> comboBoxTypeList;
-    private Attribute attribute;
     private JDialog attributeDialog;
     private JPanel bottomPanel;
     private JButton cancelButton;
@@ -55,8 +54,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
     CentralRepository repository;
     private static final String TITLE = "Attribute Editor";
 
-    public AttributeEditor(Attribute attrib, CentralRepository cr) {
-        attribute = attrib;
+    public AttributeEditor(CentralRepository cr) {
         repository = cr;
 
         setLayout(new BorderLayout());
@@ -75,10 +73,11 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
 
         comboBoxTypeList.forEach(next -> {
             if (next == null) {
-            comboBoxStringList.add("unspecified");
-        } else {
-            comboBoxStringList.add(next.getName());
-        }});
+                comboBoxStringList.add("unspecified");
+            } else {
+                comboBoxStringList.add(next.getName());
+            }
+        });
 
         typeComboBox = new JComboBox<>(comboBoxStringList);
         visibilityLabel = new JLabel("Visibility: ");
@@ -117,12 +116,15 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         bottomPanel.add(cancelButton);
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+        // Note: initialize() will be called in showDialog()
     }
 
     @Override
-    public boolean showDialog(Component parent) {
+    public Attribute editDialog(Attribute attribute, Component parent) {
         ok = false;
+
+        // Initialize fields based on attribute (null for new, object for edit)
+        initialize(attribute);
 
         // find the owner frame
         Frame owner = null;
@@ -142,10 +144,23 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         attributeDialog.setLocationRelativeTo(owner);
         attributeDialog.setVisible(true);
 
-        return ok;
+        if (!ok) {
+            return null; // Cancelled
+        }
+
+        // Create new attribute if needed, then set properties
+        if (attribute == null) {
+            attribute = new Attribute(this.getAttributeName());
+        } else {
+            attribute.setName(this.getAttributeName());
+        }
+        attribute.setType(this.getType());
+        attribute.setVisibility(this.getVisibility());
+        attribute.setScope(this.getScope());
+        return attribute;
     }
 
-    public void initialize() {
+    public void initialize(Attribute attribute) {
         if (attribute == null) {
             nameField.setText("");
         } else {
@@ -225,25 +240,6 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         } else if (event.getSource() == cancelButton) {
             attributeDialog.setVisible(false);
         }
-    }
-
-    @Override
-    public Attribute createElement() {
-        Attribute newAttribute = new Attribute(this.getAttributeName());
-
-        newAttribute.setType(this.getType());
-        newAttribute.setVisibility(this.getVisibility());
-        newAttribute.setScope(this.getScope());
-
-        return newAttribute;
-    }
-
-    @Override
-    public void editElement() {
-        attribute.setName(this.getAttributeName());
-        attribute.setType(this.getType());
-        attribute.setVisibility(this.getVisibility());
-        attribute.setScope(this.getScope());
     }
 
 }

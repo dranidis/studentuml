@@ -11,7 +11,7 @@ public class MethodParameterPanel extends ListPanel<MethodParameter> {
     }
 
     @Override
-    protected ElementEditor<MethodParameter> createElementEditor(MethodParameter methodParameter, CentralRepository repository) {
-        return new MethodParameterEditor(methodParameter, repository);
+    protected ElementEditor<MethodParameter> createElementEditor(CentralRepository repository) {
+        return new MethodParameterEditor(repository);
     }
 }

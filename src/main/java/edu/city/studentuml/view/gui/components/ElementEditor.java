@@ -3,30 +3,29 @@ package edu.city.studentuml.view.gui.components;
 import java.awt.Component;
 
 /**
- * The elementEditor interface must be implemented by element editors (such as
+ * The ElementEditor interface must be implemented by element editors (such as
  * MethodEditor, AttributeEditor) that are being used by the classes that extend
- * the ListPanel abstract class.
+ * the ListPanel abstract class. This interface uses a simplified single-method
+ * design that handles both creating new elements and editing existing elements.
  */
 public interface ElementEditor<T extends Copyable<T>> {
 
     /**
-     * Shows the dialog for editing the element. Returns false if the editing is cancelled.
+     * Shows a dialog to create a new element or edit an existing element.
      * 
-     * @param parent
-     * @return
+     * @param element The element to edit, or null to create a new element
+     * @param parent  The parent component for the dialog
+     * @return The created or edited element, or null if the operation was cancelled
      */
-    boolean showDialog(Component parent);
-    
     /**
-     * returns a new element with the user entered fields fields.
-     * @return
+     * Refactored: ElementEditor now uses a single method for both create and edit.
+     * Shows dialog to edit/create element. Returns the element if OK, null if
+     * cancelled.
+     * 
+     * @param element The element to edit, or null to create new
+     * @param parent  Parent component for dialog
+     * @return The edited/created element, or null if cancelled
      */
-    T createElement();
-    
-    /**
-     * Sets the fields of the element that is passed to the Editor (via the
-     * constructor). The fields take the values of the data entered by the user.
-     */
-    void editElement();
-    
+    T editDialog(T element, Component parent);
+
 }
