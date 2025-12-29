@@ -1,25 +1,18 @@
 package edu.city.studentuml.view.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.MessageReturnValue;
@@ -30,21 +23,14 @@ import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
-public class CallMessageEditor extends JPanel implements ActionListener {
+public class CallMessageEditor extends OkCancelDialog {
     private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
-    private JPanel bottomPanel;
-    private JDialog messageDialog;
-    private JButton cancelButton;
-    private JPanel centerPanel;
-    private JPanel fieldsPanel;
-    private JCheckBox iterativeCheckBox;
     private CallMessageGR callMessageGR;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
-    private boolean ok;
-    private JButton okButton;
+    private JCheckBox iterativeCheckBox;
 
     private MethodParameterPanel methodParametersPanel;
 
@@ -54,15 +40,26 @@ public class CallMessageEditor extends JPanel implements ActionListener {
 
     private JComboBox<Type> typeComboBox;
     private JLabel typeLabel;
-    
+
     private Vector<Type> types;
+    private CentralRepository repository;
 
-    public CallMessageEditor(CallMessageGR callMessageGR, CentralRepository repository) {
-        
+    public CallMessageEditor(Component parent, String title, CallMessageGR callMessageGR,
+            CentralRepository repository) {
+        super(parent, title);
+
         this.callMessageGR = callMessageGR;
-        
-        setLayout(new BorderLayout());
+        this.repository = repository;
 
+        // Ensure UI components are created
+        initializeIfNeeded();
+
+        // initialize with the method data to be edited, if any
+        initialize();
+    }
+
+    @Override
+    protected JPanel makeCenterPanel() {
         nameLabel = new JLabel("Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
@@ -78,11 +75,11 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         namePanel.add(iterativeCheckBox);
         returnValueLabel = new JLabel("Return Value: ");
         returnValueField = new JTextField(15);
-        
+
         types = repository.getTypes();
         typeLabel = new JLabel("Return Type: ");
         typeComboBox = new JComboBox<>(types);
-        
+
         returnValuePanel = new JPanel();
 
         FlowLayout returnValueLayout = new FlowLayout();
@@ -91,64 +88,27 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         returnValuePanel.setLayout(returnValueLayout);
         returnValuePanel.add(returnValueLabel);
         returnValuePanel.add(returnValueField);
-        
+
         returnValuePanel.add(typeLabel);
         returnValuePanel.add(typeComboBox);
-        
-        fieldsPanel = new JPanel();
+
+        JPanel fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(2, 1));
         fieldsPanel.add(namePanel);
         fieldsPanel.add(returnValuePanel);
-        
+
         methodParametersPanel = new MethodParameterPanel("Message Parameters", repository);
 
-        centerPanel = new JPanel();
+        JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        if(!(callMessageGR instanceof CreateMessageGR)) {
+        if (!(callMessageGR instanceof CreateMessageGR)) {
             centerPanel.add(fieldsPanel);
         }
 
         centerPanel.add(methodParametersPanel);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout());
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
 
-        // initialize with the method data to be edited, if any
-        initialize();
-    }
-
-    public boolean showDialog(Component parent, String title) {
-        logger.fine(() -> "TITLE : " + title);
-
-        ok = false;
-
-        // find the owner frame
-        Frame owner = null;
-
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        }
-
-        messageDialog = new JDialog(owner, true);
-        messageDialog.getContentPane().add(this);
-        messageDialog.setTitle(title);
-        messageDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        messageDialog.pack();
-        messageDialog.setResizable(false);
-        messageDialog.setLocationRelativeTo(owner);
-        messageDialog.setVisible(true);
-
-        return ok;
+        return centerPanel;
     }
 
     public void initialize() {
@@ -175,7 +135,7 @@ public class CallMessageEditor extends JPanel implements ActionListener {
                 }
             }
         }
-        
+
         // initialize the list of parameters
         methodParametersPanel.setElements(message.getParameters());
     }
@@ -204,12 +164,11 @@ public class CallMessageEditor extends JPanel implements ActionListener {
         return methodParametersPanel.getElements();
     }
 
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == nameField) {
-            messageDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            messageDialog.setVisible(false);
-        } 
+    @Override
+    protected void actionRest(ActionEvent event) {
+        // Handle enter key in name field as OK
+        if (event.getSource() == nameField) {
+            actionOK(event);
+        }
     }
 }

@@ -139,13 +139,14 @@ public abstract class AbstractSDSelectionController extends SelectionController 
     }
 
     private void editCallMessage(CallMessageGR messageGR) {
-        CallMessageEditor callMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
+        CallMessageEditor callMessageEditor = new CallMessageEditor(parentComponent, "Call Message Editor",
+                messageGR, model.getCentralRepository());
         CallMessage message = messageGR.getCallMessage();
 
         CallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
-        if (!callMessageEditor.showDialog(parentComponent, "Call Message Editor")) {
+        if (!callMessageEditor.showDialog()) {
             return;
         }
 

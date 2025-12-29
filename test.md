@@ -34,7 +34,23 @@
 -   ✅ Graphical Model coverage increased by **6%** (32% → 38%)
 -   ✅ Added comprehensive link reconnection tests (40 new tests)
 -   ✅ Added comprehensive AddElementControllerFactory tests (7 new tests)
--   ✅ **Code reduction: ~1,545 lines eliminated** through editor refactoring (no new tests needed)
+
+**Refactoring Impact (refactor-edit-dialogs branch):**
+
+-   📊 **Java Code Statistics vs develop**:
+    -   Java files deleted: 7 files (812 lines eliminated)
+    -   Java files added: 7 files (1,333 lines of reusable abstractions)
+    -   Net Java code: +521 lines of reusable infrastructure
+-   🗑️ **Files Eliminated**: 7 editor files (812 lines total)
+    -   ActionNodeEditor (105), ActivityNodeEditor (105), ClassNameEditor (142)
+    -   ControlFlowEditor (105), DecisionNodeEditor (106), DependencyEditor (148)
+    -   StateEditor (101)
+-   ➕ **New Reusable Abstractions**: 7 Java files (1,333 lines total)
+    -   OkCancelDialog (124), StringEditorDialog (65), TypedEntityEditor (500)
+    -   AssociationEditorBase (329), RolePanel (144), ExtensionPointsPanel (52)
+    -   AssociationClassShowArrowTest (119)
+-   ✅ **Code Quality**: Eliminated 812 lines of duplicate editor code, invested 521 net lines in reusable abstractions that benefit 14 refactored editors
+-   🎯 **Impact**: ~54% average code duplication eliminated across 14 editors through abstraction patterns, all 220 tests passing
 
 ## Testing Goals
 

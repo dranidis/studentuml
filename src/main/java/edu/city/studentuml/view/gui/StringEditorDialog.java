@@ -16,6 +16,7 @@ public class StringEditorDialog extends OkCancelDialog {
 
     public StringEditorDialog(Component parent, String dialogTitle, String label, String initialText) {
         super(parent, dialogTitle);
+        initializeIfNeeded(); // Ensure UI components are created
         textField.addActionListener(this);
         textField.setText(initialText);
         labelField.setText(label);

@@ -30,6 +30,9 @@ public class ObjectFlowEditor extends OkCancelDialog {
     public ObjectFlowEditor(Component parent, ObjectFlowGR objectFlowGR) {
         super(parent, "Object Flow Editor");
 
+        // Ensure UI components are created
+        initializeIfNeeded();
+
         // Initialize fields with current values
         ObjectFlow flow = (ObjectFlow) objectFlowGR.getEdge();
         weightField.setText(flow.getWeight());

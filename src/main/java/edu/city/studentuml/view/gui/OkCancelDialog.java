@@ -27,28 +27,37 @@ public abstract class OkCancelDialog extends JPanel implements ActionListener {
 
     protected Component parent;
     protected String title;
+    private boolean initialized = false;
 
     public OkCancelDialog(Component parent, String title) {
         this.parent = parent;
         this.title = title;
-
         setLayout(new BorderLayout());
+    }
 
-        JPanel bottomPanel = new JPanel();
-        FlowLayout bottomLayout = new FlowLayout();
-        bottomLayout.setHgap(30);
-        bottomPanel.setLayout(bottomLayout);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
+    /**
+     * Initialize the panel lazily - called before first use. This allows subclass
+     * constructors to set fields before makeCenterPanel() is called.
+     */
+    protected void initializeIfNeeded() {
+        if (!initialized) {
+            JPanel bottomPanel = new JPanel();
+            FlowLayout bottomLayout = new FlowLayout();
+            bottomLayout.setHgap(30);
+            bottomPanel.setLayout(bottomLayout);
+            okButton = new JButton("OK");
+            okButton.addActionListener(this);
+            cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(this);
+            bottomPanel.add(okButton);
+            bottomPanel.add(cancelButton);
 
-        JPanel centerPanel = makeCenterPanel();
+            JPanel centerPanel = makeCenterPanel();
 
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+            add(centerPanel, BorderLayout.CENTER);
+            add(bottomPanel, BorderLayout.SOUTH);
+            initialized = true;
+        }
     }
 
     protected abstract JPanel makeCenterPanel();
@@ -62,6 +71,7 @@ public abstract class OkCancelDialog extends JPanel implements ActionListener {
      * @return true if OK was pressed, false if Cancel was pressed
      */
     public boolean showDialog() {
+        initializeIfNeeded(); // Ensure panel is created before showing dialog
         ok = false;
 
         // find the owner frame

@@ -6,15 +6,25 @@ This document analyzes all GUI `*Editor` classes in the StudentUML project to id
 
 **Current Status**:
 
--   Total Editor Classes: **31 editor files**
+-   Total Editor Classes: **31 editor files** → **24 editor files remaining** (7 deleted)
 -   **Refactored Categories**: 5 out of 7 categories completed
     -   ✅ Category 1: Simple Single-Field Editors (3 editors)
     -   ✅ Category 2: Complex Entity Editors with Type Selection (5 editors)
     -   ✅ Category 4: Association Editors (4 editors)
     -   ✅ Category 5: Collection/List Editors (2 editors)
--   **Total Code Reduction**: ~1,545 lines eliminated across 14 editors (~54% average reduction in refactored editors)
--   **Test Coverage**: All 220 tests passing
--   **New Reusable Components**: ListPanel (with double-click support), ExtensionPointsPanel, StateEditor
+    -   ✅ Category 6: OkCancelDialog Migration (6 of 7 editors completed)
+-   **Java Code Statistics (vs develop)**:
+    -   Java files deleted: 7 files (812 lines eliminated)
+    -   Java files added: 7 files (1,333 lines of reusable abstractions)
+    -   Net Java code: +521 lines of reusable infrastructure
+-   **OkCancelDialog Migration**:
+    -   Editors refactored: 6 (UMLNoteEditor, UCExtendEditor, CallMessageEditor, AttributeEditor, MethodEditor, MethodParameterEditor)
+    -   Lines eliminated: 236 lines (18% avg reduction)
+    -   Remaining candidates: 1 (ClassifierEditor - deferred due to complexity)
+-   **Deleted Files**: ActionNodeEditor (105), ActivityNodeEditor (105), ClassNameEditor (142), ControlFlowEditor (105), DecisionNodeEditor (106), DependencyEditor (148), StateEditor (101)
+-   **New Abstractions**: OkCancelDialog (124), StringEditorDialog (65), TypedEntityEditor (500), AssociationEditorBase (329), RolePanel (144), ExtensionPointsPanel (52), AssociationClassShowArrowTest (119)
+-   **Test Coverage**: All 220 tests passing (0 failures, 0 errors)
+-   **Code Quality Impact**: Eliminated 812 lines of duplicated editor code, replaced with 1,333 lines of reusable, well-tested abstractions - net investment of 521 lines creates infrastructure that reduces duplication across 17+ refactored editors. OkCancelDialog migration eliminated an additional 236 lines across 6 editors.
 
 ---
 
@@ -197,28 +207,93 @@ The domain model uses composition over inheritance - `AbstractAssociationClass` 
 
 ---
 
-### Category 6: Message Editors (Sequence Diagrams)
+### Category 6: OkCancelDialog Migration
 
-**Pattern**: Message-specific editors with method selection
+**Pattern**: Standard modal dialog with OK/Cancel buttons - eliminate duplicate dialog management code
 
-| Editor            | Message Type | Status            | LOC  |
-| ----------------- | ------------ | ----------------- | ---- |
-| CallMessageEditor | Call/Return  | ❌ Not refactored | ~340 |
+**Goal**: Refactor editors to extend `OkCancelDialog` base class, eliminating ~40-50 lines of boilerplate per editor
 
-**Analysis**: Specialized editor with unique constraints (method selection, return message coupling)
+| Editor                | Before   | After    | Saved   | Reduction | Status      |
+| --------------------- | -------- | -------- | ------- | --------- | ----------- |
+| UMLNoteEditor         | 121      | 66       | 55      | 45%       | ✅ Complete |
+| UCExtendEditor        | 95       | 44       | 51      | 54%       | ✅ Complete |
+| CallMessageEditor     | 215      | 171      | 44      | 20%       | ✅ Complete |
+| AttributeEditor       | 245      | 219      | 26      | 11%       | ✅ Complete |
+| MethodEditor          | 245      | 214      | 31      | 13%       | ✅ Complete |
+| MethodParameterEditor | 192      | 163      | 29      | 15%       | ✅ Complete |
+| ClassifierEditor      | 170      | -        | -       | -         | ⏸️ Deferred |
+| **TOTAL (Completed)** | **1283** | **1047** | **236** | **18%**   | **6/7**     |
 
-**Recommendation**: Could benefit from base class, but lower priority due to specificity
+**Duplicate Code Eliminated Per Editor**:
+
+-   JDialog creation and configuration (~15 lines)
+-   OK/Cancel button setup (~10 lines)
+-   FlowLayout bottom panel (~7 lines)
+-   ActionListener for OK/Cancel (~8 lines)
+-   Frame owner resolution (~7 lines)
+-   Dialog fields (okButton, cancelButton, bottomPanel, dialog, ok flag) (~7 lines)
+
+**ElementEditor<T> Integration Pattern** (AttributeEditor, MethodEditor, MethodParameterEditor):
+
+```java
+public class EditorX extends OkCancelDialog implements ElementEditor<T> {
+    public EditorX(Repository repository) {
+        super(null, TITLE); // Parent deferred to editDialog()
+        this.repository = repository;
+    }
+
+    @Override
+    public T editDialog(T element, Component parent) {
+        this.parent = parent;       // Set parent before showDialog
+        initialize(element);
+        if (!showDialog()) {
+            return null;
+        }
+        // Create/update element, return
+    }
+
+    @Override
+    protected JPanel makeCenterPanel() {
+        // Build UI, return panel
+    }
+
+    @Override
+    protected void actionOK(ActionEvent event) {
+        // Validate, call super.actionOK() if valid
+    }
+
+    @Override
+    protected void actionRest(ActionEvent event) {
+        // Handle enter key in text fields
+    }
+}
+```
+
+**Key Insight**: OkCancelDialog works with ElementEditor<T> by calling `showDialog()` **from within** `editDialog()` method, enabling deferred parent initialization and maintaining interface contract.
+
+**Deferred Editor Rationale**:
+
+-   ClassifierEditor: Abstract base class with complex autocomplete logic (AutocompleteJComboBox) and custom validation (okPressed method); affects 4 subclasses (ClassEditor, InterfaceEditor, ConceptualClassEditor, ActorEditor); estimated ~40 lines savings if refactored
+
+**Benefits Achieved**:
+
+-   ✅ 236 lines of duplicate code eliminated across 6 editors
+-   ✅ Consistent dialog behavior across all refactored editors
+-   ✅ Simplified editor code focusing on business logic
+-   ✅ Centralized dialog management in OkCancelDialog base class
+-   ✅ ElementEditor<T> interface fully compatible with OkCancelDialog
+-   ✅ All 220 tests passing after each refactoring
+
+**Status**: ✅ **PHASE 2 COMPLETED** - 6 editors successfully refactored, 236 lines eliminated
 
 ---
 
 ### Category 7: Specialized Editors
 
-| Editor                | Purpose           | Status            | Notes                           |
-| --------------------- | ----------------- | ----------------- | ------------------------------- |
-| UMLNoteEditor         | Text area editor  | ❌ Not refactored | JTextArea instead of JTextField |
-| RuleEditor            | Consistency rules | ❌ Not refactored | Complex tree-based UI           |
-| MyComboBoxEditor      | Table cell editor | ❌ Not refactored | Extends DefaultCellEditor       |
-| MethodParameterEditor | Method params     | ❌ Not refactored | Implements ElementEditor<T>     |
+| Editor           | Purpose           | Status            | Notes                     |
+| ---------------- | ----------------- | ----------------- | ------------------------- |
+| RuleEditor       | Consistency rules | ❌ Not refactored | Complex tree-based UI     |
+| MyComboBoxEditor | Table cell editor | ❌ Not refactored | Extends DefaultCellEditor |
 
 **Recommendation**:
 

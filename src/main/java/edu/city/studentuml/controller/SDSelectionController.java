@@ -141,13 +141,14 @@ public class SDSelectionController extends AbstractSDSelectionController {
 
     //new edit create method 
     public void editCreateMessage(CreateMessageGR messageGR) {
-        CallMessageEditor createMessageEditor = new CallMessageEditor(messageGR, model.getCentralRepository());
+        CallMessageEditor createMessageEditor = new CallMessageEditor(parentComponent, "Create Message Editor",
+                messageGR, model.getCentralRepository());
         CreateMessage message = messageGR.getCreateMessage();
 
         CreateMessage undoCreateMessage = message.clone();
 
         // if user presses cancel don't do anything
-        if (!createMessageEditor.showDialog(parentComponent, "Create Message Editor")) {
+        if (!createMessageEditor.showDialog()) {
             return;
         }
 

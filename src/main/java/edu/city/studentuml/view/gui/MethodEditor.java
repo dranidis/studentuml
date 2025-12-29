@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
@@ -8,40 +7,26 @@ import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.ElementEditor;
 import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.JButton;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
-public class MethodEditor extends JPanel implements ActionListener, ElementEditor<Method> {
+public class MethodEditor extends OkCancelDialog implements ElementEditor<Method> {
 
     private static final String[] scopes = { "instance", "classifier" };
     private static final String[] visibilities = { "public", "private", "protected" };
-    private Vector<Type> types;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
-    private JPanel centerPanel;
-    private JPanel fieldsPanel;
-    private JDialog methodDialog;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
-    private boolean ok;
-    private JButton okButton;
     private MethodParameterPanel methodParametersPanel;
     private JComboBox<String> scopeComboBox;
     private JLabel scopeLabel;
@@ -57,11 +42,14 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
     private static final String TITLE = "Method Editor";
 
     public MethodEditor(CentralRepository cr) {
+        super(null, TITLE); // parent will be set in editDialog
         repository = cr;
+    }
 
-        types = repository.getTypes();
+    @Override
+    protected JPanel makeCenterPanel() {
+        Vector<Type> types = repository.getTypes();
 
-        setLayout(new BorderLayout());
         nameLabel = new JLabel("Method Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
@@ -87,61 +75,38 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         scopePanel.setLayout(new FlowLayout());
         scopePanel.add(scopeLabel);
         scopePanel.add(scopeComboBox);
-        fieldsPanel = new JPanel();
+
+        JPanel fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new GridLayout(4, 1));
         fieldsPanel.add(namePanel);
         fieldsPanel.add(typePanel);
         fieldsPanel.add(visibilityPanel);
         fieldsPanel.add(scopePanel);
 
-        methodParametersPanel = new MethodParameterPanel("Method Parameters", cr);
+        methodParametersPanel = new MethodParameterPanel("Method Parameters", repository);
 
-        centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(2, 1));
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.add(fieldsPanel);
-
         centerPanel.add(methodParametersPanel);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout());
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
 
-        // Note: initialize() will be called in showDialog()
+        return centerPanel;
     }
 
     @Override
     public Method editDialog(Method method, Component parent) {
-        ok = false;
+        // Set parent for this dialog instance
+        this.parent = parent;
+
+        // Ensure UI components are created before initializing fields
+        initializeIfNeeded();
 
         // Initialize fields based on method (null for new, object for edit)
         initialize(method);
 
-        // find the owner frame
-        Frame owner = null;
-
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        }
-
-        methodDialog = new JDialog(owner, true);
-        methodDialog.getContentPane().add(this);
-        methodDialog.setTitle(TITLE);
-        methodDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        methodDialog.pack();
-        methodDialog.setResizable(false);
-        methodDialog.setLocationRelativeTo(owner);
-        methodDialog.setVisible(true);
-
-        if (!ok) {
-            return null;
+        // Show dialog using OkCancelDialog's showDialog method
+        if (!showDialog()) {
+            return null; // Cancelled
         }
 
         // Create new method if needed, then set properties
@@ -167,10 +132,10 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
 
         } else {
             nameField.setText(method.getName());
+            Vector<Type> types = repository.getTypes();
             for (int i = 0; i < types.size(); i++) {
                 if (types.get(i).toString().equals(method.getReturnType().getName())) {
                     typeComboBox.setSelectedIndex(i);
-
                     break;
                 }
             }
@@ -216,9 +181,9 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
 
     public int getScope() {
         if (scopeComboBox.getSelectedIndex() == 0) {
-            return Attribute.INSTANCE;
+            return Method.INSTANCE;
         } else {
-            return Attribute.CLASSIFIER;
+            return Method.CLASSIFIER;
         }
     }
 
@@ -226,20 +191,27 @@ public class MethodEditor extends JPanel implements ActionListener, ElementEdito
         return methodParametersPanel.getElements();
     }
 
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == nameField) {
+    @Override
+    protected void actionRest(ActionEvent event) {
+        // Handle enter key in name field as OK
+        if (event.getSource() == nameField) {
+            // Validate before accepting
             if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
-
                 return;
             }
-
-            methodDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            methodDialog.setVisible(false);
+            actionOK(event);
         }
     }
 
-    // createElement and editElement removed: handled by showDialog
+    @Override
+    protected void actionOK(ActionEvent event) {
+        // Validate name field
+        if (nameField.getText() == null || nameField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        super.actionOK(event);
+    }
+
 }

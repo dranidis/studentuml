@@ -261,6 +261,34 @@ This document tracks potential features and improvements for StudentUML.
 -   **loop**: Show repeated operations (e.g., "[for each item] process item")
     Without combined fragments, sequence diagrams can only show simple linear flows, limiting their usefulness for documenting complex interactions with conditionals, loops, and error handling.
 
+## Rendering and Visualization
+
+### Draw UML Notes Below Other Elements
+
+**Status:** Not implemented  
+**Priority:** Medium  
+**Description:** UML notes should be rendered below other diagram elements (classes, use cases, actors, activities, etc.) to prevent them from obscuring important diagram content. Currently, notes are drawn correctly with proper z-order in Class Diagrams (CCD/DCD) and Sequence Diagrams (SD), but they appear above other elements in Activity Diagrams (AD) and Use Case Diagrams (UCD).
+
+**Technical Notes:**
+
+-   The rendering order is controlled by the order of elements in the graphical elements list
+-   In `DiagramView.paintComponent()`, elements are drawn in iteration order
+-   Classes implementing correct z-order (notes below):
+    -   `CCDView` / `DCDView`: Notes drawn correctly
+    -   `SDView` / `SSDView`: Notes drawn correctly
+-   Classes with incorrect z-order (notes above):
+    -   `ADView`: Notes should be drawn before activities and flows
+    -   `UCDView`: Notes should be drawn before use cases and actors
+-   Implementation approach:
+    -   Option 1: Modify `DiagramView.paintComponent()` to render in two passes (notes first, then other elements)
+    -   Option 2: Sort graphical elements by type before rendering (notes have lowest z-index)
+    -   Option 3: Maintain separate list for notes in `DiagramModel` and render them first
+    -   Option 4: Add `getZIndex()` method to `GraphicalElement` interface and sort by z-index
+-   Need to ensure XML serialization order doesn't affect functionality
+-   Need to verify all diagram types (AD, UCD, CCD, DCD, SD, SSD) handle z-order consistently
+
+**Use Case:** When annotating diagrams with explanatory notes, users expect notes to appear as background elements that don't hide important diagram content (classes, relationships, activities, use cases). The inconsistent behavior between diagram types is confusing and can result in notes obscuring critical diagram elements in AD and UCD views.
+
 ## Additional Potential Features
 
 _Add new feature requests below this line_
