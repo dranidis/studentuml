@@ -2,38 +2,26 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.graphical.UCExtendGR;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.ExtensionPointsPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
  * @author draganbisercic
  */
-public class UCExtendEditor extends JPanel implements ActionListener {
+public class UCExtendEditor extends JPanel {
 
-    private List<ExtensionPoint> extensionPoints;
-    private JList<String> extensionsList;
-    private JButton addExtensionButton;
-    private JButton editExtensionButton;
-    private JButton deleteExtensionButton;
-    private JPanel extensionsButtonsPanel;
-    private JPanel extensionPointsPanel;
+    private ExtensionPointsPanel extensionPointsPanel;
     private JButton okButton;
     private JButton cancelButton;
     private JPanel bottomPanel;
@@ -41,34 +29,22 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     private UCExtendGR ucExtendGR;
     private boolean ok; // stores whether the user has pressed ok
 
-    public UCExtendEditor(UCExtendGR uc) {
+    public UCExtendEditor(UCExtendGR uc, CentralRepository repository) {
         ucExtendGR = uc;
 
         setLayout(new BorderLayout());
-        extensionPointsPanel = new JPanel(new BorderLayout());
-        extensionPointsPanel.setBorder(BorderFactory.createTitledBorder("Extension Points"));
 
-        extensionsList = new JList<>();
-        extensionsList.setFixedCellWidth(300);
-        extensionsList.setVisibleRowCount(4);
-        addExtensionButton = new JButton("Add...");
-        addExtensionButton.addActionListener(this);
-        editExtensionButton = new JButton("Edit...");
-        editExtensionButton.addActionListener(this);
-        deleteExtensionButton = new JButton("Delete");
-        deleteExtensionButton.addActionListener(this);
-        extensionsButtonsPanel = new JPanel();
-        extensionsButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        extensionsButtonsPanel.add(addExtensionButton);
-        extensionsButtonsPanel.add(editExtensionButton);
-        extensionsButtonsPanel.add(deleteExtensionButton);
-        extensionPointsPanel.add(new JScrollPane(extensionsList), BorderLayout.CENTER);
-        extensionPointsPanel.add(extensionsButtonsPanel, BorderLayout.SOUTH);
+        extensionPointsPanel = new ExtensionPointsPanel("Extension Points", repository);
 
         okButton = new JButton("OK");
-        okButton.addActionListener(this);
+        okButton.addActionListener(e -> {
+            ucExtendDialog.setVisible(false);
+            ok = true;
+        });
+
         cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
+        cancelButton.addActionListener(e -> ucExtendDialog.setVisible(false));
+
         FlowLayout bottomLayout = new FlowLayout();
         bottomLayout.setHgap(30);
         bottomPanel = new JPanel();
@@ -83,22 +59,9 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public void initialize() {
-        extensionPoints = new ArrayList<>();
-
-        // if extensions modified and then canceled
-        for (ExtensionPoint extension : ucExtendGR.getExtensionPoints()) {
-            extensionPoints.add(extension);
-        }
-        updateExtensionsList();
-    }
-
-    private void updateExtensionsList() {
-        Vector<String> v = new Vector<>();
-        for (ExtensionPoint ep : getExtensionPoints()) {
-            String s = ep.getName();
-            v.add(s);
-        }
-        extensionsList.setListData(v);
+        // Convert List to Vector for ListPanel
+        Vector<ExtensionPoint> extensionPointsVector = new Vector<>(ucExtendGR.getExtensionPoints());
+        extensionPointsPanel.setElements(extensionPointsVector);
     }
 
     public boolean showDialog(Component parent, String title) {
@@ -126,70 +89,6 @@ public class UCExtendEditor extends JPanel implements ActionListener {
     }
 
     public List<ExtensionPoint> getExtensionPoints() {
-        return extensionPoints;
-    }
-
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton) {
-            ucExtendDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            ucExtendDialog.setVisible(false);
-        } else if (event.getSource() == addExtensionButton) {
-            addExtensionPoint();
-        } else if (event.getSource() == editExtensionButton) {
-            editExtensionPoint();
-        } else if (event.getSource() == deleteExtensionButton) {
-            deleteExtensionPoint();
-        }
-    }
-
-    public void addExtensionPoint() {
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
-                "Extension Point Editor", "Extension Point Name:", "");
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-        if (stringEditorDialog.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "You entered invalid extension point name.",
-                    "Invalid extension name", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        extensionPoints.add(new ExtensionPoint(stringEditorDialog.getText()));
-        updateExtensionsList();
-    }
-
-    public void editExtensionPoint() {
-        if (extensionPoints == null || extensionPoints.isEmpty()
-                || extensionsList.getSelectedIndex() < 0) {
-            return;
-        }
-
-        int index = extensionsList.getSelectedIndex();
-        ExtensionPoint ext = extensionPoints.get(index);
-
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(this,
-                "Extension Point Editor", "Extension Point Name:", ext.getName());
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        } else if (stringEditorDialog.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "You entered invalid extension point name.",
-                    "Invalid extension name", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        extensionPoints.set(index, new ExtensionPoint(stringEditorDialog.getText()));
-        updateExtensionsList();
-    }
-
-    public void deleteExtensionPoint() {
-        if (extensionPoints == null || extensionPoints.isEmpty()
-                || extensionsList.getSelectedIndex() < 0) {
-            return;
-        }
-
-        extensionPoints.remove(extensionsList.getSelectedIndex());
-        updateExtensionsList();
+        return extensionPointsPanel.getElements();
     }
 }

@@ -21,7 +21,6 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.StringEditorDialog;
 
 import java.awt.Point;
-import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 /**

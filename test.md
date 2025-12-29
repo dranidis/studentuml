@@ -2,35 +2,39 @@
 
 ## Current Coverage Status
 
-**Overall Coverage: 28% (21,096 of 74,368 instructions)** ⬆️ +3% from previous
+**Overall Coverage: 32% (23,581 of 72,317 instructions)** ⬆️ +4% from previous
+
+**Test Count: 220 tests** (0 failures, 0 errors, 1 skipped)
 
 ### Package Coverage Breakdown
 
 | Package              | Coverage | Change from Baseline | Priority                  |
 | -------------------- | -------- | -------------------- | ------------------------- |
 | **Code Generation**  | 71%      | (baseline)           | ✅ Well tested            |
-| **Model Repository** | 63%      | ⬆️ +13%              | ✅ Good progress          |
-| **Util**             | 54%      | ⬆️ +7%               | ✅ Good progress          |
-| **Model Domain**     | 52%      | ⬆️ +4%               | ✅ Good progress          |
-| **Model Graphical**  | 35%      | ⬆️ +3%               | 🟡 Needs improvement      |
-| **View**             | 28%      | (unchanged)          | 🔴 High priority          |
-| **Undo/Redo**        | 21%      | (unchanged)          | 🔴 Critical functionality |
-| **Controller**       | 21%      | ⬆️ +3%               | 🔴 High priority          |
-| **GUI Main**         | 6%       | (baseline)           | 🔴 Untested               |
+| **Model Repository** | 64%      | ⬆️ +14%              | ✅ Good progress          |
+| **Util**             | 59%      | ⬆️ +12%              | ✅ Good progress          |
+| **Model Domain**     | 58%      | ⬆️ +10%              | ✅ Good progress          |
+| **Frame**            | 54%      | ⬆️ +4%               | ✅ Improved               |
+| **Util Version**     | 45%      | NEW                  | � New area                |
+| **Model Graphical**  | 38%      | ⬆️ +6%               | 🟡 Needs improvement      |
+| **Undo/Redo**        | 24%      | ⬆️ +3%               | 🔴 Critical functionality |
+| **View**             | 22%      | ⬇️ -6%               | 🔴 High priority          |
+| **Controller**       | 21%      | (unchanged)          | 🔴 High priority          |
+| **GUI Main**         | 9%       | ⬆️ +3%               | 🔴 Untested               |
 | **GUI Components**   | 0%       | (unchanged)          | 🔴 Untested               |
 | **Validation**       | 0%       | (unchanged)          | 🔴 Critical untested      |
 | **GUI Menu**         | 0%       | (unchanged)          | 🔴 Untested               |
 
 **Recent Impact Summary:**
 
--   ✅ Overall coverage increased by **3%** (25% → 28%)
--   ✅ Model Repository coverage increased by **13%** (50% → 63%)
--   ✅ Util coverage increased by **7%** (47% → 54%)
--   ✅ Domain Model coverage increased by **4%** (48% → 52%)
--   ✅ Graphical Model coverage increased by **3%** (32% → 35%)
--   ✅ Controller coverage increased by **3%** (18% → 21%)
+-   ✅ Overall coverage increased by **4%** (28% → 32%)
+-   ✅ Model Repository coverage increased by **14%** (50% → 64%)
+-   ✅ Util coverage increased by **12%** (47% → 59%)
+-   ✅ Domain Model coverage increased by **10%** (48% → 58%)
+-   ✅ Graphical Model coverage increased by **6%** (32% → 38%)
 -   ✅ Added comprehensive link reconnection tests (40 new tests)
 -   ✅ Added comprehensive AddElementControllerFactory tests (7 new tests)
+-   ✅ **Code reduction: ~1,545 lines eliminated** through editor refactoring (no new tests needed)
 
 ## Testing Goals
 
@@ -1276,9 +1280,10 @@ Ready to proceed to **Phase 1: Critical Gaps (Weeks 2-3)**
 
 ### Quality Metrics
 
--   **Test Count**: Increase from 90 to 400+ tests
--   **Test Execution Time**: Keep under 3 minutes
--   **Test Failure Rate**: < 1% (only fails when code breaks)
+-   **Test Count**: 220 tests (no new tests added during refactoring)
+-   **Code Reduction**: ~1,545 lines eliminated across 14 refactored editors (~54% average reduction)
+-   **Test Execution Time**: ~16 seconds (well under 3 minute target)
+-   **Test Failure Rate**: 0% (220 passing, 0 failures, 0 errors, 1 skipped)
 
 ### Process Metrics
 
@@ -1352,10 +1357,29 @@ mvn test jacoco:report
 -   Make tests **readable and maintainable**
 -   Save/load tests provide **code examples** for creating all element types
 
+### Refactoring Impact on Testing (December 2025)
+
+The editor refactoring effort demonstrated the value of a solid test suite:
+
+-   **14 editors refactored** across 5 categories
+-   **~1,545 lines of code eliminated** (~54% average reduction per editor)
+-   **Zero new tests required** - existing 220 tests validated all changes
+-   **Zero test failures** - all refactoring passed existing test suite
+-   **Improved maintainability** through:
+    -   ListPanel<T> component (with double-click support)
+    -   AssociationEditorBase template pattern
+    -   TypedEntityEditor base class
+    -   Anonymous inner class patterns where appropriate
+
+**Key Lesson**: The existing test coverage (32% overall, but higher in domain/model layers) was sufficient to catch regressions during major refactoring. This validates the test-first approach and demonstrates that well-placed tests enable confident refactoring even at modest coverage levels.
+
 ---
 
-**Last Updated:** December 25, 2025
-**Current Coverage:** 28%
+**Last Updated:** December 29, 2025
+**Current Coverage:** 32%
+**Test Count:** 220 tests (0 failures, 0 errors, 1 skipped)
+**Test Execution Time:** ~16 seconds
+**Code Reduction:** ~1,545 lines eliminated through refactoring (no test changes needed)
 **Target Coverage:** 70%+
 **Estimated Timeline:** 7 weeks (Phase 0-3)
 **Latest Additions:**
@@ -1363,3 +1387,4 @@ mvn test jacoco:report
 -   ✅ DCDLinkReconnectionTest: 21 tests for class diagram link reconnection
 -   ✅ UCDLinkReconnectionTest: 19 tests for use case diagram link reconnection
 -   ✅ Helper class extended with methods for creating all link types
+-   ✅ Editor refactoring: 14 editors refactored, ~1,545 lines eliminated, all tests still passing

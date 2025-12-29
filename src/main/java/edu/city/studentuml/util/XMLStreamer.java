@@ -254,7 +254,7 @@ public class XMLStreamer {
      */
     public void streamChildrenFrom(Element element, Object parent) throws NotStreamable {
         if (element == null) {
-            String parentInfo = (parent != null ? parent.getClass().getName() : "null");
+            String parentInfo = parent != null ? parent.getClass().getName() : "null";
             logger.severe("Cannot stream children from null element. Parent: " + parentInfo);
             throw new NotStreamable("Invalid XML structure: missing required element for " + parentInfo);
         }

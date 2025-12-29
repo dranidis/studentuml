@@ -128,7 +128,7 @@ public class UCDSelectionController extends SelectionController {
 
     private void editExtend(UCExtendGR link) {
         UCExtend originalUCExtend = (UCExtend) link.getLink();
-        UCExtendEditor ucExtendEditor = new UCExtendEditor(link);
+        UCExtendEditor ucExtendEditor = new UCExtendEditor(link, model.getCentralRepository());
         if (!ucExtendEditor.showDialog(parentComponent, "Use Case Extend Editor")) {
             return;
         }

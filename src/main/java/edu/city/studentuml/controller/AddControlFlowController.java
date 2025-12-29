@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import java.awt.Point;
-import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.ControlFlow;

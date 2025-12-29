@@ -2,13 +2,13 @@ package edu.city.studentuml.model.domain;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 import org.w3c.dom.Element;
 
 /**
- *
  * @author Biser
  */
-public class State implements IXMLCustomStreamable {
+public class State implements IXMLCustomStreamable, Copyable<State> {
 
     private String name;
 
@@ -32,6 +32,11 @@ public class State implements IXMLCustomStreamable {
     @Override
     public State clone() {
         return new State(this.getName());
+    }
+
+    @Override
+    public State copyOf(State state) {
+        return state.clone();
     }
 
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {

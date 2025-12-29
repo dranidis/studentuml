@@ -6,17 +6,10 @@ import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.ListPanel;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.TitledBorder;
 
 /**
  * Editor for Object Nodes in Activity Diagrams. Extends TypedEntityEditor to
@@ -27,21 +20,22 @@ import javax.swing.border.TitledBorder;
 public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode> {
 
     private ObjectNodeGR objectNodeGR;
-
-    // States management components
-    private JPanel statesPanel;
-    private JList<State> statesList;
-    private JButton addStateButton;
-    private JButton editStateButton;
-    private JButton deleteStateButton;
-    private Vector<State> states;
+    private ListPanel<State> statesPanel;
 
     public ObjectNodeEditor(ObjectNodeGR objectNodeGR, CentralRepository cr) {
         super(cr);
         this.objectNodeGR = objectNodeGR;
 
-        // Create states management panel
-        createStatesPanel();
+        // Create states management panel as anonymous inner class
+        statesPanel = new ListPanel<State>("Object States", cr) {
+            @Override
+            protected ElementEditor<State> createElementEditor(State state, CentralRepository repository) {
+                StateEditor editor = new StateEditor(state, repository);
+                // Pass all states for duplicate checking
+                editor.setAllStates(getElements());
+                return editor;
+            }
+        };
 
         // Re-arrange layout: move centerPanel (name/type) to NORTH, states to CENTER
         remove(centerPanel);
@@ -51,32 +45,6 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
         // bottomPanel is already in SOUTH from base class
 
         initialize();
-    }
-
-    private void createStatesPanel() {
-        TitledBorder title = BorderFactory.createTitledBorder("Object States");
-        statesPanel = new JPanel(new BorderLayout());
-        statesPanel.setBorder(title);
-
-        statesList = new JList<>();
-        statesList.setFixedCellWidth(400);
-        statesList.setVisibleRowCount(5);
-
-        addStateButton = new JButton("Add...");
-        addStateButton.addActionListener(this);
-        editStateButton = new JButton("Edit...");
-        editStateButton.addActionListener(this);
-        deleteStateButton = new JButton("Delete");
-        deleteStateButton.addActionListener(this);
-
-        JPanel statesButtonsPanel = new JPanel();
-        statesButtonsPanel.setLayout(new GridLayout(1, 3, 10, 10));
-        statesButtonsPanel.add(addStateButton);
-        statesButtonsPanel.add(editStateButton);
-        statesButtonsPanel.add(deleteStateButton);
-
-        statesPanel.add(new JScrollPane(statesList), BorderLayout.CENTER);
-        statesPanel.add(statesButtonsPanel, BorderLayout.SOUTH);
     }
 
     public void initialize() {
@@ -93,12 +61,8 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
         nameField.setText(objectNode.getName());
         initializeTypeComboBox();
 
-        // Initialize states - make a copy for editing
-        states = new Vector<>();
-        for (State originalState : objectNode.getStates()) {
-            states.add(new State(originalState.getName()));
-        }
-        updateStatesList();
+        // Initialize states using StatesPanel - convert List to Vector
+        statesPanel.setElements(new Vector<>(objectNode.getStates()));
     }
 
     public String getObjectName() {
@@ -118,108 +82,7 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
     }
 
     public Vector<State> getStates() {
-        return states;
-    }
-
-    private void updateStatesList() {
-        statesList.setListData(states);
-    }
-
-    private void addState() {
-        StringEditorDialog sed = new StringEditorDialog(
-                this, "State Editor", "State Name:", "");
-
-        if (!sed.showDialog()) {
-            return;
-        }
-
-        String stateName = sed.getText();
-        if (stateName == null || stateName.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "State name cannot be empty!",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Check if state with same name already exists
-        for (State s : states) {
-            if (s.getName().equals(stateName)) {
-                JOptionPane.showMessageDialog(this,
-                        "A state with this name already exists!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        states.add(new State(stateName));
-        updateStatesList();
-    }
-
-    private void editState() {
-        State selectedState = statesList.getSelectedValue();
-        if (selectedState == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a state to edit.",
-                    "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        StringEditorDialog sed = new StringEditorDialog(
-                this, "State Editor", "State Name:", selectedState.getName());
-
-        if (!sed.showDialog()) {
-            return;
-        }
-
-        String newStateName = sed.getText();
-        if (newStateName == null || newStateName.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "State name cannot be empty!",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Check if another state with same name exists
-        for (State s : states) {
-            if (s != selectedState && s.getName().equals(newStateName)) {
-                JOptionPane.showMessageDialog(this,
-                        "A state with this name already exists!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        selectedState.setName(newStateName);
-        updateStatesList();
-    }
-
-    private void deleteState() {
-        State selectedState = statesList.getSelectedValue();
-        if (selectedState == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a state to delete.",
-                    "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        states.remove(selectedState);
-        updateStatesList();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
-
-        if (source == addStateButton) {
-            addState();
-        } else if (source == editStateButton) {
-            editState();
-        } else if (source == deleteStateButton) {
-            deleteState();
-        } else {
-            // Delegate to parent for type-related buttons
-            super.actionPerformed(e);
-        }
+        return statesPanel.getElements();
     }
 
     @Override
