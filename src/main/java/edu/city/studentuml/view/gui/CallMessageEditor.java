@@ -15,18 +15,23 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.graphical.CallMessageGR;
-import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
+/**
+ * Editor for CallMessage domain objects. Allows editing of call message properties
+ * including name, parameters, return value and return type.
+ * 
+ * @author Ervin Ramollari
+ */
 public class CallMessageEditor extends OkCancelDialog {
     private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
-    private CallMessageGR callMessageGR;
+    private CallMessage callMessage;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
@@ -44,11 +49,11 @@ public class CallMessageEditor extends OkCancelDialog {
     private Vector<Type> types;
     private CentralRepository repository;
 
-    public CallMessageEditor(Component parent, String title, CallMessageGR callMessageGR,
+    public CallMessageEditor(Component parent, String title, CallMessage callMessage,
             CentralRepository repository) {
         super(parent, title);
 
-        this.callMessageGR = callMessageGR;
+        this.callMessage = callMessage;
         this.repository = repository;
 
         // Ensure UI components are created
@@ -102,7 +107,7 @@ public class CallMessageEditor extends OkCancelDialog {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        if (!(callMessageGR instanceof CreateMessageGR)) {
+        if (!(callMessage instanceof CreateMessage)) {
             centerPanel.add(fieldsPanel);
         }
 
@@ -112,24 +117,22 @@ public class CallMessageEditor extends OkCancelDialog {
     }
 
     public void initialize() {
-        CallMessage message = callMessageGR.getCallMessage();
-
         // initialize the name field
-        nameField.setText(message.getName());
+        nameField.setText(callMessage.getName());
 
         // initialize the iterative check box
-        iterativeCheckBox.setSelected(message.isIterative());
+        iterativeCheckBox.setSelected(callMessage.isIterative());
 
-        if (message.getReturnValue() != null) {
-            returnValueField.setText(message.getReturnValue().getName());
+        if (callMessage.getReturnValue() != null) {
+            returnValueField.setText(callMessage.getReturnValue().getName());
         }
 
         // initialize the type combo box
-        if (message.getReturnType() == null) {
+        if (callMessage.getReturnType() == null) {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < types.size(); i++) {
-                if (types.get(i).toString().equals(message.getReturnType().getName())) {
+                if (types.get(i).toString().equals(callMessage.getReturnType().getName())) {
                     typeComboBox.setSelectedIndex(i);
                     break;
                 }
@@ -137,7 +140,7 @@ public class CallMessageEditor extends OkCancelDialog {
         }
 
         // initialize the list of parameters
-        methodParametersPanel.setElements(message.getParameters());
+        methodParametersPanel.setElements(callMessage.getParameters());
     }
 
     public String getCallMessageName() {

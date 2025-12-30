@@ -1,7 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.ExtensionPoint;
-import edu.city.studentuml.model.graphical.UCExtendGR;
+import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.ExtensionPointsPanel;
 import java.awt.Component;
@@ -10,17 +10,20 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 /**
+ * Editor for UCExtend domain objects. Allows editing of extension points
+ * for use case extend relationships.
+ * 
  * @author draganbisercic
  */
 public class UCExtendEditor extends OkCancelDialog {
 
     private ExtensionPointsPanel extensionPointsPanel;
-    private UCExtendGR ucExtendGR;
+    private UCExtend ucExtend;
     private CentralRepository repository;
 
-    public UCExtendEditor(Component parent, String title, UCExtendGR uc, CentralRepository repository) {
+    public UCExtendEditor(Component parent, String title, UCExtend ucExtend, CentralRepository repository) {
         super(parent, title);
-        this.ucExtendGR = uc;
+        this.ucExtend = ucExtend;
         this.repository = repository;
 
         initializeIfNeeded(); // Ensure UI components are created
@@ -35,7 +38,7 @@ public class UCExtendEditor extends OkCancelDialog {
 
     public void initialize() {
         // Convert List to Vector for ListPanel
-        Vector<ExtensionPoint> extensionPointsVector = new Vector<>(ucExtendGR.getExtensionPoints());
+        Vector<ExtensionPoint> extensionPointsVector = new Vector<>(ucExtend.getExtensionPoints());
         extensionPointsPanel.setElements(extensionPointsVector);
     }
 

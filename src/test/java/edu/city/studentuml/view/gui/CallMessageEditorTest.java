@@ -10,8 +10,6 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.CallMessageGR;
-import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 
 /**
@@ -19,6 +17,9 @@ import edu.city.studentuml.model.repository.CentralRepository;
  * Validates the lazy initialization pattern and the editor's ability to manage
  * call message properties (name, parameters, return value/type, iterative
  * flag).
+ * 
+ * Note: Tests now use CallMessage domain objects directly, not CallMessageGR graphical wrappers.
+ * This follows proper MVC architecture where editors work with domain models.
  * 
  * @author Dimitris Dranidis
  */
@@ -42,17 +43,12 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        // Create graphical elements
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         // Create call message
         GenericOperation operation = new GenericOperation("doSomething");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
         // Test that constructor completes without exceptions
-        CallMessageEditor editor = new CallMessageEditor(null, "Test Call Message", callMessageGR, repository);
+        CallMessageEditor editor = new CallMessageEditor(null, "Test Call Message", callMessage, repository);
 
         assertNotNull("Editor should be created successfully", editor);
     }
@@ -64,15 +60,11 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         GenericOperation operation = new GenericOperation("calculate");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
         callMessage.setIterative(true);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
-        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessageGR, repository);
+        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessage, repository);
 
         // Editor should have initialized with the message data
         assertNotNull("Editor should be created", editor);
@@ -85,14 +77,10 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         GenericOperation operation = new GenericOperation("test");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
-        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessageGR, repository) {
+        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessage, repository) {
             @Override
             public boolean showDialog() {
                 initializeIfNeeded();
@@ -112,14 +100,10 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         GenericOperation operation = new GenericOperation("test");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
-        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessageGR, repository) {
+        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessage, repository) {
             @Override
             public boolean showDialog() {
                 initializeIfNeeded();
@@ -139,14 +123,10 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         GenericOperation operation = new GenericOperation("process");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
-        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessageGR, repository) {
+        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessage, repository) {
             @Override
             public boolean showDialog() {
                 // Call initializeIfNeeded multiple times
@@ -170,16 +150,12 @@ public class CallMessageEditorTest {
         SDObject objA = new SDObject("a", dcA);
         SDObject objB = new SDObject("b", dcB);
 
-        SDObjectGR objAGR = new SDObjectGR(objA, 100);
-        SDObjectGR objBGR = new SDObjectGR(objB, 200);
-
         GenericOperation operation = new GenericOperation("iterate");
         CallMessage callMessage = new CallMessage(objA, objB, operation);
         callMessage.setIterative(true);
-        CallMessageGR callMessageGR = new CallMessageGR(objAGR, objBGR, callMessage, 150);
 
         // Test that constructor handles iterative messages
-        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessageGR, repository);
+        CallMessageEditor editor = new CallMessageEditor(null, "Test", callMessage, repository);
 
         assertNotNull("Editor should be created for iterative message", editor);
     }

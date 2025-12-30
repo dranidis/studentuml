@@ -6,14 +6,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.city.studentuml.model.domain.*;
-import edu.city.studentuml.model.graphical.UCExtendGR;
-import edu.city.studentuml.model.graphical.UseCaseGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 
 /**
  * Tests for UCExtendEditor using mocked showDialog() to avoid UI blocking.
  * Validates the lazy initialization pattern and the editor's ability to manage
  * extension points for UC Extend relationships.
+ * 
+ * Note: Tests now use UCExtend domain objects directly, not UCExtendGR graphical wrappers.
+ * This follows proper MVC architecture where editors work with domain models.
  * 
  * @author Dimitris Dranidis
  */
@@ -36,13 +37,8 @@ public class UCExtendEditorTest {
         UseCase extendingUC = new UseCase("ExtendingUseCase");
         UCExtend extend = new UCExtend(extendingUC, baseUC);
 
-        // Create graphical elements
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
         // Test that constructor completes without exceptions
-        UCExtendEditor editor = new UCExtendEditor(null, "Test UC Extend", extendGR, repository);
+        UCExtendEditor editor = new UCExtendEditor(null, "Test UC Extend", extend, repository);
 
         assertNotNull("Editor should be created successfully", editor);
     }
@@ -53,11 +49,7 @@ public class UCExtendEditorTest {
         UseCase extendingUC = new UseCase("ExtendingUseCase");
         UCExtend extend = new UCExtend(extendingUC, baseUC);
 
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
-        UCExtendEditor editor = new UCExtendEditor(null, "Test", extendGR, repository);
+        UCExtendEditor editor = new UCExtendEditor(null, "Test", extend, repository);
 
         // Verify editor initializes with empty extension points
         assertNotNull("Extension points list should not be null", editor.getExtensionPoints());
@@ -76,11 +68,7 @@ public class UCExtendEditorTest {
         extend.addExtensionPoint(ep1);
         extend.addExtensionPoint(ep2);
 
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
-        UCExtendEditor editor = new UCExtendEditor(null, "Test", extendGR, repository);
+        UCExtendEditor editor = new UCExtendEditor(null, "Test", extend, repository);
 
         // Verify editor initializes with the extension points
         assertEquals("Should have 2 extension points", 2, editor.getExtensionPoints().size());
@@ -94,11 +82,7 @@ public class UCExtendEditorTest {
         UseCase extendingUC = new UseCase("ExtendingUseCase");
         UCExtend extend = new UCExtend(extendingUC, baseUC);
 
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
-        UCExtendEditor editor = new UCExtendEditor(null, "Test", extendGR, repository) {
+        UCExtendEditor editor = new UCExtendEditor(null, "Test", extend, repository) {
             @Override
             public boolean showDialog() {
                 initializeIfNeeded();
@@ -117,11 +101,7 @@ public class UCExtendEditorTest {
         UseCase extendingUC = new UseCase("ExtendingUseCase");
         UCExtend extend = new UCExtend(extendingUC, baseUC);
 
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
-        UCExtendEditor editor = new UCExtendEditor(null, "Test", extendGR, repository) {
+        UCExtendEditor editor = new UCExtendEditor(null, "Test", extend, repository) {
             @Override
             public boolean showDialog() {
                 initializeIfNeeded();
@@ -141,11 +121,7 @@ public class UCExtendEditorTest {
         UCExtend extend = new UCExtend(extendingUC, baseUC);
         extend.addExtensionPoint(new ExtensionPoint("test"));
 
-        UseCaseGR baseGR = new UseCaseGR(baseUC, 100, 100);
-        UseCaseGR extendingGR = new UseCaseGR(extendingUC, 200, 200);
-        UCExtendGR extendGR = new UCExtendGR(extendingGR, baseGR, extend);
-
-        UCExtendEditor editor = new UCExtendEditor(null, "Test", extendGR, repository) {
+        UCExtendEditor editor = new UCExtendEditor(null, "Test", extend, repository) {
             @Override
             public boolean showDialog() {
                 // Call initializeIfNeeded multiple times
