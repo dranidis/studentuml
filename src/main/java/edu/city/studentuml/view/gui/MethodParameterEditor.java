@@ -4,7 +4,7 @@ import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 /**
  * @author Ervin Ramollari
  */
-public class MethodParameterEditor extends OkCancelDialog implements ElementEditor<MethodParameter> {
+public class MethodParameterEditor extends OkCancelDialog implements Editor<MethodParameter> {
 
     private static final String TITLE = "Parameter Editor";
     private Vector<String> comboBoxStringList;

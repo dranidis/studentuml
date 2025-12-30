@@ -94,7 +94,7 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
     }
 
     private void addElement() {
-        ElementEditor<T> elementEditor = createElementEditor(repository);
+        Editor<T> elementEditor = createElementEditor(repository);
         T newElement = elementEditor.editDialog(null, this);
         if (newElement == null) {
             return;
@@ -103,7 +103,7 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
         updateElementsList();
     }
 
-    protected abstract ElementEditor<T> createElementEditor(CentralRepository repository);
+    protected abstract Editor<T> createElementEditor(CentralRepository repository);
 
     private void editElement() {
         if (elements.isEmpty() || elementsList.getSelectedIndex() < 0) {
@@ -111,7 +111,7 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
         }
 
         T element = elements.elementAt(elementsList.getSelectedIndex());
-        ElementEditor<T> elementEditor = createElementEditor(repository);
+        Editor<T> elementEditor = createElementEditor(repository);
         T editedElement = elementEditor.editDialog(element, this);
         if (editedElement == null) {
             return;

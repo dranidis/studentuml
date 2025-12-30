@@ -18,8 +18,8 @@ public class ExtensionPointsPanel extends ListPanel<ExtensionPoint> {
     }
 
     @Override
-    protected ElementEditor<ExtensionPoint> createElementEditor(CentralRepository repository) {
-        return new ElementEditor<ExtensionPoint>() {
+    protected Editor<ExtensionPoint> createElementEditor(CentralRepository repository) {
+        return new Editor<ExtensionPoint>() {
             @Override
             public ExtensionPoint editDialog(ExtensionPoint extensionPoint, Component parent) {
                 String initialValue = (extensionPoint != null) ? extensionPoint.getName() : "";

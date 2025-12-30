@@ -4,7 +4,7 @@ import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
 import java.awt.Component;
@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class MethodEditor extends OkCancelDialog implements ElementEditor<Method> {
+public class MethodEditor extends OkCancelDialog implements Editor<Method> {
 
     private static final String[] scopes = { "instance", "classifier" };
     private static final String[] visibilities = { "public", "private", "protected" };

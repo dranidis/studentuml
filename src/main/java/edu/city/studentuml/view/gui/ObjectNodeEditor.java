@@ -6,7 +6,7 @@ import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.ListPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -31,9 +31,9 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
         // Create states management panel as anonymous inner class
         statesPanel = new ListPanel<State>("Object States", cr) {
             @Override
-            protected ElementEditor<State> createElementEditor(CentralRepository repository) {
-                // Return anonymous ElementEditor implementation for State editing
-                return new ElementEditor<State>() {
+            protected Editor<State> createElementEditor(CentralRepository repository) {
+                // Return anonymous Editor implementation for State editing
+                return new Editor<State>() {
                     @Override
                     public State editDialog(State state, Component parent) {
                         String initialValue = (state != null) ? state.getName() : "";

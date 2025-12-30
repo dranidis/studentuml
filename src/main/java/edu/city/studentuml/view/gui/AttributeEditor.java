@@ -4,7 +4,7 @@ import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class AttributeEditor extends OkCancelDialog implements ElementEditor<Attribute> {
+public class AttributeEditor extends OkCancelDialog implements Editor<Attribute> {
 
     private static final String[] scopes = { "instance", "classifier" };
     private static final String[] visibilities = { "private", "public", "protected" };
