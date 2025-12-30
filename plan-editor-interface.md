@@ -134,45 +134,63 @@ All 338 tests passing.
 **Phase 2a: Refactor Editors to Accept Domain Objects**
 
 **Scope Analysis**:
-- **UCExtendEditor**: 1 controller file (UCDSelectionController), 1 test file (6 test call sites)
-- **CallMessageEditor**: 2 controller files (AbstractSDSelectionController, SDSelectionController), 1 test file (8 test call sites)
-- **UMLNoteEditor**: 1 controller file (SelectionController), 1 test file (7 test call sites) - SKIP (no domain object)
 
--   [ ] Task 2a.1: Refactor UCExtendEditor
-    -   [ ] Change constructor: `UCExtendEditor(Component, String, UCExtend, CentralRepository)`
-    -   [ ] Update field from `UCExtendGR` to `UCExtend`
-    -   [ ] Update `initialize()` to work with `ucExtend` directly
-    -   [ ] Update 1 controller: `UCDSelectionController.java`
-    -   [ ] Update test: `UCExtendEditorTest.java` (6 test methods)
-    -   [ ] Run tests: `mvn test -Dtest=UCExtendEditorTest`
-    -   [ ] Commit: "Refactor UCExtendEditor to accept UCExtend domain object"
-    
--   [ ] Task 2a.2: Refactor CallMessageEditor
-    -   [ ] Change constructor: `CallMessageEditor(Component, String, CallMessage, CentralRepository)`
-    -   [ ] Update field from `CallMessageGR` to `CallMessage`
-    -   [ ] Update `initialize()` to work with `callMessage` directly
-    -   [ ] Update 2 controllers: `AbstractSDSelectionController.java`, `SDSelectionController.java`
-    -   [ ] Update test: `CallMessageEditorTest.java` (8 test methods)
-    -   [ ] Run tests: `mvn test -Dtest=CallMessageEditorTest`
-    -   [ ] Commit: "Refactor CallMessageEditor to accept CallMessage domain object"
-    
--   [ ] Task 2a.3: Skip UMLNoteEditor
-    -   [ ] Reason: No separate domain object (UMLNoteGR stores `String text` directly)
-    -   [ ] Notes are special: they annotate other elements rather than being standalone entities
-    -   [ ] Can revisit later if domain separation becomes necessary
-    
--   [ ] Task 2a.4: Skip StringEditorDialog
-    -   [ ] Reason: Utility dialog for generic string input, not a domain editor
+-   **UCExtendEditor**: 1 controller file (UCDSelectionController), 1 test file (6 test call sites)
+-   **CallMessageEditor**: 2 controller files (AbstractSDSelectionController, SDSelectionController), 1 test file (8 test call sites)
+-   **UMLNoteEditor**: 1 controller file (SelectionController), 1 test file (7 test call sites) - SKIP (no domain object)
 
-**Phase 2b: Migrate to Editor<T> Interface**
+-   [x] Task 2a.1: Refactor UCExtendEditor ✅
+    -   [x] Change constructor: `UCExtendEditor(Component, String, UCExtend, CentralRepository)`
+    -   [x] Update field from `UCExtendGR` to `UCExtend`
+    -   [x] Update `initialize()` to work with `ucExtend` directly
+    -   [x] Update 1 controller: `UCDSelectionController.java`
+    -   [x] Update test: `UCExtendEditorTest.java` (6 test methods passing)
+    -   [x] Run tests: `mvn test -Dtest=UCExtendEditorTest`
+    -   [x] Commit: 220f2fe "Phase 2a: Refactor Pattern 3 editors to use domain objects"
+-   [x] Task 2a.2: Refactor CallMessageEditor ✅
+    -   [x] Change constructor: `CallMessageEditor(Component, String, CallMessage, CentralRepository)`
+    -   [x] Update field from `CallMessageGR` to `CallMessage`
+    -   [x] Update `initialize()` to work with `callMessage` directly
+    -   [x] Changed instanceof check from `CreateMessageGR` to `CreateMessage` (domain level)
+    -   [x] Update 2 controllers: `AbstractSDSelectionController.java`, `SDSelectionController.java`
+    -   [x] Update test: `CallMessageEditorTest.java` (6 test methods passing)
+    -   [x] Run tests: `mvn test -Dtest=CallMessageEditorTest`
+    -   [x] Commit: 220f2fe "Phase 2a: Refactor Pattern 3 editors to use domain objects"
+-   [x] Task 2a.3: Skip UMLNoteEditor ✅
+    -   [x] Reason: No separate domain object (UMLNoteGR stores `String text` directly)
+    -   [x] Notes are special: they annotate other elements rather than being standalone entities
+    -   [x] Can revisit later if domain separation becomes necessary
+-   [x] Task 2a.4: Skip StringEditorDialog ✅
+    -   [x] Reason: Utility dialog for generic string input, not a domain editor
 
-After Phase 2a completes, these editors will work with domain objects and can be migrated:
+**Phase 2a Summary**: All tasks complete. Both editors (UCExtendEditor, CallMessageEditor) now accept domain objects instead of graphical wrappers. All 338 tests passing. Proper MVC architecture restored: editors work with domain models, not views.
+
+**Phase 2b: Migrate to Editor<T> Interface** (IN PROGRESS)
+
+**Dependencies**: Phase 2a complete ✅
+
+After Phase 2a, these editors work with domain objects and can be migrated to Editor<T>:
 
 -   [ ] Task 2b.1: Make UCExtend implement Copyable<UCExtend>
+    -   [ ] Add clone() method to UCExtend class
+    -   [ ] Handle deep copy of `List<ExtensionPoint> extensionPoints`
+    -   [ ] Determine if ExtensionPoint needs Copyable
+    -   [ ] Write test for cloning
 -   [ ] Task 2b.2: Make CallMessage implement Copyable<CallMessage>
+    -   [ ] Add clone() method to CallMessage class
+    -   [ ] Ensure CreateMessage subclass clones correctly
+    -   [ ] Write test for cloning both CallMessage and CreateMessage
 -   [ ] Task 2b.3: Migrate UCExtendEditor to implement Editor<UCExtend>
+    -   [ ] Add `implements Editor<UCExtend>`
+    -   [ ] Implement `editDialog(UCExtend ucExtend, Component parent)` method
+    -   [ ] Update UCDSelectionController to use new interface method
 -   [ ] Task 2b.4: Migrate CallMessageEditor to implement Editor<CallMessage>
+    -   [ ] Add `implements Editor<CallMessage>`
+    -   [ ] Implement `editDialog(CallMessage message, Component parent)` method
+    -   [ ] Update AbstractSDSelectionController and SDSelectionController
 -   [ ] Task 2b.5: Decide on UMLNoteEditor approach
+    -   [ ] Option 1: Create NoteContent domain object
+    -   [ ] Option 2: Keep as special case (String-based)
 -   [ ] Task 2b.6: Update all controller call sites
 -   [ ] Task 2b.7: Run full test suite
 
