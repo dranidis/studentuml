@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.ReturnMessage;
@@ -19,13 +21,17 @@ import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
+import edu.city.studentuml.util.undoredo.ActorRepositoryOperations;
 import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
 import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.StringEditorDialog;
+import edu.city.studentuml.view.gui.TypeOperation;
+import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 /**
  * Overrides the methods for setting the undo and redo coordinates for the
@@ -90,23 +96,35 @@ public abstract class AbstractSDSelectionController extends SelectionController 
     private void editActorInstance(ActorInstanceGR actorInstance) {
         CentralRepository repository = model.getCentralRepository();
         ActorInstance originalActorInstance = actorInstance.getActorInstance();
-        ActorInstanceEditor actorInstanceEditor = new ActorInstanceEditor(repository);
-        actorInstanceEditor.initialize(originalActorInstance);
 
-        // UNDO/REDO
+        // Create editor and initial result
+        ActorInstanceEditor actorInstanceEditor = new ActorInstanceEditor(repository);
+        TypedEntityEditResult<Actor, ActorInstance> initialResult = new TypedEntityEditResult<>(originalActorInstance,
+                new java.util.ArrayList<>());
+
+        TypedEntityEditResult<Actor, ActorInstance> result = actorInstanceEditor.editDialog(initialResult,
+                parentComponent);
+
+        // Check if user cancelled
+        if (result == null) {
+            return;
+        }
+
+        ActorInstance newActorInstance = result.getDomainObject();
+
+        // UNDO/REDO setup
         ActorInstance undoActorInstance = originalActorInstance.clone();
         ActorInstanceEdit undoEdit = new ActorInstanceEdit(undoActorInstance,
                 originalActorInstance.getActor().getName());
 
-        // show the actor instance editor dialog and check whether the user has pressed
-        // cancel
-        if (!actorInstanceEditor.showDialog(parentComponent, "Actor Instance Editor")) {
-            return;
-        }
+        // Create compound edit for all operations
+        CompoundEdit compoundEdit = new CompoundEdit();
 
-        ActorInstance newActorInstance = new ActorInstance(actorInstanceEditor.getActorInstanceName(),
-                actorInstanceEditor.getActor());
-        ActorInstanceEdit originalEdit;
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<Actor> typeOps = new ActorRepositoryOperations();
+        for (TypeOperation<Actor> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
 
         // edit the actor if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -130,10 +148,16 @@ public abstract class AbstractSDSelectionController extends SelectionController 
         } else {
             repository.editActorInstance(originalActorInstance, newActorInstance);
 
-            // UNDO/REDO
-            originalEdit = new ActorInstanceEdit(originalActorInstance, originalActorInstance.getActor().getName());
-            UndoableEdit edit = new EditActorInstanceEdit(originalEdit, undoEdit, model);
-            parentComponent.getUndoSupport().postEdit(edit);
+            // Add domain object edit to compound
+            ActorInstanceEdit originalEdit = new ActorInstanceEdit(originalActorInstance,
+                    originalActorInstance.getActor().getName());
+            compoundEdit.addEdit(new EditActorInstanceEdit(originalEdit, undoEdit, model));
+        }
+
+        // Post the compound edit
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            parentComponent.getUndoSupport().postEdit(compoundEdit);
         }
 
         // set observable model to changed in order to notify its views
@@ -169,14 +193,14 @@ public abstract class AbstractSDSelectionController extends SelectionController 
     }
 
     private void editReturnMessage(ReturnMessageGR messageGR) {
-        StringEditorDialog dialog = new StringEditorDialog(parentComponent,
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent,
                 "Return Message Editor", "Return Message String:", messageGR.getReturnMessage().getName());
-        if (!dialog.showDialog()) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
         ReturnMessage undoReturnMessage = messageGR.getReturnMessage().clone();
         ReturnMessage originalReturnMessage = messageGR.getReturnMessage();
-        originalReturnMessage.setName(dialog.getText());
+        originalReturnMessage.setName(stringEditorDialog.getText());
 
         // UNDO/REDO
         UndoableEdit edit = new EditReturnMessageEdit(originalReturnMessage, undoReturnMessage, model);

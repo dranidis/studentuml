@@ -3,11 +3,12 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,6 @@ public class DesignAssociationClassEditor extends AssociationEditorBase {
             "Bidirectional", "Role A to Role B", "Role B to Role A"
     };
 
-    private AssociationClassGR associationClassGR;
     private JPanel topPanel;
     private JPanel directionPanel;
     private JLabel directionLabel;
@@ -39,9 +39,8 @@ public class DesignAssociationClassEditor extends AssociationEditorBase {
     private MethodsPanel methodsPanel;
     private JPanel centerPanel;
 
-    public DesignAssociationClassEditor(AssociationClassGR associationClassGR, CentralRepository cr) {
+    public DesignAssociationClassEditor(CentralRepository cr) {
         super();
-        this.associationClassGR = associationClassGR;
 
         // Create label direction components (now supported for association classes)
         createLabelDirectionComponents(edu.city.studentuml.model.domain.Association.FROM_A_TO_B);
@@ -72,24 +71,91 @@ public class DesignAssociationClassEditor extends AssociationEditorBase {
         // Layout: center panel in CENTER, bottom panel in SOUTH
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        initialize();
     }
 
-    @Override
-    public void initialize() {
-        DesignAssociationClass a = (DesignAssociationClass) associationClassGR.getAssociationClass();
-
+    /**
+     * Initialize the editor with data from a DesignAssociationClass.
+     * 
+     * @param associationClass The association class to load data from
+     */
+    public void initializeFromAssociationClass(DesignAssociationClass associationClass) {
         // Use base class helper to initialize common association fields
-        initializeCommonFields(a);
+        initializeCommonFields(associationClass);
 
         // Initialize direction combo box
-        int direction = a.getDirection();
+        int direction = associationClass.getDirection();
         directionComboBox.setSelectedIndex(direction);
 
         // Initialize attributes and methods
-        attributesPanel.setElements(a.getAttributes());
-        methodsPanel.setElements(a.getMethods());
+        attributesPanel.setElements(associationClass.getAttributes());
+        methodsPanel.setElements(associationClass.getMethods());
+    }
+
+    /**
+     * Edit a DesignAssociationClass using the Editor pattern. This is the preferred
+     * method for editing association classes.
+     * 
+     * @param associationClass The association class to edit
+     * @param parentComponent  The parent component for the dialog
+     * @return A new DesignAssociationClass with the edited values, or null if
+     *         cancelled
+     */
+    public DesignAssociationClass editDialog(DesignAssociationClass associationClass, Component parentComponent) {
+        // Initialize UI with current values
+        initializeFromAssociationClass(associationClass);
+
+        // Show the dialog
+        if (!showDialog(parentComponent, "Association Class Editor")) {
+            return null; // User cancelled
+        }
+
+        // Create a clone and copy the edited values
+        DesignAssociationClass edited = associationClass.clone();
+
+        // Copy association properties from UI
+        edited.setName(nameField.getText());
+        edited.setDirection(getDirection());
+        edited.setShowArrow(isShowArrow());
+        edited.setLabelDirection(getLabelDirection());
+
+        // Copy roles
+        edited.getRoleA().setName(getRoleAName());
+        edited.getRoleA().setMultiplicity(getRoleAMultiplicity());
+        edited.getRoleB().setName(getRoleBName());
+        edited.getRoleB().setMultiplicity(getRoleBMultiplicity());
+
+        // Copy attributes and methods
+        NotifierVector<Attribute> attributes = new NotifierVector<>();
+        attributes.addAll(getAttributes());
+        edited.setAttributes(attributes);
+
+        NotifierVector<Method> methods = new NotifierVector<>();
+        methods.addAll(getMethods());
+        edited.setMethods(methods);
+
+        return edited;
+    }
+
+    /**
+     * Legacy initialization method for backward compatibility. This method should
+     * not be used - domain object should be passed to
+     * initializeFromAssociationClass().
+     * 
+     * @deprecated Use
+     *             {@link #initializeFromAssociationClass(DesignAssociationClass)}
+     *             instead
+     */
+    @Deprecated
+    @Override
+    public void initialize() {
+        // This method is only here for backward compatibility
+        throw new UnsupportedOperationException(
+                "DesignAssociationClassEditor no longer supports initialization without domain object. Pass DesignAssociationClass to initializeFromAssociationClass() instead.");
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "Association Class Editor";
     }
 
     public int getDirection() {

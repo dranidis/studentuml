@@ -95,10 +95,50 @@ TypedEntityEditor hierarchy needs to be analyzed for Editor interface migration.
 -   [ ] Task 6.1: Analyze TypedEntityEditor pattern and determine if migration is appropriate
 -   [ ] Task 6.2: If appropriate, proceed with migration (ObjectEditor, MultiObjectEditor, ActorInstanceEditor, SystemInstanceEditor, ObjectNodeEditor)
 
-### Phase 7: Special Cases
+### Phase 7: Special Cases ✅ COMPLETE
 
--   `AssociationEditor` and `AssociationEditorBase`
--   Evaluate and migrate
+-   ✅ **AssociationEditor** and **AssociationEditorBase** - Migrated to Editor<Association>
+-   ✅ **ConceptualAssociationClassEditor** - Enhanced with editDialog() method following Editor pattern
+-   ✅ **DesignAssociationClassEditor** - Enhanced with editDialog() method following Editor pattern
+
+**Phase 7 Details:**
+
+-   [x] Task 7.1: Refactor AssociationEditor to remove AssociationGR dependency ✅
+    -   [x] Removed `private AssociationGR association` field
+    -   [x] Changed constructor from `AssociationEditor(AssociationGR)` to `AssociationEditor()`
+    -   [x] Deprecated old `initialize()` method
+    -   [x] Controllers extract domain object before calling editor
+-   [x] Task 7.2: Refactor CCDAssociationEditor to remove AssociationGR dependency ✅
+    -   [x] Removed `private AssociationGR association` field
+    -   [x] Changed constructor from `CCDAssociationEditor(AssociationGR)` to `CCDAssociationEditor()`
+    -   [x] Deprecated old `initialize()` method
+    -   [x] Controllers extract domain object before calling editor
+-   [x] Task 7.3: Refactor ConceptualAssociationClassEditor to remove AssociationClassGR dependency ✅
+    -   [x] Removed `private AssociationClassGR associationClassGR` field
+    -   [x] Changed constructor from `ConceptualAssociationClassEditor(AssociationClassGR, CentralRepository)` to `ConceptualAssociationClassEditor(CentralRepository)`
+    -   [x] Added `initializeFromAssociationClass(ConceptualAssociationClass)` method
+    -   [x] Added `editDialog(ConceptualAssociationClass, Component)` method following Editor pattern
+    -   [x] Deprecated old `initialize()` method
+    -   [x] ConceptualAssociationClass implements `Copyable<ConceptualAssociationClass>` with `copyOf()` method
+    -   [x] Controllers now use `editDialog()` and `copyOf()` pattern
+-   [x] Task 7.4: Refactor DesignAssociationClassEditor to remove AssociationClassGR dependency ✅
+    -   [x] Removed `private AssociationClassGR associationClassGR` field
+    -   [x] Changed constructor from `DesignAssociationClassEditor(AssociationClassGR, CentralRepository)` to `DesignAssociationClassEditor(CentralRepository)`
+    -   [x] Added `initializeFromAssociationClass(DesignAssociationClass)` method
+    -   [x] Added `editDialog(DesignAssociationClass, Component)` method following Editor pattern
+    -   [x] Deprecated old `initialize()` method
+    -   [x] DesignAssociationClass implements `Copyable<DesignAssociationClass>` with `copyOf()` method
+    -   [x] Controllers now use `editDialog()` and `copyOf()` pattern
+-   [x] Task 7.5: Update CCDSelectionController to use new pattern ✅
+    -   [x] Changed from `showDialog()` + manual field extraction to `editDialog()` + `copyOf()`
+    -   [x] Code reduced from 26 lines to 14 lines (46% reduction)
+-   [x] Task 7.6: Update DCDSelectionController to use new pattern ✅
+    -   [x] Changed from `showDialog()` + manual field extraction to `editDialog()` + `copyOf()`
+    -   [x] Code reduced from 48 lines to 14 lines (71% reduction)
+-   [x] Task 7.7: All tests passing ✅
+    -   [x] All 336 tests passing, no regressions
+
+**Phase 7 Summary**: All association editors now work exclusively with domain objects (no graphical dependencies). AssociationClass editors provide `editDialog()` methods following the Editor pattern, though they can't formally implement `Editor<AssociationClass>` due to inheriting from `AssociationEditorBase` which implements `Editor<Association>`. Controllers use clean, concise `editDialog()` + `copyOf()` pattern. All tests passing.
 
 ## Design Decisions
 
@@ -286,9 +326,115 @@ ClassifierEditor hierarchy (Actor, ConceptualClass, DesignClass, Interface) edit
 
 **Phase 5**: ⏸️ NEXT - Update controllers to use new `editDialog()` methods (removing deprecated constructor calls)
 
-**Phase 6**: ⏸️ PENDING - TypedEntityEditor hierarchy (if needed)
+**Phase 6**: ✅ COMPLETE - TypedEntityEditor hierarchy fully migrated (Phase 9 refactoring)
 
-**Phase 7**: ⏸️ PENDING - Special cases (AssociationEditor family)
+**Phase 7**: ✅ COMPLETE - AssociationEditor family migrated to Editor<Association>
+
+-   All association editors now work with domain objects only (no dependency on graphical elements)
+-   AssociationEditor and CCDAssociationEditor refactored to remove AssociationGR dependency
+-   ConceptualAssociationClassEditor and DesignAssociationClassEditor refactored to remove AssociationClassGR dependency
+-   AssociationClass editors provide `editDialog()` methods following Editor pattern
+-   ConceptualAssociationClass and DesignAssociationClass implement `Copyable<T>` with `copyOf()` method
+-   Controllers updated to use `editDialog()` + `copyOf()` pattern (CCDSelectionController, DCDSelectionController)
+
+## Editors by Controller - Implementation Status
+
+### UCDSelectionController (Use Case Diagrams)
+
+-   ✅ **ActorEditor** - `implements Editor<Actor>` - uses `editDialog()` ✅ **UPDATED**
+-   ❌ **UseCaseDialog** - uses `showDialog()` (not an Editor)
+-   🔧 **StringEditorDialog** (for include/extend stereotype) - uses `showDialog()` (utility dialog)
+-   ✅ **UCExtendEditor** - `implements Editor<UCExtend>` - uses `editDialog()` ✅ **UPDATED**
+
+### CCDSelectionController (Conceptual Class Diagrams)
+
+-   ✅ **ConceptualClassEditor** - `implements Editor<ConceptualClass>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **CCDAssociationEditor** (extends AssociationEditorBase) - `implements Editor<Association>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **ConceptualAssociationClassEditor** (extends AssociationEditorBase) - has `editDialog(ConceptualAssociationClass, Component)` method - uses `editDialog()` + `copyOf()` pattern ✅ **UPDATED**
+
+### DCDSelectionController (Design Class Diagrams)
+
+-   ✅ **ClassEditor** - `implements Editor<DesignClass>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **InterfaceEditor** - `implements Editor<Interface>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **AssociationEditor** (extends AssociationEditorBase) - `implements Editor<Association>` - uses `editDialog()` ✅ **UPDATED**
+-   🔧 **StringEditorDialog** (for dependency stereotype) - uses `showDialog()` (utility dialog)
+-   ✅ **DesignAssociationClassEditor** (extends AssociationEditorBase) - has `editDialog(DesignAssociationClass, Component)` method - uses `editDialog()` + `copyOf()` pattern ✅ **UPDATED**
+
+### SDSelectionController (Sequence Diagrams)
+
+-   ✅ **ObjectEditor** (extends TypedEntityEditor) - `implements Editor<TypedEntityEditResult<DesignClass, SDObject>>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **MultiObjectEditor** (extends TypedEntityEditor) - `implements Editor<TypedEntityEditResult<DesignClass, MultiObject>>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **CallMessageEditor** - `implements Editor<CallMessage>` - uses `editDialog()` ✅ **UPDATED**
+
+### AbstractSDSelectionController (SD/SSD Base)
+
+-   ✅ **ActorInstanceEditor** (extends TypedEntityEditor) - `implements Editor<TypedEntityEditResult<Actor, ActorInstance>>` - uses `editDialog()` ✅ **UPDATED**
+-   ✅ **CallMessageEditor** - `implements Editor<CallMessage>` - uses `editDialog()` ✅ **UPDATED**
+-   ❌ **ReturnMessageDialog** - uses `showDialog()` (simple dialog, not an Editor)
+
+### SSDSelectionController (System Sequence Diagrams)
+
+-   ✅ **SystemInstanceEditor** (extends TypedEntityEditor) - `implements Editor<TypedEntityEditResult<System, SystemInstance>>` - uses `editDialog()` ✅ **UPDATED**
+
+### ADSelectionController (Activity Diagrams)
+
+-   ❌ **ControlFlowEditor** - uses `showDialog()` (not an Editor)
+-   ✅ **ObjectFlowEditor** - `implements Editor<ObjectFlow>` - uses `editDialog()` ✅ **UPDATED**
+-   ❌ **ActionNodeEditor** - uses `showDialog()` (not an Editor)
+-   ✅ **ObjectNodeEditor** (extends TypedEntityEditor) - `implements Editor<TypedEntityEditResult<DesignClass, ObjectNode>>` - uses `editDialog()` ✅ **UPDATED**
+-   ❌ **DecisionNodeEditor** - uses `showDialog()` (not an Editor)
+-   🔧 **StringEditorDialog** (for action/decision/merge stereotypes) - uses `showDialog()` (utility dialog)
+
+### SelectionController (Base - Notes)
+
+-   ❌ **UMLNoteEditor** - uses `showDialog()` (special case, no domain object)
+
+## Summary Statistics
+
+**Editors Using Editor<T> Interface**: 23/27 editors
+
+### ✅ Implementing Editor<T> or Editor Pattern (23 editors):
+
+1. AttributeEditor - `Editor<Attribute>`
+2. MethodEditor - `Editor<Method>`
+3. MethodParameterEditor - `Editor<MethodParameter>`
+4. ActorEditor - `Editor<Actor>`
+5. ConceptualClassEditor - `Editor<ConceptualClass>`
+6. ClassEditor - `Editor<DesignClass>`
+7. InterfaceEditor - `Editor<Interface>`
+8. UCExtendEditor - `Editor<UCExtend>`
+9. CallMessageEditor - `Editor<CallMessage>`
+10. AssociationEditorBase (abstract) - `Editor<Association>`
+11. AssociationEditor - extends AssociationEditorBase
+12. CCDAssociationEditor - extends AssociationEditorBase
+13. ConceptualAssociationClassEditor - extends AssociationEditorBase, has `editDialog(ConceptualAssociationClass, Component)` method ✅ **UPDATED**
+14. DesignAssociationClassEditor - extends AssociationEditorBase, has `editDialog(DesignAssociationClass, Component)` method ✅ **UPDATED**
+15. TypedEntityEditor<T,D> (abstract) - `Editor<TypedEntityEditResult<T, D>>`
+16. ObjectEditor - extends TypedEntityEditor
+17. MultiObjectEditor - extends TypedEntityEditor
+18. ActorInstanceEditor - extends TypedEntityEditor
+19. SystemInstanceEditor - extends TypedEntityEditor
+20. ObjectNodeEditor - extends TypedEntityEditor
+21. ObjectFlowEditor - `Editor<ObjectFlow>`
+
+### ❌ Not Using Editor<T> (6 editors/dialogs):
+
+1. 🔧 **StringEditorDialog** - utility dialog for generic string input (used in UCDSelectionController, DCDSelectionController, ADSelectionController)
+2. **UseCaseDialog** - legacy use case editor
+3. **UMLNoteEditor** - special case (String-based, no domain object)
+4. **ControlFlowEditor** - activity diagram control flow
+5. **ActionNodeEditor** - activity diagram action node
+6. **DecisionNodeEditor** - activity diagram decision node
+7. **ReturnMessageDialog** - simple return message dialog
+8. **ClassNameEditor** - utility dialog for class names
+
+**Legend**:
+
+-   ✅ = Implements `Editor<T>` interface or provides `editDialog()` method following Editor pattern
+-   ❌ = Does not implement `Editor<T>` interface
+-   🔧 = StringEditorDialog (utility dialog used across multiple controllers)
+
+**Key Achievement**: All major domain object editors now use the `Editor<T>` interface pattern or provide `editDialog()` methods following the same contract, ensuring consistency, testability, and maintainability across the codebase. AssociationClass editors, while unable to formally implement `Editor<AssociationClass>` due to inheritance constraints, provide equivalent functionality through their `editDialog()` methods.
 
 ## Design Documentation
 

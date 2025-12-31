@@ -1,5 +1,13 @@
 package edu.city.studentuml.view.gui;
 
+import javax.swing.undo.CompoundEdit;
+
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.undoredo.AddTypeEdit;
+import edu.city.studentuml.util.undoredo.DeleteTypeEdit;
+import edu.city.studentuml.util.undoredo.EditTypeEdit;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
+
 /**
  * Represents a pending operation on a type (add/edit/delete). Used by
  * TypedEntityEditor to track type management operations without immediately
@@ -109,6 +117,24 @@ public class TypeOperation<T> {
             return "DELETE: " + oldType;
         default:
             return "UNKNOWN";
+        }
+    }
+
+    public void applyTypeOperationsAndAddTheirUndoEdits(CentralRepository repository,
+            TypeRepositoryOperations<T> typeOps, CompoundEdit compoundEdit) {
+        switch (this.getOperation()) {
+        case ADD:
+            typeOps.addToRepository(repository, this.getNewType());
+            compoundEdit.addEdit(new AddTypeEdit<>(this.getNewType(), repository, typeOps));
+            break;
+        case EDIT:
+            typeOps.editInRepository(repository, this.getOldType(), this.getNewType());
+            compoundEdit.addEdit(new EditTypeEdit<>(this.getOldType(), this.getNewType(), repository, typeOps));
+            break;
+        case DELETE:
+            typeOps.removeFromRepository(repository, this.getOldType());
+            compoundEdit.addEdit(new DeleteTypeEdit<>(this.getOldType(), repository, typeOps));
+            break;
         }
     }
 }

@@ -3,10 +3,12 @@ package edu.city.studentuml.controller;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
@@ -15,15 +17,19 @@ import edu.city.studentuml.model.graphical.MultiObjectGR;
 import edu.city.studentuml.model.graphical.SDObjectGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.DesignClassRepositoryOperations;
 import edu.city.studentuml.util.undoredo.EditCreateMessageEdit;
 import edu.city.studentuml.util.undoredo.EditMultiObjectEdit;
 import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
 import edu.city.studentuml.util.undoredo.MultiObjectEdit;
 import edu.city.studentuml.util.undoredo.ObjectEdit;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.MultiObjectEditor;
 import edu.city.studentuml.view.gui.ObjectEditor;
+import edu.city.studentuml.view.gui.TypeOperation;
+import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 // handles all events when the "selection" button in the SD toolbar is pressed
 public class SDSelectionController extends AbstractSDSelectionController {
@@ -41,24 +47,36 @@ public class SDSelectionController extends AbstractSDSelectionController {
     public void editSDObject(SDObjectGR object) {
         CentralRepository repository = model.getCentralRepository();
         SDObject originalObject = object.getSDObject();
+
+        // Create editor and initial result
         ObjectEditor objectEditor = new ObjectEditor(repository);
-        objectEditor.initialize(originalObject);
+        TypedEntityEditResult<DesignClass, SDObject> initialResult = new TypedEntityEditResult<>(originalObject,
+                new java.util.ArrayList<>());
 
-        // UNDO/REDO
-        SDObject undoObject = new SDObject(originalObject.getName(), originalObject.getDesignClass());
-        ObjectEdit undoEdit = new ObjectEdit(undoObject, originalObject.getDesignClass().getName());
+        // Use new editDialog() method
+        TypedEntityEditResult<DesignClass, SDObject> result = objectEditor.editDialog(initialResult, parentComponent);
 
-        // show the object editor dialog and check whether the user has pressed cancel
-        if (!objectEditor.showDialog(parentComponent, "Object Editor")) {
+        // Check if user cancelled
+        if (result == null) {
             return;
         }
 
-        SDObject newObject = new SDObject(objectEditor.getObjectName(), objectEditor.getDesignClass());
-        ObjectEdit originalEdit;
+        SDObject newObject = result.getDomainObject();
 
-        // edit the object if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
-        // or if the new name is blank
+        // UNDO/REDO setup
+        SDObject undoObject = new SDObject(originalObject.getName(), originalObject.getDesignClass());
+        ObjectEdit undoEdit = new ObjectEdit(undoObject, originalObject.getDesignClass().getName());
+
+        // Create compound edit for all operations (type operations + domain object change)
+        CompoundEdit compoundEdit = new CompoundEdit();
+
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
+        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
+
+        // Handle domain object editing with conflict checking
         if (!originalObject.getName().equals(newObject.getName())
                 && repository.getObject(newObject.getName()) != null
                 && !newObject.getName().equals("")) {
@@ -77,10 +95,15 @@ public class SDSelectionController extends AbstractSDSelectionController {
             }
         } else {
             repository.editObject(originalObject, newObject);
-            // Undo/Redo
-            originalEdit = new ObjectEdit(originalObject, originalObject.getDesignClass().getName());
-            UndoableEdit edit = new EditSDObjectEdit(originalEdit, undoEdit, model);
-            parentComponent.getUndoSupport().postEdit(edit);
+            // Add domain object edit to compound
+            ObjectEdit originalEdit = new ObjectEdit(originalObject, originalObject.getDesignClass().getName());
+            compoundEdit.addEdit(new EditSDObjectEdit(originalEdit, undoEdit, model));
+        }
+
+        // Post the compound edit if there were any edits
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            parentComponent.getUndoSupport().postEdit(compoundEdit);
         }
 
         // set observable model to changed in order to notify its views
@@ -91,21 +114,35 @@ public class SDSelectionController extends AbstractSDSelectionController {
     public void editMultiObject(MultiObjectGR multiObject) {
         CentralRepository repository = model.getCentralRepository();
         MultiObject originalMultiObject = multiObject.getMultiObject();
+
+        // Create editor and initial result
         MultiObjectEditor multiObjectEditor = new MultiObjectEditor(repository);
-        multiObjectEditor.initialize(originalMultiObject);
+        TypedEntityEditResult<DesignClass, MultiObject> initialResult = new TypedEntityEditResult<>(originalMultiObject,
+                new java.util.ArrayList<>());
 
-        // UNDO/REDO
-        MultiObject undoObject = new MultiObject(originalMultiObject.getName(), originalMultiObject.getDesignClass());
-        MultiObjectEdit undoEdit = new MultiObjectEdit(undoObject, originalMultiObject.getDesignClass().getName());
+        // Use new editDialog() method
+        TypedEntityEditResult<DesignClass, MultiObject> result = multiObjectEditor.editDialog(initialResult,
+                parentComponent);
 
-        // show the multi object editor dialog and check whether the user has pressed cancel
-        if (!multiObjectEditor.showDialog(parentComponent, "Multiobject Editor")) {
+        // Check if user cancelled
+        if (result == null) {
             return;
         }
 
-        MultiObject newMultiObject = new MultiObject(multiObjectEditor.getMultiObjectName(),
-                multiObjectEditor.getDesignClass());
-        MultiObjectEdit originalEdit;
+        MultiObject newMultiObject = result.getDomainObject();
+
+        // UNDO/REDO setup
+        MultiObject undoObject = new MultiObject(originalMultiObject.getName(), originalMultiObject.getDesignClass());
+        MultiObjectEdit undoEdit = new MultiObjectEdit(undoObject, originalMultiObject.getDesignClass().getName());
+
+        // Create compound edit for all operations
+        CompoundEdit compoundEdit = new CompoundEdit();
+
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
+        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
 
         // edit the multiobject if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict
@@ -129,10 +166,16 @@ public class SDSelectionController extends AbstractSDSelectionController {
         } else {
             repository.editMultiObject(originalMultiObject, newMultiObject);
 
-            // UNDO/REDO
-            originalEdit = new MultiObjectEdit(originalMultiObject, originalMultiObject.getDesignClass().getName());
-            UndoableEdit edit = new EditMultiObjectEdit(originalEdit, undoEdit, model);
-            parentComponent.getUndoSupport().postEdit(edit);
+            // Add domain object edit to compound
+            MultiObjectEdit originalEdit = new MultiObjectEdit(originalMultiObject,
+                    originalMultiObject.getDesignClass().getName());
+            compoundEdit.addEdit(new EditMultiObjectEdit(originalEdit, undoEdit, model));
+        }
+
+        // Post the compound edit
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            parentComponent.getUndoSupport().postEdit(compoundEdit);
         }
 
         // set observable model to changed in order to notify its views

@@ -2,10 +2,11 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
-import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
@@ -20,13 +21,11 @@ import javax.swing.JPanel;
  */
 public class ConceptualAssociationClassEditor extends AssociationEditorBase {
 
-    private AssociationClassGR associationClassGR;
     private AttributesPanel attributesPanel;
     private JPanel centerPanel;
 
-    public ConceptualAssociationClassEditor(AssociationClassGR associationClassGR, CentralRepository cr) {
+    public ConceptualAssociationClassEditor(CentralRepository cr) {
         super();
-        this.associationClassGR = associationClassGR;
 
         // Create label direction components (now supported for association classes)
         createLabelDirectionComponents(edu.city.studentuml.model.domain.Association.FROM_A_TO_B);
@@ -43,19 +42,82 @@ public class ConceptualAssociationClassEditor extends AssociationEditorBase {
         // Layout: center panel in CENTER, bottom panel in SOUTH
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+    }
 
-        initialize();
+    /**
+     * Initialize the editor with data from a ConceptualAssociationClass.
+     * 
+     * @param associationClass The association class to load data from
+     */
+    public void initializeFromAssociationClass(ConceptualAssociationClass associationClass) {
+        // Use base class helper to initialize common association fields
+        initializeCommonFields(associationClass);
+
+        // Initialize attributes
+        attributesPanel.setElements(associationClass.getAttributes());
+    }
+
+    /**
+     * Edit a ConceptualAssociationClass using the Editor pattern. This is the
+     * preferred method for editing association classes.
+     * 
+     * @param associationClass The association class to edit
+     * @param parentComponent  The parent component for the dialog
+     * @return A new ConceptualAssociationClass with the edited values, or null if
+     *         cancelled
+     */
+    public ConceptualAssociationClass editDialog(ConceptualAssociationClass associationClass,
+            Component parentComponent) {
+        // Initialize UI with current values
+        initializeFromAssociationClass(associationClass);
+
+        // Show the dialog
+        if (!showDialog(parentComponent, "Association Class Editor")) {
+            return null; // User cancelled
+        }
+
+        // Create a clone and copy the edited values
+        ConceptualAssociationClass edited = associationClass.clone();
+
+        // Copy association properties from UI
+        edited.setName(nameField.getText());
+        edited.setShowArrow(isShowArrow());
+        edited.setLabelDirection(getLabelDirection());
+
+        // Copy roles
+        edited.getRoleA().setName(getRoleAName());
+        edited.getRoleA().setMultiplicity(getRoleAMultiplicity());
+        edited.getRoleB().setName(getRoleBName());
+        edited.getRoleB().setMultiplicity(getRoleBMultiplicity());
+
+        // Copy attributes
+        NotifierVector<Attribute> attributes = new NotifierVector<>();
+        attributes.addAll(getAttributes());
+        edited.setAttributes(attributes);
+
+        return edited;
+    }
+
+    /**
+     * Legacy initialization method for backward compatibility. This method should
+     * not be used - domain object should be passed to
+     * initializeFromAssociationClass().
+     * 
+     * @deprecated Use
+     *             {@link #initializeFromAssociationClass(ConceptualAssociationClass)}
+     *             instead
+     */
+    @Deprecated
+    @Override
+    public void initialize() {
+        // This method is only here for backward compatibility
+        throw new UnsupportedOperationException(
+                "ConceptualAssociationClassEditor no longer supports initialization without domain object. Pass ConceptualAssociationClass to initializeFromAssociationClass() instead.");
     }
 
     @Override
-    public void initialize() {
-        ConceptualAssociationClass a = (ConceptualAssociationClass) associationClassGR.getAssociationClass();
-
-        // Use base class helper to initialize common association fields
-        initializeCommonFields(a);
-
-        // Initialize attributes
-        attributesPanel.setElements(a.getAttributes());
+    protected String getDialogTitle() {
+        return "Association Class Editor";
     }
 
     public Vector<Attribute> getAttributes() {

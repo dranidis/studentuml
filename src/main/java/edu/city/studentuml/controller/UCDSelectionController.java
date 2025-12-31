@@ -69,15 +69,15 @@ public class UCDSelectionController extends SelectionController {
         CentralRepository repository = model.getCentralRepository();
         UseCase originalUseCase = (UseCase) useCaseGR.getComponent();
 
-        StringEditorDialog dialog = new StringEditorDialog(parentComponent,
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent,
                 "Use Case Editor", "Use Case Name:", originalUseCase.getName());
 
-        if (!dialog.showDialog()) {
+        if (!stringEditorDialog.showDialog()) {
             // cancel clicked
             return;
         }
 
-        UseCase newUseCase = new UseCase(dialog.getText());
+        UseCase newUseCase = new UseCase(stringEditorDialog.getText());
 
         if (!originalUseCase.getName().equals(newUseCase.getName())
                 && repository.getUseCase(newUseCase.getName()) != null && !newUseCase.getName().equals("")) {
