@@ -8,23 +8,51 @@ import java.util.Vector;
 
 /**
  * Editor for SD Objects in Sequence Diagrams.
- * 
  */
 public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
 
-    private SDObjectGR objectGR;
-
-    public ObjectEditor(SDObjectGR obj, CentralRepository cr) {
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public ObjectEditor(CentralRepository cr) {
         super(cr);
-        this.objectGR = obj;
-        initialize();
     }
 
-    public void initialize() {
-        SDObject object = objectGR.getSDObject();
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param obj The graphical SD object wrapper
+     * @param cr  The central repository
+     * @deprecated Use {@link #ObjectEditor(CentralRepository)} and call
+     *             {@link #initialize(SDObject)} instead
+     */
+    @Deprecated
+    public ObjectEditor(SDObjectGR obj, CentralRepository cr) {
+        super(cr);
+        initialize(obj.getSDObject());
+    }
+
+    /**
+     * Initialize the editor with an SD object.
+     * 
+     * @param object The SD object to edit
+     */
+    public void initialize(SDObject object) {
         setCurrentType(object.getDesignClass());
         nameField.setText(object.getName());
         initializeTypeComboBox();
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * 
+     * @deprecated Use {@link #initialize(SDObject)} instead
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getObjectName() {
@@ -33,6 +61,23 @@ public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
 
     public DesignClass getDesignClass() {
         return getCurrentType();
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "Object Editor";
+    }
+
+    @Override
+    protected void initializeFromDomainObject(SDObject object) {
+        setCurrentType(object.getDesignClass());
+        nameField.setText(object.getName());
+        initializeTypeComboBox();
+    }
+
+    @Override
+    protected SDObject buildDomainObject() {
+        return new SDObject(getEntityName(), getCurrentType());
     }
 
     @Override

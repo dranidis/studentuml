@@ -1,13 +1,12 @@
 package edu.city.studentuml.controller;
 
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
@@ -41,8 +40,9 @@ public class SDSelectionController extends AbstractSDSelectionController {
 
     public void editSDObject(SDObjectGR object) {
         CentralRepository repository = model.getCentralRepository();
-        ObjectEditor objectEditor = new ObjectEditor(object, repository);
         SDObject originalObject = object.getSDObject();
+        ObjectEditor objectEditor = new ObjectEditor(repository);
+        objectEditor.initialize(originalObject);
 
         // UNDO/REDO
         SDObject undoObject = new SDObject(originalObject.getName(), originalObject.getDesignClass());
@@ -90,8 +90,9 @@ public class SDSelectionController extends AbstractSDSelectionController {
 
     public void editMultiObject(MultiObjectGR multiObject) {
         CentralRepository repository = model.getCentralRepository();
-        MultiObjectEditor multiObjectEditor = new MultiObjectEditor(multiObject, repository);
         MultiObject originalMultiObject = multiObject.getMultiObject();
+        MultiObjectEditor multiObjectEditor = new MultiObjectEditor(repository);
+        multiObjectEditor.initialize(originalMultiObject);
 
         // UNDO/REDO
         MultiObject undoObject = new MultiObject(originalMultiObject.getName(), originalMultiObject.getDesignClass());
@@ -142,19 +143,19 @@ public class SDSelectionController extends AbstractSDSelectionController {
     //new edit create method 
     public void editCreateMessage(CreateMessageGR messageGR) {
         CreateMessage message = messageGR.getCreateMessage();
-        CallMessageEditor createMessageEditor = new CallMessageEditor(parentComponent, "Create Message Editor",
-                message, model.getCentralRepository());
+        CallMessageEditor createMessageEditor = new CallMessageEditor(model.getCentralRepository());
 
         CreateMessage undoCreateMessage = message.clone();
 
         // if user presses cancel don't do anything
-        if (!createMessageEditor.showDialog()) {
+        CallMessage editedMessage = createMessageEditor.editDialog(message, parentComponent);
+        if (editedMessage == null) {
             return;
         }
 
-        List<MethodParameter> parameters = createMessageEditor.getParameters();
+        // Copy parameters from edited message to original message
         message.setParameters(new Vector<>());
-        message.getParameters().addAll(parameters);
+        message.getParameters().addAll(editedMessage.getParameters());
 
         // UNDO/REDO
         UndoableEdit edit = new EditCreateMessageEdit(message, undoCreateMessage, model);

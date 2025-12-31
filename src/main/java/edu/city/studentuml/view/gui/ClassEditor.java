@@ -2,6 +2,7 @@ package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -23,13 +24,16 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 
 /**
  * @author Ervin Ramollari
  * @author Dimitris Dranidis
  */
-public class ClassEditor extends ClassifierEditor implements ClassEditorI {
+public class ClassEditor extends ClassifierEditor implements ClassEditorI, Editor<DesignClass> {
+
+    private static final String TITLE = "Class Editor";
 
     private List<Attribute> attributesFromConceptualClass;
     private AttributesPanel attributesPanel;
@@ -46,8 +50,39 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
 
     private JPanel centerPanel;
 
+    /**
+     * Constructor for Editor<DesignClass> pattern. Creates a ClassEditor with an
+     * empty DesignClass and initializes the UI.
+     */
+    public ClassEditor(CentralRepository cr) {
+        super(new DesignClass(""), cr, AUTO_COMPLETE);
+
+        initializeUI(cr);
+    }
+
+    /**
+     * @deprecated Use {@link #ClassEditor(CentralRepository)} and
+     *             {@link #editDialog(DesignClass, Component)} instead.
+     */
+    @Deprecated
     public ClassEditor(DesignClass designClass, CentralRepository cr) {
         super(designClass, cr, AUTO_COMPLETE);
+
+        initializeUI(cr);
+
+        if (designClass != null) {
+            if (designClass.getStereotype() != null) {
+                stereotypeField.setText(designClass.getStereotype());
+            }
+
+            attributesPanel.setElements(designClass.getAttributes());
+            methodsPanel.setElements(designClass.getMethods());
+
+            setAttributesFromConceptualClass();
+        }
+    }
+
+    private void initializeUI(CentralRepository cr) {
 
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
@@ -92,17 +127,23 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
         add(bottomPanel, BorderLayout.SOUTH);
 
         attributesFromConceptualClass = new Vector<>();
+    }
 
-        if (designClass != null) {
-            if (designClass.getStereotype() != null) {
-                stereotypeField.setText(designClass.getStereotype());
-            }
-
-            attributesPanel.setElements(designClass.getAttributes());
-            methodsPanel.setElements(designClass.getMethods());
-
-            setAttributesFromConceptualClass();
+    @Override
+    public DesignClass editDialog(DesignClass designClass, Component parent) {
+        setClassifierName(designClass.getName());
+        if (designClass.getStereotype() != null) {
+            stereotypeField.setText(designClass.getStereotype());
+        } else {
+            stereotypeField.setText("");
         }
+        attributesPanel.setElements(designClass.getAttributes());
+        methodsPanel.setElements(designClass.getMethods());
+
+        if (!showDialog(parent, TITLE)) {
+            return null;
+        }
+        return getDesignClass();
     }
 
     public DesignClass getDesignClass() {

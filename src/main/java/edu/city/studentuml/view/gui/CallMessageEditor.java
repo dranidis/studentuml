@@ -20,15 +20,17 @@ import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.MethodParameterPanel;
 
 /**
- * Editor for CallMessage domain objects. Allows editing of call message properties
- * including name, parameters, return value and return type.
+ * Editor for CallMessage domain objects. Allows editing of call message
+ * properties including name, parameters, return value and return type.
  * 
  * @author Ervin Ramollari
+ * @author Dimitris Dranidis
  */
-public class CallMessageEditor extends OkCancelDialog {
+public class CallMessageEditor extends OkCancelDialog implements Editor<CallMessage> {
     private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
 
     private CallMessage callMessage;
@@ -48,7 +50,16 @@ public class CallMessageEditor extends OkCancelDialog {
 
     private Vector<Type> types;
     private CentralRepository repository;
+    private static final String TITLE_CALL = "Call Message Editor";
+    private static final String TITLE_CREATE = "Create Message Editor";
 
+    public CallMessageEditor(CentralRepository repository) {
+        super(null, TITLE_CALL); // parent and title will be set in editDialog
+        this.repository = repository;
+    }
+
+    // Legacy constructor for backward compatibility during transition
+    @Deprecated
     public CallMessageEditor(Component parent, String title, CallMessage callMessage,
             CentralRepository repository) {
         super(parent, title);
@@ -116,7 +127,42 @@ public class CallMessageEditor extends OkCancelDialog {
         return centerPanel;
     }
 
+    @Override
+    public CallMessage editDialog(CallMessage callMessage, Component parent) {
+        // Set parent and title for this dialog instance
+        this.parent = parent;
+        this.title = (callMessage instanceof CreateMessage ? TITLE_CREATE : TITLE_CALL);
+
+        // Ensure UI components are created before initializing fields
+        initializeIfNeeded();
+
+        // Initialize fields based on callMessage
+        initialize(callMessage);
+
+        // Show dialog using OkCancelDialog's showDialog method
+        if (!showDialog()) {
+            return null; // Cancelled
+        }
+
+        // Update message properties
+        if (!(callMessage instanceof CreateMessage)) {
+            callMessage.setName(getCallMessageName());
+        }
+        callMessage.setIterative(isIterative());
+        callMessage.setReturnValue(getReturnValue());
+        callMessage.setReturnType(getReturnType());
+        callMessage.setParameters(getParameters());
+
+        return callMessage;
+    }
+
+    // Legacy method for backward compatibility
+    @Deprecated
     public void initialize() {
+        initialize(this.callMessage);
+    }
+
+    public void initialize(CallMessage callMessage) {
         // initialize the name field
         nameField.setText(callMessage.getName());
 

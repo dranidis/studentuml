@@ -18,18 +18,43 @@ import javax.swing.JOptionPane;
  * handle type selection and adds states management.
  *
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode> {
 
-    private ObjectNodeGR objectNodeGR;
     private ListPanel<State> statesPanel;
 
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public ObjectNodeEditor(CentralRepository cr) {
+        super(cr);
+        initializeStatesPanel();
+    }
+
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param objectNodeGR The graphical object node wrapper
+     * @param cr           The central repository
+     * @deprecated Use {@link #ObjectNodeEditor(CentralRepository)} and call
+     *             {@link #initialize(ObjectNode)} instead
+     */
+    @Deprecated
     public ObjectNodeEditor(ObjectNodeGR objectNodeGR, CentralRepository cr) {
         super(cr);
-        this.objectNodeGR = objectNodeGR;
+        initializeStatesPanel();
+        initialize((ObjectNode) objectNodeGR.getComponent());
+    }
 
+    /**
+     * Initialize the states panel. Called by both constructors.
+     */
+    private void initializeStatesPanel() {
         // Create states management panel as anonymous inner class
-        statesPanel = new ListPanel<State>("Object States", cr) {
+        statesPanel = new ListPanel<State>("Object States", repository) {
             @Override
             protected Editor<State> createElementEditor(CentralRepository repository) {
                 // Return anonymous Editor implementation for State editing
@@ -84,13 +109,14 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
         add(statesPanel, BorderLayout.CENTER);
 
         // bottomPanel is already in SOUTH from base class
-
-        initialize();
     }
 
-    public void initialize() {
-        ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
-
+    /**
+     * Initialize the editor with an ObjectNode domain object.
+     * 
+     * @param objectNode The domain object to edit
+     */
+    public void initialize(ObjectNode objectNode) {
         // Initialize type information
         Type type = objectNode.getType();
         if (type instanceof DesignClass) {
@@ -104,6 +130,15 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
 
         // Initialize states using StatesPanel - convert List to Vector
         statesPanel.setElements(new Vector<>(objectNode.getStates()));
+    }
+
+    /**
+     * @deprecated No-op method for backward compatibility. Use
+     *             {@link #initialize(ObjectNode)} instead.
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getObjectName() {
@@ -124,6 +159,46 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
 
     public Vector<State> getStates() {
         return statesPanel.getElements();
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "Object Node Editor";
+    }
+
+    @Override
+    protected void initializeFromDomainObject(ObjectNode objectNode) {
+        // Initialize type information
+        Type type = objectNode.getType();
+        if (type instanceof DesignClass) {
+            setCurrentType((DesignClass) type);
+        } else {
+            setCurrentType(null);
+        }
+
+        nameField.setText(objectNode.getName());
+        initializeTypeComboBox();
+
+        // Initialize states using StatesPanel - convert List to Vector
+        statesPanel.setElements(new Vector<>(objectNode.getStates()));
+    }
+
+    @Override
+    protected ObjectNode buildDomainObject() {
+        ObjectNode objectNode = new ObjectNode();
+        objectNode.setName(getEntityName());
+        objectNode.setType(getCurrentType());
+
+        // Set states from the states panel
+        objectNode.clearStates();
+        Vector<State> states = statesPanel.getElements();
+        if (states != null) {
+            for (State state : states) {
+                objectNode.addState(state);
+            }
+        }
+
+        return objectNode;
     }
 
     @Override

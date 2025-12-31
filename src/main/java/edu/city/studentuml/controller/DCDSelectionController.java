@@ -50,14 +50,13 @@ public class DCDSelectionController extends SelectionController {
     private void editClass(ClassGR classGR) {
         CentralRepository repository = model.getCentralRepository();
         DesignClass originalClass = classGR.getDesignClass();
-        ClassEditorI classEditor = new ClassEditor(originalClass, repository);
+        ClassEditorI classEditor = new ClassEditor(repository);
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classEditor.showDialog(parentComponent, "Class Editor")) {
+        DesignClass newClass = classEditor.editDialog(originalClass, parentComponent);
+        if (newClass == null) {
             return;
         }
-
-        DesignClass newClass = classEditor.getDesignClass();
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -89,15 +88,14 @@ public class DCDSelectionController extends SelectionController {
     private void editInterface(InterfaceGR interfaceGR) {
         CentralRepository repository = model.getCentralRepository();
         Interface originalInterface = interfaceGR.getInterface();
-        InterfaceEditor interfaceEditor = new InterfaceEditor(originalInterface, repository);
+        InterfaceEditor interfaceEditor = new InterfaceEditor(repository);
 
         // show the interface editor dialog and check whether the user has pressed
         // cancel
-        if (!interfaceEditor.showDialog(parentComponent, "Interface Editor")) {
+        Interface newInterface = interfaceEditor.editDialog(originalInterface, parentComponent);
+        if (newInterface == null) {
             return;
         }
-
-        Interface newInterface = interfaceEditor.getInterface();
 
         // edit the interface if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any

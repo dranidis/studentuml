@@ -10,22 +10,52 @@ import java.util.Vector;
  * Editor for Multi Objects in Sequence Diagrams.
  *
  * @author Ervin Ramollari
+ * @author Dimitris Dranidis
  */
 public class MultiObjectEditor extends TypedEntityEditor<DesignClass, MultiObject> {
 
-    private MultiObjectGR multiObjectGR;
-
-    public MultiObjectEditor(MultiObjectGR obj, CentralRepository cr) {
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public MultiObjectEditor(CentralRepository cr) {
         super(cr);
-        this.multiObjectGR = obj;
-        initialize();
     }
 
-    public void initialize() {
-        MultiObject multiObject = multiObjectGR.getMultiObject();
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param obj The graphical multi object wrapper
+     * @param cr  The central repository
+     * @deprecated Use {@link #MultiObjectEditor(CentralRepository)} and call
+     *             {@link #initialize(MultiObject)} instead
+     */
+    @Deprecated
+    public MultiObjectEditor(MultiObjectGR obj, CentralRepository cr) {
+        super(cr);
+        initialize(obj.getMultiObject());
+    }
+
+    /**
+     * Initialize the editor with a multi object.
+     * 
+     * @param multiObject The multi object to edit
+     */
+    public void initialize(MultiObject multiObject) {
         setCurrentType(multiObject.getDesignClass());
         nameField.setText(multiObject.getName());
         initializeTypeComboBox();
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * 
+     * @deprecated Use {@link #initialize(MultiObject)} instead
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getMultiObjectName() {
@@ -34,6 +64,23 @@ public class MultiObjectEditor extends TypedEntityEditor<DesignClass, MultiObjec
 
     public DesignClass getDesignClass() {
         return getCurrentType();
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "Multiobject Editor";
+    }
+
+    @Override
+    protected void initializeFromDomainObject(MultiObject multiObject) {
+        setCurrentType(multiObject.getDesignClass());
+        nameField.setText(multiObject.getName());
+        initializeTypeComboBox();
+    }
+
+    @Override
+    protected MultiObject buildDomainObject() {
+        return new MultiObject(getEntityName(), getCurrentType());
     }
 
     @Override

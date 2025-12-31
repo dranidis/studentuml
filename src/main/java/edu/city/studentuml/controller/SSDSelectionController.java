@@ -14,8 +14,8 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.SystemInstanceEditor;
 
 /**
- *
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
 public class SSDSelectionController extends AbstractSDSelectionController {
 
@@ -26,8 +26,9 @@ public class SSDSelectionController extends AbstractSDSelectionController {
 
     private void editSystemInstance(SystemInstanceGR systemInstanceGR) {
         CentralRepository repository = model.getCentralRepository();
-        SystemInstanceEditor systemEditor = new SystemInstanceEditor(systemInstanceGR, repository);
         SystemInstance originalSystemInstance = systemInstanceGR.getSystemInstance();
+        SystemInstanceEditor systemEditor = new SystemInstanceEditor(repository);
+        systemEditor.initialize(originalSystemInstance);
 
         // UNDO/REDO
         SystemInstance undoSystemInstance = new SystemInstance(originalSystemInstance.getName(),

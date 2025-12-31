@@ -29,7 +29,9 @@ import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * Overrides the methods for setting the undo and redo coordinates for the
- * undo/redo of movement of SD and SSD diagrams.
+ * undo/redo of movement of SD and SSD diagrams.\
+ * 
+ * @author Dimitris Dranidis
  */
 public abstract class AbstractSDSelectionController extends SelectionController {
 
@@ -87,8 +89,9 @@ public abstract class AbstractSDSelectionController extends SelectionController 
 
     private void editActorInstance(ActorInstanceGR actorInstance) {
         CentralRepository repository = model.getCentralRepository();
-        ActorInstanceEditor actorInstanceEditor = new ActorInstanceEditor(actorInstance, repository);
         ActorInstance originalActorInstance = actorInstance.getActorInstance();
+        ActorInstanceEditor actorInstanceEditor = new ActorInstanceEditor(repository);
+        actorInstanceEditor.initialize(originalActorInstance);
 
         // UNDO/REDO
         ActorInstance undoActorInstance = originalActorInstance.clone();
@@ -140,22 +143,22 @@ public abstract class AbstractSDSelectionController extends SelectionController 
 
     private void editCallMessage(CallMessageGR messageGR) {
         CallMessage message = messageGR.getCallMessage();
-        CallMessageEditor callMessageEditor = new CallMessageEditor(parentComponent, "Call Message Editor",
-                message, model.getCentralRepository());
+        CallMessageEditor callMessageEditor = new CallMessageEditor(model.getCentralRepository());
 
         CallMessage undoCallMessage = message.clone();
 
         // if user presses cancel don't do anything
-        if (!callMessageEditor.showDialog()) {
+        CallMessage editedMessage = callMessageEditor.editDialog(message, parentComponent);
+        if (editedMessage == null) {
             return;
         }
 
-        message.setName(callMessageEditor.getCallMessageName());
-        message.setIterative(callMessageEditor.isIterative());
-        message.setReturnValue(callMessageEditor.getReturnValue());
-        message.setReturnType(callMessageEditor.getReturnType());
+        message.setName(editedMessage.getName());
+        message.setIterative(editedMessage.isIterative());
+        message.setReturnValue(editedMessage.getReturnValue());
+        message.setReturnType(editedMessage.getReturnType());
 
-        message.setParameters(callMessageEditor.getParameters());
+        message.setParameters(editedMessage.getParameters());
 
         // UNDO/REDO
         UndoableEdit edit = new EditCallMessageEdit(message, undoCallMessage, model);

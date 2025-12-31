@@ -43,14 +43,13 @@ public class CCDSelectionController extends SelectionController {
     private void editClass(ConceptualClassGR classGR) {
         CentralRepository repository = model.getCentralRepository();
         ConceptualClass originalClass = classGR.getConceptualClass();
-        ConceptualClassEditor classEditor = new ConceptualClassEditor(originalClass, repository);
+        ConceptualClassEditor classEditor = new ConceptualClassEditor(repository);
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classEditor.showDialog(parentComponent, "Conceptual Class Editor")) {
+        ConceptualClass newClass = classEditor.editDialog(originalClass, parentComponent);
+        if (newClass == null) {
             return;
         }
-
-        ConceptualClass newClass = classEditor.getConceptualClass();
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any conflict

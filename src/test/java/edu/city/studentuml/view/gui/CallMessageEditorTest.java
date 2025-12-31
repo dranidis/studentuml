@@ -16,10 +16,9 @@ import edu.city.studentuml.model.repository.CentralRepository;
  * Tests for CallMessageEditor using mocked showDialog() to avoid UI blocking.
  * Validates the lazy initialization pattern and the editor's ability to manage
  * call message properties (name, parameters, return value/type, iterative
- * flag).
- * 
- * Note: Tests now use CallMessage domain objects directly, not CallMessageGR graphical wrappers.
- * This follows proper MVC architecture where editors work with domain models.
+ * flag). Note: Tests now use CallMessage domain objects directly, not
+ * CallMessageGR graphical wrappers. This follows proper MVC architecture where
+ * editors work with domain models.
  * 
  * @author Dimitris Dranidis
  */

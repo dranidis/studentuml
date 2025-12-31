@@ -10,22 +10,52 @@ import java.util.Vector;
  * Editor for System Instances in Sequence Diagrams.
  * 
  * @author Dragan Bisercic
+ * @author Dimitris Dranidis
  */
 public class SystemInstanceEditor extends TypedEntityEditor<System, SystemInstance> {
 
-    private SystemInstanceGR systemInstanceGR;
-
-    public SystemInstanceEditor(SystemInstanceGR s, CentralRepository cr) {
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public SystemInstanceEditor(CentralRepository cr) {
         super(cr);
-        this.systemInstanceGR = s;
-        initialize();
     }
 
-    public void initialize() {
-        SystemInstance instance = systemInstanceGR.getSystemInstance();
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param s  The graphical system instance wrapper
+     * @param cr The central repository
+     * @deprecated Use {@link #SystemInstanceEditor(CentralRepository)} and call
+     *             {@link #initialize(SystemInstance)} instead
+     */
+    @Deprecated
+    public SystemInstanceEditor(SystemInstanceGR s, CentralRepository cr) {
+        super(cr);
+        initialize(s.getSystemInstance());
+    }
+
+    /**
+     * Initialize the editor with a system instance.
+     * 
+     * @param instance The system instance to edit
+     */
+    public void initialize(SystemInstance instance) {
         setCurrentType(instance.getSystem());
         nameField.setText(instance.getName());
         initializeTypeComboBox();
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * 
+     * @deprecated Use {@link #initialize(SystemInstance)} instead
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getSystemName() {
@@ -34,6 +64,23 @@ public class SystemInstanceEditor extends TypedEntityEditor<System, SystemInstan
 
     public System getSystem() {
         return getCurrentType();
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "System Instance Editor";
+    }
+
+    @Override
+    protected void initializeFromDomainObject(SystemInstance instance) {
+        setCurrentType(instance.getSystem());
+        nameField.setText(instance.getName());
+        initializeTypeComboBox();
+    }
+
+    @Override
+    protected SystemInstance buildDomainObject() {
+        return new SystemInstance(getEntityName(), getCurrentType());
     }
 
     @Override

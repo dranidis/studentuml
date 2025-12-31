@@ -4,11 +4,13 @@ import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 /**
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
-public class ConceptualClass extends AbstractClass {
+public class ConceptualClass extends AbstractClass implements Copyable<ConceptualClass> {
 
     public ConceptualClass(GenericClass gc) {
         super(gc);
@@ -28,6 +30,11 @@ public class ConceptualClass extends AbstractClass {
         streamer.streamObject(node, "generic", genericClass);
 
         streamer.streamObjects(streamer.addChild(node, "attributes"), attributes.iterator());
+    }
+
+    @Override
+    public ConceptualClass copyOf(ConceptualClass conceptualClass) {
+        return conceptualClass.clone();
     }
 
     public ConceptualClass clone() {

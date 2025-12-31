@@ -11,10 +11,9 @@ import edu.city.studentuml.model.repository.CentralRepository;
 /**
  * Tests for UCExtendEditor using mocked showDialog() to avoid UI blocking.
  * Validates the lazy initialization pattern and the editor's ability to manage
- * extension points for UC Extend relationships.
- * 
- * Note: Tests now use UCExtend domain objects directly, not UCExtendGR graphical wrappers.
- * This follows proper MVC architecture where editors work with domain models.
+ * extension points for UC Extend relationships. Note: Tests now use UCExtend
+ * domain objects directly, not UCExtendGR graphical wrappers. This follows
+ * proper MVC architecture where editors work with domain models.
  * 
  * @author Dimitris Dranidis
  */

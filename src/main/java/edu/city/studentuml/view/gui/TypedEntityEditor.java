@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.Editor;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -11,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,17 +27,21 @@ import javax.swing.WindowConstants;
 
 /**
  * Abstract base class for editors that manage entities with type selection.
- * Provides common functionality for: - Name field management - Type selection
- * via combo box - Add/Edit/Delete type operations - CardLayout for type options
- * panel - Repository integration
+ * Implements Editor<TypedEntityEditResult<T, D>> to provide pure,
+ * side-effect-free editing. Key features: - Name field management - Type
+ * selection via combo box - Add/Edit/Delete type operations (tracked, not
+ * immediately applied) - CardLayout for type options panel - Repository
+ * integration (read-only during editing) - Returns TypedEntityEditResult
+ * containing edited domain object + type operations Controllers apply
+ * operations atomically with proper undo/redo support.
  * 
  * @param <T> The type class (e.g., DesignClass, System, Actor)
  * @param <D> The domain object class (e.g., SDObject, SystemInstance,
  *            ActorInstance)
- * @author StudentUML Team
+ * @author Dimitris Dranidis
  */
 public abstract class TypedEntityEditor<T, D> extends JPanel
-        implements ActionListener, ItemListener {
+        implements Editor<TypedEntityEditResult<T, D>>, ActionListener, ItemListener {
 
     protected static final String UNNAMED = "(unnamed)";
 
@@ -61,6 +68,9 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     protected Vector<T> types;
     protected CentralRepository repository;
 
+    // NEW: Track type operations instead of applying them immediately
+    protected List<TypeOperation<T>> pendingOperations;
+
     /**
      * Constructor for TypedEntityEditor.
      * 
@@ -70,6 +80,7 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     public TypedEntityEditor(CentralRepository repository) {
         this.repository = repository;
         this.types = (Vector<T>) loadTypesFromRepository().clone();
+        this.pendingOperations = new ArrayList<>();
 
         setLayout(new BorderLayout());
         centerPanel = new JPanel(new GridLayout(3, 1));
@@ -159,6 +170,39 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     }
 
     /**
+     * Edit a typed entity using the Editor<T> interface pattern. This method is
+     * pure - it has no side effects on the repository. Type operations are tracked
+     * and returned for the controller to apply.
+     * 
+     * @param initial The initial result (contains domain object to edit)
+     * @param parent  The parent component for dialog positioning
+     * @return The edit result (domain object + type operations), or null if
+     *         cancelled
+     */
+    @Override
+    public TypedEntityEditResult<T, D> editDialog(TypedEntityEditResult<T, D> initial, Component parent) {
+        // Clear pending operations from any previous edit
+        pendingOperations.clear();
+
+        // Initialize from the domain object
+        D domainObject = initial.getDomainObject();
+        initializeFromDomainObject(domainObject);
+
+        // Show the dialog
+        boolean confirmed = showDialog(parent, getDialogTitle());
+
+        if (!confirmed) {
+            return null; // User cancelled
+        }
+
+        // Build the new domain object from editor state
+        D newDomainObject = buildDomainObject();
+
+        // Return result with domain object and pending operations
+        return new TypedEntityEditResult<>(newDomainObject, pendingOperations);
+    }
+
+    /**
      * Initialize the editor with current entity data. Populates the type combo box
      * and sets initial values.
      */
@@ -191,7 +235,7 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     }
 
     /**
-     * Add a new type to the repository.
+     * Add a new type (tracked as pending operation, not immediately applied).
      * 
      * @return The name of the newly created type, or null if cancelled/failed
      */
@@ -209,17 +253,19 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
                 && !getTypeName(newType).equals("")) {
             JOptionPane.showMessageDialog(null,
                     getTypeExistsMessage(),
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+                    "Cannot Add", JOptionPane.ERROR_MESSAGE);
             return null;
         } else {
             types.add(newType);
-            addTypeToRepository(newType);
+            // Track operation instead of applying it
+            pendingOperations.add(TypeOperation.add(newType));
             return getTypeName(newType);
         }
     }
 
     /**
-     * Edit an existing type.
+     * Edit an existing type (tracked as pending operation, not immediately
+     * applied).
      * 
      * @param type The type to edit
      * @return The name of the edited type, or null if cancelled/failed
@@ -232,9 +278,6 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
             return null;
         }
 
-        // Ensure the type exists in repository
-        addTypeToRepository(type);
-
         T newType = createTypeFromName(stringEditorDialog.getText());
 
         if (!getTypeName(type).equals(getTypeName(newType))
@@ -245,7 +288,8 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
                     "Cannot Edit", JOptionPane.ERROR_MESSAGE);
             return null;
         } else {
-            editTypeInRepository(type, newType);
+            // Track operation instead of applying it
+            pendingOperations.add(TypeOperation.edit(type, newType));
             return getTypeName(newType);
         }
     }
@@ -293,7 +337,7 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     }
 
     /**
-     * Delete the currently selected type.
+     * Delete the currently selected type (tracked as pending operation).
      */
     protected void deleteType() {
         if (typeComboBox.getSelectedItem().equals(UNNAMED)) {
@@ -309,7 +353,8 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
         }
         T type = getTypeFromRepository(typeComboBox.getSelectedItem().toString());
         types.remove(type);
-        removeTypeFromRepository(type);
+        // Track operation instead of applying it
+        pendingOperations.add(TypeOperation.delete(type));
     }
 
     /**
@@ -368,6 +413,29 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
     }
 
     // Abstract methods to be implemented by subclasses
+
+    /**
+     * Get the dialog title for editing.
+     * 
+     * @return The dialog title (e.g., "Object Editor", "Actor Instance Editor")
+     */
+    protected abstract String getDialogTitle();
+
+    /**
+     * Initialize the editor from a domain object. Should set currentType and
+     * nameField from the domain object.
+     * 
+     * @param domainObject The domain object to initialize from
+     */
+    protected abstract void initializeFromDomainObject(D domainObject);
+
+    /**
+     * Build a new domain object from the current editor state. Should construct the
+     * domain object using nameField.getText() and currentType.
+     * 
+     * @return A new domain object with the edited values
+     */
+    protected abstract D buildDomainObject();
 
     /**
      * Get the label for the name field.

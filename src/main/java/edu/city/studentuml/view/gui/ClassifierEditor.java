@@ -135,6 +135,20 @@ public abstract class ClassifierEditor extends JPanel implements ActionListener 
         }
     }
 
+    /**
+     * Sets the classifier name in the appropriate name field. This method is for
+     * use by subclasses implementing Editor<T> pattern.
+     * 
+     * @param name the name to set
+     */
+    protected void setClassifierName(String name) {
+        if (autoComplete) {
+            autoNameField.setSelectedItem(name);
+        } else {
+            nameField.setText(name);
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == cancelButton) {

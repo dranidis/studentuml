@@ -34,6 +34,7 @@ import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public class ADSelectionController extends SelectionController {
 
@@ -183,8 +184,9 @@ public class ADSelectionController extends SelectionController {
 
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
-        ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(objectNodeGR, repository);
         ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
+        ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(repository);
+        objectNodeEditor.initialize(objectNode);
 
         // show the object node editor dialog and check whether the user has pressed cancel
         if (!objectNodeEditor.showDialog(parentComponent, "Object Node Editor")) {

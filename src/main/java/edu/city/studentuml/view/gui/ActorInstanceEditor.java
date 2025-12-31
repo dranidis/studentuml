@@ -9,23 +9,52 @@ import java.util.Vector;
 /**
  * Editor for Actor Instances in Sequence Diagrams.
  *
- * @author Dragan Bisercic
+ * @author Dimitris Dranidis
  */
 public class ActorInstanceEditor extends TypedEntityEditor<Actor, ActorInstance> {
 
-    private ActorInstanceGR actorInstanceGR;
-
-    public ActorInstanceEditor(ActorInstanceGR ai, CentralRepository cr) {
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public ActorInstanceEditor(CentralRepository cr) {
         super(cr);
-        this.actorInstanceGR = ai;
-        initialize();
     }
 
-    public void initialize() {
-        ActorInstance actorInstance = actorInstanceGR.getActorInstance();
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param ai The graphical actor instance wrapper
+     * @param cr The central repository
+     * @deprecated Use {@link #ActorInstanceEditor(CentralRepository)} and call
+     *             {@link #initialize(ActorInstance)} instead
+     */
+    @Deprecated
+    public ActorInstanceEditor(ActorInstanceGR ai, CentralRepository cr) {
+        super(cr);
+        initialize(ai.getActorInstance());
+    }
+
+    /**
+     * Initialize the editor with an actor instance.
+     * 
+     * @param actorInstance The actor instance to edit
+     */
+    public void initialize(ActorInstance actorInstance) {
         setCurrentType(actorInstance.getActor());
         nameField.setText(actorInstance.getName());
         initializeTypeComboBox();
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * 
+     * @deprecated Use {@link #initialize(ActorInstance)} instead
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getActorInstanceName() {
@@ -34,6 +63,23 @@ public class ActorInstanceEditor extends TypedEntityEditor<Actor, ActorInstance>
 
     public Actor getActor() {
         return getCurrentType();
+    }
+
+    @Override
+    protected String getDialogTitle() {
+        return "Actor Instance Editor";
+    }
+
+    @Override
+    protected void initializeFromDomainObject(ActorInstance actorInstance) {
+        setCurrentType(actorInstance.getActor());
+        nameField.setText(actorInstance.getName());
+        initializeTypeComboBox();
+    }
+
+    @Override
+    protected ActorInstance buildDomainObject() {
+        return new ActorInstance(getEntityName(), getCurrentType());
     }
 
     @Override

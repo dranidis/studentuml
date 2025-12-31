@@ -4,7 +4,6 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Actor;
-import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UseCase;
@@ -26,6 +25,7 @@ import edu.city.studentuml.view.gui.UCExtendEditor;
 
 /**
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
 public class UCDSelectionController extends SelectionController {
 
@@ -42,13 +42,12 @@ public class UCDSelectionController extends SelectionController {
     private void editActor(UCActorGR uCActorGR) {
         CentralRepository repository = model.getCentralRepository();
         Actor originalActor = (Actor) uCActorGR.getComponent();
-        ActorEditor actorEditor = new ActorEditor(originalActor, repository);
+        ActorEditor actorEditor = new ActorEditor(repository);
 
-        if (!actorEditor.showDialog(parentComponent, "Actor Editor")) {
+        Actor newActor = actorEditor.editDialog(originalActor, parentComponent);
+        if (newActor == null) {
             return;
         }
-
-        Actor newActor = actorEditor.getActor();
 
         if (!originalActor.getName().equals(newActor.getName()) && repository.getActor(newActor.getName()) != null
                 && !newActor.getName().equals("")) {
@@ -128,16 +127,11 @@ public class UCDSelectionController extends SelectionController {
 
     private void editExtend(UCExtendGR link) {
         UCExtend originalUCExtend = (UCExtend) link.getLink();
-        UCExtendEditor ucExtendEditor = new UCExtendEditor(parentComponent, "Use Case Extend Editor",
-                originalUCExtend, model.getCentralRepository());
-        if (!ucExtendEditor.showDialog()) {
-            return;
-        }
+        UCExtendEditor ucExtendEditor = new UCExtendEditor(model.getCentralRepository());
 
-        UCExtend newUCExtend = new UCExtend((UseCase) originalUCExtend.getSource(),
-                (UseCase) originalUCExtend.getTarget());
-        for (ExtensionPoint ep : ucExtendEditor.getExtensionPoints()) {
-            newUCExtend.addExtensionPoint(ep.clone());
+        UCExtend newUCExtend = ucExtendEditor.editDialog(originalUCExtend, parentComponent);
+        if (newUCExtend == null) {
+            return;
         }
 
         // Undo/Redo [edit]

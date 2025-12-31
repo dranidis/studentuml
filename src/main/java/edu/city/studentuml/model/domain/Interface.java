@@ -11,8 +11,9 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
-public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable {
+public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable, Copyable<Interface> {
 
     private NotifierVector<Method> methods;
     private String name;
@@ -80,6 +81,11 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     public void streamToXML(Element node, XMLStreamer streamer) {
         node.setAttribute("name", getName());
         streamer.streamObjects(streamer.addChild(node, "methods"), methods.iterator());
+    }
+
+    @Override
+    public Interface copyOf(Interface interfaceObj) {
+        return interfaceObj.clone();
     }
 
     public Interface clone() {
