@@ -33,13 +33,21 @@ import javax.swing.undo.UndoableEdit;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.UCAssociation;
+import edu.city.studentuml.model.domain.UCExtend;
+import edu.city.studentuml.model.domain.UCGeneralization;
+import edu.city.studentuml.model.domain.UCInclude;
+import edu.city.studentuml.model.domain.AbstractAssociationClass;
+import edu.city.studentuml.model.domain.ControlFlow;
+import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.graphical.AbstractLinkGR;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
@@ -53,13 +61,18 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EndpointType;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
+import edu.city.studentuml.model.graphical.ControlFlowGR;
+import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCAssociationGR;
@@ -579,7 +592,6 @@ public abstract class SelectionController {
                 model.removeGraphicalElement(selectedElement);
             }
         }
-
     }
 
     /**
@@ -665,7 +677,10 @@ public abstract class SelectionController {
     /**
      * Copy the selected elements to the clipboard. The elements are stored in the
      * ClipboardManager for later pasting. If a composite element (e.g., System box)
-     * is selected, its child components are also included.
+     * is selected, its child components are also included. Copy the selected
+     * elements to the clipboard. The elements are stored in the ClipboardManager
+     * for later pasting. If a composite element (e.g., System box) is selected, its
+     * child components are also included.
      */
     public void copySelected() {
         if (selectedElements.isEmpty()) {
@@ -788,8 +803,9 @@ public abstract class SelectionController {
 
         // First pass: Clone non-link elements (classes, use cases, etc.)
         for (GraphicalElement originalElement : clipboardElements) {
-            // Skip links and SD messages in first pass - we'll handle them after objects are cloned
-            if (originalElement instanceof LinkGR || originalElement instanceof SDMessageGR) {
+            // Skip links, edges, and SD messages in first pass - we'll handle them after objects are cloned
+            if (originalElement instanceof LinkGR || originalElement instanceof EdgeGR
+                    || originalElement instanceof SDMessageGR) {
                 continue;
             }
 
@@ -906,6 +922,48 @@ public abstract class SelectionController {
             }
         }
 
+        // Handle edges (ControlFlowGR, ObjectFlowGR) for Activity Diagrams
+        for (GraphicalElement originalElement : clipboardElements) {
+            if (!(originalElement instanceof EdgeGR)) {
+                continue;
+            }
+
+            try {
+                EdgeGR originalEdge = (EdgeGR) originalElement;
+
+                // Get the endpoints of the original edge
+                GraphicalElement sourceNode = (GraphicalElement) originalEdge.getSource();
+                GraphicalElement targetNode = (GraphicalElement) originalEdge.getTarget();
+
+                // Check if both endpoints were copied
+                GraphicalElement clonedSource = originalToCloneMap.get(sourceNode);
+                GraphicalElement clonedTarget = originalToCloneMap.get(targetNode);
+
+                if (clonedSource instanceof NodeComponentGR && clonedTarget instanceof NodeComponentGR) {
+                    // Create new edge connecting the pasted nodes
+                    EdgeGR newEdge = createEdgeForPastedElements(
+                            originalEdge,
+                            (NodeComponentGR) clonedSource,
+                            (NodeComponentGR) clonedTarget);
+
+                    if (newEdge != null) {
+                        model.addGraphicalElement(newEdge);
+                        pastedElements.add(newEdge);
+
+                        // Create undo/redo edit and add to compound edit
+                        UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newEdge, model);
+                        compoundEdit.addEdit(addEdit);
+
+                        logger.fine("Pasted edge: " + newEdge.getClass().getSimpleName());
+                    }
+                }
+            } catch (Exception e) {
+                logger.warning(
+                        "Failed to paste edge " + originalElement.getClass().getSimpleName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
         // Third pass: Re-establish parent-child relationships for composite elements
         for (GraphicalElement originalElement : clipboardElements) {
             if (originalElement instanceof CompositeUCDElementGR) {
@@ -955,6 +1013,27 @@ public abstract class SelectionController {
             }
         }
 
+        // Fourth pass: Update UMLNote references to point to cloned elements
+        for (GraphicalElement pastedElement : pastedElements) {
+            if (pastedElement instanceof UMLNoteGR) {
+                UMLNoteGR noteGR = (UMLNoteGR) pastedElement;
+                GraphicalElement originalTarget = noteGR.getTo();
+
+                // Check if the note's target was also copied
+                GraphicalElement clonedTarget = originalToCloneMap.get(originalTarget);
+
+                if (clonedTarget != null) {
+                    // Update the note to point to the cloned element instead of the original
+                    noteGR.setTo(clonedTarget);
+                    logger.fine("Updated note reference: " + noteGR.getClass().getSimpleName() +
+                            " now points to cloned " + clonedTarget.getClass().getSimpleName());
+                } else {
+                    // The note's target was not copied, so it still points to the original element
+                    logger.fine("Note reference unchanged: target element was not copied");
+                }
+            }
+        }
+
         // End the compound edit and post it as a single undoable operation
         compoundEdit.end();
         parentComponent.getUndoSupport().postEdit(compoundEdit);
@@ -968,6 +1047,8 @@ public abstract class SelectionController {
         }
 
         logger.fine("Successfully pasted " + pastedElements.size() + " elements");
+
+        logger.fine("Successfully pasted " + pastedElements.size() + " elements");
     }
 
     /**
@@ -979,6 +1060,7 @@ public abstract class SelectionController {
      * repository when pasting links whose endpoints share domain classifiers with
      * the original.
      */
+
     private LinkGR createLinkForPastedElements(LinkGR originalLink,
             ClassifierGR newA,
             ClassifierGR newB) {
@@ -1001,30 +1083,93 @@ public abstract class SelectionController {
             // REUSE the same domain Generalization object
             return new GeneralizationGR(newA, newB, origDomain);
 
-        } else if (originalLink instanceof DependencyGR &&
-        // Dependency requires both to be DesignClass (not interfaces)
-                newA instanceof ClassGR && newB instanceof ClassGR) {
+        } else if (originalLink instanceof DependencyGR
+                // Dependency requires both to be DesignClass (not interfaces)
+                && newA instanceof ClassGR && newB instanceof ClassGR) {
             Dependency origDomain = ((DependencyGR) originalLink).getDependency();
             // REUSE the same domain Dependency object
             return new DependencyGR((ClassGR) newA, (ClassGR) newB, origDomain);
 
-        } else if (originalLink instanceof RealizationGR &&
-        // Realization requires DesignClass and Interface
-                newA instanceof ClassGR && newB instanceof InterfaceGR) {
+        } else if (originalLink instanceof RealizationGR
+                // Realization requires DesignClass and Interface
+                && newA instanceof ClassGR && newB instanceof InterfaceGR) {
             Realization origDomain = ((RealizationGR) originalLink).getRealization();
             // REUSE the same domain Realization object
             return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, origDomain);
 
-        } else if (originalLink instanceof UCAssociationGR &&
-        // Use Case Association requires UCActorGR and UseCaseGR
-                newA instanceof UCActorGR && newB instanceof UseCaseGR) {
+        } else if (originalLink instanceof UCAssociationGR
+                // Use Case Association requires UCActorGR and UseCaseGR
+                && newA instanceof UCActorGR && newB instanceof UseCaseGR) {
             UCAssociation origDomain = (UCAssociation) ((UCAssociationGR) originalLink).getLink();
             // REUSE the same domain UCAssociation object
             return new UCAssociationGR((UCActorGR) newA, (UseCaseGR) newB, origDomain);
+
+        } else if (originalLink instanceof UCIncludeGR
+                // Use Case Include requires two UseCaseGR elements
+                && newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
+            UCInclude origDomain = (UCInclude) ((UCIncludeGR) originalLink).getLink();
+            // REUSE the same domain UCInclude object
+            return new UCIncludeGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
+
+        } else if (originalLink instanceof UCExtendGR
+                // Use Case Extend requires two UseCaseGR elements
+                && newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
+            UCExtend origDomain = (UCExtend) ((UCExtendGR) originalLink).getLink();
+            // REUSE the same domain UCExtend object
+            return new UCExtendGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
+
+        } else if (originalLink instanceof UCGeneralizationGR) {
+            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR elements
+            UCGeneralization origDomain = (UCGeneralization) ((UCGeneralizationGR) originalLink).getLink();
+            // REUSE the same domain UCGeneralization object
+            if (newA instanceof UCActorGR && newB instanceof UCActorGR) {
+                return new UCGeneralizationGR((UCActorGR) newA, (UCActorGR) newB, origDomain);
+            } else if (newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
+                return new UCGeneralizationGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
+            }
+
+        } else if (originalLink instanceof AssociationClassGR) {
+            // Association Class is a composite element with both an association and a class
+            AssociationClassGR origAssocClass = (AssociationClassGR) originalLink;
+            AbstractAssociationClass origDomain = origAssocClass.getAssociationClass();
+            // REUSE the same domain AssociationClass object
+            return new AssociationClassGR(newA, newB, origDomain);
         }
 
         // Handle other link types as needed
         logger.warning("Unsupported link type for paste: " + originalLink.getClass().getName());
+        return null;
+    }
+
+    /**
+     * Creates a new edge (control flow or object flow) of the same type as the
+     * original, but connecting the newly pasted activity diagram nodes.
+     */
+    private EdgeGR createEdgeForPastedElements(EdgeGR originalEdge,
+            NodeComponentGR newSource,
+            NodeComponentGR newTarget) {
+        // Calculate connection points (use center of nodes as default)
+        java.awt.Point srcPoint = new java.awt.Point(
+                newSource.getX() + newSource.getWidth() / 2,
+                newSource.getY() + newSource.getHeight() / 2);
+        java.awt.Point trgPoint = new java.awt.Point(
+                newTarget.getX() + newTarget.getWidth() / 2,
+                newTarget.getY() + newTarget.getHeight() / 2);
+
+        // Create appropriate edge type based on the original
+        if (originalEdge instanceof ControlFlowGR) {
+            ControlFlow origDomain = (ControlFlow) ((ControlFlowGR) originalEdge).getEdge();
+            // REUSE the same domain ControlFlow object
+            return new ControlFlowGR(newSource, newTarget, origDomain, srcPoint, trgPoint);
+
+        } else if (originalEdge instanceof ObjectFlowGR) {
+            ObjectFlow origDomain = (ObjectFlow) ((ObjectFlowGR) originalEdge).getEdge();
+            // REUSE the same domain ObjectFlow object
+            return new ObjectFlowGR(newSource, newTarget, origDomain, srcPoint, trgPoint);
+        }
+
+        // Handle other edge types as needed
+        logger.warning("Unsupported edge type for paste: " + originalEdge.getClass().getName());
         return null;
     }
 
@@ -1036,7 +1181,35 @@ public abstract class SelectionController {
             RoleClassifierGR newSource,
             RoleClassifierGR newTarget) {
         // Create appropriate message type based on the original
-        if (originalMessage instanceof CallMessageGR) {
+        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends CallMessageGR)
+        if (originalMessage instanceof CreateMessageGR) {
+            CreateMessageGR origCreate = (CreateMessageGR) originalMessage;
+            CreateMessage origDomain = origCreate.getCreateMessage();
+
+            // Create new domain message with new source/target
+            CreateMessage newDomain = new CreateMessage(
+                    newSource.getRoleClassifier(),
+                    newTarget.getRoleClassifier());
+
+            // Copy properties from original
+            newDomain.setIterative(origDomain.isIterative());
+
+            for (MethodParameter p : origDomain.getParameters()) {
+                newDomain.addParameter(p.clone());
+            }
+
+            if (origDomain.getReturnValue() != null) {
+                newDomain.setReturnValue(
+                        new edu.city.studentuml.model.domain.MessageReturnValue(
+                                origDomain.getReturnValue().getName()));
+            }
+
+            newDomain.setReturnType(origDomain.getReturnType());
+
+            // Create new graphical create message with cloned endpoints
+            return new CreateMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
+
+        } else if (originalMessage instanceof CallMessageGR) {
             CallMessageGR origCall = (CallMessageGR) originalMessage;
             CallMessage origDomain = origCall.getCallMessage();
 
@@ -1063,6 +1236,18 @@ public abstract class SelectionController {
 
             // Create new graphical message with cloned endpoints
             return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
+
+        } else if (originalMessage instanceof DestroyMessageGR) {
+            DestroyMessageGR origDestroy = (DestroyMessageGR) originalMessage;
+            DestroyMessage origDomain = origDestroy.getDestroyMessage();
+
+            // Create new domain message with new source/target
+            DestroyMessage newDomain = new DestroyMessage(
+                    newSource.getRoleClassifier(),
+                    newTarget.getRoleClassifier());
+
+            // Create new graphical message with cloned endpoints
+            return new DestroyMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
 
         } else if (originalMessage instanceof ReturnMessageGR) {
             ReturnMessageGR origReturn = (ReturnMessageGR) originalMessage;

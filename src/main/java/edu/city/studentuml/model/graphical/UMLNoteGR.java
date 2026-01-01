@@ -220,6 +220,10 @@ public class UMLNoteGR extends GraphicalElement {
         return to;
     }
 
+    public void setTo(GraphicalElement to) {
+        this.to = to;
+    }
+
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
