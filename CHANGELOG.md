@@ -1,5 +1,17 @@
 # StudentUML Changelog
 
+## [1.4.1] - 2026-01-01
+
+### Fixed
+
+-   Copy/paste support for AssociationClassGR in Design Class Diagrams
+-   Copy/paste support for UCIncludeGR, UCExtendGR, and UCGeneralizationGR in Use Case Diagrams
+-   Copy/paste support for ControlFlowGR and ObjectFlowGR in Activity Diagrams
+-   Copy/paste type preservation for CreateMessageGR in Sequence Diagrams
+-   Copy/paste support for DestroyMessageGR in Sequence Diagrams
+-   UMLNote linking after paste - notes now correctly reference pasted elements instead of originals
+-   Activity Diagram crash (IndexOutOfBoundsException) when pasting edges without connection points
+
 ## [1.4.0] - 2025-12-22
 
 ### Added
