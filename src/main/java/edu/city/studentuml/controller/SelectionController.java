@@ -932,6 +932,27 @@ public abstract class SelectionController {
             }
         }
 
+        // Fourth pass: Update UMLNote references to point to cloned elements
+        for (GraphicalElement pastedElement : pastedElements) {
+            if (pastedElement instanceof UMLNoteGR) {
+                UMLNoteGR noteGR = (UMLNoteGR) pastedElement;
+                GraphicalElement originalTarget = noteGR.getTo();
+                
+                // Check if the note's target was also copied
+                GraphicalElement clonedTarget = originalToCloneMap.get(originalTarget);
+                
+                if (clonedTarget != null) {
+                    // Update the note to point to the cloned element instead of the original
+                    noteGR.setTo(clonedTarget);
+                    logger.fine("Updated note reference: " + noteGR.getClass().getSimpleName() + 
+                               " now points to cloned " + clonedTarget.getClass().getSimpleName());
+                } else {
+                    // The note's target was not copied, so it still points to the original element
+                    logger.fine("Note reference unchanged: target element was not copied");
+                }
+            }
+        }
+
         // End the compound edit and post it as a single undoable operation
         compoundEdit.end();
         parentComponent.getUndoSupport().postEdit(compoundEdit);
@@ -1048,16 +1069,26 @@ public abstract class SelectionController {
     private EdgeGR createEdgeForPastedElements(EdgeGR originalEdge,
             NodeComponentGR newSource,
             NodeComponentGR newTarget) {
+        // Calculate connection points (use center of nodes as default)
+        java.awt.Point srcPoint = new java.awt.Point(
+            newSource.getX() + newSource.getWidth() / 2,
+            newSource.getY() + newSource.getHeight() / 2
+        );
+        java.awt.Point trgPoint = new java.awt.Point(
+            newTarget.getX() + newTarget.getWidth() / 2,
+            newTarget.getY() + newTarget.getHeight() / 2
+        );
+        
         // Create appropriate edge type based on the original
         if (originalEdge instanceof ControlFlowGR) {
             ControlFlow origDomain = (ControlFlow) ((ControlFlowGR) originalEdge).getEdge();
             // REUSE the same domain ControlFlow object
-            return new ControlFlowGR(newSource, newTarget, origDomain);
+            return new ControlFlowGR(newSource, newTarget, origDomain, srcPoint, trgPoint);
 
         } else if (originalEdge instanceof ObjectFlowGR) {
             ObjectFlow origDomain = (ObjectFlow) ((ObjectFlowGR) originalEdge).getEdge();
             // REUSE the same domain ObjectFlow object
-            return new ObjectFlowGR(newSource, newTarget, origDomain);
+            return new ObjectFlowGR(newSource, newTarget, origDomain, srcPoint, trgPoint);
         }
 
         // Handle other edge types as needed
