@@ -34,6 +34,7 @@ import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.MethodParameter;
@@ -68,6 +69,7 @@ import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCAssociationGR;
@@ -1159,6 +1161,18 @@ public abstract class SelectionController {
 
             // Create new graphical message with cloned endpoints
             return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
+
+        } else if (originalMessage instanceof DestroyMessageGR) {
+            DestroyMessageGR origDestroy = (DestroyMessageGR) originalMessage;
+            DestroyMessage origDomain = origDestroy.getDestroyMessage();
+
+            // Create new domain message with new source/target
+            DestroyMessage newDomain = new DestroyMessage(
+                    newSource.getRoleClassifier(),
+                    newTarget.getRoleClassifier());
+
+            // Create new graphical message with cloned endpoints
+            return new DestroyMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
 
         } else if (originalMessage instanceof ReturnMessageGR) {
             ReturnMessageGR origReturn = (ReturnMessageGR) originalMessage;
