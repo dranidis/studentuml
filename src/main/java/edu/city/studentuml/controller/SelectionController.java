@@ -32,6 +32,7 @@ import javax.swing.undo.UndoableEdit;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.CallMessage;
+import edu.city.studentuml.model.domain.CreateMessage;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericOperation;
@@ -66,6 +67,7 @@ import edu.city.studentuml.model.graphical.RealizationGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCAssociationGR;
@@ -672,7 +674,7 @@ public abstract class SelectionController {
             return;
         }
 
-        logger.info("Pasting " + clipboardElements.size() + " elements from clipboard");
+        logger.fine("Pasting " + clipboardElements.size() + " elements from clipboard");
 
         // Calculate the bounding box of the original elements (find top-left corner)
         int minX = Integer.MAX_VALUE;
@@ -828,7 +830,7 @@ public abstract class SelectionController {
                             UndoableEdit addEdit = new edu.city.studentuml.util.undoredo.AddEdit(newMessage, model);
                             compoundEdit.addEdit(addEdit);
 
-                            logger.info("Pasted SD message: " + newMessage.getClass().getSimpleName() +
+                            logger.fine("Pasted SD message: " + newMessage.getClass().getSimpleName() +
                                     " connecting " + clonedSource.getClass().getSimpleName() +
                                     " to " + clonedTarget.getClass().getSimpleName());
                         }
@@ -937,15 +939,15 @@ public abstract class SelectionController {
             if (pastedElement instanceof UMLNoteGR) {
                 UMLNoteGR noteGR = (UMLNoteGR) pastedElement;
                 GraphicalElement originalTarget = noteGR.getTo();
-                
+
                 // Check if the note's target was also copied
                 GraphicalElement clonedTarget = originalToCloneMap.get(originalTarget);
-                
+
                 if (clonedTarget != null) {
                     // Update the note to point to the cloned element instead of the original
                     noteGR.setTo(clonedTarget);
-                    logger.fine("Updated note reference: " + noteGR.getClass().getSimpleName() + 
-                               " now points to cloned " + clonedTarget.getClass().getSimpleName());
+                    logger.fine("Updated note reference: " + noteGR.getClass().getSimpleName() +
+                            " now points to cloned " + clonedTarget.getClass().getSimpleName());
                 } else {
                     // The note's target was not copied, so it still points to the original element
                     logger.fine("Note reference unchanged: target element was not copied");
@@ -965,7 +967,7 @@ public abstract class SelectionController {
             selectedElements.add(pastedElement);
         }
 
-        logger.info("Successfully pasted " + pastedElements.size() + " elements");
+        logger.fine("Successfully pasted " + pastedElements.size() + " elements");
     }
 
     /**
@@ -1071,14 +1073,12 @@ public abstract class SelectionController {
             NodeComponentGR newTarget) {
         // Calculate connection points (use center of nodes as default)
         java.awt.Point srcPoint = new java.awt.Point(
-            newSource.getX() + newSource.getWidth() / 2,
-            newSource.getY() + newSource.getHeight() / 2
-        );
+                newSource.getX() + newSource.getWidth() / 2,
+                newSource.getY() + newSource.getHeight() / 2);
         java.awt.Point trgPoint = new java.awt.Point(
-            newTarget.getX() + newTarget.getWidth() / 2,
-            newTarget.getY() + newTarget.getHeight() / 2
-        );
-        
+                newTarget.getX() + newTarget.getWidth() / 2,
+                newTarget.getY() + newTarget.getHeight() / 2);
+
         // Create appropriate edge type based on the original
         if (originalEdge instanceof ControlFlowGR) {
             ControlFlow origDomain = (ControlFlow) ((ControlFlowGR) originalEdge).getEdge();
@@ -1104,7 +1104,35 @@ public abstract class SelectionController {
             RoleClassifierGR newSource,
             RoleClassifierGR newTarget) {
         // Create appropriate message type based on the original
-        if (originalMessage instanceof CallMessageGR) {
+        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends CallMessageGR)
+        if (originalMessage instanceof CreateMessageGR) {
+            CreateMessageGR origCreate = (CreateMessageGR) originalMessage;
+            CreateMessage origDomain = origCreate.getCreateMessage();
+
+            // Create new domain message with new source/target
+            CreateMessage newDomain = new CreateMessage(
+                    newSource.getRoleClassifier(),
+                    newTarget.getRoleClassifier());
+
+            // Copy properties from original
+            newDomain.setIterative(origDomain.isIterative());
+
+            for (MethodParameter p : origDomain.getParameters()) {
+                newDomain.addParameter(p.clone());
+            }
+
+            if (origDomain.getReturnValue() != null) {
+                newDomain.setReturnValue(
+                        new edu.city.studentuml.model.domain.MessageReturnValue(
+                                origDomain.getReturnValue().getName()));
+            }
+
+            newDomain.setReturnType(origDomain.getReturnType());
+
+            // Create new graphical create message with cloned endpoints
+            return new CreateMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
+
+        } else if (originalMessage instanceof CallMessageGR) {
             CallMessageGR origCall = (CallMessageGR) originalMessage;
             CallMessage origDomain = origCall.getCallMessage();
 
