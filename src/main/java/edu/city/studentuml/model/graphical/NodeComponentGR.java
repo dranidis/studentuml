@@ -7,8 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.controller.EditContext;
 import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.util.Coverable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * @author Biser
@@ -115,6 +120,91 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
     protected abstract int calculateWidth(Graphics2D g);
 
     protected abstract int calculateHeight(Graphics2D g);
+
+    /**
+     * Template method for editing a node component's name using a
+     * StringEditorDialog. This implements Pattern 1 (Simple Domain Edit) for domain
+     * objects that have a name property.
+     * <p>
+     * The workflow is:
+     * </p>
+     * <ol>
+     * <li>Show StringEditorDialog with the provided title and label</li>
+     * <li>If cancelled, return false</li>
+     * <li>Clone the domain object for undo/redo</li>
+     * <li>Apply the new name via setName()</li>
+     * <li>Create and post the UndoableEdit (provided by subclass)</li>
+     * <li>Notify model changed and reload name pool</li>
+     * <li>Return true</li>
+     * </ol>
+     * 
+     * @param context             the edit context providing access to model,
+     *                            repository, parent component, and undo support
+     * @param dialogTitle         the title to display in the StringEditorDialog
+     *                            (e.g., "Activity Node Editor")
+     * @param fieldLabel          the label for the text field (e.g., "Activity
+     *                            name: ")
+     * @param undoableEditFactory a function that creates the appropriate
+     *                            UndoableEdit given the original and cloned domain
+     *                            objects
+     * @return true if the edit was successful and applied, false if cancelled
+     */
+    protected boolean editNameWithDialog(
+            EditContext context,
+            String dialogTitle,
+            String fieldLabel,
+            UndoableEditFactory undoableEditFactory) {
+
+        NodeComponent domainObject = getComponent();
+
+        // Show the string editor dialog
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(
+                context.getParentComponent(),
+                dialogTitle,
+                fieldLabel,
+                domainObject.getName());
+
+        // Check whether the user has pressed cancel
+        if (!stringEditorDialog.showDialog()) {
+            return false;
+        }
+
+        // Clone domain object for undo/redo before applying changes
+        NodeComponent undoDomainObject = (NodeComponent) domainObject.clone();
+
+        // Apply the changes to the domain object
+        String newName = stringEditorDialog.getText();
+        domainObject.setName(newName);
+
+        // Create undo/redo support using the factory provided by subclass
+        UndoableEdit edit = undoableEditFactory.create(domainObject, undoDomainObject, context.getModel());
+        context.getUndoSupport().postEdit(edit);
+
+        // Notify observers that the model has changed
+        context.notifyModelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true;
+    }
+
+    /**
+     * Functional interface for creating UndoableEdit instances. This allows
+     * subclasses to provide their specific UndoableEdit implementation while
+     * reusing the common editing workflow.
+     */
+    @FunctionalInterface
+    protected interface UndoableEditFactory {
+        /**
+         * Creates an UndoableEdit for the given domain objects.
+         * 
+         * @param original the original domain object being edited
+         * @param undo     the cloned domain object for undo operations
+         * @param model    the diagram model
+         * @return the UndoableEdit instance
+         */
+        UndoableEdit create(NodeComponent original, NodeComponent undo,
+                DiagramModel model);
+    }
 
     @Override
     public String toString() {

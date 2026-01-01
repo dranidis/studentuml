@@ -4,8 +4,6 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-import edu.city.studentuml.model.domain.ActionNode;
-import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.DecisionNode;
 import edu.city.studentuml.model.domain.DesignClass;
@@ -13,20 +11,14 @@ import edu.city.studentuml.model.domain.Edge;
 import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.ObjectNode;
-import edu.city.studentuml.model.graphical.ActionNodeGR;
-import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
-import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.DesignClassRepositoryOperations;
-import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
-import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
-import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
 import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
@@ -49,10 +41,8 @@ public class ADSelectionController extends SelectionController {
         super(parent, model);
         editElementMapper.put(ControlFlowGR.class, el -> editControlFlow((ControlFlowGR) el));
         editElementMapper.put(ObjectFlowGR.class, el -> editObjectFlow((ObjectFlowGR) el));
-        editElementMapper.put(ActionNodeGR.class, el -> editActionNode((ActionNodeGR) el));
         editElementMapper.put(ObjectNodeGR.class, el -> editObjectNode((ObjectNodeGR) el));
-        editElementMapper.put(ActivityNodeGR.class, el -> editActivityNode((ActivityNodeGR) el));
-        editElementMapper.put(DecisionNodeGR.class, el -> editDecisionNode((DecisionNodeGR) el));
+        // ActivityNodeGR, DecisionNodeGR, and ActionNodeGR now use polymorphic edit() method
     }
 
     private void editControlFlow(ControlFlowGR controlFlowGR) {
@@ -162,32 +152,6 @@ public class ADSelectionController extends SelectionController {
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    private void editActionNode(ActionNodeGR actionNodeGR) {
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Action Node Editor",
-                "Action name: ",
-                actionNodeGR.getComponent().getName());
-        ActionNode actionNode = (ActionNode) actionNodeGR.getComponent();
-
-        // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-
-        // Undo/Redo
-        ActionNode undoActionNode = (ActionNode) actionNode.clone();
-
-        String actionName = stringEditorDialog.getText();
-        actionNode.setName(actionName);
-
-        // Undo/Redo
-        UndoableEdit edit = new EditActionNodeEdit(actionNode, undoActionNode, model);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
         ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
@@ -240,58 +204,4 @@ public class ADSelectionController extends SelectionController {
         model.modelChanged();
         SystemWideObjectNamePool.getInstance().reload();
     }
-
-    private void editActivityNode(ActivityNodeGR activityNodeGR) {
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Activity Node Editor",
-                "Activity name: ",
-                activityNodeGR.getComponent().getName());
-
-        ActivityNode activityNode = (ActivityNode) activityNodeGR.getComponent();
-
-        // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-
-        // Undo/Redo
-        ActivityNode undoActivityNode = (ActivityNode) activityNode.clone();
-
-        String activityName = stringEditorDialog.getText();
-        activityNode.setName(activityName);
-
-        // Undo/Redo
-        UndoableEdit edit = new EditActivityNodeEdit(activityNode, undoActivityNode, model);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
-    private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
-        DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getComponent();
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Decision Node Editor",
-                "Decision name: ",
-                decisionNode.getName());
-
-        // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-
-        // Undo/Redo
-        DecisionNode undoDecisionNode = (DecisionNode) decisionNode.clone();
-
-        String decisionName = stringEditorDialog.getText();
-        decisionNode.setName(decisionName);
-
-        // Undo/Redo
-        UndoableEdit edit = new EditDecisionNodeEdit(decisionNode, undoDecisionNode, model);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
 }

@@ -29,18 +29,17 @@ public class CCDSelectionControllerTest {
         model = new CCDModel("ccd", umlProject);
         ccdInternalFrame = new CCDInternalFrame(model);
         h = new Helper(model);
-        selectionController  = new CCDSelectionController(ccdInternalFrame, model);
+        selectionController = new CCDSelectionController(ccdInternalFrame, model);
     }
 
     @Test
     public void testCreation() {
-        
+
         assertNotNull(selectionController);
     }
 
     @Test
     public void testDeleteElementUndo() {
-        
 
         /**
          * Adds a conceptual class A
@@ -50,13 +49,12 @@ public class CCDSelectionControllerTest {
         selectionController.addElementToSelection(cGr);
         selectionController.deleteSelected();
 
-        assertFalse("no matches", model.getGraphicalElements().stream().anyMatch(ge -> 
-        ge instanceof ConceptualClassGR));
+        assertFalse("no matches",
+                model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR));
 
         ccdInternalFrame.getUndoManager().undo();
 
-        assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> 
-        ge instanceof ConceptualClassGR));        
+        assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR));
     }
 
     @Test
@@ -102,7 +100,32 @@ public class CCDSelectionControllerTest {
 
         assertTrue("found", model.getGraphicalElements().stream().anyMatch(ge -> ge instanceof ConceptualClassGR));
         assertEquals(7, h.countRelationshipsWithClassNamed("A"));
-    }  
-    
+    }
+
+    @Test
+    public void testConceptualClassEdit_withPolymorphicMethod() {
+        // This test verifies that ConceptualClassGR.edit() method exists and accepts EditContext
+        // We cannot test the actual dialog interaction in headless mode
+
+        // Verify the polymorphic edit() method exists and has correct signature
+        try {
+            java.lang.reflect.Method editMethod = ConceptualClassGR.class.getMethod("edit", EditContext.class);
+            assertNotNull("ConceptualClassGR should have edit(EditContext) method", editMethod);
+            assertEquals("edit() should return boolean", boolean.class, editMethod.getReturnType());
+
+            // Verify EditContext can be created with correct dependencies
+            EditContext context = new EditContext(model, ccdInternalFrame);
+            assertNotNull("EditContext should be created successfully", context);
+            assertEquals("EditContext should provide correct model", model, context.getModel());
+            assertEquals("EditContext should provide correct repository",
+                    model.getCentralRepository(), context.getRepository());
+            assertEquals("EditContext should provide correct parent component",
+                    ccdInternalFrame, context.getParentComponent());
+            assertNotNull("EditContext should provide undo support", context.getUndoSupport());
+
+        } catch (NoSuchMethodException e) {
+            assertTrue("ConceptualClassGR should have edit(EditContext) method", false);
+        }
+    }
 
 }

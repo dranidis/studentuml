@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import edu.city.studentuml.controller.EditContext;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotStreamable;
@@ -116,15 +117,59 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     public abstract void move(int x, int y);
 
     public abstract boolean contains(Point2D p);
-    
+
     /**
-     * Creates a deep copy of this graphical element.
-     * The clone should include a cloned domain object and copied visual properties,
-     * but should not copy relationships to other elements or selection state.
+     * Creates a deep copy of this graphical element. The clone should include a
+     * cloned domain object and copied visual properties, but should not copy
+     * relationships to other elements or selection state.
      * 
      * @return a new GraphicalElement that is a copy of this instance
      */
     public abstract GraphicalElement clone();
+
+    /**
+     * Opens an editor dialog for this graphical element, allowing the user to
+     * modify its properties. This method encapsulates the element-specific edit
+     * logic that was previously scattered across selection controller subclasses.
+     * <p>
+     * The default implementation returns {@code false}, indicating that this
+     * element type is not editable. Subclasses should override this method to
+     * provide their specific editing behavior.
+     * <p>
+     * Typical implementation pattern:
+     * <ol>
+     * <li>Clone the domain object to enable undo/redo</li>
+     * <li>Open an editor dialog using {@code context.getParentComponent()}</li>
+     * <li>If the user confirms changes, apply them to the domain object</li>
+     * <li>Create and add an appropriate UndoableEdit via
+     * {@code context.getUndoSupport()}</li>
+     * <li>Call {@code context.notifyModelChanged()} to trigger observer
+     * updates</li>
+     * <li>Return {@code true} to indicate successful edit</li>
+     * </ol>
+     * <p>
+     * Example usage in a controller:
+     * 
+     * <pre>
+     * EditContext context = new EditContext(model, repository, parentComponent, undoSupport);
+     * if (element.edit(context)) {
+     *     // Edit was successful and applied
+     * } else {
+     *     // Edit was cancelled or element is not editable
+     * }
+     * </pre>
+     * 
+     * @param context the edit context providing access to model, repository, parent
+     *                component, and undo support
+     * @return {@code true} if the element was successfully edited and changes were
+     *         applied, {@code false} if the edit was cancelled or the element is
+     *         not editable
+     * @since 1.5.0
+     */
+    public boolean edit(EditContext context) {
+        // Default implementation: element is not editable
+        return false;
+    }
 
     public boolean containedInArea(int x, int y, int toX, int toY) {
         Rectangle2D b = getBounds();
@@ -136,7 +181,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         String uid = node.getAttribute("uid");
 
         if (uid != null && uid.equals("")) {
@@ -156,5 +201,4 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
     public String toString() {
         return "[" + getX() + ", " + getY() + "][" + getWidth() + ", " + getHeight() + "]";
     }
-    
 }

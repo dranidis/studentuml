@@ -20,7 +20,6 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR {
@@ -110,7 +109,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         currentY = nameFieldHeight + 2;
 
-        for(Attribute a: abstractClass.getAttributes()) {
+        for (Attribute a : abstractClass.getAttributes()) {
             String name = a.toString();
             Rectangle2D bounds = GraphicsHelper.getTextBounds(name, attributeFont, frc);
             int attributeX = ATTRIBUTEFIELDXOFFSET - (int) bounds.getX();
@@ -118,7 +117,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
             g.drawString(name, startingX + attributeX, startingY + attributeY);
             currentY = currentY + ATTRIBUTEFIELDYOFFSET + (int) bounds.getHeight();
         }
-        
+
         currentY = nameFieldHeight + attributeFieldHeight + 2;
         drawMethods(g, frc, startingX, startingY, currentY);
     }
@@ -167,7 +166,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         newWidth = calculateStereotypeWidth(g, newWidth);
 
         // consider attribute text dimensions
-        for(Attribute a: abstractClass.getAttributes()) {
+        for (Attribute a : abstractClass.getAttributes()) {
             Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, frc);
             int attributeWidth = (int) bounds.getWidth() + 2 * ATTRIBUTEFIELDXOFFSET;
 
@@ -207,7 +206,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider name text dimensions
         if (!abstractClass.getName().equals("")) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont,
+                    g.getFontRenderContext());
 
             height = height + (int) bounds.getHeight() + (2 * NAMEFIELDYOFFSET);
         }
@@ -227,10 +227,10 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     public int calculateAttributeFieldHeight(Graphics2D g) {
         int height = 0;
 
-        for(Attribute a: abstractClass.getAttributes()) {
+        for (Attribute a : abstractClass.getAttributes()) {
             Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, g.getFontRenderContext());
 
-            height += (int) bounds.getHeight() + ATTRIBUTEFIELDYOFFSET; 
+            height += (int) bounds.getHeight() + ATTRIBUTEFIELDYOFFSET;
         }
 
         height += ATTRIBUTEFIELDYOFFSET;
@@ -253,7 +253,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     }
 
     @Override
-    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable  {
+    public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         super.streamFromXML(node, streamer, instance);
         startingPoint.x = Integer.parseInt(node.getAttribute("x"));
         startingPoint.y = Integer.parseInt(node.getAttribute("y"));

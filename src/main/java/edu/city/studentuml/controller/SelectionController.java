@@ -262,6 +262,14 @@ public abstract class SelectionController {
     }
 
     private void mapeditElement(GraphicalElement element) {
+        // Try polymorphic edit() method first (new approach)
+        EditContext context = new EditContext(model, parentComponent);
+        if (element.edit(context)) {
+            // Element handled its own editing via polymorphic method
+            return;
+        }
+
+        // Fall back to legacy mapper approach for elements not yet migrated
         Consumer<GraphicalElement> editElementConsumer = editElementMapper.get(element.getClass());
         if (editElementConsumer != null) {
             editElementConsumer.accept(element);

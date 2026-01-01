@@ -18,7 +18,15 @@ import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
+import edu.city.studentuml.view.gui.InterfaceEditor;
+
+import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.model.repository.CentralRepository;
 
 /**
  * @author Ervin Ramollari
@@ -221,20 +229,69 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
 
+    /**
+     * Polymorphic edit method for InterfaceGR. Implements Pattern 2 (Name Conflict)
+     * - DCD variant (silent merge on conflict).
+     * 
+     * @param context The edit context containing model, repository, parent
+     *                component, and undo support
+     * @return true if the edit was successful, false if user cancelled
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        CentralRepository repository = context.getRepository();
+        Interface originalInterface = this.getInterface();
+        InterfaceEditor interfaceEditor = new InterfaceEditor(repository);
+
+        // show the interface editor dialog and check whether the user has pressed cancel
+        Interface newInterface = interfaceEditor.editDialog(originalInterface, context.getParentComponent());
+        if (newInterface == null) {
+            return false; // User cancelled
+        }
+
+        // Pattern 2: Name conflict handling - DCD/CCD variant (silent merge)
+        // edit the interface if there is no change in the name,
+        // or if there is a change in the name but the new name doesn't bring any conflict
+        // or if the new name is blank
+        if (!originalInterface.getName().equals(newInterface.getName())
+                && repository.getInterface(newInterface.getName()) != null
+                && !newInterface.getName().equals("")) {
+
+            // Name conflict: replace this graphical element's reference with the existing interface
+            this.setInterface(repository.getInterface(newInterface.getName()));
+
+            // remove the existing interface if it has no name
+            if (originalInterface.getName().equals("")) {
+                repository.removeInterface(originalInterface);
+            }
+        } else {
+            // No conflict: normal edit with undo/redo
+            UndoableEdit edit = new EditInterfaceEdit(originalInterface, newInterface, context.getModel());
+            repository.editInterface(originalInterface, newInterface);
+            context.getUndoSupport().postEdit(edit);
+        }
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true;
+    }
+
     @Override
     public InterfaceGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         Interface sameInterface = getInterface();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        InterfaceGR clonedGR = new InterfaceGR(sameInterface, 
-            new Point(this.startingPoint.x, this.startingPoint.y));
-        
+        InterfaceGR clonedGR = new InterfaceGR(sameInterface,
+                new Point(this.startingPoint.x, this.startingPoint.y));
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
     }
 }
