@@ -4,314 +4,152 @@ import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-
 /**
+ * Editor for System Instances in Sequence Diagrams.
+ * 
  * @author Dragan Bisercic
+ * @author Dimitris Dranidis
  */
-public class SystemInstanceEditor extends JPanel implements ActionListener, ItemListener {
+public class SystemInstanceEditor extends TypedEntityEditor<System, SystemInstance> {
 
-    private JPanel systemPanel;
-    private JLabel systemLabel;
-    private JComboBox<String> systemComboBox;
-    private JDialog systemInstanceDialog;
+    /**
+     * Constructor that accepts domain object.
+     * 
+     * @param cr The central repository
+     */
+    public SystemInstanceEditor(CentralRepository cr) {
+        super(cr);
+    }
 
-    private JPanel namePanel;
-    private JLabel nameLabel;
-    private JTextField nameField;
-
-    private final JPanel cardPanel;
-    private final JPanel nonemptyPanel;
-    private final JLabel addSystemLabel;
-
-    private JPanel centerPanel;
-    private JButton addSystemButton;
-    private JButton editSystemButton;
-    private JButton deleteSystemButton;
-
-    private JPanel bottomPanel;
-    private JButton okButton;
-    private JButton cancelButton;
-
-    private boolean ok;
-
-    private System system;
-    private Vector<System> systems;
-    private SystemInstanceGR systemInstance;
-    private CentralRepository repository;
-
-    @SuppressWarnings("unchecked")
+    /**
+     * Deprecated constructor for backward compatibility.
+     * 
+     * @param s  The graphical system instance wrapper
+     * @param cr The central repository
+     * @deprecated Use {@link #SystemInstanceEditor(CentralRepository)} and call
+     *             {@link #initialize(SystemInstance)} instead
+     */
+    @Deprecated
     public SystemInstanceEditor(SystemInstanceGR s, CentralRepository cr) {
-        systemInstance = s;
-        repository = cr;
-        systems = (Vector<System>) repository.getSystems().clone();
-        setLayout(new BorderLayout());
-
-        centerPanel = new JPanel(new GridLayout(3, 1));
-
-        namePanel = new JPanel(new FlowLayout());
-        nameLabel = new JLabel("System Instance Name: ");
-        nameField = new JTextField(15);
-        nameField.addActionListener(this);
-        namePanel.add(nameLabel);
-        namePanel.add(nameField);
-
-        systemPanel = new JPanel(new FlowLayout());
-        systemLabel = new JLabel("System: ");
-        systemComboBox = new JComboBox<>();
-        systemComboBox.setMaximumRowCount(5);
-        systemComboBox.addItemListener(this);
-        systemPanel.add(systemLabel);
-        systemPanel.add(systemComboBox);
-
-        cardPanel = new JPanel(new CardLayout());
-        nonemptyPanel = new JPanel(new FlowLayout());
-        addSystemLabel = new JLabel("System options: ");
-        addSystemButton = new JButton("Add...");
-        addSystemButton.addActionListener(this);
-        editSystemButton = new JButton("Edit...");
-        editSystemButton.addActionListener(this);
-        deleteSystemButton = new JButton("Delete");
-        deleteSystemButton.addActionListener(this);
-        nonemptyPanel.add(addSystemLabel);
-        nonemptyPanel.add(addSystemButton);
-        nonemptyPanel.add(editSystemButton);
-        nonemptyPanel.add(deleteSystemButton);
-        cardPanel.add("nonempty", nonemptyPanel);
-
-        centerPanel.add(namePanel);
-        centerPanel.add(systemPanel);
-        centerPanel.add(cardPanel);
-
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
-        FlowLayout bottomLayout = new FlowLayout();
-        bottomLayout.setHgap(20);
-        bottomPanel.setLayout(bottomLayout);
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+        super(cr);
+        initialize(s.getSystemInstance());
     }
 
-    public boolean showDialog(Component parent, String title) {
-        ok = false;
-
-        // find the owner frame
-        Frame owner = null;
-
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        }
-
-        systemInstanceDialog = new JDialog(owner, true);
-        systemInstanceDialog.getContentPane().add(this);
-        systemInstanceDialog.setTitle(title);
-        systemInstanceDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        systemInstanceDialog.pack();
-        systemInstanceDialog.setResizable(false);
-        systemInstanceDialog.setLocationRelativeTo(owner);
-        systemInstanceDialog.setVisible(true);
-
-        return ok;
-    }
-
-    public void initialize() {
-        SystemInstance instance = systemInstance.getSystemInstance();
-        system = instance.getSystem();
-
+    /**
+     * Initialize the editor with a system instance.
+     * 
+     * @param instance The system instance to edit
+     */
+    public void initialize(SystemInstance instance) {
+        setCurrentType(instance.getSystem());
         nameField.setText(instance.getName());
+        initializeTypeComboBox();
+    }
 
-        // initialize the system names combo box
-        if (!systems.contains(system)) {
-            systems.add(system);
-        }
-
-        boolean hasEmpty = false;
-        for (System s : systems) {
-            if (s != null && !s.getName().equals("")) {
-                systemComboBox.addItem(s.getName());
-            } else if (s != null) {
-                systemComboBox.addItem("(unnamed)");
-                hasEmpty = true;
-            }
-        }
-        if (!hasEmpty) {
-            systems.add(new System(""));
-            systemComboBox.addItem("(unnamed)");
-        }
-        if (system.getName().equals("")) {
-            systemComboBox.setSelectedItem("(unnamed)");
-        } else {
-            systemComboBox.setSelectedItem(system.getName());
-        }
-        updateAddSystemPanel();
+    /**
+     * Legacy method for backward compatibility.
+     * 
+     * @deprecated Use {@link #initialize(SystemInstance)} instead
+     */
+    @Deprecated
+    public void initialize() {
+        // No-op for backward compatibility
     }
 
     public String getSystemName() {
-        return nameField.getText();
+        return getEntityName();
     }
 
     public System getSystem() {
-        return system;
+        return getCurrentType();
     }
 
-    public String addNewSystem() {
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name");
-        if (systemName == null) {    // user has pressed cancel
-            return "fail";
-        }
-
-        System newSystem = new System(systemName);
-
-        if (repository.getSystem(newSystem.getName()) != null && !newSystem.getName().equals("")) {
-            JOptionPane.showMessageDialog(null,
-                    "There is an existing System with the given name already!\n",
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
-        } else {
-            systems.add(newSystem);
-            repository.addSystem(newSystem);
-            return newSystem.getName();
-        }
+    @Override
+    protected String getDialogTitle() {
+        return "System Instance Editor";
     }
 
-    // edits the given system
-    public String editSystem(System s) {
-        // show the system editor dialog
-        String systemName = JOptionPane.showInputDialog("Enter the System's Name");
-
-        if (systemName == null) {    // user has pressed cancel
-            return "fail";
-        }
-
-        // ensure that the to-be-edited system exists in the repository
-        repository.addSystem(s);
-
-        System newSystem = new System(systemName);
-
-        // edit the system if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
-        // or if the new name is blank
-        if (!s.getName().equals(newSystem.getName())
-                && repository.getSystem(newSystem.getName()) != null
-                && !newSystem.getName().equals("")) {
-            JOptionPane.showMessageDialog(null,
-                    "There is an existing system with the given name already!\n",
-                    "Cannot Edit", JOptionPane.ERROR_MESSAGE);
-            return "fail";
-        } else {
-            repository.editSystem(s, newSystem);
-            return newSystem.getName();
-        }
+    @Override
+    protected void initializeFromDomainObject(SystemInstance instance) {
+        setCurrentType(instance.getSystem());
+        nameField.setText(instance.getName());
+        initializeTypeComboBox();
     }
 
-    public void updateComboBox(String index) {
-        systemComboBox.removeAllItems();
-        for (System s : systems) {
-            if (s != null && !s.getName().equals("")) {
-                systemComboBox.addItem(s.getName());
-            } else if (s != null) {
-                systemComboBox.addItem("(unnamed)");
-            }
-        }
-        systemComboBox.setSelectedItem(index);
+    @Override
+    protected SystemInstance buildDomainObject() {
+        return new SystemInstance(getEntityName(), getCurrentType());
     }
 
-    private void setSelectedSystem() {
-        system = (System) systems.get(systemComboBox.getSelectedIndex());
+    @Override
+    protected String getNameLabel() {
+        return "System Instance Name: ";
     }
 
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == nameField) {
-            setSelectedSystem();
-            systemInstanceDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            systemInstanceDialog.setVisible(false);
-        } else if (event.getSource() == addSystemButton) {
-            String index = addNewSystem();
-            if (!index.equals("fail")) {
-                updateComboBox(index);
-                updateAddSystemPanel();
-            }
-        } else if (event.getSource() == editSystemButton) {
-            String index = editSystem((System) systems.elementAt(systemComboBox.getSelectedIndex()));
-            if (!index.equals("fail")) {
-                updateComboBox(index);
-                updateAddSystemPanel();
-            }
-        } else if (event.getSource() == deleteSystemButton) {
-            deleteSystem();
-            updateComboBox("(unnamed)");
-        }
+    @Override
+    protected String getTypeLabel() {
+        return "System: ";
     }
 
-    private void deleteSystem() {
-        if (systemComboBox.getSelectedItem().equals("(unnamed)")) {
-            return;
-        }
-        int n = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to delete this type?",
-                "Delete Type",
-                JOptionPane.YES_NO_OPTION);
-        if (n != JOptionPane.YES_OPTION) {
-            return;
-        }
-        System s = repository.getSystem(systemComboBox.getSelectedItem().toString());
-        systems.remove(s);
-        repository.removeSystem(repository.getSystem(s.getName()));
+    @Override
+    protected String getTypeOptionsLabel() {
+        return "System options: ";
     }
 
-    private void updateAddSystemPanel() {
-        String s = getSelectedItem();
-        if (s.equals("(unnamed)")) {
-            editSystemButton.setEnabled(false);
-            deleteSystemButton.setEnabled(false);
-        } else {
-            editSystemButton.setEnabled(true);
-            deleteSystemButton.setEnabled(true);
-        }
+    @Override
+    protected String getTypeEditorTitle() {
+        return "System Editor";
     }
 
-    public void itemStateChanged(ItemEvent e) {
-        updateAddSystemPanel();
+    @Override
+    protected String getTypeEditorLabel() {
+        return "System Name:";
     }
 
-    private String getSelectedItem() {
-        String s = (String) systemComboBox.getSelectedItem();
-        if (s == null) {
-            return "";
-        } else {
-            return (String) systemComboBox.getSelectedItem();
-        }
+    @Override
+    protected String getTypeExistsMessage() {
+        return "There is an existing System with the given name already!\n";
+    }
+
+    @Override
+    protected Vector<System> loadTypesFromRepository() {
+        return repository.getSystems();
+    }
+
+    @Override
+    protected System createEmptyType() {
+        return new System("");
+    }
+
+    @Override
+    protected System createTypeFromName(String name) {
+        return new System(name);
+    }
+
+    @Override
+    protected String getTypeName(System type) {
+        return type.getName();
+    }
+
+    @Override
+    protected System getTypeFromRepository(String name) {
+        return repository.getSystem(name);
+    }
+
+    @Override
+    protected void addTypeToRepository(System type) {
+        repository.addSystem(type);
+    }
+
+    @Override
+    protected void editTypeInRepository(System oldType, System newType) {
+        repository.editSystem(oldType, newType);
+    }
+
+    @Override
+    protected void removeTypeFromRepository(System type) {
+        repository.removeSystem(repository.getSystem(type.getName()));
     }
 }

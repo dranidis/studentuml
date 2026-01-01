@@ -16,13 +16,15 @@ import edu.city.studentuml.util.NotStreamable;
 /**
  * Phase 0.6: Activity Diagram Save/Load Integration Test Tests
  * serialization/deserialization of Activity Diagrams with: - All node types:
- * Initial, Action, Decision, Merge, Fork, Join, Final - Control flows with
- * guards (guarded transitions) - Note attached to action node Scenario: Order
- * Processing workflow with 12 nodes, 13 flows, 1 note Expected: All AD elements
- * correctly saved to and restored from XML with: - All nodes present with
- * correct types and positions - All control flows with correct source/target
- * and guards - Note properly attached to action node - Domain model objects
- * properly shared in central repository
+ * Initial, Action, Object Node, Decision, Merge, Fork, Join, Final - Control
+ * flows with guards (guarded transitions) - Object flows with weights and
+ * guards - Note attached to action node Scenario: Order Processing workflow
+ * with 15 nodes, 16 flows (10 control + 4 object), 1 note Expected: All AD
+ * elements correctly saved to and restored from XML with: - All nodes present
+ * with correct types and positions (including object nodes) - All control flows
+ * and object flows with correct source/target, guards, and weights - Note
+ * properly attached to action node - Domain model objects properly shared in
+ * central repository
  * 
  * @author Copilot
  */
@@ -41,56 +43,68 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
 
         // Create Action Nodes (rectangular rounded boxes with action names)
         ActionNode receiveOrder = new ActionNode("Receive Order");
-        ActionNodeGR receiveOrderGR = new ActionNodeGR(receiveOrder, 200, 130);
+        ActionNodeGR receiveOrderGR = new ActionNodeGR(receiveOrder, 200, 150);
         model.addGraphicalElement(receiveOrderGR);
 
+        // Object Node 1: Order data passed between actions
+        ObjectNode orderData = new ObjectNode();
+        orderData.setName("Order");
+        ObjectNodeGR orderDataGR = new ObjectNodeGR(orderData, 250, 230);
+        model.addGraphicalElement(orderDataGR);
+
         ActionNode validateOrder = new ActionNode("Validate Order");
-        ActionNodeGR validateOrderGR = new ActionNodeGR(validateOrder, 250, 210);
+        ActionNodeGR validateOrderGR = new ActionNodeGR(validateOrder, 250, 310);
         model.addGraphicalElement(validateOrderGR);
 
         ActionNode processPayment = new ActionNode("Process Payment");
-        ActionNodeGR processPaymentGR = new ActionNodeGR(processPayment, 150, 350);
+        ActionNodeGR processPaymentGR = new ActionNodeGR(processPayment, 100, 480);
         model.addGraphicalElement(processPaymentGR);
 
+        // Object Node 2: Payment receipt passed to next action
+        ObjectNode paymentReceipt = new ObjectNode();
+        paymentReceipt.setName("Receipt");
+        ObjectNodeGR paymentReceiptGR = new ObjectNodeGR(paymentReceipt, 150, 570);
+        model.addGraphicalElement(paymentReceiptGR);
+
         ActionNode shipOrder = new ActionNode("Ship Order");
-        ActionNodeGR shipOrderGR = new ActionNodeGR(shipOrder, 250, 490);
+        ActionNodeGR shipOrderGR = new ActionNodeGR(shipOrder, 250, 730);
         model.addGraphicalElement(shipOrderGR);
 
         ActionNode notifyCustomer = new ActionNode("Notify Customer");
-        ActionNodeGR notifyCustomerGR = new ActionNodeGR(notifyCustomer, 150, 610);
+        ActionNodeGR notifyCustomerGR = new ActionNodeGR(notifyCustomer, 120, 910);
         model.addGraphicalElement(notifyCustomerGR);
 
         ActionNode updateInventory = new ActionNode("Update Inventory");
-        ActionNodeGR updateInventoryGR = new ActionNodeGR(updateInventory, 350, 610);
+        ActionNodeGR updateInventoryGR = new ActionNodeGR(updateInventory, 380, 910);
         model.addGraphicalElement(updateInventoryGR);
 
         ActionNode handleRejection = new ActionNode("Handle Rejection");
-        ActionNodeGR handleRejectionGR = new ActionNodeGR(handleRejection, 350, 350);
+        ActionNodeGR handleRejectionGR = new ActionNodeGR(handleRejection, 400, 480);
         model.addGraphicalElement(handleRejectionGR);
 
         // Create Decision Node (diamond for branching)
         DecisionNode orderValidDecision = new DecisionNode();
-        DecisionNodeGR orderValidDecisionGR = new DecisionNodeGR(orderValidDecision, 250, 280);
+        DecisionNodeGR orderValidDecisionGR = new DecisionNodeGR(orderValidDecision, 250, 390);
         model.addGraphicalElement(orderValidDecisionGR);
 
         // Create Merge Node (diamond for merging branches)
         MergeNode mergeNode = new MergeNode();
-        MergeNodeGR mergeNodeGR = new MergeNodeGR(mergeNode, 250, 420);
+        MergeNodeGR mergeNodeGR = new MergeNodeGR(mergeNode, 250, 650);
         model.addGraphicalElement(mergeNodeGR);
 
         // Create Fork Node (thick bar for splitting into parallel flows)
         ForkNode forkNode = new ForkNode();
-        ForkNodeGR forkNodeGR = new ForkNodeGR(forkNode, 250, 560);
+        ForkNodeGR forkNodeGR = new ForkNodeGR(forkNode, 250, 820);
         model.addGraphicalElement(forkNodeGR);
 
         // Create Join Node (thick bar for synchronizing parallel flows)
         JoinNode joinNode = new JoinNode();
-        JoinNodeGR joinNodeGR = new JoinNodeGR(joinNode, 250, 680);
+        JoinNodeGR joinNodeGR = new JoinNodeGR(joinNode, 250, 1000);
         model.addGraphicalElement(joinNodeGR);
 
         // Create Activity Final Node (circle with filled inner circle)
         ActivityFinalNode finalNode = new ActivityFinalNode();
-        ActivityFinalNodeGR finalNodeGR = new ActivityFinalNodeGR(finalNode, 250, 760);
+        ActivityFinalNodeGR finalNodeGR = new ActivityFinalNodeGR(finalNode, 250, 1080);
         model.addGraphicalElement(finalNodeGR);
 
         // Create Control Flows (directed edges connecting nodes)
@@ -100,118 +114,137 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
         // Flow 1: Initial -> Receive Order
         ControlFlow cf1 = new ControlFlow(initialNode, receiveOrder);
         ControlFlowGR cf1GR = new ControlFlowGR(initialNodeGR, receiveOrderGR, cf1,
-                new Point(250, 50), new Point(200, 130));
+                new Point(250, 50), new Point(200, 150));
         model.addGraphicalElement(cf1GR);
 
-        // Flow 2: Receive Order -> Validate Order
-        ControlFlow cf2 = new ControlFlow(receiveOrder, validateOrder);
-        ControlFlowGR cf2GR = new ControlFlowGR(receiveOrderGR, validateOrderGR, cf2,
-                new Point(200, 130), new Point(250, 210));
-        model.addGraphicalElement(cf2GR);
+        // Flow 2: Receive Order -> Order (Object Flow)
+        ObjectFlow of1 = new ObjectFlow(receiveOrder, orderData);
+        of1.setWeight("1");
+        ObjectFlowGR of1GR = new ObjectFlowGR(receiveOrderGR, orderDataGR, of1,
+                new Point(200, 150), new Point(250, 230));
+        model.addGraphicalElement(of1GR);
 
-        // Flow 3: Validate Order -> Decision
+        // Flow 3: Order -> Validate Order (Object Flow)
+        ObjectFlow of2 = new ObjectFlow(orderData, validateOrder);
+        ObjectFlowGR of2GR = new ObjectFlowGR(orderDataGR, validateOrderGR, of2,
+                new Point(250, 230), new Point(250, 310));
+        model.addGraphicalElement(of2GR);
+
+        // Flow 4: Validate Order -> Decision
         ControlFlow cf3 = new ControlFlow(validateOrder, orderValidDecision);
         ControlFlowGR cf3GR = new ControlFlowGR(validateOrderGR, orderValidDecisionGR, cf3,
-                new Point(250, 210), new Point(250, 280));
+                new Point(250, 310), new Point(250, 390));
         model.addGraphicalElement(cf3GR);
 
-        // Flow 4: Decision -> Process Payment [valid]
+        // Flow 5: Decision -> Process Payment [valid]
         ControlFlow cf4 = new ControlFlow(orderValidDecision, processPayment);
         cf4.setGuard("valid");
         ControlFlowGR cf4GR = new ControlFlowGR(orderValidDecisionGR, processPaymentGR, cf4,
-                new Point(250, 280), new Point(150, 350));
+                new Point(250, 390), new Point(100, 480));
         model.addGraphicalElement(cf4GR);
 
-        // Flow 5: Decision -> Handle Rejection [invalid]
+        // Flow 6: Decision -> Handle Rejection [invalid]
         ControlFlow cf5 = new ControlFlow(orderValidDecision, handleRejection);
         cf5.setGuard("invalid");
         ControlFlowGR cf5GR = new ControlFlowGR(orderValidDecisionGR, handleRejectionGR, cf5,
-                new Point(250, 280), new Point(350, 350));
+                new Point(250, 390), new Point(400, 480));
         model.addGraphicalElement(cf5GR);
 
-        // Flow 6: Process Payment -> Merge
-        ControlFlow cf6 = new ControlFlow(processPayment, mergeNode);
-        ControlFlowGR cf6GR = new ControlFlowGR(processPaymentGR, mergeNodeGR, cf6,
-                new Point(150, 350), new Point(250, 420));
-        model.addGraphicalElement(cf6GR);
+        // Flow 7: Process Payment -> Receipt (Object Flow)
+        ObjectFlow of3 = new ObjectFlow(processPayment, paymentReceipt);
+        of3.setWeight("1");
+        of3.setGuard("payment successful");
+        ObjectFlowGR of3GR = new ObjectFlowGR(processPaymentGR, paymentReceiptGR, of3,
+                new Point(100, 480), new Point(150, 570));
+        model.addGraphicalElement(of3GR);
 
-        // Flow 7: Merge -> Ship Order
+        // Flow 8: Receipt -> Merge (Object Flow)
+        ObjectFlow of4 = new ObjectFlow(paymentReceipt, mergeNode);
+        ObjectFlowGR of4GR = new ObjectFlowGR(paymentReceiptGR, mergeNodeGR, of4,
+                new Point(150, 570), new Point(250, 650));
+        model.addGraphicalElement(of4GR);
+
+        // Flow 9: Merge -> Ship Order
         ControlFlow cf7 = new ControlFlow(mergeNode, shipOrder);
         ControlFlowGR cf7GR = new ControlFlowGR(mergeNodeGR, shipOrderGR, cf7,
-                new Point(250, 420), new Point(250, 490));
+                new Point(250, 650), new Point(250, 730));
         model.addGraphicalElement(cf7GR);
 
-        // Flow 8: Ship Order -> Fork
+        // Flow 10: Ship Order -> Fork
         ControlFlow cf8 = new ControlFlow(shipOrder, forkNode);
         ControlFlowGR cf8GR = new ControlFlowGR(shipOrderGR, forkNodeGR, cf8,
-                new Point(250, 490), new Point(250, 560));
+                new Point(250, 730), new Point(250, 820));
         model.addGraphicalElement(cf8GR);
 
-        // Flow 9: Fork -> Notify Customer (parallel branch 1)
+        // Flow 11: Fork -> Notify Customer (parallel branch 1)
         ControlFlow cf9 = new ControlFlow(forkNode, notifyCustomer);
         ControlFlowGR cf9GR = new ControlFlowGR(forkNodeGR, notifyCustomerGR, cf9,
-                new Point(250, 560), new Point(150, 610));
+                new Point(250, 820), new Point(120, 910));
         model.addGraphicalElement(cf9GR);
 
-        // Flow 10: Fork -> Update Inventory (parallel branch 2)
+        // Flow 12: Fork -> Update Inventory (parallel branch 2)
         ControlFlow cf10 = new ControlFlow(forkNode, updateInventory);
         ControlFlowGR cf10GR = new ControlFlowGR(forkNodeGR, updateInventoryGR, cf10,
-                new Point(250, 560), new Point(350, 610));
+                new Point(250, 820), new Point(380, 910));
         model.addGraphicalElement(cf10GR);
 
-        // Flow 11: Notify Customer -> Join
+        // Flow 13: Notify Customer -> Join
         ControlFlow cf11 = new ControlFlow(notifyCustomer, joinNode);
         ControlFlowGR cf11GR = new ControlFlowGR(notifyCustomerGR, joinNodeGR, cf11,
-                new Point(150, 610), new Point(250, 680));
+                new Point(120, 910), new Point(250, 1000));
         model.addGraphicalElement(cf11GR);
 
-        // Flow 12: Update Inventory -> Join
+        // Flow 14: Update Inventory -> Join
         ControlFlow cf12 = new ControlFlow(updateInventory, joinNode);
         ControlFlowGR cf12GR = new ControlFlowGR(updateInventoryGR, joinNodeGR, cf12,
-                new Point(350, 610), new Point(250, 680));
+                new Point(380, 910), new Point(250, 1000));
         model.addGraphicalElement(cf12GR);
 
-        // Flow 13: Join -> Final
+        // Flow 15: Join -> Final
         ControlFlow cf13 = new ControlFlow(joinNode, finalNode);
         ControlFlowGR cf13GR = new ControlFlowGR(joinNodeGR, finalNodeGR, cf13,
-                new Point(250, 680), new Point(250, 760));
+                new Point(250, 1000), new Point(250, 1080));
         model.addGraphicalElement(cf13GR);
 
-        // Flow 14: Handle Rejection -> Merge (alternative path back to main flow)
+        // Flow 16: Handle Rejection -> Merge (alternative path back to main flow)
         ControlFlow cf14 = new ControlFlow(handleRejection, mergeNode);
         ControlFlowGR cf14GR = new ControlFlowGR(handleRejectionGR, mergeNodeGR, cf14,
-                new Point(350, 350), new Point(250, 420));
+                new Point(400, 480), new Point(250, 650));
         model.addGraphicalElement(cf14GR);
 
         // Add a Note attached to Process Payment action
         // Note: UMLNoteGR constructor is (text, connectedElement, position)
-        Point notePosition = new Point(50, 330);
+        Point notePosition = new Point(10, 450);
         UMLNoteGR noteGR = new UMLNoteGR(
                 "Payment processing includes\nfraud detection and\nauthorization checks",
                 processPaymentGR,
                 notePosition);
         model.addGraphicalElement(noteGR);
 
-        // Total: 13 nodes (1 initial + 7 actions + 1 decision + 1 merge + 1 fork + 1 join + 1 final)
-        //        14 control flows (2 with guards)
+        // Total: 15 nodes (1 initial + 7 actions + 2 object nodes + 1 decision + 1 merge + 1 fork + 1 join + 1 final)
+        //        16 flows (12 control flows + 4 object flows, with guards on some)
         //        1 note
-        // Expected graphical elements: 28
+        // Expected graphical elements: 32
 
         // ===== Verify Phase 1: Confirm model built correctly =====
         Vector<GraphicalElement> originalElements = model.getGraphicalElements();
-        assertEquals("Should have 28 graphical elements (13 nodes + 14 flows + 1 note)",
-                28, originalElements.size());
+        assertEquals("Should have 32 graphical elements (15 nodes + 16 flows + 1 note)",
+                32, originalElements.size());
 
         // Count node types
-        int actionCount = 0, controlFlowCount = 0, noteCount = 0;
+        int actionCount = 0, controlFlowCount = 0, objectFlowCount = 0, noteCount = 0;
         int initialCount = 0, decisionCount = 0, mergeCount = 0;
-        int forkCount = 0, joinCount = 0, finalCount = 0;
+        int forkCount = 0, joinCount = 0, finalCount = 0, objectNodeCount = 0;
 
         for (GraphicalElement ge : originalElements) {
             if (ge instanceof ActionNodeGR)
                 actionCount++;
+            else if (ge instanceof ObjectNodeGR)
+                objectNodeCount++;
             else if (ge instanceof ControlFlowGR)
                 controlFlowCount++;
+            else if (ge instanceof ObjectFlowGR)
+                objectFlowCount++;
             else if (ge instanceof UMLNoteGR)
                 noteCount++;
             else if (ge instanceof InitialNodeGR)
@@ -229,7 +262,9 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
         }
 
         assertEquals("Should have 7 action nodes", 7, actionCount);
-        assertEquals("Should have 14 control flows", 14, controlFlowCount);
+        assertEquals("Should have 2 object nodes", 2, objectNodeCount);
+        assertEquals("Should have 12 control flows", 12, controlFlowCount);
+        assertEquals("Should have 4 object flows", 4, objectFlowCount);
         assertEquals("Should have 1 note", 1, noteCount);
         assertEquals("Should have 1 initial node", 1, initialCount);
         assertEquals("Should have 1 decision node", 1, decisionCount);
@@ -252,12 +287,13 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
         assertEquals("Diagram name should match", "Order Processing AD", loadedModel.getName());
 
         List<GraphicalElement> loadedElements = loadedModel.getGraphicalElements();
-        assertEquals("Loaded model should have same 28 elements",
-                28, loadedElements.size());
+        assertEquals("Loaded model should have same 32 elements",
+                32, loadedElements.size());
 
         // Count node types in loaded model
         actionCount = 0;
         controlFlowCount = 0;
+        objectFlowCount = 0;
         noteCount = 0;
         initialCount = 0;
         decisionCount = 0;
@@ -265,12 +301,17 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
         forkCount = 0;
         joinCount = 0;
         finalCount = 0;
+        objectNodeCount = 0;
 
         for (GraphicalElement ge : loadedElements) {
             if (ge instanceof ActionNodeGR)
                 actionCount++;
+            else if (ge instanceof ObjectNodeGR)
+                objectNodeCount++;
             else if (ge instanceof ControlFlowGR)
                 controlFlowCount++;
+            else if (ge instanceof ObjectFlowGR)
+                objectFlowCount++;
             else if (ge instanceof UMLNoteGR)
                 noteCount++;
             else if (ge instanceof InitialNodeGR)
@@ -288,7 +329,9 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
         }
 
         assertEquals("Loaded: Should have 7 action nodes", 7, actionCount);
-        assertEquals("Loaded: Should have 14 control flows", 14, controlFlowCount);
+        assertEquals("Loaded: Should have 2 object nodes", 2, objectNodeCount);
+        assertEquals("Loaded: Should have 12 control flows", 12, controlFlowCount);
+        assertEquals("Loaded: Should have 4 object flows", 4, objectFlowCount);
         assertEquals("Loaded: Should have 1 note", 1, noteCount);
         assertEquals("Loaded: Should have 1 initial node", 1, initialCount);
         assertEquals("Loaded: Should have 1 decision node", 1, decisionCount);
@@ -327,13 +370,13 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
 
         // Verify action node positions are preserved
         assertEquals("Receive Order X position", 200, loadedReceiveOrderGR.getX());
-        assertEquals("Receive Order Y position", 130, loadedReceiveOrderGR.getY());
+        assertEquals("Receive Order Y position", 150, loadedReceiveOrderGR.getY());
         assertEquals("Validate Order X position", 250, loadedValidateOrderGR.getX());
-        assertEquals("Validate Order Y position", 210, loadedValidateOrderGR.getY());
-        assertEquals("Process Payment X position", 150, loadedProcessPaymentGR.getX());
-        assertEquals("Process Payment Y position", 350, loadedProcessPaymentGR.getY());
-        assertEquals("Handle Rejection X position", 350, loadedHandleRejectionGR.getX());
-        assertEquals("Handle Rejection Y position", 350, loadedHandleRejectionGR.getY());
+        assertEquals("Validate Order Y position", 310, loadedValidateOrderGR.getY());
+        assertEquals("Process Payment X position", 100, loadedProcessPaymentGR.getX());
+        assertEquals("Process Payment Y position", 480, loadedProcessPaymentGR.getY());
+        assertEquals("Handle Rejection X position", 400, loadedHandleRejectionGR.getX());
+        assertEquals("Handle Rejection Y position", 480, loadedHandleRejectionGR.getY());
 
         // ===== Phase 6: Verify control flows with guards =====
         ControlFlowGR validGuardFlow = null;
@@ -367,6 +410,59 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
                 "Handle Rejection",
                 ((ActionNode) invalidCF.getTarget()).getName());
 
+        // ===== Phase 6b: Verify object nodes and object flows =====
+        ObjectNodeGR loadedOrderDataGR = null;
+        ObjectNodeGR loadedPaymentReceiptGR = null;
+
+        for (GraphicalElement ge : loadedElements) {
+            if (ge instanceof ObjectNodeGR) {
+                ObjectNodeGR onGR = (ObjectNodeGR) ge;
+                ObjectNode on = (ObjectNode) onGR.getComponent();
+                String name = on.getName();
+
+                if ("Order".equals(name))
+                    loadedOrderDataGR = onGR;
+                else if ("Receipt".equals(name))
+                    loadedPaymentReceiptGR = onGR;
+            }
+        }
+
+        assertNotNull("Should find Order object node", loadedOrderDataGR);
+        assertNotNull("Should find Receipt object node", loadedPaymentReceiptGR);
+
+        // Verify object node positions
+        assertEquals("Order object node X position", 250, loadedOrderDataGR.getX());
+        assertEquals("Order object node Y position", 230, loadedOrderDataGR.getY());
+        assertEquals("Receipt object node X position", 150, loadedPaymentReceiptGR.getX());
+        assertEquals("Receipt object node Y position", 570, loadedPaymentReceiptGR.getY());
+
+        // Verify object flows with weight and guard
+        ObjectFlowGR paymentReceiptFlow = null;
+        int objectFlowsWithWeight = 0;
+
+        for (GraphicalElement ge : loadedElements) {
+            if (ge instanceof ObjectFlowGR) {
+                ObjectFlowGR ofGR = (ObjectFlowGR) ge;
+                ObjectFlow of = (ObjectFlow) ofGR.getEdge();
+
+                if (of.getWeight() != null && !of.getWeight().isEmpty()) {
+                    objectFlowsWithWeight++;
+                }
+
+                if ("payment successful".equals(of.getGuard())) {
+                    paymentReceiptFlow = ofGR;
+                }
+            }
+        }
+
+        assertEquals("Should have 2 object flows with weight", 2, objectFlowsWithWeight);
+        assertNotNull("Should find object flow with 'payment successful' guard", paymentReceiptFlow);
+
+        ObjectFlow paymentReceiptOF = (ObjectFlow) paymentReceiptFlow.getEdge();
+        assertEquals("Payment receipt flow should have weight '1'", "1", paymentReceiptOF.getWeight());
+        assertEquals("Payment receipt flow should have guard 'payment successful'",
+                "payment successful", paymentReceiptOF.getGuard());
+
         // ===== Phase 7: Verify note attachment =====
         UMLNoteGR loadedNoteGR = null;
         for (GraphicalElement ge : loadedElements) {
@@ -384,8 +480,8 @@ public class ADSaveLoadTest extends SaveLoadTestBase {
 
         // ===== SUCCESS =====
         // java.lang.System.out.println("✅ Phase 0.6: AD Save/Load Test - All verifications passed!");
-        // java.lang.System.out.println("   ✓ All 12 node types correctly saved and loaded");
-        // java.lang.System.out.println("   ✓ All 13 control flows with guards correctly saved and loaded");
+        // java.lang.System.out.println("   ✓ All 15 node types correctly saved and loaded (including 2 object nodes)");
+        // java.lang.System.out.println("   ✓ All 16 flows (12 control + 4 object) with guards/weights correctly saved and loaded");
         // java.lang.System.out.println("   ✓ Note attachment correctly saved and loaded");
     }
 }

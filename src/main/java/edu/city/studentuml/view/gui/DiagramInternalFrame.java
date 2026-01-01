@@ -283,9 +283,17 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     }
 
     private void renameDiagram() {
-        String newName = JOptionPane.showInputDialog(this, "Enter the new Diagram name:", model.getName());
+        StringEditorDialog dialog = new StringEditorDialog(this,
+                "Diagram Name", "Enter the new Diagram name:", model.getName());
+
+        if (!dialog.showDialog()) {
+            return;
+        }
+
+        String newName = dialog.getText();
+
         if (newName != null && !newName.equals("")) {
-            newName = model.getName().substring(0, model.getName().indexOf(":")) + ": " + newName;
+            // newName = model.getName().substring(0, model.getName().indexOf(":")) + ": " + newName;
             model.setName(newName);
             setTitle(newName);
         }

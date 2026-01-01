@@ -7,11 +7,13 @@ import org.w3c.dom.Element;
 
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 /**
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
-public class UCExtend extends UCLink {
+public class UCExtend extends UCLink implements Copyable<UCExtend> {
 
     private List<ExtensionPoint> extensionPoints;
     public static final String STEREOTYPE = "<<extend>>";
@@ -71,6 +73,11 @@ public class UCExtend extends UCLink {
         }
 
         return copy;
+    }
+
+    @Override
+    public UCExtend copyOf(UCExtend ucExtend) {
+        return ucExtend.clone();
     }
 
     @Override

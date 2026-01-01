@@ -9,12 +9,14 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.view.gui.components.Copyable;
+
 /**
  * @author Ramollari Ervin
  */
 @JsonIncludeProperties({ "name", "direction", "showArrow", "labelDirection", "reflective", "bidirectional", "roleA",
         "roleB" })
-public class Association implements Serializable, IXMLCustomStreamable {
+public class Association implements Serializable, IXMLCustomStreamable, Copyable<Association> {
 
     // integer constants defining direction
     public static final int BIDIRECTIONAL = 0;
@@ -84,7 +86,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public int getDirection() {
         return direction;
     }
@@ -109,7 +111,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Classifier getClassA() {
         return roleA.getReferredClass();
     }
@@ -118,7 +120,7 @@ public class Association implements Serializable, IXMLCustomStreamable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Classifier getClassB() {
         return roleB.getReferredClass();
     }
@@ -156,6 +158,11 @@ public class Association implements Serializable, IXMLCustomStreamable {
         copyAssociation.setLabelDirection(this.getLabelDirection());
 
         return copyAssociation;
+    }
+
+    @Override
+    public Association copyOf(Association source) {
+        return source.clone();
     }
 
     // need for undo/redo

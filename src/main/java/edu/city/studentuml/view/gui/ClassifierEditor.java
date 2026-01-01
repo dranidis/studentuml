@@ -28,7 +28,6 @@ import edu.city.studentuml.view.gui.components.StringSearchable;
 public abstract class ClassifierEditor extends JPanel implements ActionListener {
 
     public static final boolean AUTO_COMPLETE = true;
-    public static final boolean TEXTFIELD = false;
     private AutocompleteJComboBox autoNameField;
     private JTextField nameField;
 
@@ -133,6 +132,20 @@ public abstract class ClassifierEditor extends JPanel implements ActionListener 
             return (String) autoNameField.getSelectedItem();
         } else {
             return nameField.getText();
+        }
+    }
+
+    /**
+     * Sets the classifier name in the appropriate name field. This method is for
+     * use by subclasses implementing Editor<T> pattern.
+     * 
+     * @param name the name to set
+     */
+    protected void setClassifierName(String name) {
+        if (autoComplete) {
+            autoNameField.setSelectedItem(name);
+        } else {
+            nameField.setText(name);
         }
     }
 

@@ -2,13 +2,13 @@ package edu.city.studentuml.model.domain;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 import org.w3c.dom.Element;
 
 /**
- *
  * @author draganbisercic
  */
-public class ExtensionPoint implements IXMLCustomStreamable{
+public class ExtensionPoint implements IXMLCustomStreamable, Copyable<ExtensionPoint> {
 
     private String name;
 
@@ -33,5 +33,15 @@ public class ExtensionPoint implements IXMLCustomStreamable{
 
     public ExtensionPoint clone() {
         return new ExtensionPoint(name);
+    }
+
+    @Override
+    public ExtensionPoint copyOf(ExtensionPoint extensionPoint) {
+        return extensionPoint.clone();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

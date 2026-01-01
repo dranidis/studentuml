@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -50,6 +52,21 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
         elementsList = new JList<>();
         elementsList.setFixedCellWidth(400);
         elementsList.setVisibleRowCount(5);
+
+        // Add double-click support to edit elements
+        elementsList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = elementsList.locationToIndex(e.getPoint());
+                    if (index >= 0) {
+                        elementsList.setSelectedIndex(index);
+                        editElement();
+                    }
+                }
+            }
+        });
+
         addButton = new JButton("Add...");
         addButton.addActionListener(this);
         editButton = new JButton("Edit...");
@@ -73,21 +90,20 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
             editElement();
         } else if (event.getSource() == deleteButton) {
             deleteElement();
-        }        
+        }
     }
 
     private void addElement() {
-        ElementEditor<T> elementEditor = createElementEditor(null, repository);
-
-        if (!elementEditor.showDialog(this)) {    // cancel pressed
+        Editor<T> elementEditor = createElementEditor(repository);
+        T newElement = elementEditor.editDialog(null, this);
+        if (newElement == null) {
             return;
         }
-
-        elements.add(elementEditor.createElement());
+        elements.add(newElement);
         updateElementsList();
     }
 
-    protected abstract ElementEditor<T> createElementEditor(T object, CentralRepository repository);
+    protected abstract Editor<T> createElementEditor(CentralRepository repository);
 
     private void editElement() {
         if (elements.isEmpty() || elementsList.getSelectedIndex() < 0) {
@@ -95,13 +111,12 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
         }
 
         T element = elements.elementAt(elementsList.getSelectedIndex());
-        ElementEditor<T> elementEditor = createElementEditor(element, repository);
-
-        if (!elementEditor.showDialog(this)) {    // cancel pressed
+        Editor<T> elementEditor = createElementEditor(repository);
+        T editedElement = elementEditor.editDialog(element, this);
+        if (editedElement == null) {
             return;
         }
-
-        elementEditor.editElement();
+        elements.setElementAt(editedElement, elementsList.getSelectedIndex());
         updateElementsList();
     }
 
@@ -112,12 +127,12 @@ public abstract class ListPanel<T extends Copyable<T>> extends JPanel implements
 
         elements.remove(elementsList.getSelectedIndex());
         updateElementsList();
-    }    
+    }
 
     public void updateElementsList() {
         elementsList.setListData(elements);
     }
-    
+
     // make an exact copy of the passed attributes list
     private Vector<T> cloneElements(Vector<T> originalElements) {
         Vector<T> copyOfElements = new Vector<>();

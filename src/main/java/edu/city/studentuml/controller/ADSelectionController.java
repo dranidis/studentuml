@@ -1,17 +1,18 @@
 package edu.city.studentuml.controller;
 
 import javax.swing.JOptionPane;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.DecisionNode;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Edge;
 import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.ObjectNode;
-import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
@@ -21,22 +22,24 @@ import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.DesignClassRepositoryOperations;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
 import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
-import edu.city.studentuml.view.gui.ActionNodeEditor;
-import edu.city.studentuml.view.gui.ActivityNodeEditor;
-import edu.city.studentuml.view.gui.ControlFlowEditor;
-import edu.city.studentuml.view.gui.DecisionNodeEditor;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 import edu.city.studentuml.view.gui.ObjectNodeEditor;
+import edu.city.studentuml.view.gui.StringEditorDialog;
+import edu.city.studentuml.view.gui.TypeOperation;
+import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 /**
  * @author Biser
+ * @author Dimitris Dranidis
  */
 public class ADSelectionController extends SelectionController {
 
@@ -53,18 +56,18 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editControlFlow(ControlFlowGR controlFlowGR) {
-        ControlFlowEditor controlFlowEditor = new ControlFlowEditor(controlFlowGR);
         ControlFlow controlFlow = (ControlFlow) controlFlowGR.getEdge();
-
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Control Flow Editor", "Guard",
+                controlFlow.getGuard());
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!controlFlowEditor.showDialog(parentComponent, "Control Flow Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo
         ControlFlow undoControlFlow = (ControlFlow) controlFlow.clone();
 
-        String guard = controlFlowEditor.getGuard();
+        String guard = stringEditorDialog.getText();
         // check that the guard is ok before moving on
         // the outgoing edge from the Decision Node must have a guard (different than other guards)
         NodeComponent sourceNode = controlFlow.getSource();
@@ -100,22 +103,23 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editObjectFlow(ObjectFlowGR objectFlowGR) {
-        ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor(objectFlowGR);
-        ObjectFlow objectFlow = (ObjectFlow) objectFlowGR.getEdge();
+        ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor();
+        ObjectFlow originalObjectFlow = (ObjectFlow) objectFlowGR.getEdge();
 
-        // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!objectFlowEditor.showDialog(parentComponent, "Object Flow Editor")) {
-            return;
+        ObjectFlow editedObjectFlow = objectFlowEditor.editDialog(originalObjectFlow, parentComponent);
+        if (editedObjectFlow == null) {
+            return; // User cancelled
         }
 
-        // Undo/Redo
-        ObjectFlow undoObjectFlow = (ObjectFlow) objectFlow.clone();
+        // Undo/Redo - capture original state
+        ObjectFlow undoObjectFlow = originalObjectFlow.clone();
 
-        String weight = objectFlowEditor.getWeight();
-        String guard = objectFlowEditor.getGuard();
+        String weight = editedObjectFlow.getWeight();
+        String guard = editedObjectFlow.getGuard();
+
         // check that the guard is ok before moving on
         // the outgoing edge from the Decision Node must have a guard (different than other guards)
-        NodeComponent sourceNode = objectFlow.getSource();
+        NodeComponent sourceNode = originalObjectFlow.getSource();
         if (sourceNode instanceof DecisionNode && guard.isEmpty()) {
             JOptionPane.showMessageDialog(parentComponent,
                     "The guard must be specified for the flow going out from the decision node!",
@@ -125,7 +129,7 @@ public class ADSelectionController extends SelectionController {
         }
 
         for (Edge edge : sourceNode.getOutgoingEdges()) {
-            if (edge != objectFlow) {
+            if (edge != originalObjectFlow) {
                 String s = edge.getGuard();
                 if (s.equals(guard) && !s.isEmpty()) {
                     JOptionPane.showMessageDialog(parentComponent,
@@ -138,7 +142,7 @@ public class ADSelectionController extends SelectionController {
         }
 
         try {
-            objectFlow.setWeight(weight);
+            originalObjectFlow.setWeight(weight);
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(parentComponent,
                     e.getMessage(),
@@ -147,10 +151,10 @@ public class ADSelectionController extends SelectionController {
             return;
         }
 
-        objectFlow.setGuard(guard);
+        originalObjectFlow.setGuard(guard);
 
         // Undo/Redo
-        UndoableEdit edit = new EditObjectFlowEdit(objectFlow, undoObjectFlow, model);
+        UndoableEdit edit = new EditObjectFlowEdit(originalObjectFlow, undoObjectFlow, model);
         parentComponent.getUndoSupport().postEdit(edit);
 
         // set observable model to changed in order to notify its views
@@ -159,18 +163,20 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editActionNode(ActionNodeGR actionNodeGR) {
-        ActionNodeEditor actionNodeEditor = new ActionNodeEditor(actionNodeGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Action Node Editor",
+                "Action name: ",
+                actionNodeGR.getComponent().getName());
         ActionNode actionNode = (ActionNode) actionNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!actionNodeEditor.showDialog(parentComponent, "Action Node Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo
         ActionNode undoActionNode = (ActionNode) actionNode.clone();
 
-        String actionName = actionNodeEditor.getActionName();
+        String actionName = stringEditorDialog.getText();
         actionNode.setName(actionName);
 
         // Undo/Redo
@@ -184,37 +190,50 @@ public class ADSelectionController extends SelectionController {
 
     private void editObjectNode(ObjectNodeGR objectNodeGR) {
         CentralRepository repository = model.getCentralRepository();
-        ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(objectNodeGR, repository);
         ObjectNode objectNode = (ObjectNode) objectNodeGR.getComponent();
 
-        // show the object node editor dialog and check whether the user has pressed cancel
-        if (!objectNodeEditor.showDialog(parentComponent, "Object Node Editor")) {
+        // Create editor and initial result
+        ObjectNodeEditor objectNodeEditor = new ObjectNodeEditor(repository);
+        TypedEntityEditResult<DesignClass, ObjectNode> initialResult = new TypedEntityEditResult<>(objectNode,
+                new java.util.ArrayList<>());
+
+        TypedEntityEditResult<DesignClass, ObjectNode> result = objectNodeEditor.editDialog(initialResult,
+                parentComponent);
+
+        // Check if user cancelled
+        if (result == null) {
             return;
         }
 
-        // Undo/Redo
+        ObjectNode newObjectNode = result.getDomainObject();
 
         // do not edit if name and type are both empty
-        if (objectNodeEditor.getObjectName().isEmpty() && objectNodeEditor.getType() == null) {
+        if (newObjectNode.getName().isEmpty() && newObjectNode.getType() == null) {
             JOptionPane.showMessageDialog(parentComponent,
                     "Object name and/or type is missing!",
                     "Object Node Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
-        } else {
-            ObjectNode newObjectNode = new ObjectNode();
-            newObjectNode.setName(objectNodeEditor.getObjectName());
-            newObjectNode.setType(objectNodeEditor.getType());
+        }
 
-            // add the states to the new object node
-            for (State state : objectNodeEditor.getStates()) {
-                newObjectNode.addState(state);
-            }
+        // Create compound edit for all operations
+        CompoundEdit compoundEdit = new CompoundEdit();
 
-            // Undo/Redo [edit]
-            UndoableEdit edit = new EditObjectNodeEdit(objectNode, newObjectNode, model);
-            repository.editObjectNode(objectNode, newObjectNode);
-            parentComponent.getUndoSupport().postEdit(edit);
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
+        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
+
+        // Add domain object edit and apply
+        UndoableEdit edit = new EditObjectNodeEdit(objectNode, newObjectNode, model);
+        compoundEdit.addEdit(edit);
+        repository.editObjectNode(objectNode, newObjectNode);
+
+        // Post the compound edit
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            parentComponent.getUndoSupport().postEdit(compoundEdit);
         }
 
         // set observable model to changed in order to notify its views
@@ -223,18 +242,21 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editActivityNode(ActivityNodeGR activityNodeGR) {
-        ActivityNodeEditor activityNodeEditor = new ActivityNodeEditor(activityNodeGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Activity Node Editor",
+                "Activity name: ",
+                activityNodeGR.getComponent().getName());
+
         ActivityNode activityNode = (ActivityNode) activityNodeGR.getComponent();
 
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!activityNodeEditor.showDialog(parentComponent, "Activity Node Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo
         ActivityNode undoActivityNode = (ActivityNode) activityNode.clone();
 
-        String activityName = activityNodeEditor.getActivityName();
+        String activityName = stringEditorDialog.getText();
         activityNode.setName(activityName);
 
         // Undo/Redo
@@ -247,18 +269,20 @@ public class ADSelectionController extends SelectionController {
     }
 
     private void editDecisionNode(DecisionNodeGR decisionNodeGR) {
-        DecisionNodeEditor decisionNodeEditor = new DecisionNodeEditor(decisionNodeGR);
         DecisionNode decisionNode = (DecisionNode) decisionNodeGR.getComponent();
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Decision Node Editor",
+                "Decision name: ",
+                decisionNode.getName());
 
         // show the control flow editor dialog and check whether the user has pressed cancel
-        if (!decisionNodeEditor.showDialog(parentComponent, "Decision Node Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo
         DecisionNode undoDecisionNode = (DecisionNode) decisionNode.clone();
 
-        String decisionName = decisionNodeEditor.getActionName();
+        String decisionName = stringEditorDialog.getText();
         decisionNode.setName(decisionName);
 
         // Undo/Redo

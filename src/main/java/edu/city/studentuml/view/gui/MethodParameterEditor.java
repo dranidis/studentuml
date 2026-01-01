@@ -4,55 +4,43 @@ import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 /**
  * @author Ervin Ramollari
  */
-public class MethodParameterEditor extends JPanel implements ActionListener, ElementEditor<MethodParameter> {
+public class MethodParameterEditor extends OkCancelDialog implements Editor<MethodParameter> {
 
     private static final String TITLE = "Parameter Editor";
     private Vector<String> comboBoxStringList;
     private Vector<Type> comboBoxTypeList;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
-    private JPanel centerPanel;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
-    private boolean ok;
-    private JButton okButton;
-    private MethodParameter parameter;
-    private JDialog parameterDialog;
     private JComboBox<String> typeComboBox;
     private JLabel typeLabel;
     private JPanel typePanel;
     CentralRepository repository;
 
-    public MethodParameterEditor(MethodParameter param, CentralRepository cr) {
-        parameter = param;
+    public MethodParameterEditor(CentralRepository cr) {
+        super(null, TITLE); // parent will be set in editDialog
         repository = cr;
+    }
 
-        setLayout(new BorderLayout());
+    @Override
+    protected JPanel makeCenterPanel() {
         nameLabel = new JLabel("Parameter Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
@@ -84,48 +72,38 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
         typePanel.setLayout(new FlowLayout());
         typePanel.add(typeLabel);
         typePanel.add(typeComboBox);
-        centerPanel = new JPanel();
+
+        JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(2, 1, 5, 5));
         centerPanel.add(namePanel);
         centerPanel.add(typePanel);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout());
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+
+        return centerPanel;
     }
 
-    public boolean showDialog(Component parent) {
-        ok = false;
+    @Override
+    public MethodParameter editDialog(MethodParameter parameter, Component parent) {
+        this.parent = parent;
 
-        // find the owner frame
-        Frame owner = null;
+        // Ensure UI components are created before initializing fields
+        initializeIfNeeded();
 
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
+        initialize(parameter);
+        if (!showDialog()) {
+            return null;
         }
 
-        parameterDialog = new JDialog(owner, true);
-        parameterDialog.getContentPane().add(this);
-        parameterDialog.setTitle(TITLE);
-        parameterDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        parameterDialog.pack();
-        parameterDialog.setResizable(false);
-        parameterDialog.setLocationRelativeTo(owner);
-        parameterDialog.setVisible(true);
-
-        return ok;
+        // Create new parameter if needed, then set properties
+        if (parameter == null) {
+            parameter = new MethodParameter(getParameterName(), getType());
+        } else {
+            parameter.setName(getParameterName());
+            parameter.setType(getType());
+        }
+        return parameter;
     }
 
-    public void initialize() {
+    private void initialize(MethodParameter parameter) {
         if (parameter == null) {
             nameField.setText("");
         } else {
@@ -140,18 +118,17 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
             for (int i = 0; i < comboBoxStringList.size(); i++) {
                 if (comboBoxStringList.get(i).equals(parameter.getType().getName())) {
                     typeComboBox.setSelectedIndex(i);
-
                     break;
                 }
             }
         }
     }
 
-    public String getParameterName() {
+    private String getParameterName() {
         return nameField.getText();
     }
 
-    public Type getType() {
+    private Type getType() {
         try {
             return comboBoxTypeList.get(typeComboBox.getSelectedIndex());
         } catch (IndexOutOfBoundsException ioobe) {
@@ -159,29 +136,31 @@ public class MethodParameterEditor extends JPanel implements ActionListener, Ele
         }
     }
 
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == nameField) {
-            if (nameField.getText() == null || nameField.getText().equals("")) {
-                JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
+    @Override
+    protected void actionOK(ActionEvent event) {
+        if (nameField.getText() == null || nameField.getText().equals("")) {
+            JOptionPane.showMessageDialog(
+                    dialog,
+                    "You must provide a name",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        super.actionOK(event);
+    }
 
+    @Override
+    protected void actionRest(ActionEvent event) {
+        if (event.getSource() == nameField) {
+            if (nameField.getText() == null || nameField.getText().equals("")) {
+                JOptionPane.showMessageDialog(
+                        dialog,
+                        "You must provide a name",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
-            parameterDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            parameterDialog.setVisible(false);
+            actionOK(event);
         }
-    }
-
-    @Override
-    public MethodParameter createElement() {
-        return new MethodParameter(getParameterName(), getType());
-    }
-
-    @Override
-    public void editElement() {
-        parameter.setName(getParameterName());
-        parameter.setType(getType());
     }
 }

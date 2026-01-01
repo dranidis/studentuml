@@ -1,21 +1,26 @@
 package edu.city.studentuml.controller;
 
 import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.CompoundEdit;
 
 import edu.city.studentuml.model.domain.SystemInstance;
+import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditSystemInstanceEdit;
 import edu.city.studentuml.util.undoredo.SystemEdit;
+import edu.city.studentuml.util.undoredo.SystemRepositoryOperations;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.SystemInstanceEditor;
+import edu.city.studentuml.view.gui.TypeOperation;
+import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 /**
- *
  * @author draganbisercic
+ * @author Dimitris Dranidis
  */
 public class SSDSelectionController extends AbstractSDSelectionController {
 
@@ -26,22 +31,37 @@ public class SSDSelectionController extends AbstractSDSelectionController {
 
     private void editSystemInstance(SystemInstanceGR systemInstanceGR) {
         CentralRepository repository = model.getCentralRepository();
-        SystemInstanceEditor systemEditor = new SystemInstanceEditor(systemInstanceGR, repository);
         SystemInstance originalSystemInstance = systemInstanceGR.getSystemInstance();
 
-        // UNDO/REDO
+        // Create editor and initial result
+        SystemInstanceEditor systemEditor = new SystemInstanceEditor(repository);
+        TypedEntityEditResult<System, SystemInstance> initialResult = new TypedEntityEditResult<>(
+                originalSystemInstance, new java.util.ArrayList<>());
+
+        // Use new editDialog() method
+        TypedEntityEditResult<System, SystemInstance> result = systemEditor
+                .editDialog(initialResult, parentComponent);
+
+        // Check if user cancelled
+        if (result == null) {
+            return;
+        }
+
+        SystemInstance newSystemInstance = result.getDomainObject();
+
+        // UNDO/REDO setup
         SystemInstance undoSystemInstance = new SystemInstance(originalSystemInstance.getName(),
                 originalSystemInstance.getSystem());
         SystemEdit undoEdit = new SystemEdit(undoSystemInstance, originalSystemInstance.getSystem().getName());
 
-        // show the system instance editor dialog and check whether the user has pressed
-        // cancel
-        if (!systemEditor.showDialog(parentComponent, "System Instance Editor")) {
-            return;
-        }
+        // Create compound edit for all operations
+        CompoundEdit compoundEdit = new CompoundEdit();
 
-        SystemInstance newSystemInstance = new SystemInstance(systemEditor.getSystemName(), systemEditor.getSystem());
-        SystemEdit originalEdit;
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<System> typeOps = new SystemRepositoryOperations();
+        for (TypeOperation<System> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
 
         // edit the system instance if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -65,10 +85,16 @@ public class SSDSelectionController extends AbstractSDSelectionController {
         } else {
             repository.editSystemInstance(originalSystemInstance, newSystemInstance);
 
-            // UNDO/REDO
-            originalEdit = new SystemEdit(originalSystemInstance, originalSystemInstance.getSystem().getName());
-            UndoableEdit edit = new EditSystemInstanceEdit(originalEdit, undoEdit, model);
-            parentComponent.getUndoSupport().postEdit(edit);
+            // Add domain object edit to compound
+            SystemEdit originalEdit = new SystemEdit(originalSystemInstance,
+                    originalSystemInstance.getSystem().getName());
+            compoundEdit.addEdit(new EditSystemInstanceEdit(originalEdit, undoEdit, model));
+        }
+
+        // Post the compound edit
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            parentComponent.getUndoSupport().postEdit(compoundEdit);
         }
 
         // set observable model to changed in order to notify its views

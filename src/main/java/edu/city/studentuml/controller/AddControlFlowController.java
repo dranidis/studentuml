@@ -1,7 +1,6 @@
 package edu.city.studentuml.controller;
 
 import java.awt.Point;
-import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.ControlFlow;
@@ -17,6 +16,7 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.util.undoredo.AddEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * @author Biser
@@ -96,10 +96,15 @@ public class AddControlFlowController extends AddEdgeController {
             }
 
             // the outgoing edge must have a guard (different than other guards)
-            guard = JOptionPane.showInputDialog(parentFrame,
-                    "Please, enter the guard for the outgoing edge: ",
-                    "Guarded outgoing edge",
-                    JOptionPane.QUESTION_MESSAGE);
+            StringEditorDialog guardDialog = new StringEditorDialog(parentFrame,
+                    "Guarded outgoing edge", "Guard", "sample guard");
+
+            if (!guardDialog.showDialog()) {
+                setSelectionMode();
+                return;
+            }
+
+            guard = guardDialog.getText();
 
             if (guard == null || guard.isEmpty()) {
                 showErrorMessage("The outgoing edge must be guarded!");

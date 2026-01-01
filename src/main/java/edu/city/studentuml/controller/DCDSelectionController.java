@@ -3,12 +3,10 @@ package edu.city.studentuml.controller;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
-import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
@@ -18,7 +16,6 @@ import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.InterfaceGR;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditAssociationEdit;
 import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
@@ -27,7 +24,7 @@ import edu.city.studentuml.util.undoredo.EditDependencyEdit;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
 import edu.city.studentuml.view.gui.ClassEditor;
-import edu.city.studentuml.view.gui.DependencyEditor;
+import edu.city.studentuml.view.gui.StringEditorDialog;
 import edu.city.studentuml.view.gui.DesignAssociationClassEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.InterfaceEditor;
@@ -50,14 +47,13 @@ public class DCDSelectionController extends SelectionController {
     private void editClass(ClassGR classGR) {
         CentralRepository repository = model.getCentralRepository();
         DesignClass originalClass = classGR.getDesignClass();
-        ClassEditorI classEditor = new ClassEditor(originalClass, repository);
+        ClassEditorI classEditor = new ClassEditor(repository);
 
         // show the class editor dialog and check whether the user has pressed cancel
-        if (!classEditor.showDialog(parentComponent, "Class Editor")) {
+        DesignClass newClass = classEditor.editDialog(originalClass, parentComponent);
+        if (newClass == null) {
             return;
         }
-
-        DesignClass newClass = classEditor.getDesignClass();
 
         // edit the class if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -89,15 +85,14 @@ public class DCDSelectionController extends SelectionController {
     private void editInterface(InterfaceGR interfaceGR) {
         CentralRepository repository = model.getCentralRepository();
         Interface originalInterface = interfaceGR.getInterface();
-        InterfaceEditor interfaceEditor = new InterfaceEditor(originalInterface, repository);
+        InterfaceEditor interfaceEditor = new InterfaceEditor(repository);
 
         // show the interface editor dialog and check whether the user has pressed
         // cancel
-        if (!interfaceEditor.showDialog(parentComponent, "Interface Editor")) {
+        Interface newInterface = interfaceEditor.editDialog(originalInterface, parentComponent);
+        if (newInterface == null) {
             return;
         }
-
-        Interface newInterface = interfaceEditor.getInterface();
 
         // edit the interface if there is no change in the name,
         // or if there is a change in the name but the new name doesn't bring any
@@ -128,33 +123,35 @@ public class DCDSelectionController extends SelectionController {
 
     // Editing the selected graphical element if it is an association
     private void editAssociation(AssociationGR associationGR) {
-        AssociationEditor associationEditor = new AssociationEditor(associationGR);
-        Association association = associationGR.getAssociation();
+        AssociationEditor associationEditor = new AssociationEditor();
+        Association originalAssociation = associationGR.getAssociation();
 
-        // show the association editor dialog and check whether the user has pressed
-        // cancel
-        if (!associationEditor.showDialog(parentComponent, "Association Editor")) {
-            return;
+        // Use new editDialog() method
+        Association editedAssociation = associationEditor.editDialog(originalAssociation, parentComponent);
+        if (editedAssociation == null) {
+            return; // User cancelled
         }
 
+        // Undo/Redo - capture original state
+        Association undoAssociation = originalAssociation.clone();
+
+        // Apply all changes atomically
+        originalAssociation.setName(editedAssociation.getName());
+        originalAssociation.setDirection(editedAssociation.getDirection());
+        originalAssociation.setShowArrow(editedAssociation.getShowArrow());
+        originalAssociation.setLabelDirection(editedAssociation.getLabelDirection());
+
+        // Update roles
+        Role roleA = originalAssociation.getRoleA();
+        roleA.setName(editedAssociation.getRoleA().getName());
+        roleA.setMultiplicity(editedAssociation.getRoleA().getMultiplicity());
+
+        Role roleB = originalAssociation.getRoleB();
+        roleB.setName(editedAssociation.getRoleB().getName());
+        roleB.setMultiplicity(editedAssociation.getRoleB().getMultiplicity());
+
         // Undo/Redo
-        Association undoAssociation = association.clone();
-
-        association.setName(associationEditor.getAssociationName());
-        association.setDirection(associationEditor.getDirection());
-        association.setShowArrow(associationEditor.getShowArrow());
-        association.setLabelDirection(associationEditor.getLabelDirection());
-
-        Role roleA = association.getRoleA();
-        roleA.setName(associationEditor.getRoleAName());
-        roleA.setMultiplicity(associationEditor.getRoleAMultiplicity());
-
-        Role roleB = association.getRoleB();
-        roleB.setName(associationEditor.getRoleBName());
-        roleB.setMultiplicity(associationEditor.getRoleBMultiplicity());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditAssociationEdit(association, undoAssociation, model);
+        UndoableEdit edit = new EditAssociationEdit(originalAssociation, undoAssociation, model);
         parentComponent.getUndoSupport().postEdit(edit);
 
         // set observable model to changed in order to notify its views
@@ -169,17 +166,18 @@ public class DCDSelectionController extends SelectionController {
      * @param dependencyGR The graphical representation of the dependency to edit
      */
     private void editDependency(DependencyGR dependencyGR) {
-        DependencyEditor dependencyEditor = new DependencyEditor(dependencyGR);
+        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Dependency Editor",
+                "Stereotype: ", dependencyGR.getDependency().getStereotype());
         Dependency dependency = dependencyGR.getDependency();
 
         // show the dependency editor dialog and check whether the user has pressed cancel
-        if (!dependencyEditor.showDialog(parentComponent, "Dependency Editor")) {
+        if (!stringEditorDialog.showDialog()) {
             return;
         }
 
         // Undo/Redo - capture state before editing
         String undoStereotype = dependency.getStereotype();
-        String newStereotype = dependencyEditor.getStereotype();
+        String newStereotype = stringEditorDialog.getText();
 
         // Only create undo edit if the value actually changed
         if ((undoStereotype == null && newStereotype != null) ||
@@ -199,40 +197,25 @@ public class DCDSelectionController extends SelectionController {
 
     private void editAssociationClass(AssociationClassGR associationClassGR) {
         CentralRepository r = model.getCentralRepository();
-        DesignAssociationClassEditor associationClassEditor = new DesignAssociationClassEditor(associationClassGR, r);
-        DesignAssociationClass associationClass = (DesignAssociationClass) associationClassGR.getAssociationClass();
+        DesignAssociationClass originalAssociationClass = (DesignAssociationClass) associationClassGR
+                .getAssociationClass();
 
-        // show the association class editor dialog and check whether the user has
-        // pressed cancel
-        if (!associationClassEditor.showDialog(parentComponent, "Association Class Editor")) {
+        // Create editor and use Editor pattern
+        DesignAssociationClassEditor editor = new DesignAssociationClassEditor(r);
+        DesignAssociationClass editedAssociationClass = editor.editDialog(originalAssociationClass, parentComponent);
+
+        // Check if user cancelled
+        if (editedAssociationClass == null) {
             return;
         }
 
-        DesignAssociationClass undoAssociationClass = (DesignAssociationClass) associationClass.clone();
+        DesignAssociationClass undoAssociationClass = originalAssociationClass.clone();
 
-        associationClass.setName(associationClassEditor.getAssociationClassName());
-        associationClass.setDirection(associationClassEditor.getDirection());
-
-        Role roleA = associationClass.getRoleA();
-        roleA.setName(associationClassEditor.getRoleAName());
-        roleA.setMultiplicity(associationClassEditor.getRoleAMultiplicity());
-
-        Role roleB = associationClass.getRoleB();
-        roleB.setName(associationClassEditor.getRoleBName());
-        roleB.setMultiplicity(associationClassEditor.getRoleBMultiplicity());
-
-        // add the attributes to the new association class
-        NotifierVector<Attribute> attributes = new NotifierVector<>();
-        attributes.addAll(associationClassEditor.getAttributes());
-        associationClass.setAttributes(attributes);
-
-        // add the methods to the new association class
-        NotifierVector<Method> methods = new NotifierVector<>();
-        methods.addAll(associationClassEditor.getMethods());
-        associationClass.setMethods(methods);
+        // Apply changes using copyOf
+        originalAssociationClass.copyOf(editedAssociationClass);
 
         // Undo/Redo [edit]
-        UndoableEdit edit = new EditDCDAssociationClassEdit(associationClass, undoAssociationClass, model);
+        UndoableEdit edit = new EditDCDAssociationClassEdit(originalAssociationClass, undoAssociationClass, model);
         parentComponent.getUndoSupport().postEdit(edit);
 
         // set observable model to changed in order to notify its views

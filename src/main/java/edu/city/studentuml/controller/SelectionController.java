@@ -262,12 +262,12 @@ public abstract class SelectionController {
     }
 
     private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
+        UMLNoteEditor noteEditor = new UMLNoteEditor(parentComponent, "UML Note Editor", noteGR);
 
         // Undo/Redo
         String undoText = noteGR.getText();
 
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
+        if (!noteEditor.showDialog()) {
             return;
         }
 

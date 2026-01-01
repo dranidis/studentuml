@@ -9,9 +9,10 @@ import edu.city.studentuml.codegeneration.CCDesignClass;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 @JsonIncludeProperties({ "name", "attributes", "methods", "internalid" })
-public class DesignClass extends AbstractClass {
+public class DesignClass extends AbstractClass implements Copyable<DesignClass> {
 
     private String stereotype;
     private NotifierVector<Method> methods;
@@ -97,6 +98,11 @@ public class DesignClass extends AbstractClass {
 
         streamer.streamObjects(streamer.addChild(node, "attributes"), attributes.iterator());
         streamer.streamObjects(streamer.addChild(node, "methods"), methods.iterator());
+    }
+
+    @Override
+    public DesignClass copyOf(DesignClass designClass) {
+        return designClass.clone();
     }
 
     public DesignClass clone() {

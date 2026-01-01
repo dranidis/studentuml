@@ -10,12 +10,12 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 /**
- *
- * @author dimitris
+ * @author Dimitris Dranidis
  */
-public class CallMessage extends SDMessage implements IXMLCustomStreamable {
+public class CallMessage extends SDMessage implements IXMLCustomStreamable, Copyable<CallMessage> {
 
     private GenericOperation genericOperation;
     private boolean iterative;
@@ -59,7 +59,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Vector<MethodParameter> getParameters() {
         return parameters;
     }
@@ -122,7 +122,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */        
+     */
     public String getReturnValueAsString() {
         if (returnValue != null && !returnValue.getName().equals("")) {
             return returnValue.getName();
@@ -143,7 +143,7 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         setName(node.getAttribute("name"));
         setIterative(Boolean.parseBoolean(node.getAttribute("iterative")));
         parameters.clear();
-            streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "parameters"), this);
 
         String rv = node.getAttribute("returns");
         if (rv != null) {
@@ -203,6 +203,11 @@ public class CallMessage extends SDMessage implements IXMLCustomStreamable {
         copyCallMessage.setReturnType(this.getReturnType());
 
         return copyCallMessage;
+    }
+
+    @Override
+    public CallMessage copyOf(CallMessage message) {
+        return message.clone();
     }
 
 }

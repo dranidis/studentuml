@@ -1,7 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.ObjectFlow;
-import edu.city.studentuml.model.graphical.ObjectFlowGR;
+import edu.city.studentuml.view.gui.components.Editor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -18,46 +18,49 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- *
- * @author Biser
+ * Editor dialog for ObjectFlow properties (weight and guard). Implements
+ * Editor<ObjectFlow> interface for pure functional editing.
+ * 
+ * @author StudentUML Team
  */
-public class ObjectFlowEditor extends JPanel implements ActionListener {
+public class ObjectFlowEditor extends JPanel implements Editor<ObjectFlow>, ActionListener {
 
-    private ObjectFlowGR objectFlowGR;
-    private JDialog objectFlowDialog;
-    private JPanel centerPanel;
-    private JPanel guardPanel;
-    private JPanel weightPanel;
-    private JLabel guardLabel;
     private JTextField guardField;
-    private JLabel weightLabel;
     private JTextField weightField;
-    private boolean ok;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
     private JButton okButton;
+    private JButton cancelButton;
+    private JDialog dialog;
+    private boolean ok;
 
-    public ObjectFlowEditor(ObjectFlowGR objectFlowGR) {
-        this.objectFlowGR = objectFlowGR;
+    /**
+     * Creates a new ObjectFlowEditor with no initial data.
+     */
+    public ObjectFlowEditor() {
         setLayout(new BorderLayout());
+        createComponents();
+    }
 
-        centerPanel = new JPanel(new GridLayout(2, 0));
-        weightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        guardPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        weightLabel = new JLabel("Weight: ");
+    private void createComponents() {
+        // Center panel with weight and guard fields
+        JPanel centerPanel = new JPanel(new GridLayout(2, 1));
+
+        // Weight panel
+        JPanel weightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        weightPanel.add(new JLabel("Weight"));
         weightField = new JTextField(15);
-        weightField.addActionListener(this);
-        weightPanel.add(weightLabel);
         weightPanel.add(weightField);
-        guardLabel = new JLabel("Object flow Guard: ");
+
+        // Guard panel
+        JPanel guardPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        guardPanel.add(new JLabel("Object flow Guard"));
         guardField = new JTextField(15);
-        guardField.addActionListener(this);
-        guardPanel.add(guardLabel);
         guardPanel.add(guardField);
+
         centerPanel.add(weightPanel);
         centerPanel.add(guardPanel);
 
-        bottomPanel = new JPanel();
+        // Bottom panel with OK/Cancel buttons
+        JPanel bottomPanel = new JPanel();
         FlowLayout bottomLayout = new FlowLayout();
         bottomLayout.setHgap(30);
         bottomPanel.setLayout(bottomLayout);
@@ -70,55 +73,67 @@ public class ObjectFlowEditor extends JPanel implements ActionListener {
 
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
     }
 
-    public boolean showDialog(Component parent, String title) {
+    @Override
+    public ObjectFlow editDialog(ObjectFlow objectFlow, Component parent) {
+        // Initialize fields with current values
+        weightField.setText(objectFlow.getWeight());
+        guardField.setText(objectFlow.getGuard());
+
+        // Allow Enter key to submit the dialog
+        weightField.addActionListener(this);
+        guardField.addActionListener(this);
+
+        // Show the dialog
+        if (!showDialog(parent, "Object Flow Editor")) {
+            return null; // User cancelled
+        }
+
+        // Create a new ObjectFlow with the edited values
+        ObjectFlow edited = objectFlow.clone();
+        edited.setWeight(weightField.getText());
+        edited.setGuard(guardField.getText());
+
+        return edited;
+    }
+
+    /**
+     * Show the editor dialog.
+     * 
+     * @param parent The parent component for positioning the dialog
+     * @param title  The title of the dialog window
+     * @return true if OK was pressed, false if Cancel was pressed
+     */
+    private boolean showDialog(Component parent, String title) {
         ok = false;
 
         // find the owner frame
         Frame owner = null;
-
         if (parent instanceof Frame) {
             owner = (Frame) parent;
         } else {
             owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         }
 
-        objectFlowDialog = new JDialog(owner, true);
-        objectFlowDialog.getContentPane().add(this);
-        objectFlowDialog.setTitle(title);
-        objectFlowDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        objectFlowDialog.pack();
-        objectFlowDialog.setResizable(false);
-        objectFlowDialog.setLocationRelativeTo(owner);
-        objectFlowDialog.setVisible(true);
+        dialog = new JDialog(owner, title, true);
+        dialog.getContentPane().add(this);
+        dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        dialog.pack();
+        dialog.setResizable(false);
+        dialog.setLocationRelativeTo(owner);
+        dialog.setVisible(true);
 
         return ok;
     }
 
-    public void initialize() {
-        ObjectFlow flow = (ObjectFlow) objectFlowGR.getEdge();
-
-        weightField.setText(flow.getWeight());
-        guardField.setText(flow.getGuard());
-    }
-
-    public String getWeight() {
-        return weightField.getText();
-    }
-
-    public String getGuard() {
-        return guardField.getText();
-    }
-
+    @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == okButton || e.getSource() == guardField
-                || e.getSource() == weightField) {
-            objectFlowDialog.setVisible(false);
+        if (e.getSource() == okButton || e.getSource() == weightField || e.getSource() == guardField) {
+            dialog.setVisible(false);
             ok = true;
         } else if (e.getSource() == cancelButton) {
-            objectFlowDialog.setVisible(false);
+            dialog.setVisible(false);
         }
     }
 }
