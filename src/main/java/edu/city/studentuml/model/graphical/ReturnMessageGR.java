@@ -8,10 +8,12 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.model.domain.ReturnMessage;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 
 public class ReturnMessageGR extends SDMessageGR {
 
@@ -123,5 +125,26 @@ public class ReturnMessageGR extends SDMessageGR {
         ReturnMessageGR clonedGR = new ReturnMessageGR(sameFrom, sameTo, sameMessage, this.getY());
 
         return clonedGR;
+    }
+
+    /**
+     * Polymorphic edit method using the centralized helper to edit the return
+     * message name with undo/redo support.
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        ReturnMessage message = getReturnMessage();
+
+        return editStringPropertyWithDialog(
+                context,
+                "Return Message Editor",
+                "Return Message String:",
+                message,
+                ReturnMessage::getName,
+                ReturnMessage::setName,
+                ReturnMessage::clone,
+                (original, newValue, model) -> new EditReturnMessageEdit(original, newValue, model),
+                null, // no duplicate check
+                null); // no duplicate error message
     }
 }

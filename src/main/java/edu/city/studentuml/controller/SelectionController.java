@@ -263,7 +263,8 @@ public abstract class SelectionController {
 
     private void mapeditElement(GraphicalElement element) {
         // Try polymorphic edit() method first (new approach)
-        EditContext context = new EditContext(model, parentComponent);
+        edu.city.studentuml.editing.EditContext context = new edu.city.studentuml.editing.EditContext(model,
+                parentComponent);
         if (element.edit(context)) {
             // Element handled its own editing via polymorphic method
             return;
@@ -773,7 +774,8 @@ public abstract class SelectionController {
             }
         }
 
-        // Calculate offset to position at mouse cursor (or use default offset if no mouse position)
+        // Calculate offset to position at mouse cursor (or use default offset if no
+        // mouse position)
         final int offsetX;
         final int offsetY;
         if (currentMouseX > 0 || currentMouseY > 0) {
@@ -792,10 +794,12 @@ public abstract class SelectionController {
         // Map to track original -> cloned element mappings (for reconnecting links)
         Map<GraphicalElement, GraphicalElement> originalToCloneMap = new HashMap<>();
 
-        // Track which elements are children of composites (should not be added to model directly)
+        // Track which elements are children of composites (should not be added to model
+        // directly)
         Set<GraphicalElement> childElements = new HashSet<>();
 
-        // Create compound edit to group all paste operations into single undoable action
+        // Create compound edit to group all paste operations into single undoable
+        // action
         CompoundEdit compoundEdit = new CompoundEdit();
 
         // Identify child elements first
@@ -811,7 +815,8 @@ public abstract class SelectionController {
 
         // First pass: Clone non-link elements (classes, use cases, etc.)
         for (GraphicalElement originalElement : clipboardElements) {
-            // Skip links, edges, and SD messages in first pass - we'll handle them after objects are cloned
+            // Skip links, edges, and SD messages in first pass - we'll handle them after
+            // objects are cloned
             if (originalElement instanceof LinkGR || originalElement instanceof EdgeGR
                     || originalElement instanceof SDMessageGR) {
                 continue;
@@ -1127,7 +1132,8 @@ public abstract class SelectionController {
             return new UCExtendGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
 
         } else if (originalLink instanceof UCGeneralizationGR) {
-            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR elements
+            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR
+            // elements
             UCGeneralization origDomain = (UCGeneralization) ((UCGeneralizationGR) originalLink).getLink();
             // REUSE the same domain UCGeneralization object
             if (newA instanceof UCActorGR && newB instanceof UCActorGR) {
@@ -1189,7 +1195,8 @@ public abstract class SelectionController {
             RoleClassifierGR newSource,
             RoleClassifierGR newTarget) {
         // Create appropriate message type based on the original
-        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends CallMessageGR)
+        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends
+        // CallMessageGR)
         if (originalMessage instanceof CreateMessageGR) {
             CreateMessageGR origCreate = (CreateMessageGR) originalMessage;
             CreateMessage origDomain = origCreate.getCreateMessage();
@@ -1246,9 +1253,6 @@ public abstract class SelectionController {
             return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
 
         } else if (originalMessage instanceof DestroyMessageGR) {
-            DestroyMessageGR origDestroy = (DestroyMessageGR) originalMessage;
-            DestroyMessage origDomain = origDestroy.getDestroyMessage();
-
             // Create new domain message with new source/target
             DestroyMessage newDomain = new DestroyMessage(
                     newSource.getRoleClassifier(),
@@ -1623,7 +1627,8 @@ public abstract class SelectionController {
                     if (draggingEndpoint == EndpointType.SOURCE) {
                         reconnected = message.reconnectSource(newLifeline);
 
-                        // If reconnecting source of a call message, update corresponding return message's target
+                        // If reconnecting source of a call message, update corresponding return
+                        // message's target
                         if (reconnected && returnMsg != null) {
                             returnMsg.reconnectTarget(newLifeline);
                             logger.fine(() -> "Also updated corresponding return message target");
@@ -1631,7 +1636,8 @@ public abstract class SelectionController {
                     } else if (draggingEndpoint == EndpointType.TARGET) {
                         reconnected = message.reconnectTarget(newLifeline);
 
-                        // If reconnecting target of a call message, update corresponding return message's source
+                        // If reconnecting target of a call message, update corresponding return
+                        // message's source
                         if (reconnected && returnMsg != null) {
                             returnMsg.reconnectSource(newLifeline);
                             logger.fine(() -> "Also updated corresponding return message source");

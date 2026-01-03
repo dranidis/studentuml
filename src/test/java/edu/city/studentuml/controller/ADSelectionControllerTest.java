@@ -9,6 +9,7 @@ import org.junit.Test;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.model.domain.DecisionNode;
+import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.ActionNodeGR;
 import edu.city.studentuml.model.graphical.ADModel;
@@ -16,8 +17,14 @@ import edu.city.studentuml.model.graphical.ActivityNodeGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.InitialNodeGR;
+import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
+import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
+import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
+import edu.city.studentuml.util.undoredo.EditObjectFlowEdit;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
@@ -213,5 +220,137 @@ public class ADSelectionControllerTest {
         assertEquals(internalFrame.getUndoSupport(), context.getUndoSupport());
 
         // Manual/integration testing would be needed to verify the full edit workflow
+    }
+
+    @Test
+    public void testEditActionNodeNameWithUndo() {
+        // Create an ActionNode
+        ActionNode actionNode = new ActionNode();
+        actionNode.setName("OriginalAction");
+        ActionNodeGR actionNodeGR = new ActionNodeGR(actionNode, 100, 100);
+        model.addGraphicalElement(actionNodeGR);
+
+        // Verify initial state
+        assertEquals("OriginalAction", actionNode.getName());
+
+        // Create edit (simulating what edit() method creates)
+        ActionNode newActionNode = (ActionNode) actionNode.clone();
+        newActionNode.setName("EditedAction");
+        EditActionNodeEdit edit = new EditActionNodeEdit(actionNode, newActionNode, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedAction", actionNode.getName());
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalAction", actionNode.getName());
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedAction", actionNode.getName());
+    }
+
+    @Test
+    public void testEditActivityNodeNameWithUndo() {
+        // Create an ActivityNode
+        ActivityNode activityNode = new ActivityNode();
+        activityNode.setName("OriginalActivity");
+        ActivityNodeGR activityNodeGR = new ActivityNodeGR(activityNode, 100, 100);
+        model.addGraphicalElement(activityNodeGR);
+
+        // Verify initial state
+        assertEquals("OriginalActivity", activityNode.getName());
+
+        // Create edit
+        ActivityNode newActivityNode = (ActivityNode) activityNode.clone();
+        newActivityNode.setName("EditedActivity");
+        EditActivityNodeEdit edit = new EditActivityNodeEdit(activityNode, newActivityNode, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedActivity", activityNode.getName());
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalActivity", activityNode.getName());
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedActivity", activityNode.getName());
+    }
+
+    @Test
+    public void testEditDecisionNodeNameWithUndo() {
+        // Create a DecisionNode
+        DecisionNode decisionNode = new DecisionNode();
+        decisionNode.setName("OriginalDecision");
+        DecisionNodeGR decisionNodeGR = new DecisionNodeGR(decisionNode, 100, 100);
+        model.addGraphicalElement(decisionNodeGR);
+
+        // Verify initial state
+        assertEquals("OriginalDecision", decisionNode.getName());
+
+        // Create edit
+        DecisionNode newDecisionNode = (DecisionNode) decisionNode.clone();
+        newDecisionNode.setName("EditedDecision");
+        EditDecisionNodeEdit edit = new EditDecisionNodeEdit(decisionNode, newDecisionNode, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedDecision", decisionNode.getName());
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalDecision", decisionNode.getName());
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedDecision", decisionNode.getName());
+    }
+
+    @Test
+    public void testEditObjectFlowGuardWithUndo() {
+        // Create ObjectFlow (requires source and target nodes)
+        ActionNode sourceNode = new ActionNode();
+        sourceNode.setName("Source");
+        ActionNodeGR sourceGR = new ActionNodeGR(sourceNode, 100, 100);
+        model.addGraphicalElement(sourceGR);
+
+        ActionNode targetNode = new ActionNode();
+        targetNode.setName("Target");
+        ActionNodeGR targetGR = new ActionNodeGR(targetNode, 200, 200);
+        model.addGraphicalElement(targetGR);
+
+        ObjectFlow objectFlow = new ObjectFlow(sourceNode, targetNode);
+        objectFlow.setGuard("originalGuard");
+        objectFlow.setWeight("1");
+        ObjectFlowGR objectFlowGR = new ObjectFlowGR(sourceGR, targetGR, objectFlow);
+        model.addGraphicalElement(objectFlowGR);
+
+        // Verify initial state
+        assertEquals("originalGuard", objectFlow.getGuard());
+        assertEquals("1", objectFlow.getWeight());
+
+        // Create edit
+        ObjectFlow newObjectFlow = objectFlow.clone();
+        newObjectFlow.setGuard("editedGuard");
+        newObjectFlow.setWeight("2");
+        EditObjectFlowEdit edit = new EditObjectFlowEdit(objectFlow, newObjectFlow, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("editedGuard", objectFlow.getGuard());
+        assertEquals("2", objectFlow.getWeight());
+
+        // Undo
+        edit.undo();
+        assertEquals("originalGuard", objectFlow.getGuard());
+        assertEquals("1", objectFlow.getWeight());
+
+        // Redo again
+        edit.redo();
+        assertEquals("editedGuard", objectFlow.getGuard());
+        assertEquals("2", objectFlow.getWeight());
     }
 }

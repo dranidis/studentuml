@@ -48,6 +48,12 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
         this.stereotype = stereotype;
     }
 
+    public Dependency clone() {
+        Dependency copy = new Dependency(this.getFrom(), this.getTo());
+        copy.setStereotype(this.getStereotype());
+        return copy;
+    }
+
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         String stereo = node.getAttribute("stereotype");
         if (stereo != null && !stereo.isEmpty()) {

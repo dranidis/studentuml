@@ -5,8 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
-import java.util.logging.Logger;
-
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -31,8 +29,6 @@ import edu.city.studentuml.view.gui.components.MethodParameterPanel;
  * @author Dimitris Dranidis
  */
 public class CallMessageEditor extends OkCancelDialog implements Editor<CallMessage> {
-    private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
-
     private CallMessage callMessage;
     private JTextField nameField;
     private JLabel nameLabel;

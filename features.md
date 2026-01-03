@@ -75,6 +75,40 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** Projects using generic types (List<T>, Map<K,V>, etc.) cause consistency checking to fail with Prolog syntax errors.
 
+### Activity Diagram Node Degree Constraints
+
+**Status:** Not implemented  
+**Priority:** High  
+**Description:** Enforce control-flow degree constraints in Activity Diagrams:
+
+-   Initial nodes must have exactly one outgoing Control Flow.
+-   Final nodes (Activity Final and Flow Final) must have exactly one incoming Control Flow.
+
+Violations should be prevented at creation time (with a user-facing error/warning) and detected during consistency checks.
+
+**Technical Notes:**
+
+-   Domain types: `InitialNode`, `ActivityFinalNode`, `FlowFinalNode` under `edu.city.studentuml.model.domain`.
+-   Graphical types: `InitialNodeGR`, `ActivityFinalNodeGR`, `FlowFinalNodeGR` under `edu.city.studentuml.model.graphical`.
+-   Edge types: `ControlFlow` (domain) and `ControlFlowGR` (graphical).
+-   Creation path to validate (to locate exact enforcement points):
+    -   Add-element controllers for AD (e.g., `AddControlFlowController` or equivalent) or a generic add-edge controller.
+    -   Reconnection logic in `EdgeGR` and specific GRs (to block making an invalid degree via reconnect).
+    -   Consider a model-level validation in `NodeComponent` or a dedicated validator that counts `getOutgoingEdges()` / `getIncomingEdges()`.
+-   Suggested enforcement:
+    -   Before creating a `ControlFlow` where source is `InitialNode`, check `source.getOutgoingEdges().isEmpty()`; if not empty, block and show: "Initial node can have a single outgoing control flow".
+    -   Before creating a `ControlFlow` where target is `ActivityFinalNode` or `FlowFinalNode`, check `target.getIncomingEdges().isEmpty()`; if not empty, block and show: "Final nodes can have a single incoming control flow".
+    -   Mirror these checks in reconnection handlers (`ControlFlowGR` / `EdgeGR`) to prevent violating the constraints via reconnect.
+    -   Add consistency rules to the Prolog ruleset: count incoming/outgoing degrees for final/initial nodes and report violations.
+-   XML Save/Load:
+    -   On load, optionally run a validation pass to flag diagrams that violate the constraints.
+    -   Consider auto-fix option (disabled by default) that removes surplus flows or highlights them.
+-   Tests:
+    -   Unit tests for creation blocking in controllers.
+    -   Integration tests: attempt to draw invalid flows and assert error dialogs; ensure valid flows are allowed.
+
+**Use Case:** In UML Activity Diagrams, initial nodes represent the single entry point of the activity, and final nodes represent termination points. Allowing multiple outgoing/incoming flows makes the diagram ambiguous and violates UML semantics. Enforcing these constraints keeps models clean and semantically correct.
+
 ## Class Diagram Features
 
 ### Support Package Visibility for Methods and Attributes
@@ -321,6 +355,24 @@ This document tracks potential features and improvements for StudentUML.
 -   Related work: Editor refactoring (see `plan-editor-interface.md`) addressed copy/paste for many elements but revealed these remaining gaps
 
 **Use Case:** When duplicating diagram sections or creating variations of existing designs, users expect copy/paste to work consistently for all element types. Silent failures and broken note links cause confusion and data integrity issues. For example, copying a sequence diagram with destroy messages, or copying use case relationships (include/extend/generalization), currently fails without clear feedback. Activity diagrams lose control flow and object flow connections when pasted, making it impossible to duplicate complex activity structures.
+
+### UML Note Y-Position in Sequence Diagrams
+
+**Status:** Not implemented  
+**Priority:** Low  
+**Description:** When pasting UML notes in Sequence Diagrams, the Y-coordinate should be preserved from the original position (with offset), not calculated relative to the mouse cursor. In Sequence Diagrams, all elements are positioned at the top of the diagram, and the mouse Y-coordinate is irrelevant for vertical positioning.
+
+**Technical Notes:**
+
+-   Current behavior: `SelectionController.pasteClipboard()` uses mouse position (currentMouseY) to calculate offsetY for all elements, including UML notes in SD diagrams
+-   Expected behavior: In Sequence Diagrams, UML notes should use their original Y-coordinate plus a fixed offset, ignoring mouse Y
+-   Implementation:
+    -   In `SelectionController.pasteClipboard()`, detect if target diagram is a Sequence Diagram (SDModel or SSDModel)
+    -   For SD/SSD diagrams: when calculating offsetY for UMLNoteGR elements, use a fixed offset (e.g., 20 pixels) instead of currentMouseY
+    -   For other diagram types: keep current mouse-based positioning behavior
+-   Related code: `SelectionController.pasteClipboard()` lines ~770-795 (offset calculation)
+
+**Use Case:** When copying and pasting elements in Sequence Diagrams, UML notes attached to messages or objects should maintain their relative position in the timeline/Y-axis. Using the mouse Y-coordinate causes notes to jump to unexpected positions since SD elements are always positioned at the top regardless of where the user clicks.
 
 ## Additional Potential Features
 

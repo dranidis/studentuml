@@ -9,11 +9,9 @@ import java.util.List;
 
 import javax.swing.undo.UndoableEdit;
 
-import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.util.Coverable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.view.gui.StringEditorDialog;
 
 /**
  * @author Biser
@@ -154,37 +152,19 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
             String dialogTitle,
             String fieldLabel,
             UndoableEditFactory undoableEditFactory) {
+        NodeComponent domain = getComponent();
 
-        NodeComponent domainObject = getComponent();
-
-        // Show the string editor dialog
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(
-                context.getParentComponent(),
+        return editStringPropertyWithDialog(
+                context,
                 dialogTitle,
                 fieldLabel,
-                domainObject.getName());
-
-        // Check whether the user has pressed cancel
-        if (!stringEditorDialog.showDialog()) {
-            return false;
-        }
-
-        // Clone domain object for undo/redo before applying changes
-        NodeComponent undoDomainObject = (NodeComponent) domainObject.clone();
-
-        // Apply the changes to the domain object
-        String newName = stringEditorDialog.getText();
-        domainObject.setName(newName);
-
-        // Create undo/redo support using the factory provided by subclass
-        UndoableEdit edit = undoableEditFactory.create(domainObject, undoDomainObject, context.getModel());
-        context.getUndoSupport().postEdit(edit);
-
-        // Notify observers that the model has changed
-        context.notifyModelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-
-        return true;
+                domain,
+                NodeComponent::getName,
+                NodeComponent::setName,
+                d -> (NodeComponent) d.clone(),
+                (orig, undo, model) -> undoableEditFactory.create(orig, undo, model),
+                null, // no duplicate check
+                null); // no duplicate error message
     }
 
     /**
@@ -197,12 +177,13 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
         /**
          * Creates an UndoableEdit for the given domain objects.
          * 
-         * @param original the original domain object being edited
-         * @param undo     the cloned domain object for undo operations
+         * @param original the original domain object being edited (unmutated at call
+         *                 time)
+         * @param newValue the domain object with the new/target state for redo
          * @param model    the diagram model
          * @return the UndoableEdit instance
          */
-        UndoableEdit create(NodeComponent original, NodeComponent undo,
+        UndoableEdit create(NodeComponent original, NodeComponent newValue,
                 DiagramModel model);
     }
 

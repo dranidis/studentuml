@@ -219,6 +219,14 @@ This maintains a clear history of changes for each release and helps with versio
 -   `DiagramModel.getName()`
 -   `DiagramModel.getGraphicalElements()`
 
+### Import Style (Avoid Fully Qualified Names)
+
+-   Always prefer imports over using fully qualified class names in code.
+-   Do not write fully qualified names (e.g., `java.util.List`) in method bodies or fields unless absolutely necessary to disambiguate a name conflict.
+-   If a name conflict exists, use the fully qualified name only at the specific usage site where the conflict occurs; otherwise, import normally.
+-   When editing existing files that use fully qualified names, favor replacing them with proper imports where safe and readable.
+-   Use static imports sparingly for readability; prefer regular imports for classes and enums.
+
 ### Undo/Redo System
 
 -   All model changes must create `UndoableEdit` instances in `util/undoredo/`

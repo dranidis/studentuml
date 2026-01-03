@@ -18,15 +18,11 @@ import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.InterfaceEditor;
 
-import javax.swing.undo.UndoableEdit;
-
-import edu.city.studentuml.controller.EditContext;
-import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.editing.EditContext;
 
 /**
  * @author Ervin Ramollari
@@ -239,43 +235,16 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
      */
     @Override
     public boolean edit(EditContext context) {
-        CentralRepository repository = context.getRepository();
-        Interface originalInterface = this.getInterface();
-        InterfaceEditor interfaceEditor = new InterfaceEditor(repository);
-
-        // show the interface editor dialog and check whether the user has pressed cancel
-        Interface newInterface = interfaceEditor.editDialog(originalInterface, context.getParentComponent());
-        if (newInterface == null) {
-            return false; // User cancelled
-        }
-
-        // Pattern 2: Name conflict handling - DCD/CCD variant (silent merge)
-        // edit the interface if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
-        // or if the new name is blank
-        if (!originalInterface.getName().equals(newInterface.getName())
-                && repository.getInterface(newInterface.getName()) != null
-                && !newInterface.getName().equals("")) {
-
-            // Name conflict: replace this graphical element's reference with the existing interface
-            this.setInterface(repository.getInterface(newInterface.getName()));
-
-            // remove the existing interface if it has no name
-            if (originalInterface.getName().equals("")) {
-                repository.removeInterface(originalInterface);
-            }
-        } else {
-            // No conflict: normal edit with undo/redo
-            UndoableEdit edit = new EditInterfaceEdit(originalInterface, newInterface, context.getModel());
-            repository.editInterface(originalInterface, newInterface);
-            context.getUndoSupport().postEdit(edit);
-        }
-
-        // set observable model to changed in order to notify its views
-        context.getModel().modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-
-        return true;
+        return editClassifierWithDialog(
+                context,
+                this::getInterface, // Get current classifier
+                this::setInterface, // Set classifier reference
+                (original, parent) -> new InterfaceEditor(context.getRepository()).editDialog(original, parent),
+                context.getRepository()::getInterface, // Get classifier by name
+                context.getRepository()::removeInterface, // Remove from repository
+                (repo, orig, edited) -> repo.editInterface(orig, edited), // Edit in repository
+                (orig, edited, model) -> new EditInterfaceEdit(orig, edited, model) // Create UndoableEdit
+        );
     }
 
     @Override

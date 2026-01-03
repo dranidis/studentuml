@@ -3,21 +3,17 @@ package edu.city.studentuml.controller;
 import javax.swing.undo.UndoableEdit;
 
 import edu.city.studentuml.model.domain.Association;
-import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
-import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.EditAssociationEdit;
 import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
-import edu.city.studentuml.util.undoredo.EditDependencyEdit;
 import edu.city.studentuml.view.gui.AssociationEditor;
-import edu.city.studentuml.view.gui.StringEditorDialog;
 import edu.city.studentuml.view.gui.DesignAssociationClassEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
@@ -30,7 +26,7 @@ public class DCDSelectionController extends SelectionController {
         editElementMapper.put(AssociationClassGR.class, e -> editAssociationClass((AssociationClassGR) e));
         editElementMapper.put(AssociationGR.class, e -> editAssociation((AssociationGR) e));
         editElementMapper.put(AggregationGR.class, e -> editAssociation((AssociationGR) e));
-        editElementMapper.put(DependencyGR.class, e -> editDependency((DependencyGR) e));
+        // DependencyGR now uses polymorphic edit() method
         // InterfaceGR now uses polymorphic edit() method
     }
 
@@ -78,35 +74,7 @@ public class DCDSelectionController extends SelectionController {
      * 
      * @param dependencyGR The graphical representation of the dependency to edit
      */
-    private void editDependency(DependencyGR dependencyGR) {
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent, "Dependency Editor",
-                "Stereotype: ", dependencyGR.getDependency().getStereotype());
-        Dependency dependency = dependencyGR.getDependency();
-
-        // show the dependency editor dialog and check whether the user has pressed cancel
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-
-        // Undo/Redo - capture state before editing
-        String undoStereotype = dependency.getStereotype();
-        String newStereotype = stringEditorDialog.getText();
-
-        // Only create undo edit if the value actually changed
-        if ((undoStereotype == null && newStereotype != null) ||
-                (undoStereotype != null && !undoStereotype.equals(newStereotype))) {
-
-            dependency.setStereotype(newStereotype);
-
-            // Undo/Redo
-            UndoableEdit edit = new EditDependencyEdit(dependency, undoStereotype, newStereotype, model);
-            parentComponent.getUndoSupport().postEdit(edit);
-
-            // set observable model to changed in order to notify its views
-            model.modelChanged();
-            SystemWideObjectNamePool.getInstance().reload();
-        }
-    }
+    // DependencyGR now uses polymorphic edit(EditContext); legacy controller editor removed.
 
     private void editAssociationClass(AssociationClassGR associationClassGR) {
         CentralRepository r = model.getCentralRepository();

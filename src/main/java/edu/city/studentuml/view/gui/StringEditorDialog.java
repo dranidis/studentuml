@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -36,14 +35,10 @@ public class StringEditorDialog extends OkCancelDialog {
     /**
      * Get the text value from the name field.
      * 
-     * @return The text entered by the user, or null if blank
+     * @return The text entered by the user
      */
     public String getText() {
-        if (textField == null) {
-            return null;
-        }
-        String text = textField.getText().trim();
-        return text.isEmpty() ? null : text;
+        return textField.getText().trim();
     }
 
     @Override
@@ -51,16 +46,5 @@ public class StringEditorDialog extends OkCancelDialog {
         if (event.getSource() == textField) {
             actionOK(event);
         }
-    }
-
-    protected void actionOK(ActionEvent event) {
-        if (textField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "You must provide a non-empty value or press Cancel!",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        super.actionOK(event);
     }
 }

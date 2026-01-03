@@ -2,10 +2,13 @@ package edu.city.studentuml.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Actor;
+import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -13,6 +16,9 @@ import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.graphical.UseCaseGR;
+import edu.city.studentuml.util.undoredo.EditActorEdit;
+import edu.city.studentuml.util.undoredo.EditSystemEdit;
+import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.UCDInternalFrame;
 
@@ -238,6 +244,114 @@ public class UCDSelectionControllerTest {
         // Should be back to original state with single undo
         assertEquals("Single undo should remove entire paste operation",
                 initialCount, model.getGraphicalElements().size());
+    }
+
+    @Test
+    public void testEditActorNameWithUndo() {
+        // Create an Actor
+        UCActorGR actorGR = h.addActor("OriginalActor");
+        Actor actor = (Actor) actorGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalActor", actor.getName());
+        assertEquals(actor, umlProject.getCentralRepository().getActor("OriginalActor"));
+
+        // Create edit
+        Actor newActor = (Actor) actor.clone();
+        newActor.setName("EditedActor");
+        EditActorEdit edit = new EditActorEdit(actor, newActor, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedActor", actor.getName());
+        // Repository should be synchronized
+        assertEquals(actor, umlProject.getCentralRepository().getActor("EditedActor"));
+        assertNull(umlProject.getCentralRepository().getActor("OriginalActor"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalActor", actor.getName());
+        // Repository should be restored
+        assertEquals(actor, umlProject.getCentralRepository().getActor("OriginalActor"));
+        assertNull(umlProject.getCentralRepository().getActor("EditedActor"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedActor", actor.getName());
+        assertEquals(actor, umlProject.getCentralRepository().getActor("EditedActor"));
+        assertNull(umlProject.getCentralRepository().getActor("OriginalActor"));
+    }
+
+    @Test
+    public void testEditUseCaseNameWithUndo() {
+        // Create a UseCase
+        UseCaseGR useCaseGR = h.addUseCase("OriginalUseCase");
+        UseCase useCase = (UseCase) useCaseGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalUseCase", useCase.getName());
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+
+        // Create edit
+        UseCase newUseCase = (UseCase) useCase.clone();
+        newUseCase.setName("EditedUseCase");
+        EditUseCaseEdit edit = new EditUseCaseEdit(useCase, newUseCase, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedUseCase", useCase.getName());
+        // Repository should be synchronized
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalUseCase", useCase.getName());
+        // Repository should be restored
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedUseCase", useCase.getName());
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+    }
+
+    @Test
+    public void testEditSystemNameWithUndo() {
+        // Create a System
+        SystemGR systemGR = h.addSystem("OriginalSystem");
+        System system = (System) systemGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalSystem", system.getName());
+        assertEquals(system, umlProject.getCentralRepository().getSystem("OriginalSystem"));
+
+        // Create edit
+        System newSystem = (System) system.clone();
+        newSystem.setName("EditedSystem");
+        EditSystemEdit edit = new EditSystemEdit(system, newSystem, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedSystem", system.getName());
+        // Repository should be synchronized
+        assertEquals(system, umlProject.getCentralRepository().getSystem("EditedSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("OriginalSystem"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalSystem", system.getName());
+        // Repository should be restored
+        assertEquals(system, umlProject.getCentralRepository().getSystem("OriginalSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("EditedSystem"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedSystem", system.getName());
+        assertEquals(system, umlProject.getCentralRepository().getSystem("EditedSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("OriginalSystem"));
     }
 
 }

@@ -3,16 +3,20 @@ package edu.city.studentuml.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.util.undoredo.EditCCDClassEdit;
 import edu.city.studentuml.view.gui.CCDInternalFrame;
+import edu.city.studentuml.editing.EditContext;
 
 public class CCDSelectionControllerTest {
 
@@ -126,6 +130,42 @@ public class CCDSelectionControllerTest {
         } catch (NoSuchMethodException e) {
             assertTrue("ConceptualClassGR should have edit(EditContext) method", false);
         }
+    }
+
+    @Test
+    public void testEditConceptualClassNameWithUndo() {
+        // Create a ConceptualClass
+        ConceptualClassGR classGR = h.addConceptualClass("OriginalClass");
+        ConceptualClass conceptualClass = classGR.getConceptualClass();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalClass", conceptualClass.getName());
+        assertEquals(conceptualClass, umlProject.getCentralRepository().getConceptualClass("OriginalClass"));
+
+        // Create edit
+        ConceptualClass newClass = conceptualClass.clone();
+        newClass.setName("EditedClass");
+        EditCCDClassEdit edit = new EditCCDClassEdit(conceptualClass, newClass, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedClass", conceptualClass.getName());
+        // Repository should be synchronized
+        assertEquals(conceptualClass, umlProject.getCentralRepository().getConceptualClass("EditedClass"));
+        assertNull(umlProject.getCentralRepository().getConceptualClass("OriginalClass"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalClass", conceptualClass.getName());
+        // Repository should be restored
+        assertEquals(conceptualClass, umlProject.getCentralRepository().getConceptualClass("OriginalClass"));
+        assertNull(umlProject.getCentralRepository().getConceptualClass("EditedClass"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedClass", conceptualClass.getName());
+        assertEquals(conceptualClass, umlProject.getCentralRepository().getConceptualClass("EditedClass"));
+        assertNull(umlProject.getCentralRepository().getConceptualClass("OriginalClass"));
     }
 
 }

@@ -1285,26 +1285,26 @@ After implementing the template method for Pattern 1 elements, we investigated t
 
 **Conclusion:** All Pattern 1 (Simple Domain Edit) elements are COMPLETE. Only ActivityNodeGR, DecisionNodeGR, and ActionNodeGR truly fit this pattern (simple name edit with StringEditorDialog, clone/apply, standard undo).
 
-### Phase 4: Migrate Name Conflict Elements (Higher Risk) - NEXT?
+### Phase 4: Migrate Name Conflict Elements (Higher Risk)
 
 **Pattern 2 elements use StringEditorDialog but check for name conflicts**
 
 -   [ ] Task 4.1: Implement `edit()` in `ClassGR` (DCD) - Pattern 2
 -   [ ] Task 4.2: Implement `edit()` in `InterfaceGR` (DCD) - Pattern 2
 -   [ ] Task 4.3: Implement `edit()` in `ConceptualClassGR` (CCD) - Pattern 2
--   [ ] Task 4.4: Implement `edit()` in `UCActorGR` (UCD) - Pattern 2 variant (shows error instead of merging)
--   [ ] Task 4.5: Implement `edit()` in `UseCaseGR` (UCD) - Pattern 2 variant (shows error instead of merging)
--   [ ] Task 4.6: Implement `edit()` in `SystemGR` (UCD) - Pattern 2 variant (shows error instead of merging)
+-   [x] Task 4.4: Implement `edit()` in `UCActorGR` (UCD) - Pattern 2 variant (shows error instead of merging)
+-   [x] Task 4.5: Implement `edit()` in `UseCaseGR` (UCD) - Pattern 2 variant (shows error instead of merging)
+-   [x] Task 4.6: Implement `edit()` in `SystemGR` (UCD) - Pattern 2 variant (shows error instead of merging)
 
 **Strategy:** Could create variant template method in base class for name conflict checking
 
-### Phase 5: Migrate Validation Elements (Higher Risk) - NEXT?
+### Phase 5: Migrate Validation Elements (Higher Risk)
 
 **Pattern 4 elements have complex domain-specific validation logic**
 
--   [ ] Task 5.1: Implement `edit()` in `ControlFlowGR` (AD) - Pattern 4 (guard uniqueness validation)
--   [ ] Task 5.2: Implement `edit()` in `ObjectFlowGR` (AD) - Pattern 4 (guard uniqueness + weight format validation)
--   [ ] Task 5.3: Implement `edit()` in `DependencyGR` (DCD) - Pattern 6 (simple stereotype value)
+-   [x] Task 5.1: Implement `edit()` in `ControlFlowGR` (AD) - Pattern 4 (guard uniqueness validation)
+-   [x] Task 5.2: Implement `edit()` in `ObjectFlowGR` (AD) - Pattern 4 (guard uniqueness + weight format validation)
+-   [x] Task 5.3: Implement `edit()` in `DependencyGR` (DCD) - Pattern 6 (simple stereotype value)
 
 **Strategy:** May not be suitable for template method due to complex validation logic
 
@@ -1320,11 +1320,11 @@ After implementing the template method for Pattern 1 elements, we investigated t
 
 **Strategy:** Pattern 3 is well-structured with TypedEntityEditResult and CompoundEdit, may not need template method
 
-### Phase 7: Migrate Message Elements (Medium Risk) - NEXT?
+### Phase 7: Migrate Message Elements (Medium Risk)
 
 -   [ ] Task 7.1: Implement `edit()` in `CallMessageGR` (SD) - Pattern 5 (in-place property edit)
 -   [ ] Task 7.2: Implement `edit()` in `CreateMessageGR` (SD) - Pattern 5
--   [ ] Task 7.3: Implement `edit()` in `ReturnMessageGR` (SD) - Pattern 6 (simple value with StringEditorDialog)
+-   [x] Task 7.3: Implement `edit()` in `ReturnMessageGR` (SD) - Pattern 6 (simple value with StringEditorDialog)
 
 **Note:** ReturnMessageGR uses StringEditorDialog, similar to Pattern 1 but simpler (no domain clone)
 
@@ -1385,6 +1385,21 @@ After implementing the polymorphic edit approach with template method:
 -   Decide on next pattern to tackle (Pattern 2, 4, 5, or 6)
 -   Update remaining phase tasks based on correct pattern classifications
 -   Continue incremental migration approach
+
+**Additional Migrations Completed (Post-Phase 2):**
+
+-   ControlFlowGR (AD) edit() implemented with guard validation and centralized helper; redo-aware undo fixed via explicit redo snapshot
+-   DependencyGR (DCD) edit() implemented (stereotype simple value edit)
+-   ReturnMessageGR (SD) edit() implemented (simple value)
+-   UCD elements migrated to polymorphic edit(): UCActorGR, UseCaseGR, SystemGR with conflict-checking variant (error dialog on duplicates); corresponding controller mapper entries removed
+
+**Immediate Next Task:**
+
+-   Implement `edit()` in `ObjectFlowGR` (AD) with validation:
+    -   Guard uniqueness among outgoing edges (same as ControlFlow)
+    -   Weight format validation (integer > 0 or acceptable format per domain rules)
+    -   Use centralized helper with duplicate-checking and provide redo snapshot; add/ensure redo-aware undo edit if required
+    -   Add or adjust unit tests to cover undo/redo and validation failures
 
 ---
 

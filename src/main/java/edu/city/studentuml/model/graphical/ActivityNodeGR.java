@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import org.w3c.dom.Element;
 
-import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
@@ -320,8 +320,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     /**
-     * Opens an editor dialog for editing the activity node's name.
-     * Uses the template method from NodeComponentGR for the common editing workflow.
+     * Opens an editor dialog for editing the activity node's name. Uses the
+     * template method from NodeComponentGR for the common editing workflow.
      * 
      * @param context the edit context providing access to model, repository, parent
      *                component, and undo support
@@ -333,9 +333,9 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
                 context,
                 "Activity Node Editor",
                 "Activity name: ",
-                (original, undo, model) -> new EditActivityNodeEdit(
+                (original, newValue, model) -> new EditActivityNodeEdit(
                         (ActivityNode) original,
-                        (ActivityNode) undo,
+                        (ActivityNode) newValue,
                         model));
     }
 }

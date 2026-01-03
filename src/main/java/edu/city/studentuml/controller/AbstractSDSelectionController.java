@@ -10,7 +10,6 @@ import javax.swing.undo.UndoableEdit;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.CallMessage;
-import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
@@ -24,12 +23,10 @@ import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.ActorRepositoryOperations;
 import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
 import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
-import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.StringEditorDialog;
 import edu.city.studentuml.view.gui.TypeOperation;
 import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
@@ -48,7 +45,6 @@ public abstract class AbstractSDSelectionController extends SelectionController 
         super(parent, m);
         editElementMapper.put(ActorInstanceGR.class, el -> editActorInstance((ActorInstanceGR) el));
         editElementMapper.put(CallMessageGR.class, el -> editCallMessage((CallMessageGR) el));
-        editElementMapper.put(ReturnMessageGR.class, el -> editReturnMessage((ReturnMessageGR) el));
     }
 
     /**
@@ -192,23 +188,7 @@ public abstract class AbstractSDSelectionController extends SelectionController 
         SystemWideObjectNamePool.getInstance().reload();
     }
 
-    private void editReturnMessage(ReturnMessageGR messageGR) {
-        StringEditorDialog stringEditorDialog = new StringEditorDialog(parentComponent,
-                "Return Message Editor", "Return Message String:", messageGR.getReturnMessage().getName());
-        if (!stringEditorDialog.showDialog()) {
-            return;
-        }
-        ReturnMessage undoReturnMessage = messageGR.getReturnMessage().clone();
-        ReturnMessage originalReturnMessage = messageGR.getReturnMessage();
-        originalReturnMessage.setName(stringEditorDialog.getText());
-
-        // UNDO/REDO
-        UndoableEdit edit = new EditReturnMessageEdit(originalReturnMessage, undoReturnMessage, model);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
+    // ReturnMessageGR now uses polymorphic edit(EditContext); legacy controller editor removed.
 
     /**
      * Override to handle deletion of call messages and their corresponding return

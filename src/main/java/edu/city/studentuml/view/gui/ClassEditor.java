@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import edu.city.studentuml.controller.ClassEditorI;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.ConceptualClass;
@@ -31,7 +30,7 @@ import edu.city.studentuml.view.gui.components.MethodsPanel;
  * @author Ervin Ramollari
  * @author Dimitris Dranidis
  */
-public class ClassEditor extends ClassifierEditor implements ClassEditorI, Editor<DesignClass> {
+public class ClassEditor extends ClassifierEditor implements Editor<DesignClass> {
 
     private static final String TITLE = "Class Editor";
 

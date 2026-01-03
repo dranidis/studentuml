@@ -20,6 +20,14 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
+ * Abstract base class for graphical representations of UML classes (both
+ * conceptual and design classes).
+ * <p>
+ * Subclasses (ClassGR, ConceptualClassGR) implement the edit() method by
+ * calling the functional helper
+ * {@link GraphicalElement#editClassifierWithDialog} with appropriate lambdas
+ * for their specific classifier type.
+ * 
  * @author draganbisercic
  */
 public abstract class AbstractClassGR extends GraphicalElement implements ClassifierGR {

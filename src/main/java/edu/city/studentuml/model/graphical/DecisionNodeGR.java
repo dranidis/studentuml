@@ -1,6 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
-import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.DecisionNode;
 import edu.city.studentuml.util.undoredo.EditDecisionNodeEdit;
 
@@ -35,8 +35,8 @@ public class DecisionNodeGR extends AbstractDecisionNodeGR {
     }
 
     /**
-     * Opens an editor dialog for editing the decision node's name.
-     * Uses the template method from NodeComponentGR for the common editing workflow.
+     * Opens an editor dialog for editing the decision node's name. Uses the
+     * template method from NodeComponentGR for the common editing workflow.
      * 
      * @param context the edit context providing access to model, repository, parent
      *                component, and undo support
@@ -48,9 +48,9 @@ public class DecisionNodeGR extends AbstractDecisionNodeGR {
                 context,
                 "Decision Node Editor",
                 "Decision name: ",
-                (original, undo, model) -> new EditDecisionNodeEdit(
+                (original, newValue, model) -> new EditDecisionNodeEdit(
                         (DecisionNode) original,
-                        (DecisionNode) undo,
+                        (DecisionNode) newValue,
                         model));
     }
 }

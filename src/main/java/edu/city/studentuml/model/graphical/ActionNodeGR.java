@@ -8,7 +8,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
-import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 
@@ -131,9 +131,9 @@ public class ActionNodeGR extends LeafNodeGR {
                 context,
                 "Action Node Editor",
                 "Action name: ",
-                (original, undo, model) -> new EditActionNodeEdit(
+                (original, newValue, model) -> new EditActionNodeEdit(
                         (ActionNode) original,
-                        (ActionNode) undo,
+                        (ActionNode) newValue,
                         model));
     }
 }

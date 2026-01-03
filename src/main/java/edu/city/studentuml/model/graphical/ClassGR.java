@@ -10,16 +10,13 @@ import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
-import edu.city.studentuml.controller.EditContext;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 import edu.city.studentuml.util.undoredo.EditDCDClassEdit;
 import edu.city.studentuml.view.gui.ClassEditor;
-import javax.swing.undo.UndoableEdit;
 
 @JsonIncludeProperties({ "class", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
@@ -194,44 +191,18 @@ public class ClassGR extends AbstractClassGR {
         return clonedGR;
     }
 
+    // ========== EDIT OPERATION ==========
+
     @Override
     public boolean edit(EditContext context) {
-        CentralRepository repository = context.getRepository();
-        DesignClass originalClass = this.getDesignClass();
-        ClassEditor classEditor = new ClassEditor(repository);
-
-        // Show the class editor dialog and check whether the user has pressed cancel
-        DesignClass newClass = classEditor.editDialog(originalClass, context.getParentComponent());
-        if (newClass == null) {
-            return false; // User cancelled
-        }
-
-        // Edit the class if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
-        // or if the new name is blank
-        if (!originalClass.getName().equals(newClass.getName())
-                && repository.getDesignClass(newClass.getName()) != null
-                && !newClass.getName().equals("")) {
-
-            // Name conflict: replace graphical reference with existing class
-            this.setDesignClass(repository.getDesignClass(newClass.getName()));
-
-            // Remove the existing class if it has no name
-            if (originalClass.getName().equals("")) {
-                repository.removeClass(originalClass);
-            }
-
-        } else {
-            // No conflict: normal edit
-            UndoableEdit edit = new EditDCDClassEdit(originalClass, newClass, context.getModel());
-            repository.editClass(originalClass, newClass);
-            context.getUndoSupport().postEdit(edit);
-        }
-
-        // Notify observers
-        context.getModel().modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-
-        return true;
+        return editClassifierWithDialog(
+                context,
+                this::getDesignClass,
+                this::setDesignClass,
+                (original, parent) -> new ClassEditor(context.getRepository()).editDialog(original, parent),
+                context.getRepository()::getDesignClass,
+                context.getRepository()::removeClass,
+                (repo, orig, edited) -> repo.editClass(orig, edited),
+                (orig, edited, model) -> new EditDCDClassEdit(orig, edited, model));
     }
 }

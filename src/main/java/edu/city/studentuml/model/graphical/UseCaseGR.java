@@ -8,13 +8,14 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 
 /**
  * @author draganbisercic
@@ -332,5 +333,29 @@ public class UseCaseGR extends LeafUCDElementGR {
         clonedGR.height = this.height;
 
         return clonedGR;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        UseCase originalUseCase = (UseCase) getComponent();
+
+        // Delegate to the centralized helper with conflict checking
+        return editStringPropertyWithDialog(
+                context,
+                "Use Case Editor",
+                "Use Case Name:",
+                originalUseCase,
+                UseCase::getName,
+                UseCase::setName,
+                UseCase::clone,
+                (original, redo, model) -> new EditUseCaseEdit(
+                        original,
+                        redo,
+                        model),
+                // Duplicate detection in UCD: block on duplicates
+                newName -> newName != null
+                        && !newName.isEmpty()
+                        && context.getRepository().getUseCase(newName) != null,
+                "There is an existing use case with the same name already!\n");
     }
 }

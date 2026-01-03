@@ -3,11 +3,13 @@ package edu.city.studentuml.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
@@ -15,7 +17,9 @@ import edu.city.studentuml.model.graphical.DCDModel;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.DCDInternalFrame;
+import edu.city.studentuml.editing.EditContext;
 
 public class DCDSelectionControllerTest {
 
@@ -470,6 +474,42 @@ public class DCDSelectionControllerTest {
         } catch (NoSuchMethodException e) {
             assertTrue("InterfaceGR should have edit(EditContext) method", false);
         }
+    }
+
+    @Test
+    public void testEditInterfaceNameWithUndo() {
+        // Create an Interface
+        InterfaceGR interfaceGR = h.addInterface("OriginalInterface");
+        Interface interfaceObj = interfaceGR.getInterface();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalInterface", interfaceObj.getName());
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("OriginalInterface"));
+
+        // Create edit
+        Interface newInterface = interfaceObj.clone();
+        newInterface.setName("EditedInterface");
+        EditInterfaceEdit edit = new EditInterfaceEdit(interfaceObj, newInterface, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedInterface", interfaceObj.getName());
+        // Repository should be synchronized
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("EditedInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("OriginalInterface"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalInterface", interfaceObj.getName());
+        // Repository should be restored
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("OriginalInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("EditedInterface"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedInterface", interfaceObj.getName());
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("EditedInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("OriginalInterface"));
     }
 
 }
