@@ -42,13 +42,21 @@ public class ConceptualClassGR extends AbstractClassGR {
 
     // ========== EDIT OPERATION ==========
 
+    /**
+     * Factory method to create a ConceptualClassEditor for testing purposes. Can be
+     * overridden in tests to provide mock editors.
+     */
+    protected ConceptualClassEditor createConceptualClassEditor(EditContext context) {
+        return new ConceptualClassEditor(context.getRepository());
+    }
+
     @Override
     public boolean edit(EditContext context) {
         return editClassifierWithDialog(
                 context,
                 this::getConceptualClass,
                 this::setConceptualClass,
-                (original, parent) -> new ConceptualClassEditor(context.getRepository()).editDialog(original, parent),
+                (original, parent) -> createConceptualClassEditor(context).editDialog(original, parent),
                 context.getRepository()::getConceptualClass,
                 context.getRepository()::removeConceptualClass,
                 (repo, orig, edited) -> repo.editConceptualClass(orig, edited),

@@ -193,13 +193,21 @@ public class ClassGR extends AbstractClassGR {
 
     // ========== EDIT OPERATION ==========
 
+    /**
+     * Factory method to create a ClassEditor for testing purposes. Can be
+     * overridden in tests to provide mock editors.
+     */
+    protected ClassEditor createClassEditor(EditContext context) {
+        return new ClassEditor(context.getRepository());
+    }
+
     @Override
     public boolean edit(EditContext context) {
         return editClassifierWithDialog(
                 context,
                 this::getDesignClass,
                 this::setDesignClass,
-                (original, parent) -> new ClassEditor(context.getRepository()).editDialog(original, parent),
+                (original, parent) -> createClassEditor(context).editDialog(original, parent),
                 context.getRepository()::getDesignClass,
                 context.getRepository()::removeClass,
                 (repo, orig, edited) -> repo.editClass(orig, edited),

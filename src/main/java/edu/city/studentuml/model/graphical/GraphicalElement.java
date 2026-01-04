@@ -29,6 +29,9 @@ import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.StringEditorDialog;
+
+import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "internalid")
@@ -250,7 +253,7 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
             Predicate<String> duplicateExists,
             String duplicateErrorMessage) {
         String currentValue = getter.apply(domainObject);
-        String newValue = ElementEditHelpers.requestStringValue(context, dialogTitle, fieldLabel, currentValue,
+        String newValue = requestStringValueFromUser(context, dialogTitle, fieldLabel, currentValue,
                 duplicateExists,
                 duplicateErrorMessage);
 
@@ -283,6 +286,64 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         SystemWideObjectNamePool.getInstance().reload();
 
         return true;
+    }
+
+    /**
+     * Protected hook method for requesting a string value from the user. This
+     * method can be overridden in tests to inject mock values without showing
+     * actual dialogs. Production code delegates to
+     * ElementEditHelpers.requestStringValue.
+     * 
+     * @param context               edit context
+     * @param dialogTitle           title of the dialog
+     * @param fieldLabel            label for the input field
+     * @param currentValue          current value to display
+     * @param duplicateExists       predicate to check for duplicates (null to skip)
+     * @param duplicateErrorMessage error message for duplicates (null to skip)
+     * @return the new value from user, or null if cancelled
+     */
+    private String requestStringValueFromUser(
+            EditContext context,
+            String dialogTitle,
+            String fieldLabel,
+            String currentValue,
+            Predicate<String> duplicateExists,
+            String duplicateErrorMessage) {
+
+        // Open dialog with current value
+        StringEditorDialog dialog = createStringDialog(context, dialogTitle, fieldLabel, currentValue);
+
+        if (!dialog.showDialog()) {
+            return null; // user cancelled
+        }
+
+        String newValue = dialog.getText();
+
+        // If unchanged, return the same value; callers will short-circuit
+        if (Objects.equals(currentValue, newValue)) {
+            return newValue;
+        }
+
+        // Check for duplicates when provided
+        if (duplicateExists != null && duplicateExists.test(newValue)) {
+            if (duplicateErrorMessage != null && !duplicateErrorMessage.isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        duplicateErrorMessage,
+                        "Cannot Edit", JOptionPane.ERROR_MESSAGE);
+            }
+            return null; // blocked due to duplicate
+        }
+
+        return newValue;
+    }
+
+    protected StringEditorDialog createStringDialog(EditContext context, String dialogTitle, String fieldLabel,
+            String currentValue) {
+        return new StringEditorDialog(
+                context.getParentComponent(),
+                dialogTitle,
+                fieldLabel,
+                currentValue);
     }
 
     /**
@@ -367,16 +428,17 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
         // or if there is a change in the name but the new name doesn't bring any
         // conflict
         // or if the new name is blank
-        if (!originalClassifier.getName().equals(newClassifier.getName())
-                && getClassifierByName.apply(newClassifier.getName()) != null
-                && !newClassifier.getName().equals("")) {
-
+        String newClassName = newClassifier.getName();
+        String oldClassName = originalClassifier.getName();
+        if (!newClassName.equals("")
+                && !oldClassName.equals(newClassName)
+                && getClassifierByName.apply(newClassName) != null) {
             // Name conflict: replace this graphical element's reference with the existing
             // classifier
-            setClassifierInThis.accept(getClassifierByName.apply(newClassifier.getName()));
+            setClassifierInThis.accept(getClassifierByName.apply(newClassName));
 
             // Remove the existing classifier if it has no name
-            if (originalClassifier.getName().equals("")) {
+            if (oldClassName.equals("")) {
                 removeFromRepository.accept(originalClassifier);
             }
         } else {

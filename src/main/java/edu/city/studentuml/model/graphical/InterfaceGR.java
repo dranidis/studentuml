@@ -32,7 +32,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
     private static int methodFieldXOffset = 4;
     private static int methodFieldYOffset = 3;
-    private static int minimumMethodFieldHeight = 40;
+    private static int minimumMethodFieldHeight = 20;
     private static int minimumNameFieldHeight = 20;
     private static int minimumWidth = 70;
     private static int nameFieldXOffset = 3;
@@ -239,12 +239,23 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
                 context,
                 this::getInterface, // Get current classifier
                 this::setInterface, // Set classifier reference
-                (original, parent) -> new InterfaceEditor(context.getRepository()).editDialog(original, parent),
+                (original, parent) -> createEditor(context).editDialog(original, parent),
                 context.getRepository()::getInterface, // Get classifier by name
                 context.getRepository()::removeInterface, // Remove from repository
                 (repo, orig, edited) -> repo.editInterface(orig, edited), // Edit in repository
                 (orig, edited, model) -> new EditInterfaceEdit(orig, edited, model) // Create UndoableEdit
         );
+    }
+
+    /**
+     * Factory method to create the InterfaceEditor. Can be overridden in tests to
+     * inject mock editor behavior.
+     * 
+     * @param context The edit context
+     * @return An InterfaceEditor instance
+     */
+    protected InterfaceEditor createEditor(EditContext context) {
+        return new InterfaceEditor(context.getRepository());
     }
 
     @Override

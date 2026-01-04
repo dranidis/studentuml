@@ -14,6 +14,7 @@ import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 
@@ -353,8 +354,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                         redo,
                         model),
                 // Duplicate detection in UCD: block on duplicates
-                newName -> newName != null
-                        && !newName.isEmpty()
+                newName -> StringUtils.isNotEmpty(newName)
                         && context.getRepository().getUseCase(newName) != null,
                 "There is an existing use case with the same name already!\n");
     }

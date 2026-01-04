@@ -33,8 +33,10 @@ public class ConceptualAssociationClass extends AbstractAssociationClass
 
     @Override
     public ConceptualAssociationClass copyOf(ConceptualAssociationClass source) {
-        // Copy association properties
-        this.association.setName(source.getName());
+        // Copy association class name (this also sets the association name)
+        this.setName(source.getName());
+
+        // Copy other association properties
         this.association.setShowArrow(source.getShowArrow());
         this.association.setLabelDirection(source.getLabelDirection());
 

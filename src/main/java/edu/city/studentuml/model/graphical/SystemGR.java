@@ -346,7 +346,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
                         original,
                         redo,
                         model),
-                newName -> !StringUtils.isNullOrEmpty(newName)
+                newName -> StringUtils.isNotEmpty(newName)
                         && context.getRepository().getSystem(newName) != null,
                 "There is an existing system with the given name already!\n");
     }

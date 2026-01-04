@@ -37,8 +37,10 @@ public class DesignAssociationClass extends AbstractAssociationClass implements 
 
     @Override
     public DesignAssociationClass copyOf(DesignAssociationClass source) {
-        // Copy association properties
-        this.association.setName(source.getName());
+        // Copy association class name (this also sets the association name)
+        this.setName(source.getName());
+
+        // Copy other association properties
         this.association.setDirection(source.getDirection());
         this.association.setShowArrow(source.getShowArrow());
         this.association.setLabelDirection(source.getLabelDirection());

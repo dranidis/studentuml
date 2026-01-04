@@ -62,13 +62,18 @@ public class UCExtendEditor extends OkCancelDialog implements Editor<UCExtend> {
             return null; // Cancelled
         }
 
-        // Update extension points in the ucExtend object
-        ucExtend.clearPoints();
+        // Create a clone with the new extension points
+        // This is important: we must NOT modify the original ucExtend in-place
+        // because the repository's editUCExtend() method expects originalUCExtend
+        // and newUCExtend to be different objects so it can copy extension points
+        // from newUCExtend to originalUCExtend.
+        UCExtend clonedUCExtend = ucExtend.clone();
+        clonedUCExtend.clearPoints();
         for (ExtensionPoint ep : getExtensionPoints()) {
-            ucExtend.addExtensionPoint(ep);
+            clonedUCExtend.addExtensionPoint(ep);
         }
 
-        return ucExtend;
+        return clonedUCExtend;
     }
 
     // Legacy method for backward compatibility

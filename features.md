@@ -109,7 +109,66 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 
 **Use Case:** In UML Activity Diagrams, initial nodes represent the single entry point of the activity, and final nodes represent termination points. Allowing multiple outgoing/incoming flows makes the diagram ambiguous and violates UML semantics. Enforcing these constraints keeps models clean and semantically correct.
 
+### Weight Validation for Control and Object Flows
+
+**Status:** Not implemented  
+**Priority:** Medium  
+**Description:** Validate that the weight property of Control Flows and Object Flows in Activity Diagrams is a positive integer. The weight determines the number of tokens that traverse the edge when fired, and must be at least 1.
+
+**Technical Notes:**
+
+-   Domain types: `ControlFlow` and `ObjectFlow` under `edu.city.studentuml.model.domain`
+-   Both classes have a `weight` property (likely int or String)
+-   Need to add validation:
+    -   In setters: `setWeight(int weight)` should throw exception or ignore if weight < 1
+    -   In editors: `ControlFlowEditor` and `ObjectFlowEditor` should validate input before accepting
+    -   Show error message: "Weight must be a positive integer (≥ 1)"
+-   Consider default value: Weight defaults to 1 if not specified (standard UML behavior)
+-   UI validation:
+    -   Add input validation in property dialogs/editors
+    -   Use `JSpinner` with minimum value of 1 instead of free-text field
+    -   Or use regex validation if text field: `^[1-9][0-9]*$`
+-   XML serialization: Ensure invalid weights are not saved or are corrected on load
+-   Consistency checking: Add Prolog rule to detect flows with weight < 1
+-   Tests:
+    -   Unit tests for weight setter validation
+    -   UI tests for editor validation
+    -   Integration tests for XML load with invalid weights
+
+**Use Case:** In UML Activity Diagrams, the weight property specifies how many tokens must be available on the edge for it to be traversed. A weight of 0 or negative value is semantically invalid and would prevent the flow from ever being traversed or cause undefined behavior. Enforcing positive integer validation ensures diagrams remain semantically valid and prevents modeling errors.
+
 ## Class Diagram Features
+
+### Class Renaming Undo/Redo Issues
+
+**Status:** Bug / Not fixed  
+**Priority:** High  
+**Description:** There is an issue with Classes and renaming them. The logic in `editClassifierWithDialog` is not correct. Renaming to an existing class name and multiple undo/redo leave the repository in inconsistent states.
+
+**Reproduction Steps:**
+
+1. **Scenario 1:** Create class, rename to "A", create another class, rename to "A", then undo → **Expected:** Second class name reverts to "" (empty) **Actual:** The class gets deleted instead
+2. **Scenario 2:** Create two classes, rename first to "A", rename second to "B", then rename second to "A", then undo → **Expected:** Undo should work correctly **Actual:** Undo does not work
+3. **Scenario 3:** Multiple undos leave the repository with extra classes at the end instead of proper state restoration
+
+**Technical Notes:**
+
+-   Problem location: `GraphicalElement.editClassifierWithDialog()` method (line 407)
+-   This method implements "Silent Merge on Conflict" pattern (Pattern 2)
+-   Affects: `ClassGR`, `ConceptualClassGR`, `InterfaceGR`
+-   Current algorithm:
+    -   When name conflict detected: performs silent merge (replaces reference, optionally removes original)
+    -   When no conflict: creates undo/redo edit
+-   Issues with empty names ("") and multiple renames not handled correctly
+-   Undo/redo stack becomes inconsistent with repository state
+-   Probably other issues as well
+
+**Investigation Needed:** This requires comprehensive investigation of the name conflict resolution logic, especially:
+
+-   How empty names are handled during undo/redo
+-   Whether silent merges should create undo edits or not
+-   Repository cleanup when classes are removed/merged
+-   Interaction between multiple rename operations and undo stack
 
 ### Support Package Visibility for Methods and Attributes
 

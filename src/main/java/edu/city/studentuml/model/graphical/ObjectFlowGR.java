@@ -57,7 +57,7 @@ public class ObjectFlowGR extends EdgeGR {
         ObjectFlow originalObjectFlow = (ObjectFlow) getEdge();
 
         // Launch editor dialog
-        ObjectFlowEditor objectFlowEditor = new ObjectFlowEditor();
+        ObjectFlowEditor objectFlowEditor = createEditor(context);
         ObjectFlow editedObjectFlow = objectFlowEditor.editDialog(originalObjectFlow, context.getParentComponent());
         if (editedObjectFlow == null) {
             return false; // User cancelled
@@ -121,6 +121,17 @@ public class ObjectFlowGR extends EdgeGR {
         SystemWideObjectNamePool.getInstance().reload();
 
         return true;
+    }
+
+    /**
+     * Creates the editor for this Object Flow. Extracted into a protected method to
+     * enable testing without UI dialogs (can be overridden to return mock editor).
+     * 
+     * @param context the edit context
+     * @return the editor instance
+     */
+    protected ObjectFlowEditor createEditor(EditContext context) {
+        return new ObjectFlowEditor();
     }
 
 }

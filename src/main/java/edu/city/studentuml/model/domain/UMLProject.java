@@ -145,7 +145,6 @@ public class UMLProject implements Serializable, PropertyChangeListener, IXMLCus
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        // logger.info(() -> "propertyChange: from: " + evt.getSource().getClass().getSimpleName() + " property: " + evt.getPropertyName());
         projectChanged();
     }
 

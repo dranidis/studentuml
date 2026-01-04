@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.undoredo.EditActorEdit;
 
@@ -162,8 +163,7 @@ public class UCActorGR extends LeafUCDElementGR {
                         original,
                         redo,
                         model),
-                newName -> newName != null
-                        && !newName.isEmpty()
+                newName -> StringUtils.isNotEmpty(newName)
                         && context.getRepository().getActor(newName) != null,
                 "There is an existing actor with the given name already!\n");
     }

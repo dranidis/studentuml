@@ -86,16 +86,13 @@ import edu.city.studentuml.util.ClipboardManager;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.PositiveRectangle;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.util.undoredo.ReconnectLinkEdit;
 import edu.city.studentuml.util.undoredo.ReconnectMessageEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  * The SelectionController is the Controller component in MVC that handles all
@@ -150,7 +147,6 @@ public abstract class SelectionController {
     protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
 
         editElementMapper = new HashMap<>();
-        editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
 
         parentComponent = parent;
         model = m;
@@ -281,27 +277,6 @@ public abstract class SelectionController {
             logger.fine("No edit function registered for " + element.getClass().getSimpleName() +
                     " - element is not editable");
         }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(parentComponent, "UML Note Editor", noteGR);
-
-        // Undo/Redo
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog()) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
     }
 
     private int scale(int number) {

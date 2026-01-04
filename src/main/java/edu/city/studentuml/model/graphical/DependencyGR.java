@@ -187,8 +187,8 @@ public class DependencyGR extends LinkGR {
                 Dependency::getStereotype,
                 Dependency::setStereotype,
                 Dependency::clone,
-                (original, undoClone, model) -> new EditDependencyEdit(original, undoClone.getStereotype(),
-                        original.getStereotype(), model),
+                (original, newDomainObject, model) -> new EditDependencyEdit(original, original.getStereotype(),
+                        newDomainObject.getStereotype(), model),
                 null, // no duplicate check
                 null); // no duplicate error message
     }
