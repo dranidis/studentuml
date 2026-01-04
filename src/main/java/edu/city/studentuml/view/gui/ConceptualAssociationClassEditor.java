@@ -98,23 +98,6 @@ public class ConceptualAssociationClassEditor extends AssociationEditorBase {
         return edited;
     }
 
-    /**
-     * Legacy initialization method for backward compatibility. This method should
-     * not be used - domain object should be passed to
-     * initializeFromAssociationClass().
-     * 
-     * @deprecated Use
-     *             {@link #initializeFromAssociationClass(ConceptualAssociationClass)}
-     *             instead
-     */
-    @Deprecated
-    @Override
-    public void initialize() {
-        // This method is only here for backward compatibility
-        throw new UnsupportedOperationException(
-                "ConceptualAssociationClassEditor no longer supports initialization without domain object. Pass ConceptualAssociationClass to initializeFromAssociationClass() instead.");
-    }
-
     @Override
     protected String getDialogTitle() {
         return "Association Class Editor";

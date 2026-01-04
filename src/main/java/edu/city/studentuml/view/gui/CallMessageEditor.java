@@ -54,22 +54,6 @@ public class CallMessageEditor extends OkCancelDialog implements Editor<CallMess
         this.repository = repository;
     }
 
-    // Legacy constructor for backward compatibility during transition
-    @Deprecated
-    public CallMessageEditor(Component parent, String title, CallMessage callMessage,
-            CentralRepository repository) {
-        super(parent, title);
-
-        this.callMessage = callMessage;
-        this.repository = repository;
-
-        // Ensure UI components are created
-        initializeIfNeeded();
-
-        // initialize with the method data to be edited, if any
-        initialize();
-    }
-
     @Override
     protected JPanel makeCenterPanel() {
         nameLabel = new JLabel("Name: ");
@@ -152,7 +136,9 @@ public class CallMessageEditor extends OkCancelDialog implements Editor<CallMess
         return callMessage;
     }
 
-    // Legacy method for backward compatibility
+    /**
+     * @deprecated No longer needed with editDialog pattern
+     */
     @Deprecated
     public void initialize() {
         initialize(this.callMessage);

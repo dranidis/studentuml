@@ -2,7 +2,6 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.Association;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 
@@ -30,21 +29,6 @@ public class CCDAssociationEditor extends AssociationEditorBase {
         // Layout: center panel in CENTER, bottom panel in SOUTH
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Legacy initialization method for backward compatibility. This method should
-     * not be used - use editDialog() instead.
-     * 
-     * @deprecated Use {@link #editDialog(Association, Component)} instead
-     */
-    @Deprecated
-    @Override
-    public void initialize() {
-        // This method is only here for backward compatibility
-        // The new editDialog() pattern uses initializeFromAssociation() instead
-        throw new UnsupportedOperationException(
-                "CCDAssociationEditor no longer supports initialization without domain object. Use editDialog() instead.");
     }
 
     @Override

@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.model.graphical.SDObjectGR;
 import java.util.Vector;
 
 /**
@@ -21,20 +20,6 @@ public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
     }
 
     /**
-     * Deprecated constructor for backward compatibility.
-     * 
-     * @param obj The graphical SD object wrapper
-     * @param cr  The central repository
-     * @deprecated Use {@link #ObjectEditor(CentralRepository)} and call
-     *             {@link #initialize(SDObject)} instead
-     */
-    @Deprecated
-    public ObjectEditor(SDObjectGR obj, CentralRepository cr) {
-        super(cr);
-        initialize(obj.getSDObject());
-    }
-
-    /**
      * Initialize the editor with an SD object.
      * 
      * @param object The SD object to edit
@@ -48,7 +33,7 @@ public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
     /**
      * Legacy method for backward compatibility.
      * 
-     * @deprecated Use {@link #initialize(SDObject)} instead
+     * @deprecated No longer needed with editDialog pattern
      */
     @Deprecated
     public void initialize() {

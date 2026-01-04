@@ -29,17 +29,6 @@ public class UCExtendEditor extends OkCancelDialog implements Editor<UCExtend> {
         this.repository = repository;
     }
 
-    // Legacy constructor for backward compatibility during transition
-    @Deprecated
-    public UCExtendEditor(Component parent, String title, UCExtend ucExtend, CentralRepository repository) {
-        super(parent, title);
-        this.ucExtend = ucExtend;
-        this.repository = repository;
-
-        initializeIfNeeded(); // Ensure UI components are created
-        initialize();
-    }
-
     @Override
     protected JPanel makeCenterPanel() {
         extensionPointsPanel = new ExtensionPointsPanel("Extension Points", repository);
@@ -76,7 +65,9 @@ public class UCExtendEditor extends OkCancelDialog implements Editor<UCExtend> {
         return clonedUCExtend;
     }
 
-    // Legacy method for backward compatibility
+    /**
+     * @deprecated No longer needed with editDialog pattern
+     */
     @Deprecated
     public void initialize() {
         initialize(this.ucExtend);

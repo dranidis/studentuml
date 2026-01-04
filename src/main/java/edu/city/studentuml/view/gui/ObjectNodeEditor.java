@@ -4,7 +4,6 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.ObjectNode;
 import edu.city.studentuml.model.domain.State;
 import edu.city.studentuml.model.domain.Type;
-import edu.city.studentuml.model.graphical.ObjectNodeGR;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.ListPanel;
@@ -32,21 +31,6 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
     public ObjectNodeEditor(CentralRepository cr) {
         super(cr);
         initializeStatesPanel();
-    }
-
-    /**
-     * Deprecated constructor for backward compatibility.
-     * 
-     * @param objectNodeGR The graphical object node wrapper
-     * @param cr           The central repository
-     * @deprecated Use {@link #ObjectNodeEditor(CentralRepository)} and call
-     *             {@link #initialize(ObjectNode)} instead
-     */
-    @Deprecated
-    public ObjectNodeEditor(ObjectNodeGR objectNodeGR, CentralRepository cr) {
-        super(cr);
-        initializeStatesPanel();
-        initialize((ObjectNode) objectNodeGR.getComponent());
     }
 
     /**
@@ -133,8 +117,7 @@ public class ObjectNodeEditor extends TypedEntityEditor<DesignClass, ObjectNode>
     }
 
     /**
-     * @deprecated No-op method for backward compatibility. Use
-     *             {@link #initialize(ObjectNode)} instead.
+     * @deprecated No longer needed with editDialog pattern
      */
     @Deprecated
     public void initialize() {

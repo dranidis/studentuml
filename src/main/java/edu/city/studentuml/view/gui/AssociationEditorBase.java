@@ -336,14 +336,8 @@ public abstract class AssociationEditorBase extends JPanel implements Editor<Ass
     }
 
     /**
-     * Template method for initializing the editor with data from an association.
-     * Subclasses must implement this to load their specific data.
-     */
-    public abstract void initialize();
-
-    /**
      * Helper method to initialize common association fields. Subclasses can call
-     * this in their initialize() method.
+     * this in their initializeFromAssociation() method.
      * 
      * @param association The association to load data from
      */

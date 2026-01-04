@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.SystemInstance;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.model.graphical.SystemInstanceGR;
 import java.util.Vector;
 
 /**
@@ -24,20 +23,6 @@ public class SystemInstanceEditor extends TypedEntityEditor<System, SystemInstan
     }
 
     /**
-     * Deprecated constructor for backward compatibility.
-     * 
-     * @param s  The graphical system instance wrapper
-     * @param cr The central repository
-     * @deprecated Use {@link #SystemInstanceEditor(CentralRepository)} and call
-     *             {@link #initialize(SystemInstance)} instead
-     */
-    @Deprecated
-    public SystemInstanceEditor(SystemInstanceGR s, CentralRepository cr) {
-        super(cr);
-        initialize(s.getSystemInstance());
-    }
-
-    /**
      * Initialize the editor with a system instance.
      * 
      * @param instance The system instance to edit
@@ -51,7 +36,7 @@ public class SystemInstanceEditor extends TypedEntityEditor<System, SystemInstan
     /**
      * Legacy method for backward compatibility.
      * 
-     * @deprecated Use {@link #initialize(SystemInstance)} instead
+     * @deprecated No longer needed with editDialog pattern
      */
     @Deprecated
     public void initialize() {

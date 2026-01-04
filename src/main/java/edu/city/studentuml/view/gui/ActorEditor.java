@@ -33,21 +33,6 @@ public class ActorEditor extends ClassifierEditor implements Editor<Actor> {
         add(bottomPanel);
     }
 
-    /**
-     * @deprecated Use {@link #ActorEditor(CentralRepository)} and
-     *             {@link #editDialog(Actor, Component)} instead
-     */
-    @Deprecated
-    public ActorEditor(Actor actor, CentralRepository cr) {
-        super(actor, cr);
-
-        repository = cr;
-
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(namePanel);
-        add(bottomPanel);
-    }
-
     @Override
     public Actor editDialog(Actor actor, Component parent) {
         // Set the name in the name field using the protected method from ClassifierEditor

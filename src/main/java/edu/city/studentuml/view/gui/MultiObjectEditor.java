@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
 import java.util.Vector;
 
 /**
@@ -24,20 +23,6 @@ public class MultiObjectEditor extends TypedEntityEditor<DesignClass, MultiObjec
     }
 
     /**
-     * Deprecated constructor for backward compatibility.
-     * 
-     * @param obj The graphical multi object wrapper
-     * @param cr  The central repository
-     * @deprecated Use {@link #MultiObjectEditor(CentralRepository)} and call
-     *             {@link #initialize(MultiObject)} instead
-     */
-    @Deprecated
-    public MultiObjectEditor(MultiObjectGR obj, CentralRepository cr) {
-        super(cr);
-        initialize(obj.getMultiObject());
-    }
-
-    /**
      * Initialize the editor with a multi object.
      * 
      * @param multiObject The multi object to edit
@@ -51,7 +36,7 @@ public class MultiObjectEditor extends TypedEntityEditor<DesignClass, MultiObjec
     /**
      * Legacy method for backward compatibility.
      * 
-     * @deprecated Use {@link #initialize(MultiObject)} instead
+     * @deprecated No longer needed with editDialog pattern
      */
     @Deprecated
     public void initialize() {

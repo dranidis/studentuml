@@ -39,27 +39,6 @@ public class ConceptualClassEditor extends ClassifierEditor implements Editor<Co
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * @deprecated Use {@link #ConceptualClassEditor(CentralRepository)} and
-     *             {@link #editDialog(ConceptualClass, Component)} instead
-     */
-    @Deprecated
-    public ConceptualClassEditor(ConceptualClass cl, CentralRepository cr) {
-        super(cl, cr);
-
-        attributesPanel = new AttributesPanel("Class attributes", cr);
-
-        setLayout(new BorderLayout());
-        add(namePanel, BorderLayout.NORTH);
-        add(attributesPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        if (cl != null) {
-
-            attributesPanel.setElements(cl.getAttributes());
-        }
-    }
-
     @Override
     public ConceptualClass editDialog(ConceptualClass conceptualClass, Component parent) {
         // Initialize with the conceptual class data
