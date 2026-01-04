@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
 import java.awt.Point;
-import java.util.logging.Logger;
 
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.Edge;
@@ -13,8 +12,6 @@ import edu.city.studentuml.util.undoredo.EditControlFlowEdit;
  * @author Dimitris Dranidis
  */
 public class ControlFlowGR extends EdgeGR {
-
-    private static final Logger logger = Logger.getLogger(ControlFlowGR.class.getName());
 
     public ControlFlowGR(NodeComponentGR source, NodeComponentGR target, ControlFlow flow) {
         super(source, target, flow);

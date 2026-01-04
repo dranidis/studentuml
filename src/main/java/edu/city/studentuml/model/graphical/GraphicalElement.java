@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import edu.city.studentuml.editing.EditContext;
-import edu.city.studentuml.editing.ElementEditHelpers;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Colors;

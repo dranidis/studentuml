@@ -36,7 +36,7 @@ public class DCDSelectionControllerTest {
         model = new DCDModel("ccd", umlProject);
         internalFrame = new DCDInternalFrame(model, true);
         h = new Helper(model);
-        selectionController = new DCDSelectionController(internalFrame, model);
+        selectionController = new SelectionController(internalFrame, model);
     }
 
     @Test

@@ -33,7 +33,7 @@ public class CCDSelectionControllerTest {
         model = new CCDModel("ccd", umlProject);
         ccdInternalFrame = new CCDInternalFrame(model);
         h = new Helper(model);
-        selectionController = new CCDSelectionController(ccdInternalFrame, model);
+        selectionController = new SelectionController(ccdInternalFrame, model);
     }
 
     @Test

@@ -5,7 +5,6 @@ import edu.city.studentuml.controller.DrawLineController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
-import edu.city.studentuml.controller.UCDSelectionController;
 import edu.city.studentuml.controller.UseCaseResizeWithCoveredElementsController;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.view.DiagramView;
@@ -42,7 +41,7 @@ public class UCDInternalFrame extends DiagramInternalFrame {
     @Override
     protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
             DiagramModel model) {
-        return new UCDSelectionController(this, model);
+        return new SelectionController(this, model);
     }
 
     @Override

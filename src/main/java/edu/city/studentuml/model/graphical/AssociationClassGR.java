@@ -18,7 +18,6 @@ import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Ray;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
@@ -164,7 +163,6 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public boolean edit(EditContext context) {
-        CentralRepository r = context.getModel().getCentralRepository();
         AbstractAssociationClass originalAssociationClass = getAssociationClass();
 
         // Choose editor and edit class based on diagram type (CCD vs DCD)

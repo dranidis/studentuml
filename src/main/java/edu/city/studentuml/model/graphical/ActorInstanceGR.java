@@ -5,25 +5,13 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JOptionPane;
-import javax.swing.undo.CompoundEdit;
-
 import org.w3c.dom.Element;
 
 import edu.city.studentuml.editing.EditContext;
-import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
-import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.NotStreamable;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
-import edu.city.studentuml.util.undoredo.ActorInstanceEdit;
-import edu.city.studentuml.util.undoredo.ActorRepositoryOperations;
-import edu.city.studentuml.util.undoredo.EditActorInstanceEdit;
-import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
 import edu.city.studentuml.view.gui.ActorInstanceEditor;
-import edu.city.studentuml.view.gui.TypeOperation;
-import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 /**
  * @author Ervin Ramollari

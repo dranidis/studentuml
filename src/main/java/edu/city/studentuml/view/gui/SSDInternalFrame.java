@@ -1,8 +1,8 @@
 package edu.city.studentuml.view.gui;
 
+import edu.city.studentuml.controller.SDSelectionController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
-import edu.city.studentuml.controller.SSDSelectionController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.SSDModel;
@@ -28,7 +28,7 @@ public class SSDInternalFrame extends DiagramInternalFrame {
     @Override
     protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
             DiagramModel model) {
-        return new SSDSelectionController(this, model);
+        return new SDSelectionController(this, model);
     }
 
     @Override

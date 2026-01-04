@@ -40,13 +40,13 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCreation() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
         assertNotNull(selectionController);
     }
 
     @Test
     public void testDeleteActorWithRelationshipToUC() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         UCActorGR a = h.addActor("A");
         UseCaseGR u = h.addUseCase("U");
@@ -70,7 +70,7 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testDeleteSystemWithUseCase() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         SystemGR s = h.addSystem("System");
         UseCaseGR uc = new UseCaseGR(new UseCase("U"), 0, 0);
@@ -103,7 +103,7 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testDeleteSystemWithinSystem() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         SystemGR s1 = h.addSystem("System1");
         SystemGR s2 = h.addSystem("System2");
@@ -131,7 +131,7 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testDeleteSystemWithinSystemWithinSystem() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         SystemGR s1 = h.addSystem("System1");
         SystemGR s2 = h.addSystem("System2");
@@ -164,7 +164,7 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCopyPasteSystemWithUseCases() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         // Create a system with use cases inside
         SystemGR system = h.addSystem("System");
@@ -212,7 +212,7 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCopyPasteUndoSingleOperation() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         // Create a system with use cases inside
         SystemGR system = h.addSystem("System");

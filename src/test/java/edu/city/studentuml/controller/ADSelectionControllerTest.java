@@ -45,7 +45,7 @@ public class ADSelectionControllerTest {
         model = new ADModel("ad", umlProject);
         internalFrame = new ADInternalFrame(model);
         h = new Helper(model);
-        selectionController = new ADSelectionController(internalFrame, model);
+        selectionController = new SelectionController(internalFrame, model);
     }
 
     @Test

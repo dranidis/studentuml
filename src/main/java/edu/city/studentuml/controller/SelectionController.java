@@ -96,12 +96,17 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
  * The SelectionController is the Controller component in MVC that handles all
- * events when the "selection" button in the drawing toolbar is pressed. Serves
- * as the superclass of all selection controllers of particular diagrams.
- * Dragging and dropping, and other mouse events are handled by this superclass,
- * while the details of editing and deleting elements are left to subclasses.
+ * events when the "selection" button in the drawing toolbar is pressed. After
+ * applying the Template Method pattern to GraphicalElement classes, most
+ * diagram-specific selection controllers became empty and were removed. This
+ * class can now be instantiated directly for most diagram types (UCD, CCD, DCD,
+ * AD). For sequence diagrams (SD/SSD), use AbstractSDSelectionController which
+ * extends this class with SD-specific coordinate handling and call message
+ * deletion logic. Dragging, dropping, and other mouse events are handled by
+ * this class. Element editing is delegated to GraphicalElement.edit() via
+ * polymorphism.
  */
-public abstract class SelectionController {
+public class SelectionController {
 
     private static final Logger logger = Logger.getLogger(SelectionController.class.getName());
 
@@ -144,7 +149,7 @@ public abstract class SelectionController {
      */
     protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
 
-    protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+    public SelectionController(DiagramInternalFrame parent, DiagramModel m) {
 
         editElementMapper = new HashMap<>();
 
