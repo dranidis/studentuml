@@ -102,6 +102,8 @@ public class CentralRepository implements Serializable {
     private NotifierVector<JoinNode> joinNodes;
     private NotifierVector<ObjectNode> objectNodes;
     private NotifierVector<ActivityNode> activityNodes;
+    
+    private transient Vector<RepositoryChangeListener> changeListeners = new Vector<>();
 
     public CentralRepository() {
 
@@ -267,6 +269,10 @@ public class CentralRepository implements Serializable {
         } else {
             return false;
         }
+    }
+
+    public Vector<ConceptualClass> getConceptualClasses() {
+        return concepts;
     }
 
     // methods for manipulating the list of project classes
@@ -603,8 +609,11 @@ public class CentralRepository implements Serializable {
             return false;
         }
 
+        String oldName = originalSystemInstance.getName();
         originalSystemInstance.setName(newSystemInstance.getName());
         originalSystemInstance.setSystem(newSystemInstance.getSystem());
+        
+        notifyEdit("SystemInstance", oldName, newSystemInstance.getName());
 
         return true;
     }
@@ -692,8 +701,11 @@ public class CentralRepository implements Serializable {
             return false;
         }
 
+        String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
+        
+        notifyEdit("SDObject", oldName, newObject.getName());
 
         return true;
     }
@@ -744,8 +756,11 @@ public class CentralRepository implements Serializable {
             return false;
         }
 
+        String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
+        
+        notifyEdit("MultiObject", oldName, newObject.getName());
 
         return true;
     }
@@ -840,8 +855,11 @@ public class CentralRepository implements Serializable {
             return false;
         }
 
+        String oldName = originalActorInstance.getName();
         originalActorInstance.setName(newActorInstance.getName());
         originalActorInstance.setActor(newActorInstance.getActor());
+        
+        notifyEdit("ActorInstance", oldName, newActorInstance.getName());
 
         return true;
     }
@@ -1034,6 +1052,10 @@ public class CentralRepository implements Serializable {
 
     public boolean removeUseCase(UseCase useCase) {
         return useCases.remove(useCase);
+    }
+
+    public Vector<UseCase> getUseCases() {
+        return useCases;
     }
 
     public boolean addUCLink(UCLink link) {
@@ -1332,6 +1354,7 @@ public class CentralRepository implements Serializable {
     }
 
     public boolean editObjectNode(ObjectNode originalObjectNode, ObjectNode newObjectNode) {
+        String oldName = originalObjectNode.getName();
         originalObjectNode.setName(newObjectNode.getName());
         originalObjectNode.setType(newObjectNode.getType());
 
@@ -1339,7 +1362,58 @@ public class CentralRepository implements Serializable {
         for (State state : newObjectNode.getStates()) {
             originalObjectNode.addState(state);
         }
+        
+        notifyEdit("ObjectNode", oldName, newObjectNode.getName());
 
         return true;
+    }
+    
+    // Repository change listener support
+    
+    public void addRepositoryChangeListener(RepositoryChangeListener listener) {
+        if (changeListeners == null) {
+            changeListeners = new Vector<>();
+        }
+        if (!changeListeners.contains(listener)) {
+            changeListeners.add(listener);
+        }
+    }
+    
+    public void removeRepositoryChangeListener(RepositoryChangeListener listener) {
+        if (changeListeners != null) {
+            changeListeners.remove(listener);
+        }
+    }
+    
+    protected void notifyAdd(String entityType, String entityName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onAdd(entityType, entityName);
+            }
+        }
+    }
+    
+    protected void notifyEdit(String entityType, String oldName, String newName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onEdit(entityType, oldName, newName);
+            }
+        }
+    }
+    
+    protected void notifyRemove(String entityType, String entityName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onRemove(entityType, entityName);
+            }
+        }
+    }
+    
+    protected void notifyTypeOperation(String operation, String typeName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onTypeOperation(operation, typeName);
+            }
+        }
     }
 }

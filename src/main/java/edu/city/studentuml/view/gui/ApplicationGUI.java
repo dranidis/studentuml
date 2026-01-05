@@ -111,6 +111,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Prop
     protected boolean closingOrLoading = false;
 
     protected MenuBar menuBar;
+    
+    protected RepositoryViewerDialog repositoryViewerDialog;
 
     protected ApplicationGUI(StudentUMLFrame frame) {
 
@@ -1074,6 +1076,20 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Prop
         } else {
             showUpToDateDialog(checker);
         }
+    }
+    
+    public void openRepositoryViewer() {
+        if (repositoryViewerDialog == null || !repositoryViewerDialog.isVisible()) {
+            repositoryViewerDialog = new RepositoryViewerDialog(frame, centralRepository, umlProject);
+            repositoryViewerDialog.setVisible(true);
+        } else {
+            repositoryViewerDialog.toFront();
+            repositoryViewerDialog.requestFocus();
+        }
+    }
+    
+    public RepositoryViewerDialog getRepositoryViewerDialog() {
+        return repositoryViewerDialog;
     }
 
     private void showNewVersionDialog(VersionChecker checker) {

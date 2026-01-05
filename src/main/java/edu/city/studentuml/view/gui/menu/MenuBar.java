@@ -44,6 +44,7 @@ public class MenuBar {
         createFileMenu();
         createEditMenu();
         createCreateMenu();
+        createToolsMenu();
         jMenuBar.add(createHelpMenu());
     }
 
@@ -333,6 +334,20 @@ public class MenuBar {
         createMenu.add(newSystemSequenceMenuItem);
         createMenu.add(newSequenceDiagramMenuItem);
         createMenu.add(newDesignClassMenuItem);
+    }
+
+    private void createToolsMenu() {
+        JMenu toolsMenu = new JMenu();
+        toolsMenu.setText(" Tools ");
+        jMenuBar.add(toolsMenu);
+
+        JMenuItem repositoryViewerMenuItem = new JMenuItem();
+        repositoryViewerMenuItem.setText("Repository Viewer");
+        repositoryViewerMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 
+                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        repositoryViewerMenuItem.setToolTipText("Open a window to view and monitor repository changes");
+        repositoryViewerMenuItem.addActionListener(e -> app.openRepositoryViewer());
+        toolsMenu.add(repositoryViewerMenuItem);
     }
 
     private JMenu createHelpMenu() {
