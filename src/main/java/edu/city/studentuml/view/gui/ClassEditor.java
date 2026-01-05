@@ -16,10 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import edu.city.studentuml.controller.ClassEditorI;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.repository.CentralRepository;
@@ -31,7 +29,7 @@ import edu.city.studentuml.view.gui.components.MethodsPanel;
  * @author Ervin Ramollari
  * @author Dimitris Dranidis
  */
-public class ClassEditor extends ClassifierEditor implements ClassEditorI, Editor<DesignClass> {
+public class ClassEditor extends ClassifierEditor implements Editor<DesignClass> {
 
     private static final String TITLE = "Class Editor";
 
@@ -58,28 +56,6 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI, Edito
         super(new DesignClass(""), cr, AUTO_COMPLETE);
 
         initializeUI(cr);
-    }
-
-    /**
-     * @deprecated Use {@link #ClassEditor(CentralRepository)} and
-     *             {@link #editDialog(DesignClass, Component)} instead.
-     */
-    @Deprecated
-    public ClassEditor(DesignClass designClass, CentralRepository cr) {
-        super(designClass, cr, AUTO_COMPLETE);
-
-        initializeUI(cr);
-
-        if (designClass != null) {
-            if (designClass.getStereotype() != null) {
-                stereotypeField.setText(designClass.getStereotype());
-            }
-
-            attributesPanel.setElements(designClass.getAttributes());
-            methodsPanel.setElements(designClass.getMethods());
-
-            setAttributesFromConceptualClass();
-        }
     }
 
     private void initializeUI(CentralRepository cr) {
@@ -173,32 +149,6 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI, Edito
 
     private Vector<Method> getMethods() {
         return methodsPanel.getElements();
-    }
-
-    /**
-     * Populates attributes with attributes from a conceptual class with the same
-     * name.
-     */
-    private void setAttributesFromConceptualClass() {
-        attributesFromConceptualClass.clear();
-
-        if (!getClassName().equals("")) {
-            ConceptualClass concept = repository.getConceptualClass(getClassName());
-            if (concept != null) {
-                concept.getAttributes().forEach(conceptualAttribute -> {
-                    if (!isAttributeInList(conceptualAttribute, getAttributes())
-                            && !isAttributeInList(conceptualAttribute, attributesFromConceptualClass)) {
-                        attributesFromConceptualClass.add(conceptualAttribute.clone());
-                    }
-                });
-            }
-        }
-
-        updateAddAttributesPanel();
-    }
-
-    private boolean isAttributeInList(Attribute attribute, List<Attribute> attributes) {
-        return attributes.stream().anyMatch(a -> attribute.getName().equals(a.getName()));
     }
 
     private void updateAddAttributesPanel() {

@@ -22,6 +22,16 @@
 -   Application crash when double-clicking on non-editable graphical elements (e.g., UC Include relationships)
     -   SelectionController now gracefully ignores elements without registered editors instead of throwing UnsupportedOperationException
 
+### Changed
+
+-   Centralized single-string property editing via `GraphicalElement.editStringPropertyWithDialog(...)` and adopted it for UCD elements (`UseCaseGR`, `UCActorGR`, `SystemGR`).
+-   Refactored `UCDSelectionController` to rely on polymorphic `edit(EditContext)`; removed legacy mapper entries for UCD elements (kept `UCExtendGR` editing in controller).
+
+### Fixed
+
+-   Enforced duplicate-name conflict policies for UCD edits (Actors, Use Cases, Systems) with error dialogs and proper undo/redo + repository synchronization.
+-   Guarded headless popup visibility in `AutocompleteJComboBox` to prevent `HeadlessException` during tests.
+
 ## [1.4.1] - 2026-01-01
 
 ### Fixed

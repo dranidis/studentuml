@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.controller.ADSelectionController;
 import edu.city.studentuml.controller.ActivityResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.AddElementController;
 import edu.city.studentuml.controller.DrawLineController;
@@ -44,7 +43,7 @@ public class ADInternalFrame extends DiagramInternalFrame {
     @Override
     protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
             DiagramModel model) {
-        return new ADSelectionController(this, model);
+        return new SelectionController(this, model);
     }
 
     @Override

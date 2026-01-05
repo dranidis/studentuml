@@ -10,10 +10,13 @@ import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.util.undoredo.EditDCDClassEdit;
+import edu.city.studentuml.view.gui.ClassEditor;
 
 @JsonIncludeProperties({ "class", "internalid", "startingPoint" })
 public class ClassGR extends AbstractClassGR {
@@ -66,7 +69,7 @@ public class ClassGR extends AbstractClassGR {
         int methodX;
         int methodY;
 
-        for(Method m: designClass.getMethods()) {
+        for (Method m : designClass.getMethods()) {
             String name = m.toString();
             bounds = GraphicsHelper.getTextBounds(name, methodFont, frc);
             methodX = METHOD_XOFFSET - (int) bounds.getX();
@@ -86,7 +89,8 @@ public class ClassGR extends AbstractClassGR {
 
         // consider stereotype text dimensions
         if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds("<<" + designClass.getStereotype() + ">>", stereotypeFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds("<<" + designClass.getStereotype() + ">>", stereotypeFont,
+                    frc);
             int stereotypeWidth = (int) bounds.getWidth() + 2 * NAMEFIELDXOFFSET;
 
             if (stereotypeWidth > newWidth) {
@@ -104,7 +108,7 @@ public class ClassGR extends AbstractClassGR {
 
         // consider method text dimensions
 
-        for(Method m: designClass.getMethods()) {
+        for (Method m : designClass.getMethods()) {
             Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), methodFont, g.getFontRenderContext());
             int methodWidth = (int) bounds.getWidth() + 2 * METHOD_XOFFSET;
 
@@ -138,12 +142,12 @@ public class ClassGR extends AbstractClassGR {
         int height = 0;
         DesignClass designClass = (DesignClass) abstractClass;
 
-        for(Method m: designClass.getMethods()) {
+        for (Method m : designClass.getMethods()) {
             Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), methodFont, g.getFontRenderContext());
 
             height = height + (int) bounds.getHeight() + METHOD_YOFFSET;
         }
-        
+
         height += METHOD_YOFFSET;
 
         return Math.max(height, MINIMUMMETHODFIELDHEIGHT);
@@ -157,11 +161,10 @@ public class ClassGR extends AbstractClassGR {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public DesignClass getDesignClass() {
         return (DesignClass) abstractClass;
     }
-
 
     @Override
     public void streamToXML(Element node, XMLStreamer streamer) {
@@ -176,15 +179,38 @@ public class ClassGR extends AbstractClassGR {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         DesignClass sameClass = getDesignClass();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        ClassGR clonedGR = new ClassGR(sameClass, 
-            new Point(this.startingPoint.x, this.startingPoint.y));
-        
+        ClassGR clonedGR = new ClassGR(sameClass,
+                new Point(this.startingPoint.x, this.startingPoint.y));
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
+    }
+
+    // ========== EDIT OPERATION ==========
+
+    /**
+     * Factory method to create a ClassEditor for testing purposes. Can be
+     * overridden in tests to provide mock editors.
+     */
+    protected ClassEditor createClassEditor(EditContext context) {
+        return new ClassEditor(context.getRepository());
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        return editClassifierWithDialog(
+                context,
+                this::getDesignClass,
+                this::setDesignClass,
+                (original, parent) -> createClassEditor(context).editDialog(original, parent),
+                context.getRepository()::getDesignClass,
+                context.getRepository()::removeClass,
+                (repo, orig, edited) -> repo.editClass(orig, edited),
+                (orig, edited, model) -> new EditDCDClassEdit(orig, edited, model));
     }
 }

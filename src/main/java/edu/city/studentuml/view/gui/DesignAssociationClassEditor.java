@@ -136,23 +136,6 @@ public class DesignAssociationClassEditor extends AssociationEditorBase {
         return edited;
     }
 
-    /**
-     * Legacy initialization method for backward compatibility. This method should
-     * not be used - domain object should be passed to
-     * initializeFromAssociationClass().
-     * 
-     * @deprecated Use
-     *             {@link #initializeFromAssociationClass(DesignAssociationClass)}
-     *             instead
-     */
-    @Deprecated
-    @Override
-    public void initialize() {
-        // This method is only here for backward compatibility
-        throw new UnsupportedOperationException(
-                "DesignAssociationClassEditor no longer supports initialization without domain object. Pass DesignAssociationClass to initializeFromAssociationClass() instead.");
-    }
-
     @Override
     protected String getDialogTitle() {
         return "Association Class Editor";

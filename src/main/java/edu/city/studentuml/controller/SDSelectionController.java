@@ -1,211 +1,122 @@
 package edu.city.studentuml.controller;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoableEdit;
-
-import edu.city.studentuml.model.domain.CallMessage;
-import edu.city.studentuml.model.domain.CreateMessage;
-import edu.city.studentuml.model.domain.DesignClass;
-import edu.city.studentuml.model.domain.MultiObject;
-import edu.city.studentuml.model.domain.SDObject;
-import edu.city.studentuml.model.graphical.CreateMessageGR;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
+import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.graphical.MultiObjectGR;
-import edu.city.studentuml.model.graphical.SDObjectGR;
-import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
-import edu.city.studentuml.util.undoredo.DesignClassRepositoryOperations;
-import edu.city.studentuml.util.undoredo.EditCreateMessageEdit;
-import edu.city.studentuml.util.undoredo.EditMultiObjectEdit;
-import edu.city.studentuml.util.undoredo.EditSDObjectEdit;
-import edu.city.studentuml.util.undoredo.MultiObjectEdit;
-import edu.city.studentuml.util.undoredo.ObjectEdit;
-import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
-import edu.city.studentuml.view.gui.CallMessageEditor;
+import edu.city.studentuml.model.graphical.GraphicalElement;
+import edu.city.studentuml.model.graphical.ReturnMessageGR;
+import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.MultiObjectEditor;
-import edu.city.studentuml.view.gui.ObjectEditor;
-import edu.city.studentuml.view.gui.TypeOperation;
-import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
-// handles all events when the "selection" button in the SD toolbar is pressed
-public class SDSelectionController extends AbstractSDSelectionController {
+/**
+ * Selection controller for Sequence Diagrams (SD and SSD). Overrides the
+ * methods for setting the undo and redo coordinates for the undo/redo of
+ * movement of SD and SSD diagrams. Also handles automatic deletion of return
+ * messages when call messages are deleted.
+ * 
+ * @author Dimitris Dranidis
+ */
+public class SDSelectionController extends SelectionController {
 
-    private static final String WARNING = "Warning";
+    private List<Integer> oldXList = new ArrayList<>();
+    private List<Integer> oldYList = new ArrayList<>();
 
-    public SDSelectionController(DiagramInternalFrame parent, DiagramModel model) {
-        super(parent, model);
-        editElementMapper.put(SDObjectGR.class, el -> editSDObject((SDObjectGR) el));
-        editElementMapper.put(MultiObjectGR.class, el -> editMultiObject((MultiObjectGR) el));
-        editElementMapper.put(CreateMessageGR.class, el -> editCreateMessage((CreateMessageGR) el));
-
+    public SDSelectionController(DiagramInternalFrame parent, DiagramModel m) {
+        super(parent, m);
+        // ActorInstanceGR now uses polymorphic edit() method
     }
 
-    public void editSDObject(SDObjectGR object) {
-        CentralRepository repository = model.getCentralRepository();
-        SDObject originalObject = object.getSDObject();
+    /**
+     * Objects are always at the top. Their Y is not changing. Messages x is always
+     * 0. Only their height is changings. Store all X, Y coord of selected elements.
+     */
+    @Override
+    protected void setUndoCoordinates() {
+        oldXList.clear();
+        oldYList.clear();
 
-        // Create editor and initial result
-        ObjectEditor objectEditor = new ObjectEditor(repository);
-        TypedEntityEditResult<DesignClass, SDObject> initialResult = new TypedEntityEditResult<>(originalObject,
-                new java.util.ArrayList<>());
+        for (GraphicalElement el : selectedElements) {
+            oldXList.add(el.getX());
+            oldYList.add(el.getY());
+        }
+    }
 
-        // Use new editDialog() method
-        TypedEntityEditResult<DesignClass, SDObject> result = objectEditor.editDialog(initialResult, parentComponent);
+    /**
+     * Compare old X with new X to see what is the X distance Same for old Y and new
+     * Y for the Y distance
+     */
+    @Override
+    protected void setRedoCoordinates() {
 
-        // Check if user cancelled
-        if (result == null) {
+        if (selectedElements.isEmpty())
             return;
+
+        int newIndexX = 0;
+        int newIndexY = 0;
+        for (int i = 0; i < oldXList.size(); i++) {
+            int oldX = oldXList.get(i);
+            if (oldX != selectedElements.get(i).getX()) {
+                newIndexX = i;
+            }
+            int oldY = oldYList.get(i);
+            if (oldY != selectedElements.get(i).getY()) {
+                newIndexY = i;
+            }
         }
 
-        SDObject newObject = result.getDomainObject();
+        undoCoordinates.setLocation(oldXList.get(newIndexX), oldYList.get(newIndexY));
+        redoCoordinates.setLocation(selectedElements.get(newIndexX).getX(), selectedElements.get(newIndexY).getY());
+    }
 
-        // UNDO/REDO setup
-        SDObject undoObject = new SDObject(originalObject.getName(), originalObject.getDesignClass());
-        ObjectEdit undoEdit = new ObjectEdit(undoObject, originalObject.getDesignClass().getName());
+    // ActorInstanceGR now uses polymorphic edit(EditContext); legacy controller editor removed.
+    // ReturnMessageGR now uses polymorphic edit(EditContext); legacy controller editor removed.
+    // CallMessageGR now uses polymorphic edit(EditContext); legacy controller editor removed.
 
-        // Create compound edit for all operations (type operations + domain object change)
-        CompoundEdit compoundEdit = new CompoundEdit();
+    /**
+     * Override to handle deletion of call messages and their corresponding return
+     * messages. When a call message is deleted, its return message should also be
+     * deleted automatically.
+     */
+    @Override
+    protected void deleteSelectedElements() {
+        // Before deleting, check if any selected element is a call message
+        // and if so, add its corresponding return message to the selection
+        List<GraphicalElement> elementsToDelete = new ArrayList<>(selectedElements);
 
-        // Apply type operations first and add their undo edits
-        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
-        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
-            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
-        }
+        for (GraphicalElement element : elementsToDelete) {
+            if (element instanceof CallMessageGR) {
+                CallMessageGR callMsg = (CallMessageGR) element;
+                ReturnMessageGR returnMsg = findCorrespondingReturnMessage(callMsg);
 
-        // Handle domain object editing with conflict checking
-        if (!originalObject.getName().equals(newObject.getName())
-                && repository.getObject(newObject.getName()) != null
-                && !newObject.getName().equals("")) {
-            int response = JOptionPane.showConfirmDialog(null,
-                    "There is an existing object with the given name already.\n"
-                            + "Do you want this diagram object to refer to the existing one?",
-                    WARNING,
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            if (response == JOptionPane.YES_OPTION) {
-                object.setSDObject(repository.getObject(newObject.getName()));
-
-                if (originalObject.getName().equals("")) {
-                    repository.removeObject(originalObject);
+                // Add return message to selection if found and not already selected
+                if (returnMsg != null && !selectedElements.contains(returnMsg)) {
+                    selectedElements.add(returnMsg);
                 }
             }
-        } else {
-            repository.editObject(originalObject, newObject);
-            // Add domain object edit to compound
-            ObjectEdit originalEdit = new ObjectEdit(originalObject, originalObject.getDesignClass().getName());
-            compoundEdit.addEdit(new EditSDObjectEdit(originalEdit, undoEdit, model));
         }
 
-        // Post the compound edit if there were any edits
-        compoundEdit.end();
-        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
-            parentComponent.getUndoSupport().postEdit(compoundEdit);
-        }
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
+        // Call parent's delete logic which will now delete both call and return messages
+        super.deleteSelectedElements();
     }
 
-    public void editMultiObject(MultiObjectGR multiObject) {
-        CentralRepository repository = model.getCentralRepository();
-        MultiObject originalMultiObject = multiObject.getMultiObject();
-
-        // Create editor and initial result
-        MultiObjectEditor multiObjectEditor = new MultiObjectEditor(repository);
-        TypedEntityEditResult<DesignClass, MultiObject> initialResult = new TypedEntityEditResult<>(originalMultiObject,
-                new java.util.ArrayList<>());
-
-        // Use new editDialog() method
-        TypedEntityEditResult<DesignClass, MultiObject> result = multiObjectEditor.editDialog(initialResult,
-                parentComponent);
-
-        // Check if user cancelled
-        if (result == null) {
-            return;
-        }
-
-        MultiObject newMultiObject = result.getDomainObject();
-
-        // UNDO/REDO setup
-        MultiObject undoObject = new MultiObject(originalMultiObject.getName(), originalMultiObject.getDesignClass());
-        MultiObjectEdit undoEdit = new MultiObjectEdit(undoObject, originalMultiObject.getDesignClass().getName());
-
-        // Create compound edit for all operations
-        CompoundEdit compoundEdit = new CompoundEdit();
-
-        // Apply type operations first and add their undo edits
-        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
-        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
-            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
-        }
-
-        // edit the multiobject if there is no change in the name,
-        // or if there is a change in the name but the new name doesn't bring any conflict
-        // or if the new name is blank
-        if (!originalMultiObject.getName().equals(newMultiObject.getName())
-                && repository.getMultiObject(newMultiObject.getName()) != null
-                && !newMultiObject.getName().equals("")) {
-            int response = JOptionPane.showConfirmDialog(null,
-                    "There is an existing multiobject with the given name already.\n"
-                            + "Do you want this diagram object to refer to the existing one?",
-                    WARNING,
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            if (response == JOptionPane.YES_OPTION) {
-                multiObject.setMultiObject(repository.getMultiObject(newMultiObject.getName()));
-
-                if (originalMultiObject.getName().equals("")) {
-                    repository.removeMultiObject(originalMultiObject);
+    @Override
+    public void handleCtrlShiftSelect(GraphicalElement element) {
+        if (element instanceof SDMessageGR) {
+            if (!selectedElements.contains(element)) {
+                selectedElements.add(element);
+            }
+            SDMessageGR message = (SDMessageGR) element;
+            AbstractSDModel sdmodel = (AbstractSDModel) model;
+            List<SDMessageGR> belowMessages = sdmodel.getMessagesBelow(message);
+            for (SDMessageGR m : belowMessages) {
+                if (!selectedElements.contains(m)) {
+                    selectedElements.add(m);
                 }
             }
-        } else {
-            repository.editMultiObject(originalMultiObject, newMultiObject);
-
-            // Add domain object edit to compound
-            MultiObjectEdit originalEdit = new MultiObjectEdit(originalMultiObject,
-                    originalMultiObject.getDesignClass().getName());
-            compoundEdit.addEdit(new EditMultiObjectEdit(originalEdit, undoEdit, model));
         }
-
-        // Post the compound edit
-        compoundEdit.end();
-        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
-            parentComponent.getUndoSupport().postEdit(compoundEdit);
-        }
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
-    }
-
-    //new edit create method 
-    public void editCreateMessage(CreateMessageGR messageGR) {
-        CreateMessage message = messageGR.getCreateMessage();
-        CallMessageEditor createMessageEditor = new CallMessageEditor(model.getCentralRepository());
-
-        CreateMessage undoCreateMessage = message.clone();
-
-        // if user presses cancel don't do anything
-        CallMessage editedMessage = createMessageEditor.editDialog(message, parentComponent);
-        if (editedMessage == null) {
-            return;
-        }
-
-        // Copy parameters from edited message to original message
-        message.setParameters(new Vector<>());
-        message.getParameters().addAll(editedMessage.getParameters());
-
-        // UNDO/REDO
-        UndoableEdit edit = new EditCreateMessageEdit(message, undoCreateMessage, model);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
     }
 
 }

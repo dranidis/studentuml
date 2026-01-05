@@ -6,15 +6,16 @@ import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditActorEdit;
 
 /**
- *
  * @author draganbisercic
  */
 public class UCActorGR extends LeafUCDElementGR {
@@ -26,10 +27,10 @@ public class UCActorGR extends LeafUCDElementGR {
 
     public UCActorGR(Actor actor, int x, int y) {
         super(actor, x, y);
-        
+
         width = stickFigureWidth;
         height = stickFigureHeight;
-        
+
         actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
     }
 
@@ -53,7 +54,8 @@ public class UCActorGR extends LeafUCDElementGR {
         }
 
         // draw the actor
-        GraphicsHelper.drawStickFigure(g, startingX + (width / 2), startingY, isSelected(), getFillColor(), getOutlineColor(), getHighlightColor());
+        GraphicsHelper.drawStickFigure(g, startingX + (width / 2), startingY, isSelected(), getFillColor(),
+                getOutlineColor(), getHighlightColor());
 
         // draw the actor description under the stick figure
         g.setPaint(getOutlineColor());
@@ -132,15 +134,37 @@ public class UCActorGR extends LeafUCDElementGR {
     public UCActorGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         Actor sameActor = (Actor) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        UCActorGR clonedGR = new UCActorGR(sameActor, 
-            this.startingPoint.x, this.startingPoint.y);
-        
+        UCActorGR clonedGR = new UCActorGR(sameActor,
+                this.startingPoint.x, this.startingPoint.y);
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        Actor originalActor = (Actor) getComponent();
+
+        // Delegate to centralized helper: conflict check handled by Edit class
+        return editStringPropertyWithDialog(
+                context,
+                "Actor Editor",
+                "Actor Name:",
+                originalActor,
+                Actor::getName,
+                Actor::setName,
+                Actor::clone,
+                (original, redo, model) -> new EditActorEdit(
+                        original,
+                        redo,
+                        model),
+                newName -> StringUtils.isNotEmpty(newName)
+                        && context.getRepository().getActor(newName) != null,
+                "There is an existing actor with the given name already!\n");
     }
 }

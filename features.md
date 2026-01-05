@@ -75,7 +75,100 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** Projects using generic types (List<T>, Map<K,V>, etc.) cause consistency checking to fail with Prolog syntax errors.
 
+### Activity Diagram Node Degree Constraints
+
+**Status:** Not implemented  
+**Priority:** High  
+**Description:** Enforce control-flow degree constraints in Activity Diagrams:
+
+-   Initial nodes must have exactly one outgoing Control Flow.
+-   Final nodes (Activity Final and Flow Final) must have exactly one incoming Control Flow.
+
+Violations should be prevented at creation time (with a user-facing error/warning) and detected during consistency checks.
+
+**Technical Notes:**
+
+-   Domain types: `InitialNode`, `ActivityFinalNode`, `FlowFinalNode` under `edu.city.studentuml.model.domain`.
+-   Graphical types: `InitialNodeGR`, `ActivityFinalNodeGR`, `FlowFinalNodeGR` under `edu.city.studentuml.model.graphical`.
+-   Edge types: `ControlFlow` (domain) and `ControlFlowGR` (graphical).
+-   Creation path to validate (to locate exact enforcement points):
+    -   Add-element controllers for AD (e.g., `AddControlFlowController` or equivalent) or a generic add-edge controller.
+    -   Reconnection logic in `EdgeGR` and specific GRs (to block making an invalid degree via reconnect).
+    -   Consider a model-level validation in `NodeComponent` or a dedicated validator that counts `getOutgoingEdges()` / `getIncomingEdges()`.
+-   Suggested enforcement:
+    -   Before creating a `ControlFlow` where source is `InitialNode`, check `source.getOutgoingEdges().isEmpty()`; if not empty, block and show: "Initial node can have a single outgoing control flow".
+    -   Before creating a `ControlFlow` where target is `ActivityFinalNode` or `FlowFinalNode`, check `target.getIncomingEdges().isEmpty()`; if not empty, block and show: "Final nodes can have a single incoming control flow".
+    -   Mirror these checks in reconnection handlers (`ControlFlowGR` / `EdgeGR`) to prevent violating the constraints via reconnect.
+    -   Add consistency rules to the Prolog ruleset: count incoming/outgoing degrees for final/initial nodes and report violations.
+-   XML Save/Load:
+    -   On load, optionally run a validation pass to flag diagrams that violate the constraints.
+    -   Consider auto-fix option (disabled by default) that removes surplus flows or highlights them.
+-   Tests:
+    -   Unit tests for creation blocking in controllers.
+    -   Integration tests: attempt to draw invalid flows and assert error dialogs; ensure valid flows are allowed.
+
+**Use Case:** In UML Activity Diagrams, initial nodes represent the single entry point of the activity, and final nodes represent termination points. Allowing multiple outgoing/incoming flows makes the diagram ambiguous and violates UML semantics. Enforcing these constraints keeps models clean and semantically correct.
+
+### Weight Validation for Control and Object Flows
+
+**Status:** Not implemented  
+**Priority:** Medium  
+**Description:** Validate that the weight property of Control Flows and Object Flows in Activity Diagrams is a positive integer. The weight determines the number of tokens that traverse the edge when fired, and must be at least 1.
+
+**Technical Notes:**
+
+-   Domain types: `ControlFlow` and `ObjectFlow` under `edu.city.studentuml.model.domain`
+-   Both classes have a `weight` property (likely int or String)
+-   Need to add validation:
+    -   In setters: `setWeight(int weight)` should throw exception or ignore if weight < 1
+    -   In editors: `ControlFlowEditor` and `ObjectFlowEditor` should validate input before accepting
+    -   Show error message: "Weight must be a positive integer (≥ 1)"
+-   Consider default value: Weight defaults to 1 if not specified (standard UML behavior)
+-   UI validation:
+    -   Add input validation in property dialogs/editors
+    -   Use `JSpinner` with minimum value of 1 instead of free-text field
+    -   Or use regex validation if text field: `^[1-9][0-9]*$`
+-   XML serialization: Ensure invalid weights are not saved or are corrected on load
+-   Consistency checking: Add Prolog rule to detect flows with weight < 1
+-   Tests:
+    -   Unit tests for weight setter validation
+    -   UI tests for editor validation
+    -   Integration tests for XML load with invalid weights
+
+**Use Case:** In UML Activity Diagrams, the weight property specifies how many tokens must be available on the edge for it to be traversed. A weight of 0 or negative value is semantically invalid and would prevent the flow from ever being traversed or cause undefined behavior. Enforcing positive integer validation ensures diagrams remain semantically valid and prevents modeling errors.
+
 ## Class Diagram Features
+
+### Class Renaming Undo/Redo Issues
+
+**Status:** Bug / Not fixed  
+**Priority:** High  
+**Description:** There is an issue with Classes and renaming them. The logic in `editClassifierWithDialog` is not correct. Renaming to an existing class name and multiple undo/redo leave the repository in inconsistent states.
+
+**Reproduction Steps:**
+
+1. **Scenario 1:** Create class, rename to "A", create another class, rename to "A", then undo → **Expected:** Second class name reverts to "" (empty) **Actual:** The class gets deleted instead
+2. **Scenario 2:** Create two classes, rename first to "A", rename second to "B", then rename second to "A", then undo → **Expected:** Undo should work correctly **Actual:** Undo does not work
+3. **Scenario 3:** Multiple undos leave the repository with extra classes at the end instead of proper state restoration
+
+**Technical Notes:**
+
+-   Problem location: `GraphicalElement.editClassifierWithDialog()` method (line 407)
+-   This method implements "Silent Merge on Conflict" pattern (Pattern 2)
+-   Affects: `ClassGR`, `ConceptualClassGR`, `InterfaceGR`
+-   Current algorithm:
+    -   When name conflict detected: performs silent merge (replaces reference, optionally removes original)
+    -   When no conflict: creates undo/redo edit
+-   Issues with empty names ("") and multiple renames not handled correctly
+-   Undo/redo stack becomes inconsistent with repository state
+-   Probably other issues as well
+
+**Investigation Needed:** This requires comprehensive investigation of the name conflict resolution logic, especially:
+
+-   How empty names are handled during undo/redo
+-   Whether silent merges should create undo edits or not
+-   Repository cleanup when classes are removed/merged
+-   Interaction between multiple rename operations and undo stack
 
 ### Support Package Visibility for Methods and Attributes
 
@@ -321,6 +414,24 @@ This document tracks potential features and improvements for StudentUML.
 -   Related work: Editor refactoring (see `plan-editor-interface.md`) addressed copy/paste for many elements but revealed these remaining gaps
 
 **Use Case:** When duplicating diagram sections or creating variations of existing designs, users expect copy/paste to work consistently for all element types. Silent failures and broken note links cause confusion and data integrity issues. For example, copying a sequence diagram with destroy messages, or copying use case relationships (include/extend/generalization), currently fails without clear feedback. Activity diagrams lose control flow and object flow connections when pasted, making it impossible to duplicate complex activity structures.
+
+### UML Note Y-Position in Sequence Diagrams
+
+**Status:** Not implemented  
+**Priority:** Low  
+**Description:** When pasting UML notes in Sequence Diagrams, the Y-coordinate should be preserved from the original position (with offset), not calculated relative to the mouse cursor. In Sequence Diagrams, all elements are positioned at the top of the diagram, and the mouse Y-coordinate is irrelevant for vertical positioning.
+
+**Technical Notes:**
+
+-   Current behavior: `SelectionController.pasteClipboard()` uses mouse position (currentMouseY) to calculate offsetY for all elements, including UML notes in SD diagrams
+-   Expected behavior: In Sequence Diagrams, UML notes should use their original Y-coordinate plus a fixed offset, ignoring mouse Y
+-   Implementation:
+    -   In `SelectionController.pasteClipboard()`, detect if target diagram is a Sequence Diagram (SDModel or SSDModel)
+    -   For SD/SSD diagrams: when calculating offsetY for UMLNoteGR elements, use a fixed offset (e.g., 20 pixels) instead of currentMouseY
+    -   For other diagram types: keep current mouse-based positioning behavior
+-   Related code: `SelectionController.pasteClipboard()` lines ~770-795 (offset calculation)
+
+**Use Case:** When copying and pasting elements in Sequence Diagrams, UML notes attached to messages or objects should maintain their relative position in the timeline/Y-axis. Using the mouse Y-coordinate causes notes to jump to unexpected positions since SD elements are always positioned at the top regardless of where the user clicks.
 
 ## Additional Potential Features
 

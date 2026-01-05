@@ -86,25 +86,27 @@ import edu.city.studentuml.util.ClipboardManager;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.PositiveRectangle;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.util.undoredo.ReconnectLinkEdit;
 import edu.city.studentuml.util.undoredo.ReconnectMessageEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  * The SelectionController is the Controller component in MVC that handles all
- * events when the "selection" button in the drawing toolbar is pressed. Serves
- * as the superclass of all selection controllers of particular diagrams.
- * Dragging and dropping, and other mouse events are handled by this superclass,
- * while the details of editing and deleting elements are left to subclasses.
+ * events when the "selection" button in the drawing toolbar is pressed. After
+ * applying the Template Method pattern to GraphicalElement classes, most
+ * diagram-specific selection controllers became empty and were removed. This
+ * class can now be instantiated directly for most diagram types (UCD, CCD, DCD,
+ * AD). For sequence diagrams (SD/SSD), use AbstractSDSelectionController which
+ * extends this class with SD-specific coordinate handling and call message
+ * deletion logic. Dragging, dropping, and other mouse events are handled by
+ * this class. Element editing is delegated to GraphicalElement.edit() via
+ * polymorphism.
  */
-public abstract class SelectionController {
+public class SelectionController {
 
     private static final Logger logger = Logger.getLogger(SelectionController.class.getName());
 
@@ -147,10 +149,9 @@ public abstract class SelectionController {
      */
     protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
 
-    protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+    public SelectionController(DiagramInternalFrame parent, DiagramModel m) {
 
         editElementMapper = new HashMap<>();
-        editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
 
         parentComponent = parent;
         model = m;
@@ -262,6 +263,15 @@ public abstract class SelectionController {
     }
 
     private void mapeditElement(GraphicalElement element) {
+        // Try polymorphic edit() method first (new approach)
+        edu.city.studentuml.editing.EditContext context = new edu.city.studentuml.editing.EditContext(model,
+                parentComponent);
+        if (element.edit(context)) {
+            // Element handled its own editing via polymorphic method
+            return;
+        }
+
+        // Fall back to legacy mapper approach for elements not yet migrated
         Consumer<GraphicalElement> editElementConsumer = editElementMapper.get(element.getClass());
         if (editElementConsumer != null) {
             editElementConsumer.accept(element);
@@ -272,27 +282,6 @@ public abstract class SelectionController {
             logger.fine("No edit function registered for " + element.getClass().getSimpleName() +
                     " - element is not editable");
         }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(parentComponent, "UML Note Editor", noteGR);
-
-        // Undo/Redo
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog()) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
     }
 
     private int scale(int number) {
@@ -765,7 +754,8 @@ public abstract class SelectionController {
             }
         }
 
-        // Calculate offset to position at mouse cursor (or use default offset if no mouse position)
+        // Calculate offset to position at mouse cursor (or use default offset if no
+        // mouse position)
         final int offsetX;
         final int offsetY;
         if (currentMouseX > 0 || currentMouseY > 0) {
@@ -784,10 +774,12 @@ public abstract class SelectionController {
         // Map to track original -> cloned element mappings (for reconnecting links)
         Map<GraphicalElement, GraphicalElement> originalToCloneMap = new HashMap<>();
 
-        // Track which elements are children of composites (should not be added to model directly)
+        // Track which elements are children of composites (should not be added to model
+        // directly)
         Set<GraphicalElement> childElements = new HashSet<>();
 
-        // Create compound edit to group all paste operations into single undoable action
+        // Create compound edit to group all paste operations into single undoable
+        // action
         CompoundEdit compoundEdit = new CompoundEdit();
 
         // Identify child elements first
@@ -803,7 +795,8 @@ public abstract class SelectionController {
 
         // First pass: Clone non-link elements (classes, use cases, etc.)
         for (GraphicalElement originalElement : clipboardElements) {
-            // Skip links, edges, and SD messages in first pass - we'll handle them after objects are cloned
+            // Skip links, edges, and SD messages in first pass - we'll handle them after
+            // objects are cloned
             if (originalElement instanceof LinkGR || originalElement instanceof EdgeGR
                     || originalElement instanceof SDMessageGR) {
                 continue;
@@ -1119,7 +1112,8 @@ public abstract class SelectionController {
             return new UCExtendGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
 
         } else if (originalLink instanceof UCGeneralizationGR) {
-            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR elements
+            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR
+            // elements
             UCGeneralization origDomain = (UCGeneralization) ((UCGeneralizationGR) originalLink).getLink();
             // REUSE the same domain UCGeneralization object
             if (newA instanceof UCActorGR && newB instanceof UCActorGR) {
@@ -1181,7 +1175,8 @@ public abstract class SelectionController {
             RoleClassifierGR newSource,
             RoleClassifierGR newTarget) {
         // Create appropriate message type based on the original
-        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends CallMessageGR)
+        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends
+        // CallMessageGR)
         if (originalMessage instanceof CreateMessageGR) {
             CreateMessageGR origCreate = (CreateMessageGR) originalMessage;
             CreateMessage origDomain = origCreate.getCreateMessage();
@@ -1238,9 +1233,6 @@ public abstract class SelectionController {
             return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
 
         } else if (originalMessage instanceof DestroyMessageGR) {
-            DestroyMessageGR origDestroy = (DestroyMessageGR) originalMessage;
-            DestroyMessage origDomain = origDestroy.getDestroyMessage();
-
             // Create new domain message with new source/target
             DestroyMessage newDomain = new DestroyMessage(
                     newSource.getRoleClassifier(),
@@ -1615,7 +1607,8 @@ public abstract class SelectionController {
                     if (draggingEndpoint == EndpointType.SOURCE) {
                         reconnected = message.reconnectSource(newLifeline);
 
-                        // If reconnecting source of a call message, update corresponding return message's target
+                        // If reconnecting source of a call message, update corresponding return
+                        // message's target
                         if (reconnected && returnMsg != null) {
                             returnMsg.reconnectTarget(newLifeline);
                             logger.fine(() -> "Also updated corresponding return message target");
@@ -1623,7 +1616,8 @@ public abstract class SelectionController {
                     } else if (draggingEndpoint == EndpointType.TARGET) {
                         reconnected = message.reconnectTarget(newLifeline);
 
-                        // If reconnecting target of a call message, update corresponding return message's source
+                        // If reconnecting target of a call message, update corresponding return
+                        // message's source
                         if (reconnected && returnMsg != null) {
                             returnMsg.reconnectSource(newLifeline);
                             logger.fine(() -> "Also updated corresponding return message source");

@@ -3,7 +3,6 @@ package edu.city.studentuml.view.gui;
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.model.graphical.ActorInstanceGR;
 import java.util.Vector;
 
 /**
@@ -23,20 +22,6 @@ public class ActorInstanceEditor extends TypedEntityEditor<Actor, ActorInstance>
     }
 
     /**
-     * Deprecated constructor for backward compatibility.
-     * 
-     * @param ai The graphical actor instance wrapper
-     * @param cr The central repository
-     * @deprecated Use {@link #ActorInstanceEditor(CentralRepository)} and call
-     *             {@link #initialize(ActorInstance)} instead
-     */
-    @Deprecated
-    public ActorInstanceEditor(ActorInstanceGR ai, CentralRepository cr) {
-        super(cr);
-        initialize(ai.getActorInstance());
-    }
-
-    /**
      * Initialize the editor with an actor instance.
      * 
      * @param actorInstance The actor instance to edit
@@ -50,7 +35,7 @@ public class ActorInstanceEditor extends TypedEntityEditor<Actor, ActorInstance>
     /**
      * Legacy method for backward compatibility.
      * 
-     * @deprecated Use {@link #initialize(ActorInstance)} instead
+     * @deprecated No longer needed with editDialog pattern
      */
     @Deprecated
     public void initialize() {

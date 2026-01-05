@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.NodeComponent;
 import edu.city.studentuml.util.Coverable;
 
@@ -115,6 +118,74 @@ public abstract class NodeComponentGR extends GraphicalElement implements Covera
     protected abstract int calculateWidth(Graphics2D g);
 
     protected abstract int calculateHeight(Graphics2D g);
+
+    /**
+     * Template method for editing a node component's name using a
+     * StringEditorDialog. This implements Pattern 1 (Simple Domain Edit) for domain
+     * objects that have a name property.
+     * <p>
+     * The workflow is:
+     * </p>
+     * <ol>
+     * <li>Show StringEditorDialog with the provided title and label</li>
+     * <li>If cancelled, return false</li>
+     * <li>Clone the domain object for undo/redo</li>
+     * <li>Apply the new name via setName()</li>
+     * <li>Create and post the UndoableEdit (provided by subclass)</li>
+     * <li>Notify model changed and reload name pool</li>
+     * <li>Return true</li>
+     * </ol>
+     * 
+     * @param context             the edit context providing access to model,
+     *                            repository, parent component, and undo support
+     * @param dialogTitle         the title to display in the StringEditorDialog
+     *                            (e.g., "Activity Node Editor")
+     * @param fieldLabel          the label for the text field (e.g., "Activity
+     *                            name: ")
+     * @param undoableEditFactory a function that creates the appropriate
+     *                            UndoableEdit given the original and cloned domain
+     *                            objects
+     * @return true if the edit was successful and applied, false if cancelled
+     */
+    protected boolean editNameWithDialog(
+            EditContext context,
+            String dialogTitle,
+            String fieldLabel,
+            UndoableEditFactory undoableEditFactory) {
+        NodeComponent domain = getComponent();
+
+        return editStringPropertyWithDialog(
+                context,
+                dialogTitle,
+                fieldLabel,
+                domain,
+                NodeComponent::getName,
+                NodeComponent::setName,
+                d -> (NodeComponent) d.clone(),
+                (orig, undo, model) -> undoableEditFactory.create(orig, undo, model),
+                null, // no duplicate check
+                null); // no duplicate error message
+    }
+
+    /**
+     * Functional interface for creating UndoableEdit instances. This allows
+     * subclasses to provide their specific UndoableEdit implementation while
+     * reusing the common editing workflow.
+     */
+    @FunctionalInterface
+    protected interface UndoableEditFactory {
+        /**
+         * Creates an UndoableEdit for the given domain objects.
+         * 
+         * @param original the original domain object being edited (unmutated at call
+         *                 time)
+         * @param newValue the domain object with the new/target state for redo
+         * @param model    the diagram model
+         * @return the UndoableEdit instance
+         */
+        UndoableEdit create(NodeComponent original, NodeComponent newValue,
+                DiagramModel model);
+    }
 
     @Override
     public String toString() {

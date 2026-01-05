@@ -43,29 +43,6 @@ public class InterfaceEditor extends ClassifierEditor implements Editor<Interfac
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * @deprecated Use {@link #InterfaceEditor(CentralRepository)} and
-     *             {@link #editDialog(Interface, Component)} instead.
-     */
-    @Deprecated
-    public InterfaceEditor(Interface coreInterface, CentralRepository cr) {
-        super(coreInterface, cr, AUTO_COMPLETE);
-
-        repository = cr;
-
-        setLayout(new BorderLayout());
-
-        methodsPanel = new MethodsPanel("Interface Methods", cr);
-
-        add(namePanel, BorderLayout.NORTH);
-        add(methodsPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        if (coreInterface != null) {
-            methodsPanel.setElements(coreInterface.getMethods());
-        }
-    }
-
     @Override
     public Interface editDialog(Interface interfaceObj, Component parent) {
         setClassifierName(interfaceObj.getName());

@@ -19,10 +19,10 @@ public class EditObjectFlowEdit extends AbstractUndoableEdit {
     private DiagramModel model;
 
     // constructor for class
-    public EditObjectFlowEdit(ObjectFlow originalObjectFlow, ObjectFlow undoObjectFlow, DiagramModel model) {
+    public EditObjectFlowEdit(ObjectFlow originalObjectFlow, ObjectFlow newObjectFlow, DiagramModel model) {
         this.originalObjectFlow = originalObjectFlow;
-        this.undoObjectFlow = (ObjectFlow) undoObjectFlow.clone();
-        this.redoObjectFlow = (ObjectFlow) originalObjectFlow.clone();
+        this.undoObjectFlow = (ObjectFlow) originalObjectFlow.clone();
+        this.redoObjectFlow = (ObjectFlow) newObjectFlow.clone();
         this.model = model;
     }
 

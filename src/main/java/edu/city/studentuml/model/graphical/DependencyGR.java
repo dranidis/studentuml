@@ -10,9 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.util.undoredo.EditDependencyEdit;
 
 /**
  * @author Ervin Ramollari
@@ -167,5 +169,27 @@ public class DependencyGR extends LinkGR {
      */
     public DependencyGR createWithNewEndpoints(ClassGR newA, ClassGR newB) {
         return new DependencyGR(newA, newB, this.dependency);
+    }
+
+    /**
+     * Polymorphic edit method using the centralized helper to edit the dependency
+     * stereotype with undo/redo support.
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        Dependency dep = getDependency();
+
+        return editStringPropertyWithDialog(
+                context,
+                "Dependency Editor",
+                "Stereotype: ",
+                dep,
+                Dependency::getStereotype,
+                Dependency::setStereotype,
+                Dependency::clone,
+                (original, newDomainObject, model) -> new EditDependencyEdit(original, original.getStereotype(),
+                        newDomainObject.getStereotype(), model),
+                null, // no duplicate check
+                null); // no duplicate error message
     }
 }

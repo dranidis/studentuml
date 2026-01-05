@@ -5,8 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
-import java.util.logging.Logger;
-
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -31,8 +29,6 @@ import edu.city.studentuml.view.gui.components.MethodParameterPanel;
  * @author Dimitris Dranidis
  */
 public class CallMessageEditor extends OkCancelDialog implements Editor<CallMessage> {
-    private static final Logger logger = Logger.getLogger(CallMessageEditor.class.getName());
-
     private CallMessage callMessage;
     private JTextField nameField;
     private JLabel nameLabel;
@@ -56,22 +52,6 @@ public class CallMessageEditor extends OkCancelDialog implements Editor<CallMess
     public CallMessageEditor(CentralRepository repository) {
         super(null, TITLE_CALL); // parent and title will be set in editDialog
         this.repository = repository;
-    }
-
-    // Legacy constructor for backward compatibility during transition
-    @Deprecated
-    public CallMessageEditor(Component parent, String title, CallMessage callMessage,
-            CentralRepository repository) {
-        super(parent, title);
-
-        this.callMessage = callMessage;
-        this.repository = repository;
-
-        // Ensure UI components are created
-        initializeIfNeeded();
-
-        // initialize with the method data to be edited, if any
-        initialize();
     }
 
     @Override
@@ -156,7 +136,9 @@ public class CallMessageEditor extends OkCancelDialog implements Editor<CallMess
         return callMessage;
     }
 
-    // Legacy method for backward compatibility
+    /**
+     * @deprecated No longer needed with editDialog pattern
+     */
     @Deprecated
     public void initialize() {
         initialize(this.callMessage);

@@ -7,11 +7,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDModel;
+import edu.city.studentuml.util.undoredo.EditReturnMessageEdit;
 import edu.city.studentuml.view.gui.SDInternalFrame;
 
 public class SDSelectionControllerTest {
@@ -428,5 +430,43 @@ public class SDSelectionControllerTest {
 
         assertEquals("After redo: A should be source", objA, msg.getSource());
         assertEquals("After redo: C should be target", objC, msg.getTarget());
+    }
+
+    @Test
+    public void testEditReturnMessageNameWithUndo() {
+        // Create objects and return message
+        RoleClassifierGR objA = h.addSDObject("A", 100);
+        RoleClassifierGR objB = h.addSDObject("B", 300);
+        ReturnMessageGR returnMsg = h.addReturnMessage(objB, objA, "originalName", 150);
+
+        // Get the domain object
+        ReturnMessage domain = returnMsg.getReturnMessage();
+
+        // Verify initial state
+        assertEquals("Initial name should be 'originalName'", "originalName", domain.getName());
+
+        // Edit the name programmatically (simulating the edit workflow)
+        ReturnMessage newState = (ReturnMessage) domain.clone();
+        newState.setName("editedName");
+
+        // Create and post the edit
+        EditReturnMessageEdit edit = new EditReturnMessageEdit(domain, newState, model);
+        internalFrame.getUndoSupport().postEdit(edit);
+
+        // Apply the change (this is what the edit dialog would do)
+        domain.setName("editedName");
+
+        // Verify edited state
+        assertEquals("After edit: name should be 'editedName'", "editedName", domain.getName());
+
+        // Undo
+        assertTrue("Should be able to undo", internalFrame.getUndoManager().canUndo());
+        internalFrame.getUndoManager().undo();
+        assertEquals("After undo: name should be 'originalName'", "originalName", domain.getName());
+
+        // Redo
+        assertTrue("Should be able to redo", internalFrame.getUndoManager().canRedo());
+        internalFrame.getUndoManager().redo();
+        assertEquals("After redo: name should be 'editedName'", "editedName", domain.getName());
     }
 }

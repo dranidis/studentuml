@@ -4,8 +4,11 @@ import java.awt.Point;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditCCDClassEdit;
+import edu.city.studentuml.view.gui.ConceptualClassEditor;
 
 /**
  * @author draganbisercic
@@ -35,6 +38,29 @@ public class ConceptualClassGR extends AbstractClassGR {
         streamer.streamObject(node, "conceptualclass", getConceptualClass());
         node.setAttribute("x", Integer.toString(startingPoint.x));
         node.setAttribute("y", Integer.toString(startingPoint.y));
+    }
+
+    // ========== EDIT OPERATION ==========
+
+    /**
+     * Factory method to create a ConceptualClassEditor for testing purposes. Can be
+     * overridden in tests to provide mock editors.
+     */
+    protected ConceptualClassEditor createConceptualClassEditor(EditContext context) {
+        return new ConceptualClassEditor(context.getRepository());
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        return editClassifierWithDialog(
+                context,
+                this::getConceptualClass,
+                this::setConceptualClass,
+                (original, parent) -> createConceptualClassEditor(context).editDialog(original, parent),
+                context.getRepository()::getConceptualClass,
+                context.getRepository()::removeConceptualClass,
+                (repo, orig, edited) -> repo.editConceptualClass(orig, edited),
+                (orig, edited, model) -> new EditCCDClassEdit(orig, edited, model));
     }
 
     @Override

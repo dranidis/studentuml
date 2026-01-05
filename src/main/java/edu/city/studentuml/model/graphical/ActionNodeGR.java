@@ -8,14 +8,15 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActionNode;
+import edu.city.studentuml.util.undoredo.EditActionNodeEdit;
 
 /**
- *
  * @author Biser
  * @author Dimitris Dranidis
  */
-public class ActionNodeGR extends LeafNodeGR  {
+public class ActionNodeGR extends LeafNodeGR {
 
     private static int minimumWidth = 70;
     private static int minimumHeight = 24;
@@ -59,7 +60,6 @@ public class ActionNodeGR extends LeafNodeGR  {
         }
         // draw the action node
         g.draw(shape);
-
 
         g.setStroke(originalStroke);
         g.setPaint(getOutlineColor());
@@ -106,14 +106,34 @@ public class ActionNodeGR extends LeafNodeGR  {
     public ActionNodeGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         ActionNode sameActionNode = (ActionNode) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
         ActionNodeGR clonedGR = new ActionNodeGR(sameActionNode, this.startingPoint.x, this.startingPoint.y);
-        
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
+    }
+
+    /**
+     * Opens an editor dialog for editing the action node's name. Uses the template
+     * method from NodeComponentGR for the common editing workflow.
+     * 
+     * @param context the edit context providing access to model, repository, parent
+     *                component, and undo support
+     * @return true if the edit was successful and applied, false if cancelled
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        return editNameWithDialog(
+                context,
+                "Action Node Editor",
+                "Action name: ",
+                (original, newValue, model) -> new EditActionNodeEdit(
+                        (ActionNode) original,
+                        (ActionNode) newValue,
+                        model));
     }
 }

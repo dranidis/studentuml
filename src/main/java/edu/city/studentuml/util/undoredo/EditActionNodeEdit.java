@@ -19,10 +19,10 @@ public class EditActionNodeEdit extends AbstractUndoableEdit {
     private DiagramModel model;
 
     // constructor for class
-    public EditActionNodeEdit(ActionNode originalActionNode, ActionNode undoActionNode, DiagramModel model) {
+    public EditActionNodeEdit(ActionNode originalActionNode, ActionNode newActionNode, DiagramModel model) {
         this.originalActionNode = originalActionNode;
-        this.undoActionNode = (ActionNode) undoActionNode.clone();
-        this.redoActionNode = (ActionNode) originalActionNode.clone();
+        this.undoActionNode = (ActionNode) originalActionNode.clone();
+        this.redoActionNode = (ActionNode) newActionNode.clone();
         this.model = model;
     }
 

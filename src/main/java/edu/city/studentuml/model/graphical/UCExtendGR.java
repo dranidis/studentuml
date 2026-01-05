@@ -4,8 +4,12 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.util.logging.Logger;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UseCase;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.EditUCExtendEdit;
+import edu.city.studentuml.view.gui.UCExtendEditor;
 
 /**
  * @author draganbisercic
@@ -37,6 +41,42 @@ public class UCExtendGR extends UCLinkGR {
     @Override
     public void drawArrowHead(int x, int y, double angle, Graphics2D g) {
         GraphicsHelper.drawSimpleArrowHead(x, y, angle, g);
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        UCExtend originalUCExtend = (UCExtend) getLink();
+        UCExtendEditor ucExtendEditor = createEditor(context);
+
+        UCExtend newUCExtend = ucExtendEditor.editDialog(originalUCExtend, context.getParentComponent());
+        if (newUCExtend == null) {
+            return true; // User cancelled, but we handled it
+        }
+
+        // Undo/Redo [edit]
+        // IMPORTANT: Create undo edit BEFORE modifying the repository,
+        // so that originalUCExtend's state is captured before modification
+        EditUCExtendEdit undoEdit = new EditUCExtendEdit(originalUCExtend, newUCExtend, context.getModel());
+        context.getModel().getCentralRepository().editUCExtend(originalUCExtend, newUCExtend);
+        context.getParentComponent().getUndoSupport().postEdit(undoEdit);
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true; // Successfully handled
+    }
+
+    /**
+     * Creates the editor for this UCExtend link. Extracted into a protected method
+     * to enable testing without UI dialogs (can be overridden to return mock
+     * editor).
+     * 
+     * @param context the edit context containing repository and parent component
+     * @return the editor instance
+     */
+    protected UCExtendEditor createEditor(EditContext context) {
+        return new UCExtendEditor(context.getModel().getCentralRepository());
     }
 
     @Override

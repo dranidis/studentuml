@@ -19,6 +19,10 @@ import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
+import edu.city.studentuml.view.gui.InterfaceEditor;
+
+import edu.city.studentuml.editing.EditContext;
 
 /**
  * @author Ervin Ramollari
@@ -28,7 +32,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
     private static int methodFieldXOffset = 4;
     private static int methodFieldYOffset = 3;
-    private static int minimumMethodFieldHeight = 40;
+    private static int minimumMethodFieldHeight = 20;
     private static int minimumNameFieldHeight = 20;
     private static int minimumWidth = 70;
     private static int nameFieldXOffset = 3;
@@ -221,20 +225,53 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         node.setAttribute("y", Integer.toString(startingPoint.y));
     }
 
+    /**
+     * Polymorphic edit method for InterfaceGR. Implements Pattern 2 (Name Conflict)
+     * - DCD variant (silent merge on conflict).
+     * 
+     * @param context The edit context containing model, repository, parent
+     *                component, and undo support
+     * @return true if the edit was successful, false if user cancelled
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        return editClassifierWithDialog(
+                context,
+                this::getInterface, // Get current classifier
+                this::setInterface, // Set classifier reference
+                (original, parent) -> createEditor(context).editDialog(original, parent),
+                context.getRepository()::getInterface, // Get classifier by name
+                context.getRepository()::removeInterface, // Remove from repository
+                (repo, orig, edited) -> repo.editInterface(orig, edited), // Edit in repository
+                (orig, edited, model) -> new EditInterfaceEdit(orig, edited, model) // Create UndoableEdit
+        );
+    }
+
+    /**
+     * Factory method to create the InterfaceEditor. Can be overridden in tests to
+     * inject mock editor behavior.
+     * 
+     * @param context The edit context
+     * @return An InterfaceEditor instance
+     */
+    protected InterfaceEditor createEditor(EditContext context) {
+        return new InterfaceEditor(context.getRepository());
+    }
+
     @Override
     public InterfaceGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         Interface sameInterface = getInterface();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        InterfaceGR clonedGR = new InterfaceGR(sameInterface, 
-            new Point(this.startingPoint.x, this.startingPoint.y));
-        
+        InterfaceGR clonedGR = new InterfaceGR(sameInterface,
+                new Point(this.startingPoint.x, this.startingPoint.y));
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
     }
 }

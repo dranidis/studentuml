@@ -11,13 +11,15 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditSystemEdit;
 
 /**
  * @author draganbisercic
@@ -325,5 +327,27 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         // copied separately if the user also selects them
 
         return clonedGR;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        System originalSystem = (System) getComponent();
+
+        // Delegate to centralized helper: conflict check handled by Edit class
+        return editStringPropertyWithDialog(
+                context,
+                "System Editor",
+                "System Name:",
+                originalSystem,
+                System::getName,
+                System::setName,
+                System::clone,
+                (original, redo, model) -> new EditSystemEdit(
+                        original,
+                        redo,
+                        model),
+                newName -> StringUtils.isNotEmpty(newName)
+                        && context.getRepository().getSystem(newName) != null,
+                "There is an existing system with the given name already!\n");
     }
 }

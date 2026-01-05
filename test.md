@@ -4,7 +4,7 @@
 
 **Overall Coverage: 32% (23,581 of 72,317 instructions)** ⬆️ +4% from previous
 
-**Test Count: 220 tests** (0 failures, 0 errors, 1 skipped)
+**Test Count: 275 tests** (0 failures, 0 errors, 1 skipped) ⬆️ +55 new tests
 
 ### Package Coverage Breakdown
 

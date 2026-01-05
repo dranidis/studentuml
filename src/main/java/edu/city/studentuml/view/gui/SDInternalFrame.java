@@ -1,8 +1,8 @@
 package edu.city.studentuml.view.gui;
 
+import edu.city.studentuml.controller.SDSelectionController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
-import edu.city.studentuml.controller.SDSelectionController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.SDModel;
@@ -46,6 +46,5 @@ public class SDInternalFrame extends DiagramInternalFrame {
     @Override
     protected String makeElementClassString() {
         return "SDObjectGR";
-    }    
-    
+    }
 }

@@ -18,10 +18,10 @@ public class EditActivityNodeEdit extends AbstractUndoableEdit {
     private ActivityNode redoActivityNode;
     private DiagramModel model;
 
-    public EditActivityNodeEdit(ActivityNode originalActivityNode, ActivityNode undoActivityNode, DiagramModel model) {
+    public EditActivityNodeEdit(ActivityNode originalActivityNode, ActivityNode newActivityNode, DiagramModel model) {
         this.originalActivityNode = originalActivityNode;
-        this.undoActivityNode = (ActivityNode) undoActivityNode.clone();
-        this.redoActivityNode = (ActivityNode) originalActivityNode.clone();
+        this.undoActivityNode = (ActivityNode) originalActivityNode.clone();
+        this.redoActivityNode = (ActivityNode) newActivityNode.clone();
         this.model = model;
     }
 
