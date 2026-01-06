@@ -6,6 +6,7 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UCLinkGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
 
 public class UCDView extends DiagramView {
 
@@ -19,7 +20,16 @@ public class UCDView extends DiagramView {
         // draw links after
         lock.lock();
 
+        // FIRST: Draw notes (bottom layer, won't obscure other elements)
+        model.getGraphicalElements().stream()
+                .filter(UMLNoteGR.class::isInstance)
+                .forEach(ge -> ge.draw(g));
+
+        // THEN: Draw components and links (top layer)
         for (GraphicalElement element : model.getGraphicalElements()) {
+            if (element instanceof UMLNoteGR) {
+                continue; // Already drawn
+            }
             if (element instanceof UCDComponentGR) {
                 UCDComponentGR comp = (UCDComponentGR) element;
                 comp.draw(g);
