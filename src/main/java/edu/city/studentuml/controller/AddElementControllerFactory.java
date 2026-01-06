@@ -137,6 +137,7 @@ public class AddElementControllerFactory {
     }
 
     private AddElementController makeController(DiagramModel model, DiagramInternalFrame frame, String elementClass) {
+        logger.finer(() -> "Creating AddElementController for string " + elementClass);
 
         switch (elementClass) {
         case "UMLNoteGR":
@@ -350,12 +351,14 @@ public class AddElementControllerFactory {
 
                 @Override
                 protected LinkGR createRelationship(ClassifierGR classA, ClassifierGR classB) {
-                    if (classA != classB && classA instanceof ClassGR && classB instanceof ClassGR) {
-                        ClassGR classAGR = (ClassGR) classA;
-                        ClassGR classBGR = (ClassGR) classB;
-                        Dependency dependency = new Dependency(classAGR.getDesignClass(), classBGR.getDesignClass());
+                    logger.finer(() -> "Creating DependencyGR between " + classA + " and " + classB);
+                    if (classA != classB
+                            && classA instanceof ClassifierGR
+                            && classB instanceof ClassifierGR) {
+                        // Dependencies can connect any two classifiers (classes or interfaces)
+                        Dependency dependency = new Dependency(classA.getClassifier(), classB.getClassifier());
 
-                        return new DependencyGR(classAGR, classBGR, dependency);
+                        return new DependencyGR(classA, classB, dependency);
                     } else {
                         return null;
                     }

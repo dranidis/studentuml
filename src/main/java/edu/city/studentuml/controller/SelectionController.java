@@ -1076,12 +1076,11 @@ public class SelectionController {
             // REUSE the same domain Generalization object
             return new GeneralizationGR(newA, newB, origDomain);
 
-        } else if (originalLink instanceof DependencyGR
-                // Dependency requires both to be DesignClass (not interfaces)
-                && newA instanceof ClassGR && newB instanceof ClassGR) {
+        } else if (originalLink instanceof DependencyGR) {
+            // Dependency can connect any two classifiers (classes or interfaces)
             Dependency origDomain = ((DependencyGR) originalLink).getDependency();
             // REUSE the same domain Dependency object
-            return new DependencyGR((ClassGR) newA, (ClassGR) newB, origDomain);
+            return new DependencyGR(newA, newB, origDomain);
 
         } else if (originalLink instanceof RealizationGR
                 // Realization requires DesignClass and Interface
@@ -1450,12 +1449,12 @@ public class SelectionController {
                         if (draggingEndpoint == EndpointType.SOURCE) {
                             reconnected = oldDep.reconnectSource(newClassifier);
                             if (reconnected) {
-                                newLink = oldDep.createWithNewEndpoints((ClassGR) newClassifier, oldDep.getClassB());
+                                newLink = oldDep.createWithNewEndpoints(newClassifier, oldDep.getClassB());
                             }
                         } else if (draggingEndpoint == EndpointType.TARGET) {
                             reconnected = oldDep.reconnectTarget(newClassifier);
                             if (reconnected) {
-                                newLink = oldDep.createWithNewEndpoints(oldDep.getClassA(), (ClassGR) newClassifier);
+                                newLink = oldDep.createWithNewEndpoints(oldDep.getClassA(), newClassifier);
                             }
                         }
                     } else if (link instanceof RealizationGR) {

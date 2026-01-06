@@ -774,9 +774,9 @@ public final class ObjectFactory {
     public IXMLCustomStreamable newdependencygr(Object parent, Element stream, XMLStreamer streamer)
             throws NotStreamable {
         Dependency dependency = (Dependency) streamer.readObjectByID(stream, "dependency", null);
-        ClassGR classA = (ClassGR) SystemWideObjectNamePool.getInstance()
+        ClassifierGR classA = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute(XMLSyntax.CLASSA));
-        ClassGR classB = (ClassGR) SystemWideObjectNamePool.getInstance()
+        ClassifierGR classB = (ClassifierGR) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute(XMLSyntax.CLASSB));
 
         DependencyGR g = new DependencyGR(classA, classB, dependency);
@@ -941,9 +941,9 @@ public final class ObjectFactory {
 
     public IXMLCustomStreamable newdependency(Object parent, Element stream, XMLStreamer streamer)
             throws NotStreamable {
-        DesignClass from = (DesignClass) SystemWideObjectNamePool.getInstance()
+        Classifier from = (Classifier) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("from"));
-        DesignClass to = (DesignClass) SystemWideObjectNamePool.getInstance()
+        Classifier to = (Classifier) SystemWideObjectNamePool.getInstance()
                 .getObjectByName(stream.getAttribute("to"));
 
         return new Dependency(from, to);

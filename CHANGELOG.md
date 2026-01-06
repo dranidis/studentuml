@@ -4,6 +4,13 @@
 
 ### Added
 
+-   Support for Dependencies between Classes and Interfaces in Design Class Diagrams (DCDs)
+    -   Dependency relationships now work between any two Classifiers (DesignClass or Interface)
+    -   Supports all combinations: Class→Class, Class→Interface, Interface→Class, Interface→Interface
+    -   Dependencies can be reconnected to interfaces via drag-and-drop endpoint manipulation
+    -   Complete XML serialization/deserialization support with backward compatibility
+    -   New test: `DCDSelectionControllerTest.testCreateDependencyFromClassToInterface()`
+    -   Updated test: `DCDLinkReconnectionTest.testDependencyCanReconnectToInterface()`
 -   Stereotype labels support for Dependency relationships in Design Class Diagrams (DCDs)
     -   Dependencies can now display UML stereotypes (e.g., «use», «create», «call», «instantiate», «import», «access»)
     -   Stereotypes render in standard UML guillemets format (« ») at the dependency line midpoint
