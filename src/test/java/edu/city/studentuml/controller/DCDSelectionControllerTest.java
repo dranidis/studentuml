@@ -9,11 +9,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
@@ -510,6 +513,39 @@ public class DCDSelectionControllerTest {
         assertEquals("EditedInterface", interfaceObj.getName());
         assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("EditedInterface"));
         assertNull(umlProject.getCentralRepository().getInterface("OriginalInterface"));
+    }
+
+    @Test
+    public void testCreateDependencyFromClassToInterface() {
+        // Create a DesignClass A
+        ClassGR classA = h.addClass("A");
+        DesignClass designClassA = (DesignClass) classA.getClassifier();
+
+        // Create an Interface I
+        InterfaceGR interfaceI = h.addInterface("I");
+        Interface interfaceClassI = (Interface) interfaceI.getClassifier();
+
+        // Verify both are in the repository
+        assertNotNull("Class A should be in repository",
+                umlProject.getCentralRepository().getDesignClass("A"));
+        assertNotNull("Interface I should be in repository",
+                umlProject.getCentralRepository().getInterface("I"));
+
+        // Create a Dependency from Class A to Interface I
+        // This simulates dragging a dependency line from class A to interface I in the UI
+        Dependency dependency = new Dependency(designClassA, interfaceClassI);
+        DependencyGR dependencyGR = new DependencyGR(classA, interfaceI, dependency);
+
+        model.addGraphicalElement(dependencyGR);
+
+        // Verify the dependency was created successfully
+        assertNotNull("Dependency should be created", dependencyGR);
+        assertEquals("Dependency should have class A as source", classA, dependencyGR.getA());
+        assertEquals("Dependency should have interface I as target", interfaceI, dependencyGR.getB());
+
+        // Verify it's in the model
+        assertTrue("Dependency should be in graphical elements",
+                model.getGraphicalElements().contains(dependencyGR));
     }
 
 }

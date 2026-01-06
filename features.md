@@ -2,22 +2,38 @@
 
 This document tracks potential features and improvements for StudentUML.
 
-## Diagram Relationships
+## Known Bugs
 
-### Support Dependencies between Classes and Interfaces
+### Association Class Display Bug in DCD
 
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Currently, Dependency relationships only work between DesignClass objects. We should support dependencies from a DesignClass to an Interface, which is a common UML pattern when a class uses an interface without implementing it.
+**Status:** Bug - Not fixed  
+**Priority:** High  
+**Description:** When creating an association class between two classes in a Design Class Diagram (DCD), all three classes (the two original classes and the association class) are incorrectly displayed as association classes with dashed lines connecting them. The two original classes should be displayed as normal classes with solid borders, only the association class itself should have the dashed line to the association.
+
+**Steps to Reproduce:**
+
+1. Create a new DCD diagram
+2. Add two regular classes (e.g., Class A and Class B)
+3. Create an association class connecting them
+4. Observe that all three classes now appear as association classes with dashed lines
+
+**Expected Behavior:**
+
+-   Class A: Normal class with solid border
+-   Class B: Normal class with solid border
+-   Association Class: Connected to the association line with a dashed line
+-   Only the association class should have dashed line representation
 
 **Technical Notes:**
 
--   `ObjectFactory.newdependency()` (line ~946) currently casts both `from` and `to` to DesignClass
--   `ObjectFactory.newdependencygr()` (line ~779) casts `classb` to ClassGR
--   Need to handle Interface/InterfaceGR in addition to DesignClass/ClassGR
--   May need to create a common base type or use conditional logic
+-   Issue likely in `AssociationClassGR` or the rendering logic for associations
+-   May be related to how `ClassGR` instances are marked or styled when part of an association class
+-   Check `AssociationClassGR.paint()` and related rendering methods
+-   Verify that regular classes maintain their style independently of participation in association classes
 
-**Use Case:** When documenting that a class depends on an interface (e.g., VersionChecker depends on VersionProvider interface), currently this causes a ClassCastException.
+**Use Case:** Association classes are a fundamental UML construct. The current bug makes diagrams confusing and non-standard, as it's unclear which classes are actual association classes versus regular classes participating in associations.
+
+## Diagram Relationships
 
 ### Distinction Between Navigability and End Ownership in Associations
 
@@ -306,7 +322,6 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 
 ### Support Combined Fragments
 
-**Status:** Not implemented  
 **Status:** Not implemented  
 **Priority:** High  
 **Description:** Add support for UML 2.x combined fragments in sequence diagrams, including alternatives (alt), options (opt), loops (loop), parallel execution (par), and other interaction operators. Combined fragments allow modeling of control flow, conditionals, and iteration in sequence diagrams.

@@ -130,10 +130,9 @@ class Helper {
         return rel;
     }
 
-    DependencyGR addDependency(ClassGR a, ClassGR b) {
+    DependencyGR addDependency(ClassifierGR a, ClassifierGR b) {
         DependencyGR dep = new DependencyGR(
-                a, b, new Dependency(
-                        (DesignClass) a.getClassifier(), (DesignClass) b.getClassifier()));
+                a, b, new Dependency(a.getClassifier(), b.getClassifier()));
         model.addGraphicalElement(dep);
         return dep;
     }

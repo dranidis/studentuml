@@ -12,11 +12,11 @@ import org.w3c.dom.Element;
  */
 public class Dependency implements Serializable, IXMLCustomStreamable {
 
-    private DesignClass from;
-    private DesignClass to;
+    private Classifier from;
+    private Classifier to;
     private String stereotype;
 
-    public Dependency(DesignClass a, DesignClass b) {
+    public Dependency(Classifier a, Classifier b) {
         from = a;
         to = b;
         stereotype = null;
@@ -27,7 +27,7 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
      *
      * if name is changed the rules.txt / file needs to be updated
      */
-    public DesignClass getFrom() {
+    public Classifier getFrom() {
         return from;
     }
 
@@ -36,7 +36,7 @@ public class Dependency implements Serializable, IXMLCustomStreamable {
      *
      * if name is changed the rules.txt / file needs to be updated
      */
-    public DesignClass getTo() {
+    public Classifier getTo() {
         return to;
     }
 

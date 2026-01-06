@@ -102,7 +102,7 @@ public class CentralRepository implements Serializable {
     private NotifierVector<JoinNode> joinNodes;
     private NotifierVector<ObjectNode> objectNodes;
     private NotifierVector<ActivityNode> activityNodes;
-    
+
     private transient Vector<RepositoryChangeListener> changeListeners = new Vector<>();
 
     public CentralRepository() {
@@ -577,8 +577,8 @@ public class CentralRepository implements Serializable {
         return dependencies;
     }
 
-    // returns the dependency that exists between two classes, if any
-    public Dependency getDependency(DesignClass from, DesignClass to) {
+    // returns the dependency that exists between two classifiers, if any
+    public Dependency getDependency(Classifier from, Classifier to) {
 
         Optional<Dependency> found = dependencies.stream()
                 .filter(dependency -> dependency.getFrom() == from && dependency.getTo() == to).findAny();
@@ -612,7 +612,7 @@ public class CentralRepository implements Serializable {
         String oldName = originalSystemInstance.getName();
         originalSystemInstance.setName(newSystemInstance.getName());
         originalSystemInstance.setSystem(newSystemInstance.getSystem());
-        
+
         notifyEdit("SystemInstance", oldName, newSystemInstance.getName());
 
         return true;
@@ -704,7 +704,7 @@ public class CentralRepository implements Serializable {
         String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
-        
+
         notifyEdit("SDObject", oldName, newObject.getName());
 
         return true;
@@ -759,7 +759,7 @@ public class CentralRepository implements Serializable {
         String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
-        
+
         notifyEdit("MultiObject", oldName, newObject.getName());
 
         return true;
@@ -858,7 +858,7 @@ public class CentralRepository implements Serializable {
         String oldName = originalActorInstance.getName();
         originalActorInstance.setName(newActorInstance.getName());
         originalActorInstance.setActor(newActorInstance.getActor());
-        
+
         notifyEdit("ActorInstance", oldName, newActorInstance.getName());
 
         return true;
@@ -1362,14 +1362,14 @@ public class CentralRepository implements Serializable {
         for (State state : newObjectNode.getStates()) {
             originalObjectNode.addState(state);
         }
-        
+
         notifyEdit("ObjectNode", oldName, newObjectNode.getName());
 
         return true;
     }
-    
+
     // Repository change listener support
-    
+
     public void addRepositoryChangeListener(RepositoryChangeListener listener) {
         if (changeListeners == null) {
             changeListeners = new Vector<>();
@@ -1378,13 +1378,13 @@ public class CentralRepository implements Serializable {
             changeListeners.add(listener);
         }
     }
-    
+
     public void removeRepositoryChangeListener(RepositoryChangeListener listener) {
         if (changeListeners != null) {
             changeListeners.remove(listener);
         }
     }
-    
+
     protected void notifyAdd(String entityType, String entityName) {
         if (changeListeners != null) {
             for (RepositoryChangeListener listener : changeListeners) {
@@ -1392,7 +1392,7 @@ public class CentralRepository implements Serializable {
             }
         }
     }
-    
+
     protected void notifyEdit(String entityType, String oldName, String newName) {
         if (changeListeners != null) {
             for (RepositoryChangeListener listener : changeListeners) {
@@ -1400,7 +1400,7 @@ public class CentralRepository implements Serializable {
             }
         }
     }
-    
+
     protected void notifyRemove(String entityType, String entityName) {
         if (changeListeners != null) {
             for (RepositoryChangeListener listener : changeListeners) {
@@ -1408,7 +1408,7 @@ public class CentralRepository implements Serializable {
             }
         }
     }
-    
+
     protected void notifyTypeOperation(String operation, String typeName) {
         if (changeListeners != null) {
             for (RepositoryChangeListener listener : changeListeners) {

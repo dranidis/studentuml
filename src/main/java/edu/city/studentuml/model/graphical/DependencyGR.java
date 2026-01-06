@@ -27,13 +27,13 @@ public class DependencyGR extends LinkGR {
     // the graphical classes that the dependency line connects in the diagram
     private Dependency dependency;
 
-    public DependencyGR(ClassGR a, ClassGR b, Dependency dep) {
+    public DependencyGR(ClassifierGR a, ClassifierGR b, Dependency dep) {
         super(a, b);
         dependency = dep;
     }
 
-    public DependencyGR(ClassGR a, ClassGR b) {
-        this(a, b, new Dependency(a.getDesignClass(), b.getDesignClass()));
+    public DependencyGR(ClassifierGR a, ClassifierGR b) {
+        this(a, b, new Dependency(a.getClassifier(), b.getClassifier()));
     }
 
     @Override
@@ -78,13 +78,13 @@ public class DependencyGR extends LinkGR {
     }
 
     @JsonProperty("from")
-    public ClassGR getClassA() {
-        return (ClassGR) a;
+    public ClassifierGR getClassA() {
+        return a;
     }
 
     @JsonProperty("to")
-    public ClassGR getClassB() {
-        return (ClassGR) b;
+    public ClassifierGR getClassB() {
+        return b;
     }
 
     @Override
@@ -104,8 +104,8 @@ public class DependencyGR extends LinkGR {
     public DependencyGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Links connect graphical elements, so we reference the same endpoints
-        ClassGR sameA = getClassA();
-        ClassGR sameB = getClassB();
+        ClassifierGR sameA = getClassA();
+        ClassifierGR sameB = getClassB();
         Dependency sameDependency = getDependency();
 
         // Create new graphical wrapper referencing the SAME domain object and endpoints
@@ -121,8 +121,8 @@ public class DependencyGR extends LinkGR {
             return false;
         }
 
-        // Dependencies can only connect classes (not interfaces)
-        if (!(newElement instanceof ClassGR)) {
+        // Dependencies can connect any classifier (classes or interfaces)
+        if (!(newElement instanceof ClassifierGR)) {
             return false;
         }
 
@@ -131,31 +131,27 @@ public class DependencyGR extends LinkGR {
 
     @Override
     public boolean reconnectSource(ClassifierGR newSource) {
-        if (!(newSource instanceof ClassGR)) {
+        if (!(newSource instanceof ClassifierGR)) {
             return false;
         }
 
-        ClassGR newClass = (ClassGR) newSource;
-
         // Create a new Dependency with the new source
-        this.dependency = new Dependency(newClass.getDesignClass(), dependency.getTo());
+        this.dependency = new Dependency(newSource.getClassifier(), dependency.getTo());
 
-        logger.fine(() -> "Prepared dependency source reconnection to: " + newClass.getDesignClass().getName());
+        logger.fine(() -> "Prepared dependency source reconnection to: " + newSource.getClassifier().getName());
         return true;
     }
 
     @Override
     public boolean reconnectTarget(ClassifierGR newTarget) {
-        if (!(newTarget instanceof ClassGR)) {
+        if (!(newTarget instanceof ClassifierGR)) {
             return false;
         }
 
-        ClassGR newClass = (ClassGR) newTarget;
-
         // Create a new Dependency with the new target
-        this.dependency = new Dependency(dependency.getFrom(), newClass.getDesignClass());
+        this.dependency = new Dependency(dependency.getFrom(), newTarget.getClassifier());
 
-        logger.fine(() -> "Prepared dependency target reconnection to: " + newClass.getDesignClass().getName());
+        logger.fine(() -> "Prepared dependency target reconnection to: " + newTarget.getClassifier().getName());
         return true;
     }
 
@@ -163,11 +159,11 @@ public class DependencyGR extends LinkGR {
      * Creates a new DependencyGR with updated endpoints. Used for reconnection
      * since LinkGR endpoints are final.
      * 
-     * @param newA the new source class
-     * @param newB the new target class
+     * @param newA the new source classifier
+     * @param newB the new target classifier
      * @return new DependencyGR with same domain model but new endpoints
      */
-    public DependencyGR createWithNewEndpoints(ClassGR newA, ClassGR newB) {
+    public DependencyGR createWithNewEndpoints(ClassifierGR newA, ClassifierGR newB) {
         return new DependencyGR(newA, newB, this.dependency);
     }
 
