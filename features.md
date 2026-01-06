@@ -369,66 +369,7 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 -   **loop**: Show repeated operations (e.g., "[for each item] process item")
     Without combined fragments, sequence diagrams can only show simple linear flows, limiting their usefulness for documenting complex interactions with conditionals, loops, and error handling.
 
-## Rendering and Visualization
-
-### Draw UML Notes Below Other Elements
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** UML notes should be rendered below other diagram elements (classes, use cases, actors, activities, etc.) to prevent them from obscuring important diagram content. Currently, notes are drawn correctly with proper z-order in Class Diagrams (CCD/DCD) and Sequence Diagrams (SD), but they appear above other elements in Activity Diagrams (AD) and Use Case Diagrams (UCD).
-
-**Technical Notes:**
-
--   The rendering order is controlled by the order of elements in the graphical elements list
--   In `DiagramView.paintComponent()`, elements are drawn in iteration order
--   Classes implementing correct z-order (notes below):
-    -   `CCDView` / `DCDView`: Notes drawn correctly
-    -   `SDView` / `SSDView`: Notes drawn correctly
--   Classes with incorrect z-order (notes above):
-    -   `ADView`: Notes should be drawn before activities and flows
-    -   `UCDView`: Notes should be drawn before use cases and actors
--   Implementation approach:
-    -   Option 1: Modify `DiagramView.paintComponent()` to render in two passes (notes first, then other elements)
-    -   Option 2: Sort graphical elements by type before rendering (notes have lowest z-index)
-    -   Option 3: Maintain separate list for notes in `DiagramModel` and render them first
-    -   Option 4: Add `getZIndex()` method to `GraphicalElement` interface and sort by z-index
--   Need to ensure XML serialization order doesn't affect functionality
--   Need to verify all diagram types (AD, UCD, CCD, DCD, SD, SSD) handle z-order consistently
-
-**Use Case:** When annotating diagrams with explanatory notes, users expect notes to appear as background elements that don't hide important diagram content (classes, relationships, activities, use cases). The inconsistent behavior between diagram types is confusing and can result in notes obscuring critical diagram elements in AD and UCD views.
-
 ## Copy/Paste Operations
-
-### Copy/Paste Support for Missing Graphical Elements
-
-**Status:** Not implemented  
-**Priority:** High (Hotfix needed for current release)  
-**Description:** Several graphical element types do not support copy/paste operations, either failing silently without warning or causing errors. Additionally, UMLNotes are not properly linked to copied elements, breaking the connection between notes and diagram elements after paste.
-
-**Technical Notes:**
-
--   **Unsupported graphical elements** (paste operations fail or are not implemented):
-    -   `DestroyMessageGR` (Sequence Diagrams): No paste support
-    -   `AssociationClassGR` (Class Diagrams): No paste support
-    -   `UCIncludeGR` (Use Case Diagrams): No paste support
-    -   `UCExtendGR` (Use Case Diagrams): No paste support
-    -   `UCGeneralizationGR` (Use Case Diagrams): No paste support
--   **Silent failures** (no user warning when copy/paste doesn't work):
-    -   `ControlFlowGR` (Activity Diagrams): Silently not copied, no warning shown
-    -   `ObjectFlowGR` (Activity Diagrams): Silently not copied, no warning shown
--   **Broken relationships after paste**:
-    -   `UMLNote`: Notes are copied but not properly linked to the copied elements
-    -   After paste, notes remain linked to original elements instead of the newly pasted elements
-    -   Results in dangling note links or incorrect note associations
--   Implementation requirements:
-    -   Add copy/paste support to all missing element types (implement `Copyable<T>` interface)
-    -   Add user warnings when copy operations include unsupported elements
-    -   Fix note linking: Update `UMLNote` references to point to new element IDs after paste
-    -   Update `CopyPasteManager` or equivalent to handle note re-linking during paste
-    -   Add tests for copy/paste operations on all element types
--   Related work: Editor refactoring (see `plan-editor-interface.md`) addressed copy/paste for many elements but revealed these remaining gaps
-
-**Use Case:** When duplicating diagram sections or creating variations of existing designs, users expect copy/paste to work consistently for all element types. Silent failures and broken note links cause confusion and data integrity issues. For example, copying a sequence diagram with destroy messages, or copying use case relationships (include/extend/generalization), currently fails without clear feedback. Activity diagrams lose control flow and object flow connections when pasted, making it impossible to duplicate complex activity structures.
 
 ### UML Note Y-Position in Sequence Diagrams
 

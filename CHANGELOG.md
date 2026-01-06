@@ -26,6 +26,12 @@
 
 ### Fixed
 
+-   UML Notes now render below other diagram elements in Activity Diagrams and Use Case Diagrams
+    -   Notes no longer obscure important diagram content (activities, use cases, actors, etc.)
+    -   Fixed `ADView.drawDiagram()` to draw notes first (bottom layer)
+    -   Fixed `UCDView.drawDiagram()` to draw notes first (bottom layer)
+    -   Consistent with existing behavior in CCD, DCD, and SD diagrams
+    -   All 326 tests pass with no regressions
 -   Application crash when double-clicking on non-editable graphical elements (e.g., UC Include relationships)
     -   SelectionController now gracefully ignores elements without registered editors instead of throwing UnsupportedOperationException
 
