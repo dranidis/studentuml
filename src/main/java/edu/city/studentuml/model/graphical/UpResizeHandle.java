@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Cursor;
 import java.awt.Point;
 
 /**
@@ -12,22 +13,29 @@ public class UpResizeHandle extends ResizeHandle {
     }
 
     @Override
+    public int getCursorType() {
+        return Cursor.N_RESIZE_CURSOR;
+    }
+
+    @Override
     public void resizeElement(int x, int y) {
         int oldY = resizableElement.getStartingPoint().y;
-        if (oldY != y) {
-            int heightDifference = oldY - y;
-            Point p = new Point(resizableElement.getStartingPoint().x, y);
+        if (oldY == y)
+            return;
 
-            int border = resizableElement.getTopBorder();
-            if (p.y < border) {
-                resizableElement.setStartingPoint(p);
-                resizableElement.setHeight(resizableElement.getHeight() + heightDifference);
-            } else {
-                heightDifference = oldY - border;
-                p.setLocation(p.x, border);
-                resizableElement.setStartingPoint(p);
-                resizableElement.setHeight(resizableElement.getHeight() + heightDifference);
-            }
+        int heightDifference = oldY - y;
+        Point p = new Point(resizableElement.getStartingPoint().x, y);
+
+        int border = resizableElement.getTopBorder();
+        if (p.y < border) {
+            resizableElement.setStartingPoint(p);
+            resizableElement.setHeight(resizableElement.getHeight() + heightDifference);
+        } else {
+            // Hit minimum: clamp to border position
+            heightDifference = oldY - border;
+            p.setLocation(p.x, border);
+            resizableElement.setStartingPoint(p);
+            resizableElement.setHeight(resizableElement.getHeight() + heightDifference);
         }
     }
 

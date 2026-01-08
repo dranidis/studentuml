@@ -5,13 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.ADModel;
-import edu.city.studentuml.view.gui.ADInternalFrame;
-
-import javax.swing.undo.UndoManager;
 
 /**
  * Test class for ActionNodeGR.edit() method. ActionNodeGR is an Activity
@@ -36,8 +31,6 @@ public class ActionNodeGRTest {
     public void testActionNodeGR_EditName_UndoRedo() {
         // Create AD model and frame
         ADModel model = new ADModel("ad", umlProject);
-        ADInternalFrame frame = new ADInternalFrame(model);
-
         // Create ActionNode - uses parameterized constructor
         ActionNode actionNode = new ActionNode("processOrder");
 

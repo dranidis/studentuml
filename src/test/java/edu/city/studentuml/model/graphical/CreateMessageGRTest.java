@@ -3,8 +3,6 @@ package edu.city.studentuml.model.graphical;
 import static org.junit.Assert.*;
 
 import java.awt.Component;
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +13,6 @@ import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.SDModel;
 import edu.city.studentuml.view.gui.CallMessageEditor;
 import edu.city.studentuml.view.gui.SDInternalFrame;
 

@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Cursor;
 import java.awt.Point;
 
 /**
@@ -9,6 +10,11 @@ public class DownResizeHandle extends ResizeHandle {
 
     public DownResizeHandle(Resizable resizableElement) {
         super(resizableElement);
+    }
+
+    @Override
+    public int getCursorType() {
+        return Cursor.S_RESIZE_CURSOR;
     }
 
     @Override

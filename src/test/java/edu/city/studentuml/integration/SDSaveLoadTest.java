@@ -345,4 +345,601 @@ public class SDSaveLoadTest extends SaveLoadTestBase {
         assertTrue("Repository should have Item class", hasItem);
         assertTrue("Repository should have Order class", hasOrder);
     }
+
+    @Test
+    public void testSDSaveLoadWithCombinedFragment() throws Exception {
+        // ============================================================
+        // 1. CREATE - Build SD with combined fragment
+        // ============================================================
+        SDModel model = new SDModel("Payment SD", project);
+
+        // Create Actor
+        Actor customerActor = new Actor("Customer");
+        ActorInstance customer = new ActorInstance("customer", customerActor);
+        ActorInstanceGR customerGR = new ActorInstanceGR(customer, 50);
+        model.addRoleClassifier(customerGR);
+
+        // Create Design Classes
+        DesignClass paymentClass = new DesignClass("PaymentService");
+        DesignClass bankClass = new DesignClass("BankAPI");
+
+        // Create SD Objects
+        SDObject payment = new SDObject("payment", paymentClass);
+        SDObjectGR paymentGR = new SDObjectGR(payment, 250);
+        model.addRoleClassifier(paymentGR);
+
+        SDObject bank = new SDObject("bank", bankClass);
+        SDObjectGR bankGR = new SDObjectGR(bank, 450);
+        model.addRoleClassifier(bankGR);
+
+        // Message 1: Customer initiates payment
+        GenericOperation processOp = new GenericOperation("processPayment");
+        CallMessage processPayment = new CallMessage(customer, payment, processOp);
+        processPayment.addParameter(new MethodParameter("amount"));
+        CallMessageGR processPaymentGR = new CallMessageGR(customerGR, paymentGR, processPayment, 100);
+        model.addMessage(processPaymentGR);
+
+        // Message 2: Payment validates amount
+        GenericOperation validateOp = new GenericOperation("validateAmount");
+        CallMessage validateAmount = new CallMessage(payment, bank, validateOp);
+        validateAmount.addParameter(new MethodParameter("amount"));
+        CallMessageGR validateAmountGR = new CallMessageGR(paymentGR, bankGR, validateAmount, 150);
+        model.addMessage(validateAmountGR);
+
+        // Message 3: Bank returns validation result
+        ReturnMessage validationReturn = new ReturnMessage(bank, payment, "true");
+        ReturnMessageGR validationReturnGR = new ReturnMessageGR(bankGR, paymentGR, validationReturn, 175);
+        model.addMessage(validationReturnGR);
+
+        // Create Combined Fragment covering the conditional charge
+        CombinedFragment optFragment = new CombinedFragment(InteractionOperator.OPT, "[amount > 0]");
+        optFragment.setHeight(150);
+        project.getCentralRepository().addCombinedFragment(optFragment);
+        CombinedFragmentGR optFragmentGR = new CombinedFragmentGR(optFragment, new java.awt.Point(200, 200), 400);
+        model.addGraphicalElement(optFragmentGR);
+
+        // Message 4: Charge account (inside OPT fragment)
+        GenericOperation chargeOp = new GenericOperation("chargeAccount");
+        CallMessage charge = new CallMessage(payment, bank, chargeOp);
+        charge.addParameter(new MethodParameter("accountId"));
+        charge.addParameter(new MethodParameter("amount"));
+        CallMessageGR chargeGR = new CallMessageGR(paymentGR, bankGR, charge, 250);
+        model.addMessage(chargeGR);
+
+        // Message 5: Bank confirms charge (inside OPT fragment)
+        ReturnMessage chargeReturn = new ReturnMessage(bank, payment, "transactionId");
+        ReturnMessageGR chargeReturnGR = new ReturnMessageGR(bankGR, paymentGR, chargeReturn, 275);
+        model.addMessage(chargeReturnGR);
+
+        // Message 6: Return payment result to customer
+        ReturnMessage paymentReturn = new ReturnMessage(payment, customer, "success");
+        ReturnMessageGR paymentReturnGR = new ReturnMessageGR(paymentGR, customerGR, paymentReturn, 380);
+        model.addMessage(paymentReturnGR);
+
+        model.sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+
+        // Total: 1 actor + 2 objects + 6 messages + 1 combined fragment = 10 elements
+
+        // ============================================================
+        // 2. SAVE - Persist diagram to XML
+        // ============================================================
+        saveProject();
+
+        // ============================================================
+        // 3. LOAD - Restore from XML
+        // ============================================================
+        loadProject();
+
+        // ============================================================
+        // 4. VERIFY - Check all elements were restored correctly
+        // ============================================================
+
+        // Verify diagram exists
+        Vector<DiagramModel> diagrams = project.getDiagramModels();
+        assertEquals("Should have 1 diagram", 1, diagrams.size());
+
+        SDModel loadedModel = (SDModel) diagrams.get(0);
+        assertNotNull("SD model should be loaded", loadedModel);
+        assertEquals("Diagram title should match", "Payment SD", loadedModel.getName());
+
+        // Verify graphical elements count (3 role classifiers + 6 messages + 1 fragment = 10)
+        assertEquals("Should have 10 graphical elements", 10, loadedModel.getGraphicalElements().size());
+
+        // Verify Role Classifiers (1 actor + 2 objects = 3)
+        Vector<RoleClassifierGR> roleClassifiers = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof RoleClassifierGR) {
+                roleClassifiers.add((RoleClassifierGR) ge);
+            }
+        }
+        assertEquals("Should have 3 role classifiers", 3, roleClassifiers.size());
+
+        // Find loaded objects
+        ActorInstanceGR loadedCustomerGR = null;
+        SDObjectGR loadedPaymentGR = null;
+        SDObjectGR loadedBankGR = null;
+
+        for (RoleClassifierGR rcGR : roleClassifiers) {
+            if (rcGR instanceof ActorInstanceGR) {
+                ActorInstance ai = (ActorInstance) rcGR.getRoleClassifier();
+                if (ai.getName().equals("customer")) {
+                    loadedCustomerGR = (ActorInstanceGR) rcGR;
+                }
+            } else if (rcGR instanceof SDObjectGR) {
+                SDObject obj = (SDObject) rcGR.getRoleClassifier();
+                if (obj.getName().equals("payment")) {
+                    loadedPaymentGR = (SDObjectGR) rcGR;
+                } else if (obj.getName().equals("bank")) {
+                    loadedBankGR = (SDObjectGR) rcGR;
+                }
+            }
+        }
+
+        assertNotNull("Customer actor should be loaded", loadedCustomerGR);
+        assertNotNull("Payment object should be loaded", loadedPaymentGR);
+        assertNotNull("Bank object should be loaded", loadedBankGR);
+
+        // Verify Messages (6 messages: 3 call + 3 return)
+        Vector<SDMessageGR> messages = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof SDMessageGR) {
+                messages.add((SDMessageGR) ge);
+            }
+        }
+        assertEquals("Should have 6 messages", 6, messages.size());
+
+        // Verify Combined Fragment
+        CombinedFragmentGR loadedFragmentGR = null;
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof CombinedFragmentGR) {
+                loadedFragmentGR = (CombinedFragmentGR) ge;
+                break;
+            }
+        }
+        assertNotNull("Combined fragment should be loaded", loadedFragmentGR);
+
+        CombinedFragment loadedFragment = loadedFragmentGR.getCombinedFragment();
+        assertNotNull("Combined fragment domain object should be loaded", loadedFragment);
+        assertEquals("Fragment operator should be OPT", InteractionOperator.OPT,
+                loadedFragment.getOperator());
+        assertEquals("Fragment guard condition should match", "[amount > 0]",
+                loadedFragment.getGuardCondition());
+        assertEquals("Fragment height should be 150", 150, loadedFragment.getHeight());
+
+        // Verify graphical properties
+        // Note: The fragment position and width are auto-adjusted during creation to span
+        // the messages within its Y range. We just verify it was loaded successfully.
+        assertNotNull("Fragment should have a starting point", loadedFragmentGR.getStartingPoint());
+        assertEquals("Fragment GR Y position should be 200", 200, loadedFragmentGR.getY());
+        assertEquals("Fragment GR height should be 150", 150, loadedFragmentGR.getHeight());
+        assertTrue("Fragment should have reasonable width", loadedFragmentGR.getWidth() >= 100); // Minimum width
+
+        // Verify CentralRepository contains combined fragment
+        Vector<CombinedFragment> fragments = project.getCentralRepository().getCombinedFragments();
+        assertEquals("Repository should have 1 combined fragment", 1, fragments.size());
+        assertEquals("Repository fragment should match loaded fragment", loadedFragment, fragments.get(0));
+
+        // Verify messages are in repository
+        Vector<SDMessage> sdMessages = project.getCentralRepository().getSDMessages();
+        assertEquals("Repository should have 6 messages", 6, sdMessages.size());
+    }
+
+    @Test
+    public void testSDWithAltFragmentSaveLoad() throws Exception {
+        // ============================================================
+        // 1. CREATE - Build SD with ALT fragment with multiple operands
+        // ============================================================
+        SDModel model = new SDModel("Payment Processing SD", project);
+
+        // Create Design Classes for objects
+        DesignClass customerClass = new DesignClass("Customer");
+        DesignClass paymentClass = new DesignClass("PaymentService");
+
+        // Create SD Objects
+        SDObject customer = new SDObject("customer", customerClass);
+        SDObjectGR customerGR = new SDObjectGR(customer, 100);
+        model.addRoleClassifier(customerGR);
+
+        SDObject payment = new SDObject("payment", paymentClass);
+        SDObjectGR paymentGR = new SDObjectGR(payment, 300);
+        model.addRoleClassifier(paymentGR);
+
+        // Message 1: Customer requests payment
+        GenericOperation payOp = new GenericOperation("processPayment");
+        CallMessage payRequest = new CallMessage(customer, payment, payOp);
+        payRequest.addParameter(new MethodParameter("amount"));
+        CallMessageGR payRequestGR = new CallMessageGR(customerGR, paymentGR, payRequest, 150);
+        model.addMessage(payRequestGR);
+
+        // Message 2: Payment approved return (inside first operand)
+        ReturnMessage approvedReturn = new ReturnMessage(payment, customer, "approved");
+        ReturnMessageGR approvedReturnGR = new ReturnMessageGR(paymentGR, customerGR, approvedReturn, 200);
+        model.addMessage(approvedReturnGR);
+
+        // Message 3: Payment denied return (inside second operand)
+        ReturnMessage deniedReturn = new ReturnMessage(payment, customer, "denied");
+        ReturnMessageGR deniedReturnGR = new ReturnMessageGR(paymentGR, customerGR, deniedReturn, 250);
+        model.addMessage(deniedReturnGR);
+
+        // Create ALT Combined Fragment with two operands
+        CombinedFragment altFragment = new CombinedFragment(InteractionOperator.ALT, "");
+        altFragment.setHeight(140);
+
+        // Add operands
+        Operand validPayment = new Operand("[payment valid]");
+        Operand invalidPayment = new Operand("[payment invalid]");
+        altFragment.addOperand(validPayment);
+        altFragment.addOperand(invalidPayment);
+
+        // Create graphical representation
+        CombinedFragmentGR altFragmentGR = new CombinedFragmentGR(
+                altFragment,
+                new java.awt.Point(50, 140),
+                400);
+        altFragmentGR.setHeight(140);
+        model.addGraphicalElement(altFragmentGR);
+
+        // Add to repository
+        model.getCentralRepository().addCombinedFragment(altFragment);
+
+        // Validate focus of control
+        model.sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+
+        // ============================================================
+        // 2. SAVE - Persist diagram to XML
+        // ============================================================
+        saveProject();
+
+        // ============================================================
+        // 3. LOAD - Restore from XML
+        // ============================================================
+        loadProject();
+
+        // ============================================================
+        // 4. VERIFY - Check all elements were restored correctly
+        // ============================================================
+
+        // Verify diagram exists
+        Vector<DiagramModel> diagrams = project.getDiagramModels();
+        assertEquals("Should have 1 diagram", 1, diagrams.size());
+
+        SDModel loadedModel = (SDModel) diagrams.get(0);
+        assertEquals("Diagram name should match", "Payment Processing SD", loadedModel.getName());
+
+        // Verify Role Classifiers (2 objects)
+        Vector<RoleClassifierGR> roleClassifiers = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof RoleClassifierGR) {
+                roleClassifiers.add((RoleClassifierGR) ge);
+            }
+        }
+        assertEquals("Should have 2 objects", 2, roleClassifiers.size());
+
+        // Verify Messages (3 messages)
+        Vector<SDMessageGR> messages = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof SDMessageGR) {
+                messages.add((SDMessageGR) ge);
+            }
+        }
+        assertEquals("Should have 3 messages", 3, messages.size());
+
+        // Verify ALT Combined Fragment
+        CombinedFragmentGR loadedFragmentGR = null;
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof CombinedFragmentGR) {
+                loadedFragmentGR = (CombinedFragmentGR) ge;
+                break;
+            }
+        }
+        assertNotNull("ALT fragment should be loaded", loadedFragmentGR);
+
+        CombinedFragment loadedFragment = loadedFragmentGR.getCombinedFragment();
+        assertNotNull("ALT fragment domain object should be loaded", loadedFragment);
+        assertEquals("Fragment operator should be ALT", InteractionOperator.ALT,
+                loadedFragment.getOperator());
+        assertEquals("Fragment height should be 140", 140, loadedFragment.getHeight());
+
+        // Verify operands were loaded
+        java.util.List<Operand> operands = loadedFragment.getOperands();
+        assertNotNull("Operands list should not be null", operands);
+        assertEquals("Should have 2 operands", 2, operands.size());
+
+        // Verify first operand
+        Operand firstOperand = operands.get(0);
+        assertEquals("First operand guard should match", "[payment valid]",
+                firstOperand.getGuardCondition());
+
+        // Verify second operand
+        Operand secondOperand = operands.get(1);
+        assertEquals("Second operand guard should match", "[payment invalid]",
+                secondOperand.getGuardCondition());
+
+        // Verify graphical properties
+        assertNotNull("Fragment should have a starting point", loadedFragmentGR.getStartingPoint());
+        assertEquals("Fragment GR Y position should be 140", 140, loadedFragmentGR.getY());
+        assertEquals("Fragment GR height should be 140", 140, loadedFragmentGR.getHeight());
+        assertTrue("Fragment should have reasonable width", loadedFragmentGR.getWidth() >= 100);
+
+        // Verify CentralRepository contains combined fragment
+        Vector<CombinedFragment> fragments = project.getCentralRepository().getCombinedFragments();
+        assertEquals("Repository should have 1 combined fragment", 1, fragments.size());
+        assertEquals("Repository fragment should match loaded fragment", loadedFragment, fragments.get(0));
+
+        // Verify messages are in repository
+        Vector<SDMessage> sdMessages = project.getCentralRepository().getSDMessages();
+        assertEquals("Repository should have 3 messages", 3, sdMessages.size());
+    }
+
+    @Test
+    public void testSDWithAllFragmentTypesSaveLoad() throws Exception {
+        // ============================================================
+        // 1. CREATE - Build SD with all fragment types: OPT, ALT, LOOP
+        // ============================================================
+        SDModel model = new SDModel("Complete Fragment Test SD", project);
+
+        // Create Design Classes for objects
+        DesignClass userClass = new DesignClass("User");
+        DesignClass serviceClass = new DesignClass("Service");
+        DesignClass dbClass = new DesignClass("Database");
+
+        // Create SD Objects
+        SDObject user = new SDObject("user", userClass);
+        SDObjectGR userGR = new SDObjectGR(user, 50);
+        model.addRoleClassifier(userGR);
+
+        SDObject service = new SDObject("service", serviceClass);
+        SDObjectGR serviceGR = new SDObjectGR(service, 250);
+        model.addRoleClassifier(serviceGR);
+
+        SDObject database = new SDObject("db", dbClass);
+        SDObjectGR databaseGR = new SDObjectGR(database, 450);
+        model.addRoleClassifier(databaseGR);
+
+        // === Message 1: User calls service.login() ===
+        GenericOperation loginOp = new GenericOperation("login");
+        CallMessage loginCall = new CallMessage(user, service, loginOp);
+        loginCall.addParameter(new MethodParameter("username"));
+        loginCall.addParameter(new MethodParameter("password"));
+        CallMessageGR loginCallGR = new CallMessageGR(userGR, serviceGR, loginCall, 120);
+        model.addMessage(loginCallGR);
+
+        // === OPT Fragment: Authentication check [user authenticated] ===
+        CombinedFragment optFragment = new CombinedFragment(InteractionOperator.OPT, "[user authenticated]");
+        optFragment.setHeight(180);
+        CombinedFragmentGR optFragmentGR = new CombinedFragmentGR(
+                optFragment,
+                new java.awt.Point(30, 150),
+                550);
+        optFragmentGR.setHeight(180);
+        model.addGraphicalElement(optFragmentGR);
+        model.getCentralRepository().addCombinedFragment(optFragment);
+
+        // Message 2: Service queries database (inside OPT)
+        GenericOperation queryOp = new GenericOperation("query");
+        CallMessage queryCall = new CallMessage(service, database, queryOp);
+        queryCall.addParameter(new MethodParameter("userId"));
+        CallMessageGR queryCallGR = new CallMessageGR(serviceGR, databaseGR, queryCall, 200);
+        model.addMessage(queryCallGR);
+
+        // Message 3: Database returns result (inside OPT)
+        ReturnMessage queryReturn = new ReturnMessage(database, service, "userData");
+        ReturnMessageGR queryReturnGR = new ReturnMessageGR(databaseGR, serviceGR, queryReturn, 250);
+        model.addMessage(queryReturnGR);
+
+        // Message 4: Return from login
+        ReturnMessage loginReturn = new ReturnMessage(service, user, "sessionToken");
+        ReturnMessageGR loginReturnGR = new ReturnMessageGR(serviceGR, userGR, loginReturn, 350);
+        model.addMessage(loginReturnGR);
+
+        // === Message 5: User calls service.fetchData() ===
+        GenericOperation fetchOp = new GenericOperation("fetchData");
+        CallMessage fetchCall = new CallMessage(user, service, fetchOp);
+        CallMessageGR fetchCallGR = new CallMessageGR(userGR, serviceGR, fetchCall, 400);
+        model.addMessage(fetchCallGR);
+
+        // === ALT Fragment: Two alternatives for data source ===
+        CombinedFragment altFragment = new CombinedFragment(InteractionOperator.ALT, "");
+        altFragment.setHeight(200);
+
+        // Add operands with custom height ratios
+        Operand cacheOperand = new Operand("[data in cache]");
+        cacheOperand.setHeightRatio(1.0);
+        Operand dbOperand = new Operand("[cache miss]");
+        dbOperand.setHeightRatio(2.0); // Twice as tall
+        altFragment.addOperand(cacheOperand);
+        altFragment.addOperand(dbOperand);
+
+        CombinedFragmentGR altFragmentGR = new CombinedFragmentGR(
+                altFragment,
+                new java.awt.Point(30, 430),
+                550);
+        altFragmentGR.setHeight(200);
+        model.addGraphicalElement(altFragmentGR);
+        model.getCentralRepository().addCombinedFragment(altFragment);
+
+        // Message 6: Return cached data (first operand)
+        ReturnMessage cachedReturn = new ReturnMessage(service, user, "cachedData");
+        ReturnMessageGR cachedReturnGR = new ReturnMessageGR(serviceGR, userGR, cachedReturn, 480);
+        model.addMessage(cachedReturnGR);
+
+        // Message 7: Query database (second operand)
+        GenericOperation fetchFromDBOp = new GenericOperation("fetchFromDB");
+        CallMessage fetchFromDBCall = new CallMessage(service, database, fetchFromDBOp);
+        CallMessageGR fetchFromDBCallGR = new CallMessageGR(serviceGR, databaseGR, fetchFromDBCall, 530);
+        model.addMessage(fetchFromDBCallGR);
+
+        // Message 8: Return from database (second operand)
+        ReturnMessage dbReturn = new ReturnMessage(database, service, "freshData");
+        ReturnMessageGR dbReturnGR = new ReturnMessageGR(databaseGR, serviceGR, dbReturn, 580);
+        model.addMessage(dbReturnGR);
+
+        // Message 9: Return from fetchData
+        ReturnMessage fetchReturn = new ReturnMessage(service, user, "data");
+        ReturnMessageGR fetchReturnGR = new ReturnMessageGR(serviceGR, userGR, fetchReturn, 650);
+        model.addMessage(fetchReturnGR);
+
+        // === Message 10: User calls service.processItems() ===
+        GenericOperation processOp = new GenericOperation("processItems");
+        CallMessage processCall = new CallMessage(user, service, processOp);
+        processCall.addParameter(new MethodParameter("items"));
+        CallMessageGR processCallGR = new CallMessageGR(userGR, serviceGR, processCall, 700);
+        model.addMessage(processCallGR);
+
+        // === LOOP Fragment: Process each item loop(3, 5) ===
+        CombinedFragment loopFragment = new CombinedFragment(InteractionOperator.LOOP, "[for each item]");
+        loopFragment.setHeight(120);
+        loopFragment.setLoopMin(3);
+        loopFragment.setLoopMax(5);
+
+        CombinedFragmentGR loopFragmentGR = new CombinedFragmentGR(
+                loopFragment,
+                new java.awt.Point(30, 730),
+                550);
+        loopFragmentGR.setHeight(120);
+        model.addGraphicalElement(loopFragmentGR);
+        model.getCentralRepository().addCombinedFragment(loopFragment);
+
+        // Message 11: Process item (inside LOOP)
+        GenericOperation processItemOp = new GenericOperation("processItem");
+        CallMessage processItemCall = new CallMessage(service, database, processItemOp);
+        processItemCall.addParameter(new MethodParameter("item"));
+        CallMessageGR processItemCallGR = new CallMessageGR(serviceGR, databaseGR, processItemCall, 780);
+        model.addMessage(processItemCallGR);
+
+        // Message 12: Return from processItem (inside LOOP)
+        ReturnMessage processItemReturn = new ReturnMessage(database, service, "success");
+        ReturnMessageGR processItemReturnGR = new ReturnMessageGR(databaseGR, serviceGR, processItemReturn, 810);
+        model.addMessage(processItemReturnGR);
+
+        // Message 13: Return from processItems
+        ReturnMessage processReturn = new ReturnMessage(service, user, "allProcessed");
+        ReturnMessageGR processReturnGR = new ReturnMessageGR(serviceGR, userGR, processReturn, 870);
+        model.addMessage(processReturnGR);
+
+        // Validate focus of control
+        model.sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+
+        // ============================================================
+        // 2. SAVE - Persist diagram to XML
+        // ============================================================
+        saveProject();
+
+        // ============================================================
+        // 3. LOAD - Restore from XML
+        // ============================================================
+        loadProject();
+
+        // ============================================================
+        // 4. VERIFY - Check all elements were restored correctly
+        // ============================================================
+
+        // Verify diagram exists
+        Vector<DiagramModel> diagrams = project.getDiagramModels();
+        assertEquals("Should have 1 diagram", 1, diagrams.size());
+
+        SDModel loadedModel = (SDModel) diagrams.get(0);
+        assertEquals("Diagram name should match", "Complete Fragment Test SD", loadedModel.getName());
+
+        // Verify Role Classifiers (3 objects)
+        Vector<RoleClassifierGR> roleClassifiers = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof RoleClassifierGR) {
+                roleClassifiers.add((RoleClassifierGR) ge);
+            }
+        }
+        assertEquals("Should have 3 objects", 3, roleClassifiers.size());
+
+        // Verify Messages (13 messages total)
+        Vector<SDMessageGR> messages = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof SDMessageGR) {
+                messages.add((SDMessageGR) ge);
+            }
+        }
+        assertEquals("Should have 13 messages", 13, messages.size());
+
+        // Verify Combined Fragments (3 fragments: OPT, ALT, LOOP)
+        Vector<CombinedFragmentGR> fragmentGRs = new Vector<>();
+        for (GraphicalElement ge : loadedModel.getGraphicalElements()) {
+            if (ge instanceof CombinedFragmentGR) {
+                fragmentGRs.add((CombinedFragmentGR) ge);
+            }
+        }
+        assertEquals("Should have 3 combined fragments", 3, fragmentGRs.size());
+
+        // Find each fragment type
+        CombinedFragmentGR loadedOptGR = null;
+        CombinedFragmentGR loadedAltGR = null;
+        CombinedFragmentGR loadedLoopGR = null;
+
+        for (CombinedFragmentGR fragmentGR : fragmentGRs) {
+            CombinedFragment fragment = fragmentGR.getCombinedFragment();
+            switch (fragment.getOperator()) {
+            case OPT:
+                loadedOptGR = fragmentGR;
+                break;
+            case ALT:
+                loadedAltGR = fragmentGR;
+                break;
+            case LOOP:
+                loadedLoopGR = fragmentGR;
+                break;
+            }
+        }
+
+        // ====== Verify OPT Fragment ======
+        assertNotNull("OPT fragment should be loaded", loadedOptGR);
+        CombinedFragment loadedOpt = loadedOptGR.getCombinedFragment();
+        assertEquals("OPT operator should match", InteractionOperator.OPT, loadedOpt.getOperator());
+        assertEquals("OPT guard should match", "[user authenticated]", loadedOpt.getGuardCondition());
+        assertEquals("OPT height should be 180", 180, loadedOpt.getHeight());
+        assertNull("OPT should have no loop min", loadedOpt.getLoopMin());
+        assertNull("OPT should have no loop max", loadedOpt.getLoopMax());
+        assertTrue("OPT should have no operands", loadedOpt.getOperands().isEmpty());
+
+        // ====== Verify ALT Fragment ======
+        assertNotNull("ALT fragment should be loaded", loadedAltGR);
+        CombinedFragment loadedAlt = loadedAltGR.getCombinedFragment();
+        assertEquals("ALT operator should match", InteractionOperator.ALT, loadedAlt.getOperator());
+        assertEquals("ALT height should be 200", 200, loadedAlt.getHeight());
+
+        // Verify ALT operands
+        java.util.List<Operand> altOperands = loadedAlt.getOperands();
+        assertNotNull("ALT operands should not be null", altOperands);
+        assertEquals("ALT should have 2 operands", 2, altOperands.size());
+
+        Operand loadedCacheOperand = altOperands.get(0);
+        assertEquals("First ALT operand guard should match", "[data in cache]",
+                loadedCacheOperand.getGuardCondition());
+        assertEquals("First ALT operand height ratio should be 1.0", 1.0,
+                loadedCacheOperand.getHeightRatio(), 0.001);
+
+        Operand loadedDBOperand = altOperands.get(1);
+        assertEquals("Second ALT operand guard should match", "[cache miss]",
+                loadedDBOperand.getGuardCondition());
+        assertEquals("Second ALT operand height ratio should be 2.0", 2.0,
+                loadedDBOperand.getHeightRatio(), 0.001);
+
+        // ====== Verify LOOP Fragment ======
+        assertNotNull("LOOP fragment should be loaded", loadedLoopGR);
+        CombinedFragment loadedLoop = loadedLoopGR.getCombinedFragment();
+        assertEquals("LOOP operator should match", InteractionOperator.LOOP, loadedLoop.getOperator());
+        assertEquals("LOOP guard should match", "[for each item]", loadedLoop.getGuardCondition());
+        assertEquals("LOOP height should be 120", 120, loadedLoop.getHeight());
+
+        // Verify loop iterations
+        assertNotNull("LOOP should have loop min", loadedLoop.getLoopMin());
+        assertEquals("LOOP min should be 3", 3, loadedLoop.getLoopMin().intValue());
+        assertNotNull("LOOP should have loop max", loadedLoop.getLoopMax());
+        assertEquals("LOOP max should be 5", 5, loadedLoop.getLoopMax().intValue());
+
+        // Verify CentralRepository contains all 3 fragments
+        Vector<CombinedFragment> fragments = project.getCentralRepository().getCombinedFragments();
+        assertEquals("Repository should have 3 combined fragments", 3, fragments.size());
+
+        // Verify messages are in repository
+        Vector<SDMessage> sdMessages = project.getCentralRepository().getSDMessages();
+        assertEquals("Repository should have 13 messages", 13, sdMessages.size());
+    }
 }

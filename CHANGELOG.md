@@ -4,6 +4,20 @@
 
 ### Added
 
+-   Combined Fragments support for Sequence Diagrams (SD/SSD)
+    -   UML 2.x combined fragments with OPT, ALT, and LOOP operators
+    -   Default creation of OPT fragments with empty guard conditions
+    -   Double-click editing of operator type, guard condition, and loop iterations
+    -   Loop iteration support following UML 2.x specification: `loop`, `loop(3)`, `loop(0,2)`, `loop(3,*)`
+    -   Automatic guard condition bracketing (adds `[...]` if missing)
+    -   Pentagon-shaped operator label in standard UML style
+    -   Transparent background to show contained messages
+    -   8-handle resize support (N, S, E, W, NE, NW, SE, SW) with cursor feedback
+    -   Copy/paste functionality preserving Y-coordinates in sequence diagrams
+    -   Full undo/redo support for all edit operations
+    -   Complete XML serialization/deserialization with backward compatibility
+    -   Custom toolbar icon following UML notation (rounded rectangle with pentagon)
+    -   13 unit tests covering creation, editing, rendering, cloning, and loop formatting
 -   Support for Dependencies between Classes and Interfaces in Design Class Diagrams (DCDs)
     -   Dependency relationships now work between any two Classifiers (DesignClass or Interface)
     -   Supports all combinations: Class→Class, Class→Interface, Interface→Class, Interface→Interface

@@ -1,5 +1,6 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Cursor;
 import java.awt.Point;
 
 /**
@@ -12,22 +13,29 @@ public class LeftResizeHandle extends ResizeHandle {
     }
 
     @Override
+    public int getCursorType() {
+        return Cursor.W_RESIZE_CURSOR;
+    }
+
+    @Override
     public void resizeElement(int x, int y) {
         int oldX = resizableElement.getStartingPoint().x;
-        if (oldX != x) {
-            int widthDifference = oldX - x;
-            Point p = new Point(x, resizableElement.getStartingPoint().y);
+        if (oldX == x)
+            return;
 
-            int border = resizableElement.getLeftBorder();
-            if (p.x < border) {
-                resizableElement.setStartingPoint(p);
-                resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
-            } else {
-                widthDifference = oldX - border;
-                p.setLocation(border, p.y);
-                resizableElement.setStartingPoint(p);
-                resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
-            }
+        int widthDifference = oldX - x;
+        Point p = new Point(x, resizableElement.getStartingPoint().y);
+
+        int border = resizableElement.getLeftBorder();
+        if (p.x < border) {
+            resizableElement.setStartingPoint(p);
+            resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
+        } else {
+            // Hit minimum: clamp to border position
+            widthDifference = oldX - border;
+            p.setLocation(border, p.y);
+            resizableElement.setStartingPoint(p);
+            resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
         }
     }
 

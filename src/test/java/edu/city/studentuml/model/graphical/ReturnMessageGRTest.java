@@ -5,13 +5,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.ReturnMessage;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.SDModel;
-import edu.city.studentuml.view.gui.SDInternalFrame;
 
 /**
  * Test class for ReturnMessageGR.edit() method. ReturnMessageGR is a Sequence
@@ -36,8 +33,6 @@ public class ReturnMessageGRTest {
     public void testReturnMessageGR_EditName_UndoRedo() {
         // Create SD model and frame
         SDModel model = new SDModel("sd", umlProject);
-        SDInternalFrame frame = new SDInternalFrame(model);
-
         // Create two design classes for source and target
         DesignClass orderClass = new DesignClass("Order");
         DesignClass paymentClass = new DesignClass("Payment");

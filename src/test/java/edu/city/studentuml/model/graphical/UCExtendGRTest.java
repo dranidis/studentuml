@@ -12,7 +12,6 @@ import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.UCExtend;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.domain.UseCase;
-import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.view.gui.UCDInternalFrame;
 import edu.city.studentuml.view.gui.UCExtendEditor;
 

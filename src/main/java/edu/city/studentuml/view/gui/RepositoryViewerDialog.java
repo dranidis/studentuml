@@ -21,7 +21,6 @@ import java.util.Date;
 public class RepositoryViewerDialog extends JDialog implements PropertyChangeListener {
 
     private final CentralRepository repository;
-    private final UMLProject umlProject;
     private final JTextArea changeLogArea;
     private final JTextArea stateArea;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -29,8 +28,6 @@ public class RepositoryViewerDialog extends JDialog implements PropertyChangeLis
     public RepositoryViewerDialog(Frame owner, CentralRepository repository, UMLProject umlProject) {
         super(owner, "Repository Viewer", false); // false = non-modal
         this.repository = repository;
-        this.umlProject = umlProject;
-
         setLayout(new BorderLayout(10, 10));
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(10, 10, 10, 10));
 

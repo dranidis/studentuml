@@ -15,6 +15,7 @@ import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.CombinedFragment;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.ControlFlow;
@@ -90,6 +91,7 @@ public class CentralRepository implements Serializable {
     private NotifierVector<SDObject> sdObjects;
     private NotifierVector<Realization> realizations;
     private NotifierVector<SDMessage> sdMessages;
+    private NotifierVector<CombinedFragment> combinedFragments;
     private NotifierVector<ControlFlow> controlFlows;
     private NotifierVector<ObjectFlow> objectFlows;
     private NotifierVector<ActionNode> actionNodes;
@@ -137,6 +139,7 @@ public class CentralRepository implements Serializable {
         sdObjects = new NotifierVector<>();
         multiObjects = new NotifierVector<>();
         sdMessages = new NotifierVector<>();
+        combinedFragments = new NotifierVector<>();
 
         controlFlows = new NotifierVector<>();
         objectFlows = new NotifierVector<>();
@@ -167,6 +170,7 @@ public class CentralRepository implements Serializable {
         actors.clear();
         actorInstances.clear();
         sdMessages.clear();
+        combinedFragments.clear();
         genericClasses.clear();
         genericAttributes.clear();
         genericOperations.clear();
@@ -898,6 +902,21 @@ public class CentralRepository implements Serializable {
 
     public Vector<SDMessage> getSDMessages() {
         return sdMessages;
+    }
+
+    // methods for manipulating the list of combined fragments
+    public boolean addCombinedFragment(CombinedFragment fragment) {
+        logger.fine(() -> "Adding combined fragment " + fragment.toString());
+        combinedFragments.add(fragment);
+        return true;
+    }
+
+    public boolean removeCombinedFragment(CombinedFragment fragment) {
+        return combinedFragments.remove(fragment);
+    }
+
+    public Vector<CombinedFragment> getCombinedFragments() {
+        return combinedFragments;
     }
 
     // The following methods manage the lists of generic concepts which can be

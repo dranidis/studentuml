@@ -23,6 +23,7 @@ import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.CombinedFragment;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.ControlFlow;
@@ -39,6 +40,7 @@ import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericClass;
 import edu.city.studentuml.model.domain.GenericOperation;
 import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.model.domain.InteractionOperator;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.JoinNode;
 import edu.city.studentuml.model.domain.MergeNode;
@@ -74,6 +76,7 @@ import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.CallMessageGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
@@ -571,6 +574,31 @@ public final class ObjectFactory {
         MultiObjectGR multiObjectGR = new MultiObjectGR(sd, x);
         ((DiagramModel) parent).addGraphicalElement(multiObjectGR);
         return multiObjectGR;
+    }
+
+    public IXMLCustomStreamable newcombinedfragment(Object parent, Element stream, XMLStreamer streamer) {
+        CombinedFragment fragment = new CombinedFragment(
+                InteractionOperator.valueOf(stream.getAttribute("operator")),
+                stream.getAttribute("guardCondition"));
+        fragment.setHeight(Integer.parseInt(stream.getAttribute("height")));
+        SystemWideObjectNamePool.getInstance().objectAdded(fragment);
+        return fragment;
+    }
+
+    public IXMLCustomStreamable newcombinedfragmentgr(Object parent, Element stream, XMLStreamer streamer)
+            throws NotStreamable {
+        // Read combined fragment domain object from child element
+        CombinedFragment fragment = (CombinedFragment) streamer.readObjectByID(stream, "fragment", null);
+        int x = Integer.parseInt(stream.getAttribute("x"));
+        int y = Integer.parseInt(stream.getAttribute("y"));
+        int width = Integer.parseInt(stream.getAttribute("width"));
+        int height = Integer.parseInt(stream.getAttribute("height"));
+
+        CombinedFragmentGR fragmentGR = new CombinedFragmentGR(fragment, new Point(x, y), width);
+        fragmentGR.setHeight(height);
+        DiagramModel model = (DiagramModel) parent;
+        model.addGraphicalElement(fragmentGR);
+        return fragmentGR;
     }
 
     public IXMLCustomStreamable newcallmessagegr(Object parent, Element stream, XMLStreamer streamer)

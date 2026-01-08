@@ -49,6 +49,7 @@ import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.graphical.AbstractLinkGR;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -68,9 +69,12 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
+import edu.city.studentuml.model.graphical.Resizable;
+import edu.city.studentuml.model.graphical.ResizeHandle;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
@@ -143,6 +147,9 @@ public class SelectionController {
     protected Point2D dragPoint = null;
     protected GraphicalElement potentialTarget = null;
 
+    // Resize handle dragging state
+    protected ResizeHandle draggingResizeHandle = null;
+
     /**
      * A map mapping a class to its editor. Each subclass of SelectionController
      * implements editors for the elements that the diagram implements.
@@ -210,7 +217,12 @@ public class SelectionController {
                 currentMouseX = scale(event.getX());
                 currentMouseY = scale(event.getY());
 
-                // Update cursor based on whether hovering over a link endpoint
+                // First check for resize handles (higher priority)
+                if (updateCursorForResizeHandle(event)) {
+                    return; // Cursor was set for resize handle
+                }
+
+                // Then check for link endpoints
                 updateCursorForLinkEndpoint(event);
             }
         };
@@ -294,6 +306,11 @@ public class SelectionController {
 
         Point2D origin = new Point2D.Double(lastX, lastY);
 
+        // Check if clicking on a resize handle of a selected element
+        if (checkForResizeHandleDrag(origin)) {
+            return; // Resize handle drag initiated, don't proceed with normal selection
+        }
+
         // Check if clicking on an endpoint of a selected link
         if (checkForEndpointDrag(origin)) {
             return; // Endpoint drag initiated, don't proceed with normal selection
@@ -353,6 +370,24 @@ public class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
+        // Handle resize handle drag completion
+        if (draggingResizeHandle != null) {
+            // Auto-resize ONLY when Control key is pressed during resize
+            // This gives users control over when fragments auto-adjust to messages
+            if (event.isControlDown()) {
+                Resizable resizedElement = draggingResizeHandle.getResizableElement();
+                if (resizedElement instanceof CombinedFragmentGR && model instanceof AbstractSDModel) {
+                    CombinedFragmentGR fragment = (CombinedFragmentGR) resizedElement;
+                    fragment.autoResizeToMessages((AbstractSDModel) model);
+                }
+            }
+
+            draggingResizeHandle = null;
+            // Reset cursor
+            parentComponent.getView().setCursor(Cursor.getDefaultCursor());
+            return;
+        }
+
         // Handle endpoint drag completion
         if (draggingLink != null) {
             completeEndpointDrag(scale(event.getX()), scale(event.getY()));
@@ -417,6 +452,14 @@ public class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
+        // Handle resize handle dragging
+        if (draggingResizeHandle != null) {
+            draggingResizeHandle.move(scale(event.getX()), scale(event.getY()));
+            // Trigger repaint to show resize in real-time
+            model.modelChanged();
+            return;
+        }
+
         // Handle endpoint dragging
         if (draggingLink != null) {
             handleEndpointDrag(scale(event.getX()), scale(event.getY()));
@@ -754,6 +797,9 @@ public class SelectionController {
             }
         }
 
+        // Check if we're in a sequence diagram (SD or SSD)
+        boolean isSequenceDiagram = model instanceof AbstractSDModel;
+
         // Calculate offset to position at mouse cursor (or use default offset if no
         // mouse position)
         final int offsetX;
@@ -761,11 +807,13 @@ public class SelectionController {
         if (currentMouseX > 0 || currentMouseY > 0) {
             // Position the top-left element at the mouse cursor
             offsetX = currentMouseX - minX;
-            offsetY = currentMouseY - minY;
+            // For sequence diagrams, preserve Y coordinate (time axis)
+            // For other diagrams, position at mouse Y
+            offsetY = isSequenceDiagram ? 0 : (currentMouseY - minY);
         } else {
             // Fallback: use fixed offset (20 pixels right and down)
             offsetX = 20;
-            offsetY = 20;
+            offsetY = isSequenceDiagram ? 0 : 20;
         }
 
         // List to store newly created (pasted) elements
@@ -1311,6 +1359,36 @@ public class SelectionController {
     }
 
     /**
+     * Checks if the mouse is pressed on a resize handle of a selected resizable
+     * element. If so, initiates resize handle dragging.
+     * 
+     * @param point the mouse click point
+     * @return true if resize handle drag was initiated, false otherwise
+     */
+    private boolean checkForResizeHandleDrag(Point2D point) {
+        // Check all selected elements for resizable elements with handles at this point
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof Resizable) {
+                Resizable resizable = (Resizable) element;
+                ResizeHandle handle = resizable.getResizeHandle((int) point.getX(), (int) point.getY());
+
+                if (handle != null) {
+                    // Initiate resize handle drag
+                    draggingResizeHandle = handle;
+
+                    logger.fine(() -> "Started dragging resize handle of " + element.getClass().getSimpleName());
+
+                    // Update cursor to match the resize handle direction
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(handle.getCursorType()));
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Handles the dragging of a link endpoint, updating the drag point and finding
      * potential targets.
      * 
@@ -1686,6 +1764,37 @@ public class SelectionController {
     }
 
     /**
+     * Updates the cursor based on whether the mouse is hovering over a resize
+     * handle. Changes to appropriate resize cursor when over a handle of a selected
+     * resizable element.
+     * 
+     * @param event the mouse event containing the current mouse position
+     * @return true if cursor was set for a resize handle, false otherwise
+     */
+    private boolean updateCursorForResizeHandle(MouseEvent event) {
+        int scaledX = scale(event.getX());
+        int scaledY = scale(event.getY());
+
+        // Check if hovering over a resize handle of any selected resizable element
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof Resizable) {
+                Resizable resizable = (Resizable) element;
+
+                // Check if mouse is over a resize handle
+                ResizeHandle handle = resizable.getResizeHandle(scaledX, scaledY);
+                if (handle != null) {
+                    // Mouse is over a resize handle - show appropriate resize cursor
+                    parentComponent.getView().setCursor(
+                            Cursor.getPredefinedCursor(handle.getCursorType()));
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Updates the cursor based on whether the mouse is hovering over a link
      * endpoint. Changes to HAND_CURSOR when over an endpoint of a selected link,
      * otherwise DEFAULT_CURSOR. Also updates hover state for visual feedback.
@@ -1744,5 +1853,4 @@ public class SelectionController {
             parentComponent.getView().setCursor(Cursor.getDefaultCursor());
         }
     }
-
 }

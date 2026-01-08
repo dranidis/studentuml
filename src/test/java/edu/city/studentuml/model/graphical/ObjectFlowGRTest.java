@@ -11,7 +11,6 @@ import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActionNode;
 import edu.city.studentuml.model.domain.ObjectFlow;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.ADModel;
 import edu.city.studentuml.view.gui.ADInternalFrame;
 import edu.city.studentuml.view.gui.ObjectFlowEditor;
 

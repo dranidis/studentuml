@@ -320,55 +320,6 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 
 **Use Case:** When modeling designs that rely on abstraction and polymorphism (Strategy pattern, dependency injection, plugin architectures), it's important to show that clients depend on abstract types, not concrete implementations. For example, showing `VersionChecker` calling `getLatestVersion()` on a `provider : <<interface>> VersionProvider` makes it clear that any implementation can be used. Concrete implementations (like `GitHubVersionProvider`) can be shown separately using found messages to demonstrate actual execution flow without coupling the abstract interaction to a specific implementation.
 
-### Support Combined Fragments
-
-**Status:** Not implemented  
-**Priority:** High  
-**Description:** Add support for UML 2.x combined fragments in sequence diagrams, including alternatives (alt), options (opt), loops (loop), parallel execution (par), and other interaction operators. Combined fragments allow modeling of control flow, conditionals, and iteration in sequence diagrams.
-
-**Reference:** https://www.uml-diagrams.org/sequence-diagrams-combined-fragment.html
-
-**Technical Notes:**
-
--   UML 2.x defines 12 interaction operators for combined fragments:
-    -   **alt** (alternatives): mutually exclusive conditional paths (if-then-else)
-    -   **opt** (option): optional execution (if-then)
-    -   **loop** (loop): repeated execution with guard condition
-    -   **par** (parallel): concurrent/parallel execution
-    -   **break**: breaking/exception handling
-    -   **critical**: critical region (atomic execution)
-    -   **neg** (negative): invalid/prohibited interaction
-    -   **assert**: mandatory/required interaction
-    -   **strict**: strict sequential ordering
-    -   **seq**: weak sequential ordering
-    -   **ignore**: ignore certain messages
-    -   **consider**: consider only certain messages
--   Implementation requirements:
-    -   Create `CombinedFragmentGR` class for graphical representation
-    -   Create `CombinedFragment` domain class with:
-        -   Operator type (alt, opt, loop, etc.)
-        -   Guard conditions for each operand
-        -   Nested message sequences
-        -   Coverage (which lifelines are included)
-    -   Rendering:
-        -   Rectangle with rounded corners covering relevant lifelines
-        -   Operator label in pentagon in upper left corner (e.g., "alt", "loop")
-        -   Dashed horizontal lines separating operands (for alt)
-        -   Guard conditions in square brackets (e.g., `[x > 0]`, `[else]`)
-        -   Messages within the fragment region
-    -   Support nesting of fragments (e.g., loop inside alt)
-    -   XML serialization for fragment structure, operators, and guards
-    -   UI: Tools to create/edit fragments, set operators and guards
--   Start with most common operators: **alt**, **opt**, **loop** (Priority 1)
--   Add additional operators in subsequent phases (Priority 2)
-
-**Use Case:** Combined fragments are essential for modeling realistic control flow in sequence diagrams. For example:
-
--   **alt**: Show conditional behavior (e.g., "if shouldNotify() then showDialog() else do nothing")
--   **opt**: Show optional operations (e.g., "[new version available] show update dialog")
--   **loop**: Show repeated operations (e.g., "[for each item] process item")
-    Without combined fragments, sequence diagrams can only show simple linear flows, limiting their usefulness for documenting complex interactions with conditionals, loops, and error handling.
-
 ## Copy/Paste Operations
 
 ### UML Note Y-Position in Sequence Diagrams

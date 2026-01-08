@@ -53,8 +53,17 @@ public abstract class AbstractSDModel extends DiagramModel {
             addMessage((SDMessageGR) e);
         } else if (e instanceof UMLNoteGR) {
             super.addGraphicalElement(e);
+        } else if (e instanceof CombinedFragmentGR) {
+            addCombinedFragment((CombinedFragmentGR) e);
         }
         SystemWideObjectNamePool.getInstance().done();
+    }
+
+    // before calling the superclass add element, the combined fragment
+    // is added to the project repository
+    private void addCombinedFragment(CombinedFragmentGR fragmentGR) {
+        repository.addCombinedFragment(fragmentGR.getCombinedFragment());
+        super.addGraphicalElement(fragmentGR);
     }
 
     // before calling the superclass add element, the role classifier
@@ -99,6 +108,9 @@ public abstract class AbstractSDModel extends DiagramModel {
             restoreMessagesDistances();
         }
         SystemWideObjectNamePool.getInstance().reload();
+
+        // Note: Auto-resize disabled when adding messages
+        // User can manually resize fragments as needed
     }
 
     public void setAutomove(boolean automove) {
@@ -113,6 +125,8 @@ public abstract class AbstractSDModel extends DiagramModel {
             moveRoleClassifier((RoleClassifierGR) e, x, y);
         } else if (e instanceof SDMessageGR) {
             moveMessage((SDMessageGR) e, x, y);
+        } else if (e instanceof CombinedFragmentGR) {
+            moveCombinedFragment((CombinedFragmentGR) e, x, y);
         } else { //UML Notes
             super.moveGraphicalElement(e, x, y);
         }
@@ -121,11 +135,20 @@ public abstract class AbstractSDModel extends DiagramModel {
     private void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
+        // Note: Auto-resize disabled during lifeline drag
+        // Fragments only auto-resize when manually resized or moved
     }
 
     private void moveMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
         sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+        // Note: Auto-resize disabled during message drag for better performance
+        // Fragments will auto-resize when messages are added/removed or lifelines move
+    }
+
+    private void moveCombinedFragment(CombinedFragmentGR fragment, int x, int y) {
+        super.moveGraphicalElement(fragment, x, y);
+        // Just move during drag - auto-resize happens on settle
     }
 
     // apart from just moving the dragged and dropped element
@@ -136,6 +159,11 @@ public abstract class AbstractSDModel extends DiagramModel {
             settleRoleClassifier((RoleClassifierGR) e, x, y);
         } else if (e instanceof SDMessageGR) {
             settleMessage((SDMessageGR) e, x, y);
+        } else if (e instanceof CombinedFragmentGR) {
+            settleCombinedFragment((CombinedFragmentGR) e, x, y);
+        } else {
+            // Handle other elements (e.g., UMLNoteGR)
+            super.settleGraphicalElement(e, x, y);
         }
     }
 
@@ -143,6 +171,8 @@ public abstract class AbstractSDModel extends DiagramModel {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
         restoreRoleClassifiersDistances();
+        // Note: Auto-resize disabled on lifeline settle
+        // Fragments only auto-resize when manually resized or moved
     }
 
     private void settleMessage(SDMessageGR m, int x, int y) {
@@ -150,6 +180,14 @@ public abstract class AbstractSDModel extends DiagramModel {
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
         sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+        // Note: Auto-resize disabled on message settle - fragments maintain their size
+        // They will auto-resize when messages are added/removed or lifelines move
+    }
+
+    private void settleCombinedFragment(CombinedFragmentGR fragment, int x, int y) {
+        super.moveGraphicalElement(fragment, x, y);
+        // Note: Auto-resize disabled when moving fragment
+        // Only auto-resize on manual resize with handles
     }
 
     // subclasses that need to validate create and destroy messages need to override this method
@@ -280,6 +318,12 @@ public abstract class AbstractSDModel extends DiagramModel {
         } else if (e instanceof SDMessageGR) {
             removeMessage((SDMessageGR) e);
         } else if (e instanceof UMLNoteGR) {
+            super.removeGraphicalElement(e);
+        } else if (e instanceof CombinedFragmentGR) {
+            // Remove the domain object from central repository
+            CombinedFragmentGR fragmentGR = (CombinedFragmentGR) e;
+            getCentralRepository().removeCombinedFragment(fragmentGR.getCombinedFragment());
+            // Remove the graphical element from diagram
             super.removeGraphicalElement(e);
         }
         SystemWideObjectNamePool.getInstance().done();

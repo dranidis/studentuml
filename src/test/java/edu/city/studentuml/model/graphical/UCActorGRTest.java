@@ -7,8 +7,6 @@ import org.junit.Test;
 
 import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.UMLProject;
-import edu.city.studentuml.model.graphical.UCDModel;
-import edu.city.studentuml.view.gui.UCDInternalFrame;
 
 /**
  * Test class for UCActorGR.edit() method. UCActorGR is a Use Case Diagram
@@ -33,8 +31,6 @@ public class UCActorGRTest {
     public void testUCActorGR_EditName_UndoRedo() {
         // Create UCD model and frame
         UCDModel model = new UCDModel("ucd", umlProject);
-        UCDInternalFrame frame = new UCDInternalFrame(model);
-
         // Create Actor - uses parameterized constructor
         Actor actor = new Actor("Customer");
         model.getCentralRepository().addActor(actor);

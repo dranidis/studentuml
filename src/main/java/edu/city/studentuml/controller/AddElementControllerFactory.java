@@ -16,6 +16,7 @@ import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.CombinedFragment;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DecisionNode;
@@ -28,6 +29,7 @@ import edu.city.studentuml.model.domain.FlowFinalNode;
 import edu.city.studentuml.model.domain.ForkNode;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.model.domain.InteractionOperator;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.JoinNode;
 import edu.city.studentuml.model.domain.MergeNode;
@@ -55,6 +57,7 @@ import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
@@ -240,6 +243,18 @@ public class AddElementControllerFactory {
                     return new MultiObjectGR(new MultiObject("", new DesignClass("")), x);
                 }
 
+            };
+
+        case "CombinedFragmentGR":
+            return new AddClickElementController(model, frame) {
+
+                @Override
+                protected GraphicalElement makeGraphicalElement(int x, int y) {
+                    return new CombinedFragmentGR(
+                            new CombinedFragment(InteractionOperator.OPT, ""),
+                            new Point(x, y),
+                            CombinedFragmentGR.DEFAULT_WIDTH);
+                }
             };
 
         case "InitialNodeGR":

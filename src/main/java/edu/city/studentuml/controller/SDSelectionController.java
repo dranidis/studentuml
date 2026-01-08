@@ -1,14 +1,19 @@
 package edu.city.studentuml.controller;
 
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.city.studentuml.model.domain.Operand;
 import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
+import edu.city.studentuml.util.undoredo.DragSeparatorEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
@@ -23,6 +28,11 @@ public class SDSelectionController extends SelectionController {
 
     private List<Integer> oldXList = new ArrayList<>();
     private List<Integer> oldYList = new ArrayList<>();
+
+    // Separator dragging state
+    private CombinedFragmentGR draggingFragment = null;
+    private int draggingSeparatorIndex = -1;
+    private double[] oldSeparatorRatios = null;
 
     public SDSelectionController(DiagramInternalFrame parent, DiagramModel m) {
         super(parent, m);
@@ -119,4 +129,114 @@ public class SDSelectionController extends SelectionController {
         }
     }
 
+    /**
+     * Override myMousePressed to check for separator dragging before normal element
+     * selection.
+     */
+    @Override
+    protected void myMousePressed(MouseEvent event) {
+        int x = scale(event.getX());
+        int y = scale(event.getY());
+        Point point = new Point(x, y);
+
+        // Check if clicking on a CombinedFragment separator
+        for (GraphicalElement element : model.getGraphicalElements()) {
+            if (element instanceof CombinedFragmentGR) {
+                CombinedFragmentGR fragmentGR = (CombinedFragmentGR) element;
+                int separatorIndex = fragmentGR.getSeparatorIndexAt(point);
+
+                if (separatorIndex >= 0) {
+                    // Start dragging separator
+                    draggingFragment = fragmentGR;
+                    draggingSeparatorIndex = separatorIndex;
+
+                    // Capture old height ratios for undo
+                    List<Operand> operands = fragmentGR.getCombinedFragment().getOperands();
+                    oldSeparatorRatios = new double[operands.size()];
+                    for (int i = 0; i < operands.size(); i++) {
+                        oldSeparatorRatios[i] = operands.get(i).getHeightRatio();
+                    }
+
+                    fragmentGR.startDraggingSeparator(separatorIndex, y);
+
+                    // Disable drag rectangle drawing during separator drag
+                    parentComponent.getDrawRectangleController().setSelectionMode(false);
+
+                    return; // Don't proceed with normal selection
+                }
+            }
+        }
+
+        // Not clicking on separator, proceed with normal selection
+        super.myMousePressed(event);
+    }
+
+    /**
+     * Override myMouseDragged to handle separator dragging.
+     */
+    @Override
+    protected void myMouseDragged(MouseEvent event) {
+        if (draggingFragment != null && draggingSeparatorIndex >= 0) {
+            // Dragging a separator
+            int y = scale(event.getY());
+            draggingFragment.dragSeparator(y);
+            model.modelChanged(); // Trigger repaint
+        } else {
+            // Normal element dragging
+            super.myMouseDragged(event);
+        }
+    }
+
+    /**
+     * Override myMouseReleased to finish separator dragging.
+     */
+    @Override
+    protected void myMouseReleased(MouseEvent event) {
+        if (draggingFragment != null && draggingSeparatorIndex >= 0) {
+            // Finish dragging separator
+            draggingFragment.finishDraggingSeparator();
+
+            // Capture new height ratios for undo
+            List<Operand> operands = draggingFragment.getCombinedFragment().getOperands();
+            double[] newSeparatorRatios = new double[operands.size()];
+            for (int i = 0; i < operands.size(); i++) {
+                newSeparatorRatios[i] = operands.get(i).getHeightRatio();
+            }
+
+            // Check if ratios actually changed
+            boolean changed = false;
+            if (oldSeparatorRatios != null) {
+                for (int i = 0; i < oldSeparatorRatios.length && i < newSeparatorRatios.length; i++) {
+                    if (Math.abs(oldSeparatorRatios[i] - newSeparatorRatios[i]) > 0.0001) {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+
+            // Create undo/redo edit if ratios changed
+            if (changed && oldSeparatorRatios != null) {
+                DragSeparatorEdit edit = new DragSeparatorEdit(
+                        draggingFragment.getCombinedFragment(),
+                        oldSeparatorRatios,
+                        newSeparatorRatios,
+                        model);
+                parentComponent.getUndoSupport().postEdit(edit);
+            }
+
+            draggingFragment = null;
+            draggingSeparatorIndex = -1;
+            oldSeparatorRatios = null;
+
+            // Re-enable drag rectangle drawing
+            parentComponent.getDrawRectangleController().setSelectionMode(true);
+        } else {
+            // Normal element release
+            super.myMouseReleased(event);
+        }
+    }
+
+    private int scale(int number) {
+        return (int) (number / parentComponent.getView().getScale());
+    }
 }
