@@ -25,12 +25,14 @@ import edu.city.studentuml.model.graphical.LinkGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.Colors;
-import edu.city.studentuml.util.ScaleRound;
 import edu.city.studentuml.util.Theme;
 
 public abstract class DiagramView extends JPanel implements PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(DiagramView.class.getName());
+
+    public static final double MAX_SCALE = 10.0; // 1000%;
+    public static final double MIN_SCALE = 0.1; // 10%
 
     protected DiagramModel model;
     protected transient Line2D dragLine = new Line2D.Double(0, 0, 0, 0);
@@ -64,7 +66,15 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
     }
 
     public void setScale(double scale) {
-        this.scale = ScaleRound.roundTo05(scale);
+        // this.scale = ScaleRound.roundTo05(scale);
+        this.scale = scale;
+
+        if (this.scale > MAX_SCALE) {
+            this.scale = MAX_SCALE;
+        }
+        if (this.scale < MIN_SCALE) {
+            this.scale = MIN_SCALE;
+        }
         changeSizeToFitAllElements();
         repaint();
     }

@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -8,15 +9,18 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.beans.PropertyVetoException;
 import java.util.logging.Logger;
 
+import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEditSupport;
@@ -37,6 +41,8 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
     private static final Logger logger = Logger.getLogger(DiagramInternalFrame.class.getName());
 
+    private static final double SCALE_ACCOUNT_FOR_MARGINS = 0.99;
+
     protected transient AddElementControllerFactory addElementControllerFactory;
     protected transient AddElementController addElementController;
     protected transient DrawLineController drawLineController; //TK draw line
@@ -56,6 +62,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
     protected AbsractToolbar toolbar;
 
     protected JMenuBar menuBar;
+    protected JComboBox<String> zoomComboBox;
 
     private JScrollPane drawingAreaScrollPane;
 
@@ -146,6 +153,10 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 logger.finest("clicked");
                 iframe.toFront();
+                // Clear focus from zoom combo box when clicking on diagram
+                if (zoomComboBox != null && zoomComboBox.getEditor().getEditorComponent().hasFocus()) {
+                    view.requestFocusInWindow();
+                }
             }
         });
 
@@ -158,6 +169,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 } else {
                     view.zoomOut();
                 }
+                updateZoomComboBox();
             }
         });
 
@@ -252,20 +264,167 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
 
         JMenuItem zoomIn = new JMenuItem("Zoom in");
         zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK));
-        zoomIn.addActionListener(e -> view.zoomIn());
+        zoomIn.addActionListener(e -> {
+            view.zoomIn();
+            updateZoomComboBox();
+        });
         editMenu.add(zoomIn);
 
         JMenuItem zoomOut = new JMenuItem("Zoom out");
         zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK));
-        zoomOut.addActionListener(e -> view.zoomOut());
+        zoomOut.addActionListener(e -> {
+            view.zoomOut();
+            updateZoomComboBox();
+        });
         editMenu.add(zoomOut);
 
         JMenuItem resetScale = new JMenuItem("Reset zoom to 100%");
         resetScale.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK));
-        resetScale.addActionListener(e -> view.setScale(1.0));
+        resetScale.addActionListener(e -> {
+            view.setScale(1.0);
+            updateZoomComboBox();
+        });
         editMenu.add(resetScale);
 
         createHelpMenubar();
+        createZoomComboBox();
+        menuBar.add(zoomComboBox); // Add zoom combo box to menu bar
+    }
+
+    private void createZoomComboBox() {
+        // Create zoom combo box with preset values
+        String[] zoomLevels = {
+                "Fit Width",
+                "Fit Window",
+                "25%",
+                "50%",
+                "75%",
+                "100%",
+                "125%",
+                "150%",
+                "200%",
+                "300%",
+                "400%"
+        };
+
+        zoomComboBox = new JComboBox<>(zoomLevels);
+        zoomComboBox.setEditable(true);
+        zoomComboBox.setSelectedItem("100%");
+
+        // Set all three size constraints to ensure the combo box respects the width
+        Dimension comboSize = new Dimension(100, 30);
+        zoomComboBox.setMinimumSize(comboSize);
+        zoomComboBox.setPreferredSize(comboSize);
+        zoomComboBox.setMaximumSize(comboSize);
+        zoomComboBox.setToolTipText("Zoom level");
+
+        // Select all text when the user clicks on the editor
+        Component editorComponent = zoomComboBox.getEditor().getEditorComponent();
+        if (editorComponent instanceof JTextField) {
+            JTextField textField = (JTextField) editorComponent;
+            textField.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    // Select all text when clicked
+                    textField.selectAll();
+                }
+            });
+
+            // Commit changes when focus is lost
+            textField.addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    // Trigger action to apply the zoom value
+                    zoomComboBox.setSelectedItem(textField.getText());
+                }
+            });
+        }
+
+        zoomComboBox.addActionListener(e -> {
+            String selected = (String) zoomComboBox.getSelectedItem();
+            if (selected == null || selected.trim().isEmpty()) {
+                return;
+            }
+
+            selected = selected.trim();
+
+            if ("Fit Width".equals(selected)) {
+                fitToWidth();
+                // Transfer focus back to diagram
+                view.requestFocusInWindow();
+            } else if ("Fit Window".equals(selected)) {
+                fitToWindow();
+                // Transfer focus back to diagram
+                view.requestFocusInWindow();
+            } else {
+                // Try to parse as percentage
+                try {
+                    // Remove % if present and any other non-numeric characters except decimal point
+                    String numberPart = selected.replaceAll("[^0-9.]", "").trim();
+                    double percentage = Double.parseDouble(numberPart);
+
+                    // // Clamp to valid range: minimum 1%, maximum MAX_ZOOM_PERCENTAGE%
+                    // if (percentage < 1) {
+                    //     percentage = 1;
+                    // } else if (percentage > MAX_ZOOM_PERCENTAGE) {
+                    //     percentage = MAX_ZOOM_PERCENTAGE;
+                    // }
+
+                    view.setScale(percentage / 100.0);
+                    updateZoomComboBox();
+                    // Transfer focus back to diagram after zoom change
+                    view.requestFocusInWindow();
+                } catch (NumberFormatException ex) {
+                    // Invalid format, restore current zoom
+                    updateZoomComboBox();
+                }
+            }
+        });
+    }
+
+    private void updateZoomComboBox() {
+        if (zoomComboBox != null) {
+            int percentage = (int) Math.round(view.getScale() * 100);
+            zoomComboBox.setSelectedItem(percentage + "%");
+        }
+    }
+
+    private void fitToWidth() {
+        if (drawingAreaScrollPane == null)
+            return;
+
+        // Get actual diagram bounds
+        Point2D.Double maxPos = view.getMaxPositionOfElements();
+        double diagramWidth = maxPos.x;
+
+        int viewportWidth = drawingAreaScrollPane.getViewport().getWidth();
+
+        if (diagramWidth > 0 && viewportWidth > 0) {
+            double scale = (double) viewportWidth / diagramWidth;
+            view.setScale(scale * SCALE_ACCOUNT_FOR_MARGINS); // 95% to account for margins
+            updateZoomComboBox();
+        }
+    }
+
+    private void fitToWindow() {
+        if (drawingAreaScrollPane == null)
+            return;
+
+        // Get actual diagram bounds
+        Point2D.Double maxPos = view.getMaxPositionOfElements();
+        double diagramWidth = maxPos.x;
+        double diagramHeight = maxPos.y;
+
+        int viewportWidth = drawingAreaScrollPane.getViewport().getWidth();
+        int viewportHeight = drawingAreaScrollPane.getViewport().getHeight();
+
+        if (diagramWidth > 0 && diagramHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
+            double scaleX = (double) viewportWidth / diagramWidth;
+            double scaleY = (double) viewportHeight / diagramHeight;
+            double scale = Math.min(scaleX, scaleY);
+            view.setScale(scale * SCALE_ACCOUNT_FOR_MARGINS); // 95% to account for margins
+            updateZoomComboBox();
+        }
     }
 
     private void redo() {

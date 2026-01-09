@@ -4,6 +4,16 @@
 
 ### Added
 
+-   Zoom control dropdown in diagram menu bar
+    -   Visual zoom percentage display in menu bar (appears between Edit and Help menus)
+    -   Editable combo box for entering custom zoom values (10% - 1000%)
+    -   Preset zoom levels: 25%, 50%, 75%, 100%, 150%, 200%, 300%, 400%
+    -   "Fit Width" option to zoom diagram to fit window width
+    -   "Fit Window" option to zoom diagram to fit entire window
+    -   Automatic text selection when clicking on zoom field for quick editing
+    -   Real-time updates when zooming via Ctrl+Plus/Minus or Ctrl+Mouse Wheel
+    -   Smart value clamping
+    -   Exact zoom percentage support (no rounding) when manually entered
 -   Combined Fragments support for Sequence Diagrams (SD/SSD)
     -   UML 2.x combined fragments with OPT, ALT, and LOOP operators
     -   Default creation of OPT fragments with empty guard conditions
