@@ -5,6 +5,7 @@
 ### Fixed
 
 -   Association Class border now displays with solid stroke instead of dashed stroke in Design Class Diagrams (DCDs)
+-   UML Note Y-position now preserved correctly when pasting in Sequence Diagrams (SD/SSD) - uses fixed offset instead of mouse position
 
 ### Changed
 

@@ -3,7 +3,7 @@
 This document tracks potential features and improvements for StudentUML.
 
 ## Known Bugs
-
+ 
 ## Diagram Relationships
 
 ### Distinction Between Navigability and End Ownership in Associations
@@ -290,26 +290,6 @@ Violations should be prevented at creation time (with a user-facing error/warnin
     ```
 
 **Use Case:** When modeling designs that rely on abstraction and polymorphism (Strategy pattern, dependency injection, plugin architectures), it's important to show that clients depend on abstract types, not concrete implementations. For example, showing `VersionChecker` calling `getLatestVersion()` on a `provider : <<interface>> VersionProvider` makes it clear that any implementation can be used. Concrete implementations (like `GitHubVersionProvider`) can be shown separately using found messages to demonstrate actual execution flow without coupling the abstract interaction to a specific implementation.
-
-## Copy/Paste Operations
-
-### UML Note Y-Position in Sequence Diagrams
-
-**Status:** Not implemented  
-**Priority:** Low  
-**Description:** When pasting UML notes in Sequence Diagrams, the Y-coordinate should be preserved from the original position (with offset), not calculated relative to the mouse cursor. In Sequence Diagrams, all elements are positioned at the top of the diagram, and the mouse Y-coordinate is irrelevant for vertical positioning.
-
-**Technical Notes:**
-
--   Current behavior: `SelectionController.pasteClipboard()` uses mouse position (currentMouseY) to calculate offsetY for all elements, including UML notes in SD diagrams
--   Expected behavior: In Sequence Diagrams, UML notes should use their original Y-coordinate plus a fixed offset, ignoring mouse Y
--   Implementation:
-    -   In `SelectionController.pasteClipboard()`, detect if target diagram is a Sequence Diagram (SDModel or SSDModel)
-    -   For SD/SSD diagrams: when calculating offsetY for UMLNoteGR elements, use a fixed offset (e.g., 20 pixels) instead of currentMouseY
-    -   For other diagram types: keep current mouse-based positioning behavior
--   Related code: `SelectionController.pasteClipboard()` lines ~770-795 (offset calculation)
-
-**Use Case:** When copying and pasting elements in Sequence Diagrams, UML notes attached to messages or objects should maintain their relative position in the timeline/Y-axis. Using the mouse Y-coordinate causes notes to jump to unexpected positions since SD elements are always positioned at the top regardless of where the user clicks.
 
 ## Additional Potential Features
 
