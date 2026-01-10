@@ -18,6 +18,12 @@
 
 ### Fixed
 
+-   Association Class border now displays with solid stroke instead of dashed stroke in Design Class Diagrams (DCDs)
+
+### Changed
+
+-   Reorganized documentation: moved feature plans to `doc/features/` and maintenance/refactoring plans to `doc/maintenance/`
+
 -   Association class display bug in Design Class Diagrams (DCDs) where all classes in an association class relationship were displayed with dashed borders instead of only the connecting line being dashed
 
 ## [1.5.0] - 2026-01-10
