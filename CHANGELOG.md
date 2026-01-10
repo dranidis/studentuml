@@ -14,6 +14,12 @@
 
 ### Security
 
+## [1.5.1] - 2026-01-10
+
+### Fixed
+
+-   Association class display bug in Design Class Diagrams (DCDs) where all classes in an association class relationship were displayed with dashed borders instead of only the connecting line being dashed
+
 ## [1.5.0] - 2026-01-10
 
 ### Added
