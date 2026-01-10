@@ -280,7 +280,7 @@ Includes default paths, fill colors for themes, recent files, etc.
 
 ## Feature Development Workflow
 
-**When the user requests to START development of a feature from `features.md`, follow this workflow:**
+**When the user requests to START development of a feature from `doc/features/features.md`, follow this workflow:**
 
 ### 1. Create Feature Branch
 
@@ -296,7 +296,7 @@ Branch naming convention: `feature/XXXX-descriptive-name` where XXXX is a short 
 
 ### 2. Create Plan File
 
-Create a plan file `plan-XXXX.md` in the project root to document:
+Create a plan file `plan-XXXX.md` in the `doc/features/` directory to document:
 
 -   **Investigation**: Explore the current codebase to understand how the feature fits into existing architecture
 -   **Affected Components**: List classes, methods, and files that need modification
@@ -407,8 +407,27 @@ Before considering the feature complete:
 1. **Run full test suite**: `mvn clean test`
 2. **Check code coverage**: `mvn jacoco:report`
 3. **Update CHANGELOG.md**: Add entry under `[Unreleased]` section with brief description
-4. **Remove feature from features.md**: Delete the completed feature section from `features.md` (including title, description, technical notes, and use case)
+4. **Remove feature from features.md**: Delete the completed feature section from `doc/features/features.md` (including title, description, technical notes, and use case)
 5. **Review plan file**: Ensure all sections are complete
 6. **Commit all changes**: Including plan file, diagram, CHANGELOG.md, and features.md updates
 
 The feature branch is now ready for review and merging into `develop`.
+
+## Documentation Structure
+
+### Feature Development
+
+-   **Feature list**: `doc/features/features.md` - Contains identified features and bugs for future implementation
+-   **Feature plans**: `doc/features/plan-XXXX.md` - Created when starting a feature, documents investigation, design decisions, and implementation tasks
+-   **Feature diagrams**: `diagrams/feature-XXXX.xml` - StudentUML diagrams documenting the feature design
+
+### Maintenance and Refactoring
+
+-   **Maintenance plans**: `doc/maintenance/` - Contains documentation for refactoring tasks, code improvements, and maintenance work
+-   **Examples**: Migration summaries, refactoring plans, architecture analysis documents
+
+### Other Documentation
+
+-   **Project root**: High-level documentation (README.md, CHANGELOG.md, TESTING_STRATEGY.md)
+-   **Examples**: `examples/` - Example projects and code generation samples
+-   **Manual tests**: `manual-tests.md` - Manual testing procedures and known issues
