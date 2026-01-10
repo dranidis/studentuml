@@ -606,6 +606,7 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 setMaximum(frameProperties.maximized);
                 setIcon(frameProperties.iconified);
                 getView().setScale(frameProperties.scale);
+                updateZoomComboBox(); // Update zoom dropdown to reflect loaded scale
 
                 zOrder = frameProperties.zOrder;
             }

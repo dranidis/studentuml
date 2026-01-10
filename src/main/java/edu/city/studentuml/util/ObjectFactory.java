@@ -298,12 +298,7 @@ public final class ObjectFactory {
 
         FrameProperties frameProperties = new FrameProperties(model, rectangle, selected, iconified, scale, isMaximum,
                 zOrder);
-        // PropertyChangeListener[] listeners = pcs.getPropertyChangeListeners();
-        // String listenersStr = java.util.Arrays.stream(listeners)
-        //         .map(l -> l.getClass().getName())
-        //         .reduce((a, b) -> a + ", " + b)
-        //         .orElse("");
-        // logger.fine(() -> "Notifying listeners: [" + listenersStr + "]");
+
         pcs.firePropertyChange("framePropertiesChanged", null, frameProperties);
     }
 
