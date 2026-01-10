@@ -1,6 +1,6 @@
 # StudentUML Changelog
 
-## [Unreleased]
+## [1.5.0] - 2026-01-10
 
 ### Added
 
@@ -15,6 +15,7 @@
 -   UML Notes now render below other diagram elements in Activity Diagrams and Use Case Diagrams
 -   Application crash when double-clicking on non-editable graphical elements (e.g., UC Include relationships)
 -   Enforced duplicate-name conflict policies for UCD edits (Actors, Use Cases, Systems) with error dialogs and proper undo/redo + repository synchronization.
+-   Zoom dropdown now correctly displays the saved zoom level when opening a diagram from XML file
 
 ## [1.4.1] - 2026-01-01
 
