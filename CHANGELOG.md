@@ -1,19 +1,5 @@
 # StudentUML Changelog
 
-## [Unreleased]
-
-### Added
-
-### Changed
-
-### Fixed
-
-### Deprecated
-
-### Removed
-
-### Security
-
 ## [1.5.1] - 2026-01-10
 
 ### Fixed
@@ -23,8 +9,6 @@
 ### Changed
 
 -   Reorganized documentation: moved feature plans to `doc/features/` and maintenance/refactoring plans to `doc/maintenance/`
-
--   Association class display bug in Design Class Diagrams (DCDs) where all classes in an association class relationship were displayed with dashed borders instead of only the connecting line being dashed
 
 ## [1.5.0] - 2026-01-10
 
