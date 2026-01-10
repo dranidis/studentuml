@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -322,18 +324,18 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
         Component editorComponent = zoomComboBox.getEditor().getEditorComponent();
         if (editorComponent instanceof JTextField) {
             JTextField textField = (JTextField) editorComponent;
-            textField.addMouseListener(new java.awt.event.MouseAdapter() {
+            textField.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     // Select all text when clicked
                     textField.selectAll();
                 }
             });
 
             // Commit changes when focus is lost
-            textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            textField.addFocusListener(new FocusAdapter() {
                 @Override
-                public void focusLost(java.awt.event.FocusEvent e) {
+                public void focusLost(FocusEvent e) {
                     // Trigger action to apply the zoom value
                     zoomComboBox.setSelectedItem(textField.getText());
                 }

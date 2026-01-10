@@ -303,7 +303,7 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
                 // Last operand gets remaining height to avoid rounding errors
                 operandHeight = getY() + totalHeight - currentY;
             } else {
-                operandHeight = (int) Math.round((operand.getHeightRatio() / totalRatio) * totalHeight);
+                operandHeight = (int) Math.round(operand.getHeightRatio() / totalRatio * totalHeight);
             }
 
             // Draw guard condition at the top-left of this operand
@@ -367,7 +367,7 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
         int currentY = getY();
         for (int i = 0; i < operands.size() - 1; i++) {
             Operand operand = operands.get(i);
-            int operandHeight = (int) Math.round((operand.getHeightRatio() / totalRatio) * totalHeight);
+            int operandHeight = (int) Math.round(operand.getHeightRatio() / totalRatio * totalHeight);
             currentY += operandHeight;
 
             // Check if point is near this separator
@@ -429,7 +429,7 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
             totalRatio += ratio;
         }
 
-        double deltaRatio = (deltaY * totalRatio) / totalHeight;
+        double deltaRatio = deltaY * totalRatio / totalHeight;
 
         // Adjust the two operands around the separator
         int i = draggingSeparatorIndex;
@@ -438,7 +438,7 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
 
         // Enforce minimum heights based on MINIMUM_HEIGHT constant
         // Calculate what the actual pixel heights would be for each operand
-        double minRatio = (MINIMUM_HEIGHT * totalRatio) / totalHeight;
+        double minRatio = MINIMUM_HEIGHT * totalRatio / totalHeight;
 
         if (newRatio1 < minRatio || newRatio2 < minRatio) {
             return; // Don't allow dragging beyond minimum height
@@ -639,7 +639,7 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
         // Return the topmost Y position where the top edge can be
         // This is: (bottom edge) - (minimum height)
         // Bottom edge is: startingPoint.y + height
-        return (startingPoint.y + height) - MINIMUM_HEIGHT;
+        return startingPoint.y + height - MINIMUM_HEIGHT;
     }
 
     @Override
@@ -800,10 +800,10 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
 
         if (allowShrink) {
             // Allow both shrinking and expanding - set exact size
-            int newWidth = (rightmostX - leftmostX) + (2 * horizontalPadding);
+            int newWidth = rightmostX - leftmostX + (2 * horizontalPadding);
             newWidth = Math.max(newWidth, MINIMUM_WIDTH);
 
-            int newHeight = (requiredBottom - fragmentTop);
+            int newHeight = requiredBottom - fragmentTop;
             newHeight = Math.max(newHeight, MINIMUM_HEIGHT);
 
             startingPoint.x = requiredLeft;

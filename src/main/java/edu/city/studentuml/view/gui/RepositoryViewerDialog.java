@@ -166,6 +166,8 @@ public class RepositoryViewerDialog extends JDialog implements PropertyChangeLis
             return;
         }
 
+        sb.append(label).append(" (").append(collection.size()).append("):\n");
+
         for (Object obj : collection) {
             sb.append("  - ").append(getEntityDescription(obj)).append("\n");
         }

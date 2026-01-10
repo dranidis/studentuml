@@ -347,6 +347,7 @@ public class CombinedFragment implements Serializable, IXMLCustomStreamable {
                         operand.setHeightRatio(heightRatio);
                     } catch (NumberFormatException e) {
                         // Keep default 1.0
+                        operand.setHeightRatio(1.0);
                     }
                 }
 

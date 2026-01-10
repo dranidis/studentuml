@@ -440,13 +440,11 @@ public class CombinedFragmentEditor extends JDialog {
             }
 
             // Validate min <= max (unless max is unlimited)
-            if (loopMin != null && loopMax != null && loopMax != -1) {
-                if (loopMin > loopMax) {
-                    JOptionPane.showMessageDialog(this,
-                            "Loop minimum cannot be greater than maximum!",
-                            "Validation Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
+            if (loopMin != null && loopMax != null && loopMax != -1 && loopMin > loopMax) {
+                JOptionPane.showMessageDialog(this,
+                        "Loop minimum cannot be greater than maximum!",
+                        "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
 
             // Default: if only max provided, min defaults to 0
@@ -456,16 +454,14 @@ public class CombinedFragmentEditor extends JDialog {
         }
 
         // Validate ALT operands
-        if (operator == InteractionOperator.ALT) {
-            if (tempOperands.isEmpty()) {
-                int confirm = JOptionPane.showConfirmDialog(this,
-                        "ALT fragment has no operands. Continue anyway?",
-                        "Validation Warning",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
-                if (confirm != JOptionPane.YES_OPTION) {
-                    return false;
-                }
+        if (operator == InteractionOperator.ALT && tempOperands.isEmpty()) {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "ALT fragment has no operands. Continue anyway?",
+                    "Validation Warning",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return false;
             }
         }
 

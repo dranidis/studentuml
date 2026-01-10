@@ -10,7 +10,10 @@ import java.util.logging.Logger;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.w3c.dom.Element;
 
@@ -405,11 +408,11 @@ public abstract class GraphicalElement implements Serializable, IXMLCustomStream
      */
     protected <C extends Classifier> boolean editClassifierWithDialog(
             EditContext context,
-            java.util.function.Supplier<C> getClassifierFromThis,
-            java.util.function.Consumer<C> setClassifierInThis,
-            java.util.function.BiFunction<C, java.awt.Component, C> createAndShowEditor,
-            java.util.function.Function<String, C> getClassifierByName,
-            java.util.function.Consumer<C> removeFromRepository,
+            Supplier<C> getClassifierFromThis,
+            Consumer<C> setClassifierInThis,
+            BiFunction<C, java.awt.Component, C> createAndShowEditor,
+            Function<String, C> getClassifierByName,
+            Consumer<C> removeFromRepository,
             TriConsumer<CentralRepository, C, C> editInRepository,
             TriFunction<C, C, DiagramModel, UndoableEdit> createUndoableEdit) {
 
