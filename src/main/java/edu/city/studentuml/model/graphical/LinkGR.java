@@ -18,7 +18,6 @@ import edu.city.studentuml.util.Rotate;
 
 /**
  * A superclass that connects two classifiers.
- * 
  */
 public abstract class LinkGR extends AbstractLinkGR {
 
@@ -30,8 +29,8 @@ public abstract class LinkGR extends AbstractLinkGR {
 
     /**
      * links stores the pairs of classifiers that are connected. For each pair A, B
-     * of classifiers the number of their relationships is stored Note that only one of
-     * the pairs A,B or B,A is stored.
+     * of classifiers the number of their relationships is stored Note that only one
+     * of the pairs A,B or B,A is stored.
      */
     private static Map<Link, Integer> links = new HashMap<>();
 
@@ -122,8 +121,12 @@ public abstract class LinkGR extends AbstractLinkGR {
             drawReflective(aX, aY, bX, bY, angleA, angleB, g);
             g.setStroke(originalStroke);
         }
-    }
 
+        // Draw endpoint handles when link is selected
+        if (isSelected()) {
+            drawEndpointHandles(g);
+        }
+    }
 
     protected void drawReflective(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
     }
@@ -271,7 +274,8 @@ public abstract class LinkGR extends AbstractLinkGR {
     // returns the endpoint corresponding to role B
     public Point2D getEndPointRoleB() {
         if (isReflective()) {
-            return new Point2D.Double((double) getTopLeftXA() + getWidthA(), getTopLeftYA() + 2.0 * getReflectiveStep());
+            return new Point2D.Double((double) getTopLeftXA() + getWidthA(),
+                    getTopLeftYA() + 2.0 * getReflectiveStep());
         }
         double xA = getCentreRoleA().getX();
         double yA = getCentreRoleA().getY();
@@ -348,6 +352,44 @@ public abstract class LinkGR extends AbstractLinkGR {
     @Override
     public String toString() {
         return a.toString() + " --> " + b.toString() + " : " + super.toString();
+    }
+
+    /**
+     * Default implementation validates basic classifier compatibility. Subclasses
+     * should override to add specific validation rules.
+     */
+    @Override
+    public boolean canReconnect(EndpointType endpoint, GraphicalElement newElement) {
+        // Must be a classifier
+        if (!(newElement instanceof ClassifierGR)) {
+            logger.fine(() -> "Cannot reconnect: target is not a ClassifierGR");
+            return false;
+        }
+
+        // Self-associations (reflexive links) are allowed in UML
+        // For example: Person -> parent -> Person, Employee -> manager -> Employee
+
+        return true;
+    }
+
+    /**
+     * Default implementation - subclasses must override to update their specific
+     * domain models.
+     */
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        logger.warning("reconnectSource not implemented for " + getClass().getSimpleName());
+        return false;
+    }
+
+    /**
+     * Default implementation - subclasses must override to update their specific
+     * domain models.
+     */
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        logger.warning("reconnectTarget not implemented for " + getClass().getSimpleName());
+        return false;
     }
 
 }

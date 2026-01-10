@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,8 +65,8 @@ public class ApplicationFrame extends ApplicationGUI {
     }
 
     @Override
-    public void update(Observable observable, Object object) {
-        super.update(observable, object);
+    public void propertyChange(PropertyChangeEvent evt) {
+        super.propertyChange(evt);
         updateFrameTitle();
     }
 
@@ -110,7 +110,7 @@ public class ApplicationFrame extends ApplicationGUI {
         if (!closeProject()) {
             return;
         }
-        
+
         boolean runtimeChecking = SystemWideObjectNamePool.getInstance().isRuntimeChecking();
         SystemWideObjectNamePool.getInstance().setRuntimeChecking(false);
 
@@ -136,15 +136,39 @@ public class ApplicationFrame extends ApplicationGUI {
             menuBar.loadRecentFilesInMenu();
             return;
         } catch (NotStreamable e) {
-            logger.finer("File cannot be read (NotStreamable): " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Encountered some problems while reading the file " + fileName + ". \nContents might not fully loaded.", "XML file error",
+            logger.warning("File cannot be read (NotStreamable): " + e.getMessage());
+            String message = e.getMessage() != null && !e.getMessage().isEmpty()
+                    ? "Encountered problems while reading the file " + fileName + ".\n\n" + e.getMessage()
+                    : "Encountered some problems while reading the file " + fileName
+                            + ". \nContents might not be fully loaded.";
+            JOptionPane.showMessageDialog(null, message, "XML file error",
                     JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (NullPointerException e) {
+            logger.warning("NullPointerException while loading file: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "The file " + fileName + " has an invalid or corrupted XML structure.\n" +
+                            "This may be due to missing required elements or incorrect XML format.\n\n" +
+                            "Please check the file format matches StudentUML's expected structure.",
+                    "Invalid XML Structure",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception e) {
+            logger.warning("Unexpected error while loading file: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "An unexpected error occurred while loading the file " + fileName + ".\n" +
+                            "Error: " + e.getClass().getSimpleName() + ": " + e.getMessage(),
+                    "Loading Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         if (!errors.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             errors.forEach(e -> sb.append(e + "\n"));
-            logger.finer(() ->"File cannot be read (NotStreamable): " + sb.toString());
+            logger.finer(() -> "File cannot be read (NotStreamable): " + sb.toString());
             JOptionPane.showMessageDialog(null,
                     "Encountered some problems while reading the file " + fileName
                             + ". \nContents might not fully loaded.\nElements with errors:\n" + sb.toString(),
@@ -152,7 +176,7 @@ public class ApplicationFrame extends ApplicationGUI {
         }
 
         repositoryTreeView.expandDiagrams();
-        repositoryTreeView.update(null, null);
+        // repositoryTreeView.update(null, null); // No longer needed; repositoryTreeView should listen via PropertyChangeListener
 
         umlProject.setFilepath(fileName);
 

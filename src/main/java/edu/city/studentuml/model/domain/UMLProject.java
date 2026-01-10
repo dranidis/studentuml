@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -31,15 +32,15 @@ import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
-import edu.city.studentuml.view.gui.ApplicationGUI;
 
 @JsonIncludeProperties({ "diagramModels" })
-public class UMLProject extends Observable implements Serializable, Observer, IXMLCustomStreamable {
+public class UMLProject implements Serializable, PropertyChangeListener, IXMLCustomStreamable {
 
     private static final Logger logger = Logger.getLogger(UMLProject.class.getName());
 
     private static UMLProject instance = null;
     private NotifierVector<DiagramModel> diagramModels;
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private CentralRepository repository;
     private boolean projectSaved = true;
     private String user;
@@ -87,16 +88,19 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
         setFilepath("");
         setName("");
         SystemWideObjectNamePool.getInstance().clear();
-        logger.fine(() -> "Notifying observers: " + this.countObservers());
+        // logger.fine(() -> "Notifying listeners");
         setSaved(true);
-        setChanged();
-        notifyObservers();
+        pcs.firePropertyChange("projectCleared", null, null);
     }
 
-    @Override
-    public synchronized void addObserver(Observer o) {
-        logger.fine(() -> "OBSERVER added: " + o.toString());
-        super.addObserver(o);
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+        logger.fine(() -> "PropertyChangeListener added: " + l.toString());
+        pcs.addPropertyChangeListener(l);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener l) {
+        logger.fine(() -> "PropertyChangeListener removed: " + l.toString());
+        pcs.removePropertyChangeListener(l);
     }
 
     public CentralRepository getCentralRepository() {
@@ -122,13 +126,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
     public void addDiagram(DiagramModel dm) {
         diagramModels.add(dm);
-
-        dm.addObserver(this);
+        dm.addPropertyChangeListener(this);
         projectChanged();
     }
 
     public void removeDiagram(DiagramModel dm) {
-        dm.deleteObserver(this);
+        dm.removePropertyChangeListener(this);
         diagramModels.remove(dm);
         projectChanged();
     }
@@ -136,20 +139,12 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void projectChanged() {
         logger.fine("Project changed");
         setSaved(false);
-
-        logger.fine(() -> "Notifying observers: " + this.countObservers());
-        setChanged();
-        notifyObservers();
-
+        // logger.fine(() -> "Notifying listeners");
+        pcs.firePropertyChange("projectChanged", null, null);
     }
 
-    public void update(Observable observable, Object object) {
-        String objString = "null";
-        if (object != null) {
-            objString = object.getClass().getSimpleName();
-        }
-        String logArg = objString;
-        logger.finest(() -> "UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + logArg);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         projectChanged();
     }
 
@@ -162,7 +157,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
      * @throws NotStreamable
      */
     public List<String> loadFromXML(String filename) throws IOException, NotStreamable {
-        logger.info(() -> "Loading from XML: " + filename);
+        logger.fine(() -> "Loading from XML: " + filename);
 
         SystemWideObjectNamePool.getInstance().loading();
 
@@ -171,15 +166,15 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
 
         Element e = streamer.getNodeById(null, XMLSyntax.PROJECT);
         streamFromXML(e, streamer, this);
-        
+
         SystemWideObjectNamePool.getInstance().done();
 
-        logger.info(() -> ".......end from XML: " + filename);
+        logger.fine(() -> ".......end from XML: " + filename);
         setSaved(true);
 
         return streamer.getErrorStrings();
     }
-    
+
     // Embed4Auto
 
     public void loadFromURL(String url) throws NotStreamable {
@@ -197,9 +192,7 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     }
 
     /**
-     * Only used by applet
-     * 
-     * for undo/redo
+     * Only used by applet for undo/redo
      * 
      * @param xmlString
      * @throws NotStreamable
@@ -232,18 +225,11 @@ public class UMLProject extends Observable implements Serializable, Observer, IX
     public void streamToXML(String path) {
         XMLStreamer streamer = new XMLStreamer();
         streamer.streamObject(null, XMLSyntax.PROJECT, this);
-
-        if (ApplicationGUI.isApplet()) {
-            streamer.saveToURL(path);
-        } else {
-            streamer.saveToFile(path);
-        }
+        streamer.saveToFile(path);
     }
 
     /**
-     * Only used by applet
-     * 
-     * for undo/redo
+     * Only used by applet for undo/redo
      * 
      * @return
      */

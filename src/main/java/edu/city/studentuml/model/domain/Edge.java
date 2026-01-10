@@ -18,6 +18,9 @@ public abstract class Edge {
     }
 
     public void setGuard(String guard) {
+        if (guard == null) {
+            throw new IllegalArgumentException("Guard cannot be null");
+        }
         this.guard = guard;
     }
 
@@ -25,20 +28,16 @@ public abstract class Edge {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-     */        
+     */
     public String getGuard() {
-        if (guard.length() > 0) {
-            return guard;
-        } else {
-            return "";
-        }
+        return guard;
     }
 
     /*
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-     */        
+     */
     public NodeComponent getSource() {
         return source;
     }
@@ -47,7 +46,7 @@ public abstract class Edge {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-     */        
+     */
     public NodeComponent getTarget() {
         return target;
     }

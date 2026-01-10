@@ -1,12 +1,10 @@
 package edu.city.studentuml.model.graphical;
 
-
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -26,7 +24,6 @@ import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 
 /**
- *
  * @author Biser
  * @author Dimitris Dranidis
  */
@@ -41,8 +38,9 @@ public abstract class EdgeGR extends GraphicalElement {
     private Font font;
 
     /**
-     * This constructor is used in persistency module only (ObjectFactory).
-     * It does not populate the points list which remains empty until endpoints are read and set
+     * This constructor is used in persistency module only (ObjectFactory). It does
+     * not populate the points list which remains empty until endpoints are read and
+     * set
      */
     protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge) {
         this.source = source;
@@ -72,7 +70,7 @@ public abstract class EdgeGR extends GraphicalElement {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the advancedrules.txt / simplerules.txt file needs to be updated
-     */        
+     */
     public Edge getEdge() {
         return edge;
     }
@@ -126,7 +124,6 @@ public abstract class EdgeGR extends GraphicalElement {
      * Normally returns the first EndPoint in the points list. If the points list is
      * empty it returns the source point. This is necessary when element is created
      * by reading XML in which case the points list is initially empty
-     * 
      */
     public AbstractPointGR getStartPoint() {
 
@@ -247,7 +244,7 @@ public abstract class EdgeGR extends GraphicalElement {
 
         // get angle
         b = new Vector2D(end.getX() - start.getX(), end.getY() - start.getY());
-        double angle = Math.acos((a.dot(b)) / (a.getLength() * b.getLength()));
+        double angle = Math.acos(a.dot(b) / (a.getLength() * b.getLength()));
 
         if (start.getY() < end.getY()) {
             angle = -angle;
@@ -260,14 +257,14 @@ public abstract class EdgeGR extends GraphicalElement {
         // check containment
         Rectangle rect = new Rectangle(start.getX(), start.getY() - 6, (int) b.getLength(), 12);
 
-        return (rect.contains(rotated));
+        return rect.contains(rotated);
     }
 
     public int getContainingLineSegment(Point2D p) {
         int index;
         AbstractPointGR start;
         AbstractPointGR end;
-        
+
         for (index = 0; index < points.size() - 1; index++) {
             start = points.get(index);
             end = points.get(index + 1);
@@ -346,8 +343,7 @@ public abstract class EdgeGR extends GraphicalElement {
             }
 
             FontRenderContext frc = g.getFontRenderContext();
-            TextLayout layout = new TextLayout(string, font, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(string, font, frc);
             int textWidth = (int) bounds.getWidth();
 
             g.translate(x, y);

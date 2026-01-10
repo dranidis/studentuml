@@ -4,43 +4,29 @@ import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.Type;
 import edu.city.studentuml.model.repository.CentralRepository;
-import edu.city.studentuml.view.gui.components.ElementEditor;
+import edu.city.studentuml.view.gui.components.Editor;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
-public class AttributeEditor extends JPanel implements ActionListener, ElementEditor<Attribute> {
+public class AttributeEditor extends OkCancelDialog implements Editor<Attribute> {
 
-    private static final String[] scopes = {"instance", "classifier"};
-    private static final String[] visibilities = {"private", "public", "protected"};
+    private static final String[] scopes = { "instance", "classifier" };
+    private static final String[] visibilities = { "private", "public", "protected" };
     private Vector<String> comboBoxStringList;
     private Vector<DataType> comboBoxTypeList;
-    private Attribute attribute;
-    private JDialog attributeDialog;
-    private JPanel bottomPanel;
-    private JButton cancelButton;
-    private JPanel centerPanel;
     private JTextField nameField;
     private JLabel nameLabel;
     private JPanel namePanel;
-    private boolean ok;
-    private JButton okButton;
     private JComboBox<String> scopeComboBox;
     private JLabel scopeLabel;
     private JPanel scopePanel;
@@ -55,11 +41,13 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
     CentralRepository repository;
     private static final String TITLE = "Attribute Editor";
 
-    public AttributeEditor(Attribute attrib, CentralRepository cr) {
-        attribute = attrib;
+    public AttributeEditor(CentralRepository cr) {
+        super(null, TITLE); // parent will be set in editDialog
         repository = cr;
+    }
 
-        setLayout(new BorderLayout());
+    @Override
+    protected JPanel makeCenterPanel() {
         nameLabel = new JLabel("Attribute Name: ");
         nameField = new JTextField(15);
         nameField.addActionListener(this);
@@ -75,10 +63,11 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
 
         comboBoxTypeList.forEach(next -> {
             if (next == null) {
-            comboBoxStringList.add("unspecified");
-        } else {
-            comboBoxStringList.add(next.getName());
-        }});
+                comboBoxStringList.add("unspecified");
+            } else {
+                comboBoxStringList.add(next.getName());
+            }
+        });
 
         typeComboBox = new JComboBox<>(comboBoxStringList);
         visibilityLabel = new JLabel("Visibility: ");
@@ -101,51 +90,46 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         scopePanel.setLayout(new FlowLayout());
         scopePanel.add(scopeLabel);
         scopePanel.add(scopeComboBox);
-        centerPanel = new JPanel();
+
+        JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(4, 1, 5, 5));
         centerPanel.add(namePanel);
         centerPanel.add(typePanel);
         centerPanel.add(visibilityPanel);
         centerPanel.add(scopePanel);
-        okButton = new JButton("OK");
-        okButton.addActionListener(this);
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(this);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout());
-        bottomPanel.add(okButton);
-        bottomPanel.add(cancelButton);
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-        initialize();
+
+        return centerPanel;
     }
 
     @Override
-    public boolean showDialog(Component parent) {
-        ok = false;
+    public Attribute editDialog(Attribute attribute, Component parent) {
+        // Set parent for this dialog instance
+        this.parent = parent;
 
-        // find the owner frame
-        Frame owner = null;
+        // Ensure UI components are created before initializing fields
+        initializeIfNeeded();
 
-        if (parent instanceof Frame) {
-            owner = (Frame) parent;
-        } else {
-            owner = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
+        // Initialize fields based on attribute (null for new, object for edit)
+        initialize(attribute);
+
+        // Show dialog using OkCancelDialog's showDialog method
+        if (!showDialog()) {
+            return null; // Cancelled
         }
 
-        attributeDialog = new JDialog(owner, true);
-        attributeDialog.getContentPane().add(this);
-        attributeDialog.setTitle(TITLE);
-        attributeDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        attributeDialog.pack();
-        attributeDialog.setResizable(false);
-        attributeDialog.setLocationRelativeTo(owner);
-        attributeDialog.setVisible(true);
-
-        return ok;
+        // Create new attribute if needed, then set properties
+        if (attribute == null) {
+            attribute = new Attribute(this.getAttributeName());
+        } else {
+            attribute.setName(this.getAttributeName());
+        }
+        attribute.setType(this.getType());
+        attribute.setVisibility(this.getVisibility());
+        attribute.setScope(this.getScope());
+        return attribute;
     }
 
-    public void initialize() {
+    public void initialize(Attribute attribute) {
         if (attribute == null) {
             nameField.setText("");
         } else {
@@ -153,7 +137,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the type combo box
-        if (attribute == null || (attribute.getType() == null)) {
+        if (attribute == null || attribute.getType() == null) {
             typeComboBox.setSelectedIndex(0);
         } else {
             for (int i = 0; i < comboBoxStringList.size(); i++) {
@@ -166,7 +150,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the visibility combo box
-        if (attribute == null || (attribute.getVisibility() == Attribute.PRIVATE)) {
+        if (attribute == null || attribute.getVisibility() == Attribute.PRIVATE) {
             visibilityComboBox.setSelectedIndex(0);
         } else if (attribute.getVisibility() == Attribute.PUBLIC) {
             visibilityComboBox.setSelectedIndex(1);
@@ -175,7 +159,7 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
 
         // initialize the scope combo box
-        if (attribute == null || (attribute.getScope() == Attribute.INSTANCE)) {
+        if (attribute == null || attribute.getScope() == Attribute.INSTANCE) {
             scopeComboBox.setSelectedIndex(0);
         } else if (attribute.getScope() == Attribute.CLASSIFIER) {
             scopeComboBox.setSelectedIndex(1);
@@ -212,38 +196,27 @@ public class AttributeEditor extends JPanel implements ActionListener, ElementEd
         }
     }
 
-    public void actionPerformed(ActionEvent event) {
-        if (event.getSource() == okButton || event.getSource() == nameField) {
+    @Override
+    protected void actionRest(ActionEvent event) {
+        // Handle enter key in name field as OK
+        if (event.getSource() == nameField) {
+            // Validate before accepting
             if (nameField.getText() == null || nameField.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
-
                 return;
             }
-
-            attributeDialog.setVisible(false);
-            ok = true;
-        } else if (event.getSource() == cancelButton) {
-            attributeDialog.setVisible(false);
+            actionOK(event);
         }
     }
 
     @Override
-    public Attribute createElement() {
-        Attribute newAttribute = new Attribute(this.getAttributeName());
-
-        newAttribute.setType(this.getType());
-        newAttribute.setVisibility(this.getVisibility());
-        newAttribute.setScope(this.getScope());
-
-        return newAttribute;
-    }
-
-    @Override
-    public void editElement() {
-        attribute.setName(this.getAttributeName());
-        attribute.setType(this.getType());
-        attribute.setVisibility(this.getVisibility());
-        attribute.setScope(this.getScope());
+    protected void actionOK(ActionEvent event) {
+        // Validate name field
+        if (nameField.getText() == null || nameField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "You must provide a name", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        super.actionOK(event);
     }
 
 }

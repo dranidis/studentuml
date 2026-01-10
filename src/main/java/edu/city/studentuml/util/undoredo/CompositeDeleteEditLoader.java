@@ -14,7 +14,6 @@ import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.util.NotifierVector;
 
-
 public class CompositeDeleteEditLoader {
     private CompositeDeleteEditLoader() {
         throw new IllegalStateException("Utility class");
@@ -31,7 +30,7 @@ public class CompositeDeleteEditLoader {
             loadRoleClassifierCompositeDeleteEdit((RoleClassifierGR) e, edit, model);
         } else if (e instanceof UCDComponentGR) {
             loadUCDComponentCompositeDeleteEdit((UCDComponentGR) e, edit, model);
-        }  else if (e instanceof NodeComponentGR) {
+        } else if (e instanceof NodeComponentGR) {
             loadNodeComponentCompositeDeleteEdit((NodeComponentGR) e, edit, model);
         } else {
             edit.add(new LeafDeleteEdit(e, model));
@@ -47,40 +46,41 @@ public class CompositeDeleteEditLoader {
             } else {
                 i++;
             }
-        }        
+        }
     }
 
     private static void loadUCDComponentCompositeDeleteEdit(UCDComponentGR c, CompositeDeleteEdit edit,
             DiagramModel model) {
-                int index = c.getNumberOfElements() - 1;
-                while (index >= 0) {
-                    UCDComponentGR n = c.getElement(index);
-                    loadUCDComponentCompositeDeleteEdit(n, edit, model);
-                    // update index
-                    index--;
-                }
-                edit.add(new LeafDeleteEdit(c, model));
+        int index = c.getNumberOfElements() - 1;
+        while (index >= 0) {
+            UCDComponentGR n = c.getElement(index);
+            loadUCDComponentCompositeDeleteEdit(n, edit, model);
+            // update index
+            index--;
+        }
+        edit.add(new LeafDeleteEdit(c, model));
 
-                c.getIncomingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
-                c.getOutgoingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+        c.getIncomingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        c.getOutgoingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
     private static void loadNodeComponentCompositeDeleteEdit(NodeComponentGR c, CompositeDeleteEdit edit,
             DiagramModel model) {
-                int index = c.getNumberOfElements() - 1;
-                while (index >= 0) {
-                    NodeComponentGR n = c.getElement(index);
-                    loadNodeComponentCompositeDeleteEdit(n, edit, model);
-                    // update index
-                    index--;
-                }
-                edit.add(new LeafDeleteEdit(c, model));
+        int index = c.getNumberOfElements() - 1;
+        while (index >= 0) {
+            NodeComponentGR n = c.getElement(index);
+            loadNodeComponentCompositeDeleteEdit(n, edit, model);
+            // update index
+            index--;
+        }
+        edit.add(new LeafDeleteEdit(c, model));
 
-                c.getIncomingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
-                c.getOutgoingRelations().forEachRemaining(e -> loadCompositeDeleteEdit(e, edit, model));
+        c.getIncomingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
+        c.getOutgoingRelations().forEach(e -> loadCompositeDeleteEdit(e, edit, model));
     }
 
-    private static void loadCCDClassCompositeDeleteEdit(ConceptualClassGR c, CompositeDeleteEdit edit, DiagramModel model) {
+    private static void loadCCDClassCompositeDeleteEdit(ConceptualClassGR c, CompositeDeleteEdit edit,
+            DiagramModel model) {
         edit.add(new LeafDeleteEdit(c, model));
 
         ((CCDModel) model).getClassGRAssociationGRs(c).forEach(e -> loadCompositeDeleteEdit(e, edit, model));

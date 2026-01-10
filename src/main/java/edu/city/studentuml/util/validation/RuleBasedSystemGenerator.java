@@ -129,9 +129,9 @@ public class RuleBasedSystemGenerator {
     private void addFromVector(Object object, String functionName, Vector<String> factList, List<String> arguments) {
         Vector<Object> objects = new Vector<>();
         for (int i = 0; i < arguments.size(); i++) {
-            if ((arguments.get(i)).split("[.]").length == 2) {
+            if (arguments.get(i).split("[.]").length == 2) {
 
-                String[] nameArray = (arguments.get(i)).split("[.]");
+                String[] nameArray = arguments.get(i).split("[.]");
                 String vectorName = nameArray[0];
                 String objectName = nameArray[1];
 

@@ -6,10 +6,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Logger;
 
+import javax.swing.undo.UndoableEdit;
+
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
@@ -20,13 +23,16 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.Vector2D;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.util.undoredo.EditCCDAssociationClassEdit;
+import edu.city.studentuml.util.undoredo.EditDCDAssociationClassEdit;
+import edu.city.studentuml.view.gui.ConceptualAssociationClassEditor;
+import edu.city.studentuml.view.gui.DesignAssociationClassEditor;
 
 /**
- *
  * @author draganbisercic
  */
 public class AssociationClassGR extends LinkGR {
-    
+
     private static final Logger logger = Logger.getLogger(AssociationClassGR.class.getName());
 
     private AbstractAssociationClass associationClass;
@@ -56,16 +62,16 @@ public class AssociationClassGR extends LinkGR {
 
     @Override
     public void objectAdded(GraphicalElement obj) {
-        if (!AbstractLinkGR.linkInstances.contains(obj) && obj instanceof AssociationClassGR) {
-            AbstractLinkGR.linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
+        if (!linkInstances.contains(obj) && obj instanceof AssociationClassGR) {
+            linkInstances.add(((AssociationClassGR) obj).getAssociationElement());
         }
         associationElement.objectAdded(associationElement);
     }
 
     @Override
     public void objectRemoved(GraphicalElement obj) {
-        if (AbstractLinkGR.linkInstances.contains(obj)) {
-            AbstractLinkGR.linkInstances.remove(obj);
+        if (linkInstances.contains(obj)) {
+            linkInstances.remove(obj);
         }
         associationElement.objectRemoved(associationElement);
     }
@@ -126,12 +132,11 @@ public class AssociationClassGR extends LinkGR {
         Ray d = new Ray(associationCenterPoint, n.multiply((double) length + MINIMUM_DISTANCE));
         Point p = d.getDirection().add(d.getOrigin());
 
-        int x1 = (int) (associationCenterPoint.getX());
+        int x1 = (int) associationCenterPoint.getX();
         int y1 = (int) associationCenterPoint.getY();
         int x2 = (int) p.getX();
         int y2 = (int) p.getY();
 
-        
         if (isSelected()) {
             g.setStroke(GraphicsHelper.makeSelectedDashedStroke());
             g.setPaint(getHighlightColor());
@@ -154,6 +159,91 @@ public class AssociationClassGR extends LinkGR {
 
     public AbstractAssociationClass getAssociationClass() {
         return associationClass;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        AbstractAssociationClass originalAssociationClass = getAssociationClass();
+
+        // Choose editor and edit class based on diagram type (CCD vs DCD)
+        if (originalAssociationClass instanceof ConceptualAssociationClass) {
+            // Conceptual Class Diagram
+            ConceptualAssociationClass conceptualOriginal = (ConceptualAssociationClass) originalAssociationClass;
+
+            // Create editor and use Editor pattern
+            ConceptualAssociationClassEditor editor = createConceptualEditor(context);
+            ConceptualAssociationClass editedAssociationClass = editor.editDialog(conceptualOriginal,
+                    context.getParentComponent());
+
+            // Check if user cancelled
+            if (editedAssociationClass == null) {
+                return true;
+            }
+
+            ConceptualAssociationClass undoAssociationClass = conceptualOriginal.clone();
+
+            // Apply changes using copyOf
+            conceptualOriginal.copyOf(editedAssociationClass);
+
+            // Undo/Redo [edit]
+            UndoableEdit edit = new EditCCDAssociationClassEdit(conceptualOriginal, undoAssociationClass,
+                    context.getModel());
+            context.getParentComponent().getUndoSupport().postEdit(edit);
+
+        } else if (originalAssociationClass instanceof DesignAssociationClass) {
+            // Design Class Diagram
+            DesignAssociationClass designOriginal = (DesignAssociationClass) originalAssociationClass;
+
+            // Create editor and use Editor pattern
+            DesignAssociationClassEditor editor = createDesignEditor(context);
+            DesignAssociationClass editedAssociationClass = editor.editDialog(designOriginal,
+                    context.getParentComponent());
+
+            // Check if user cancelled
+            if (editedAssociationClass == null) {
+                return true;
+            }
+
+            DesignAssociationClass undoAssociationClass = designOriginal.clone();
+
+            // Apply changes using copyOf
+            designOriginal.copyOf(editedAssociationClass);
+
+            // Undo/Redo [edit]
+            UndoableEdit edit = new EditDCDAssociationClassEdit(designOriginal, undoAssociationClass,
+                    context.getModel());
+            context.getParentComponent().getUndoSupport().postEdit(edit);
+        }
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true;
+    }
+
+    /**
+     * Creates the editor for conceptual association class. Extracted into a
+     * protected method to enable testing without UI dialogs (can be overridden to
+     * return mock editor).
+     * 
+     * @param context the edit context containing repository
+     * @return the editor instance
+     */
+    protected ConceptualAssociationClassEditor createConceptualEditor(EditContext context) {
+        return new ConceptualAssociationClassEditor(context.getRepository());
+    }
+
+    /**
+     * Creates the editor for design association class. Extracted into a protected
+     * method to enable testing without UI dialogs (can be overridden to return mock
+     * editor).
+     * 
+     * @param context the edit context containing repository
+     * @return the editor instance
+     */
+    protected DesignAssociationClassEditor createDesignEditor(EditContext context) {
+        return new DesignAssociationClassEditor(context.getRepository());
     }
 
     public AbstractClassGR getClassA() {
@@ -202,16 +292,38 @@ public class AssociationClassGR extends LinkGR {
     }
 
     @Override
+    public Point2D getEndPointRoleA() {
+        return associationElement.getEndPointRoleA();
+    }
+
+    @Override
+    public Point2D getEndPointRoleB() {
+        return associationElement.getEndPointRoleB();
+    }
+
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        // Delegate to the internal association element
+        return associationElement.reconnectSource(newSource);
+    }
+
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        // Delegate to the internal association element
+        return associationElement.reconnectTarget(newTarget);
+    }
+
+    @Override
     public AssociationClassGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Links connect graphical elements, so we reference the same endpoints
         ClassifierGR sameA = (ClassifierGR) a;
         ClassifierGR sameB = (ClassifierGR) b;
         AbstractAssociationClass sameAssociationClass = getAssociationClass();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         AssociationClassGR clonedGR = new AssociationClassGR(sameA, sameB, sameAssociationClass);
-        
+
         return clonedGR;
-    }      
+    }
 }

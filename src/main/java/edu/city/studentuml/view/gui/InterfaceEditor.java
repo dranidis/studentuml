@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,18 +13,24 @@ import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 
 /**
  * @author Ervin Ramollari
  * @author Dimitris Dranidis
  */
-public class InterfaceEditor extends ClassifierEditor {
+public class InterfaceEditor extends ClassifierEditor implements Editor<Interface> {
 
+    private static final String TITLE = "Interface Editor";
     private MethodsPanel methodsPanel;
 
-    public InterfaceEditor(Interface coreInterface, CentralRepository cr) {
-        super(coreInterface, cr, ClassifierEditor.AUTO_COMPLETE);
+    /**
+     * Constructor for Editor<Interface> pattern. Creates an InterfaceEditor with an
+     * empty Interface and initializes the UI.
+     */
+    public InterfaceEditor(CentralRepository cr) {
+        super(new Interface(""), cr, AUTO_COMPLETE);
 
         repository = cr;
 
@@ -34,10 +41,17 @@ public class InterfaceEditor extends ClassifierEditor {
         add(namePanel, BorderLayout.NORTH);
         add(methodsPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+    }
 
-        if (coreInterface != null) {
-            methodsPanel.setElements(coreInterface.getMethods());
+    @Override
+    public Interface editDialog(Interface interfaceObj, Component parent) {
+        setClassifierName(interfaceObj.getName());
+        methodsPanel.setElements(interfaceObj.getMethods());
+
+        if (!showDialog(parent, TITLE)) {
+            return null;
         }
+        return getInterface();
     }
 
     public Interface getInterface() {

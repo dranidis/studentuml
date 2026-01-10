@@ -2,14 +2,15 @@ package edu.city.studentuml.model.domain;
 
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 import java.io.Serializable;
 import org.w3c.dom.Element;
 
 /**
- * 
  * @author Ervin Ramollari
+ * @author Dimitris Dranidis
  */
-public class Actor extends LeafUCDElement implements Serializable, IXMLCustomStreamable {
+public class Actor extends LeafUCDElement implements Serializable, IXMLCustomStreamable, Copyable<Actor> {
 
     public Actor(String n) {
         super(n);
@@ -28,6 +29,11 @@ public class Actor extends LeafUCDElement implements Serializable, IXMLCustomStr
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public Actor copyOf(Actor actor) {
+        return actor.clone();
     }
 
     public Actor clone() {

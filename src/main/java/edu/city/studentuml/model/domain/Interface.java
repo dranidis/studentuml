@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.domain;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -12,8 +11,9 @@ import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
-public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable {
+public class Interface implements Serializable, Type, Classifier, IXMLCustomStreamable, Copyable<Interface> {
 
     private NotifierVector<Method> methods;
     private String name;
@@ -49,11 +49,7 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
     }
 
     public Method getMethodByName(String n) {
-        Iterator<Method> iterator = methods.iterator();
-
-        while (iterator.hasNext()) {
-            Method meth = iterator.next();
-
+        for (Method meth : methods) {
             if (meth.getName().equals(n)) {
                 return meth;
             }
@@ -87,15 +83,15 @@ public class Interface implements Serializable, Type, Classifier, IXMLCustomStre
         streamer.streamObjects(streamer.addChild(node, "methods"), methods.iterator());
     }
 
+    @Override
+    public Interface copyOf(Interface interfaceObj) {
+        return interfaceObj.clone();
+    }
+
     public Interface clone() {
         Interface copyInterface = new Interface(this.getName());
 
-        Method method;
-        Iterator<Method> methodIterator = methods.iterator();
-        while (methodIterator.hasNext()) {
-            method = methodIterator.next();
-            copyInterface.addMethod(method.clone());
-        }
+        methods.forEach(method -> copyInterface.addMethod(method.clone()));
 
         return copyInterface;
     }

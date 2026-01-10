@@ -11,9 +11,9 @@ import javax.swing.plaf.ColorUIResource;
 public class Colors {
 
     private static final Logger logger = Logger.getLogger(Colors.class.getName());
-    
-    public static final String DEFAULT_FILL_COLOR_STRING = "" + (new Color(222, 183, 255)).getRGB();
-    public static final String DEFAULT_DARK_FILL_COLOR_STRING = "" + (new Color(99, 64, 135)).getRGB();
+
+    public static final String DEFAULT_FILL_COLOR_STRING = "" + new Color(222, 183, 255).getRGB();
+    public static final String DEFAULT_DARK_FILL_COLOR_STRING = "" + new Color(99, 64, 135).getRGB();
 
     public static final Color BLACK = new Color(0, 0, 0);
 
@@ -29,7 +29,7 @@ public class Colors {
     public static void prinUIManagerColorResources() {
         for (Entry<Object, Object> entry : UIManager.getDefaults().entrySet()) {
             if (entry.getValue() instanceof ColorUIResource)
-                logger.info(() -> entry.getKey() + "              " + entry.getValue().toString());
+                logger.fine(() -> entry.getKey() + "              " + entry.getValue().toString());
         }
     }
 
@@ -65,7 +65,7 @@ public class Colors {
     public static void chooseFillColor() {
         if (Theme.isDark()) {
             Color fc = JColorChooser.showDialog(null, "Choose a color", darkFillColor);
-            
+
             if (fc == null) {
                 return;
             }
@@ -82,7 +82,7 @@ public class Colors {
             fillColor = fc;
             Settings.setFillColor(fillColor);
         }
-   }
+    }
 
     public static void setFillColor(Color color) {
         fillColor = color;

@@ -1,5 +1,22 @@
 # StudentUML Changelog
 
+## [1.5.0] - 2026-01-10
+
+### Added
+
+-   Zoom control dropdown in diagram menu bar
+-   Combined Fragments support for Sequence Diagrams (SD/SSD)
+-   Support for Dependencies between Classes and Interfaces in Design Class Diagrams (DCDs)
+-   Stereotype labels support for Dependency relationships in Design Class Diagrams (DCDs)
+-   Command-line file opening support - StudentUML can now open diagram files directly from command line (e.g., `java -jar studentuml.jar diagram.xml`)
+
+### Fixed
+
+-   UML Notes now render below other diagram elements in Activity Diagrams and Use Case Diagrams
+-   Application crash when double-clicking on non-editable graphical elements (e.g., UC Include relationships)
+-   Enforced duplicate-name conflict policies for UCD edits (Actors, Use Cases, Systems) with error dialogs and proper undo/redo + repository synchronization.
+-   Zoom dropdown now correctly displays the saved zoom level when opening a diagram from XML file
+
 ## [1.4.1] - 2026-01-01
 
 ### Fixed

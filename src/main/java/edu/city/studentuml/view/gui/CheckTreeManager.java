@@ -33,7 +33,6 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
@@ -151,7 +150,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         public CheckTreeSelectionModel(TreeModel model, boolean dig) {
             this.model = model;
             this.dig = dig;
-            setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+            setSelectionMode(DISCONTIGUOUS_TREE_SELECTION);
         }
 
         public boolean isDigged() {
@@ -251,10 +250,10 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
                         if (!isSelectionEmpty()) {
                             removeSelectionPaths(getSelectionPaths());
                         }
-                        super.addSelectionPaths(new TreePath[]{temp});
+                        super.addSelectionPaths(new TreePath[] { temp });
                     }
                 } else {
-                    super.addSelectionPaths(new TreePath[]{path});
+                    super.addSelectionPaths(new TreePath[] { path });
                 }
             }
         }
@@ -291,7 +290,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             for (int i = 0; i < paths.length; i++) {
                 TreePath path = paths[i];
                 if (path.getPathCount() == 1) {
-                    super.removeSelectionPaths(new TreePath[]{path});
+                    super.removeSelectionPaths(new TreePath[] { path });
                 } else {
                     toggleRemoveSelection(path);
                 }
@@ -311,7 +310,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             if (parent != null) {
                 stack.push(parent);
             } else {
-                super.removeSelectionPaths(new TreePath[]{path});
+                super.removeSelectionPaths(new TreePath[] { path });
                 return;
             }
 
@@ -324,11 +323,11 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
                 for (int i = 0; i < childCount; i++) {
                     Object childNode = model.getChild(node, i);
                     if (childNode != peekNode) {
-                        super.addSelectionPaths(new TreePath[]{temp.pathByAddingChild(childNode)});
+                        super.addSelectionPaths(new TreePath[] { temp.pathByAddingChild(childNode) });
                     }
                 }
             }
-            super.removeSelectionPaths(new TreePath[]{parent});
+            super.removeSelectionPaths(new TreePath[] { parent });
         }
 
         public Enumeration<TreePath> getAllSelectedPaths() {
@@ -395,24 +394,26 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
 
         /**
-         * Set the new state to either SELECTED, NOT_SELECTED or
-         * DONT_CARE.  If state == null, it is treated as DONT_CARE.
+         * Set the new state to either SELECTED, NOT_SELECTED or DONT_CARE. If state ==
+         * null, it is treated as DONT_CARE.
          */
         public void setState(Boolean state) {
             model.setState(state);
         }
 
-        /** Return the current state, which is determined by the
-         * selection status of the model. */
+        /**
+         * Return the current state, which is determined by the selection status of the
+         * model.
+         */
         public Boolean getState() {
             return model.getState();
         }
 
         /**
-         * Exactly which Design Pattern is this?  Is it an Adapter,
-         * a Proxy or a Decorator?  In this case, my vote lies with the
-         * Decorator, because we are extending functionality and
-         * "decorating" the original model with a more powerful model.
+         * Exactly which Design Pattern is this? Is it an Adapter, a Proxy or a
+         * Decorator? In this case, my vote lies with the Decorator, because we are
+         * extending functionality and "decorating" the original model with a more
+         * powerful model.
          */
         private class TristateDecorator implements ButtonModel {
 
@@ -439,13 +440,10 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             }
 
             /**
-             * The current state is embedded in the selection / armed
-             * state of the model.
-             *
-             * We return the SELECTED state when the checkbox is selected
-             * but not armed, DONT_CARE state when the checkbox is
-             * selected and armed (grey) and NOT_SELECTED when the
-             * checkbox is deselected.
+             * The current state is embedded in the selection / armed state of the model. We
+             * return the SELECTED state when the checkbox is selected but not armed,
+             * DONT_CARE state when the checkbox is selected and armed (grey) and
+             * NOT_SELECTED when the checkbox is deselected.
              */
             private Boolean getState() {
                 if (isSelected() && !isArmed()) {
@@ -460,7 +458,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
                 }
             }
 
-            /** We rotate between NOT_SELECTED, SELECTED and DONT_CARE.*/
+            /** We rotate between NOT_SELECTED, SELECTED and DONT_CARE. */
             private void nextState() {
                 Boolean current = getState();
                 if (current == Boolean.FALSE) {
@@ -476,14 +474,17 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
             public void setArmed(boolean b) {
             }
 
-            /** We disable focusing on the component when it is not
-             * enabled. */
+            /**
+             * We disable focusing on the component when it is not enabled.
+             */
             public void setEnabled(boolean b) {
                 other.setEnabled(b);
             }
 
-            /** All these methods simply delegate to the "other" model
-             * that is being decorated. */
+            /**
+             * All these methods simply delegate to the "other" model that is being
+             * decorated.
+             */
             public boolean isArmed() {
                 return other.isArmed();
             }
@@ -606,7 +607,7 @@ public class CheckTreeManager extends MouseAdapter implements TreeSelectionListe
         }
 
         public boolean hasMoreElements() {
-            return (!stack.isEmpty() && (stack.peek()).hasMoreElements());
+            return !stack.isEmpty() && stack.peek().hasMoreElements();
         }
 
         public TreePath nextElement() {

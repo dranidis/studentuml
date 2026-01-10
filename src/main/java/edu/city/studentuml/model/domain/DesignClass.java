@@ -1,7 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-import java.util.Iterator;
-
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,9 +9,10 @@ import edu.city.studentuml.codegeneration.CCDesignClass;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.view.gui.components.Copyable;
 
 @JsonIncludeProperties({ "name", "attributes", "methods", "internalid" })
-public class DesignClass extends AbstractClass {
+public class DesignClass extends AbstractClass implements Copyable<DesignClass> {
 
     private String stereotype;
     private NotifierVector<Method> methods;
@@ -62,17 +61,13 @@ public class DesignClass extends AbstractClass {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public NotifierVector<Method> getMethods() {
         return methods;
     }
 
     public Method getMethodByName(String name) {
-        Iterator<Method> iterator = methods.iterator();
-
-        while (iterator.hasNext()) {
-            Method method = iterator.next();
-
+        for (Method method : methods) {
             if (method.getName().equals(name)) {
                 return method;
             }
@@ -91,8 +86,8 @@ public class DesignClass extends AbstractClass {
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
         setStereotype(node.getAttribute("stereotype"));
         clear();
-            streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
-            streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
+        streamer.streamChildrenFrom(streamer.getNodeById(node, "methods"), this);
     }
 
     @Override
@@ -105,6 +100,11 @@ public class DesignClass extends AbstractClass {
         streamer.streamObjects(streamer.addChild(node, "methods"), methods.iterator());
     }
 
+    @Override
+    public DesignClass copyOf(DesignClass designClass) {
+        return designClass.clone();
+    }
+
     public DesignClass clone() {
         DesignClass copyClass = new DesignClass(this.getName());
 
@@ -112,23 +112,12 @@ public class DesignClass extends AbstractClass {
             copyClass.setStereotype(this.getStereotype());
         }
 
-        Attribute attribute;
-        Iterator<Attribute> attributeIterator = attributes.iterator();
-        while (attributeIterator.hasNext()) {
-            attribute = attributeIterator.next();
-            copyClass.addAttribute(attribute.clone());
-        }
+        attributes.forEach(attribute -> copyClass.addAttribute(attribute.clone()));
 
-        Method method;
-        Iterator<Method> methodIterator = methods.iterator();
-        while (methodIterator.hasNext()) {
-            method = methodIterator.next();
-            copyClass.addMethod(method.clone());
-        }
+        methods.forEach(method -> copyClass.addMethod(method.clone()));
 
         return copyClass;
     }
-
 
     public CCDesignClass getCcDesignClass() {
         return ccDesignClass;

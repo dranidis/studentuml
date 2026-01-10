@@ -3,7 +3,6 @@ package edu.city.studentuml.model.graphical;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -20,7 +19,6 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 
 /**
- *
  * @author draganbisercic
  * @author dimitris
  */
@@ -55,8 +53,17 @@ public abstract class AbstractSDModel extends DiagramModel {
             addMessage((SDMessageGR) e);
         } else if (e instanceof UMLNoteGR) {
             super.addGraphicalElement(e);
+        } else if (e instanceof CombinedFragmentGR) {
+            addCombinedFragment((CombinedFragmentGR) e);
         }
         SystemWideObjectNamePool.getInstance().done();
+    }
+
+    // before calling the superclass add element, the combined fragment
+    // is added to the project repository
+    private void addCombinedFragment(CombinedFragmentGR fragmentGR) {
+        repository.addCombinedFragment(fragmentGR.getCombinedFragment());
+        super.addGraphicalElement(fragmentGR);
     }
 
     // before calling the superclass add element, the role classifier
@@ -66,7 +73,7 @@ public abstract class AbstractSDModel extends DiagramModel {
         if (rc instanceof ActorInstanceGR) {
             repository.addActorInstance(((ActorInstanceGR) rc).getActorInstance());
         }
-        addToRepository(rc);    //subclasses can add other role classifiers to repository
+        addToRepository(rc); //subclasses can add other role classifiers to repository
 
         roleClassifiers.add(rc);
         roleClassifiersChanged();
@@ -76,7 +83,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // hook; calls the methods in subclass that need to perform subclass specific tasks
     protected abstract void addToRepository(RoleClassifierGR rc);
-    
+
     // before calling the superclass add element, the message
     // is added to the project repository, then to the messages list,
     // which is validated for consistency,
@@ -101,12 +108,15 @@ public abstract class AbstractSDModel extends DiagramModel {
             restoreMessagesDistances();
         }
         SystemWideObjectNamePool.getInstance().reload();
+
+        // Note: Auto-resize disabled when adding messages
+        // User can manually resize fragments as needed
     }
 
     public void setAutomove(boolean automove) {
         this.automove = automove;
     }
-    
+
     // to handle cases when the movement of one element affects other
     // elements, rather than simply moving alone
     @Override
@@ -115,6 +125,8 @@ public abstract class AbstractSDModel extends DiagramModel {
             moveRoleClassifier((RoleClassifierGR) e, x, y);
         } else if (e instanceof SDMessageGR) {
             moveMessage((SDMessageGR) e, x, y);
+        } else if (e instanceof CombinedFragmentGR) {
+            moveCombinedFragment((CombinedFragmentGR) e, x, y);
         } else { //UML Notes
             super.moveGraphicalElement(e, x, y);
         }
@@ -123,11 +135,20 @@ public abstract class AbstractSDModel extends DiagramModel {
     private void moveRoleClassifier(RoleClassifierGR rc, int x, int y) {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
+        // Note: Auto-resize disabled during lifeline drag
+        // Fragments only auto-resize when manually resized or moved
     }
 
     private void moveMessage(SDMessageGR m, int x, int y) {
         super.moveGraphicalElement(m, x, y);
         sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+        // Note: Auto-resize disabled during message drag for better performance
+        // Fragments will auto-resize when messages are added/removed or lifelines move
+    }
+
+    private void moveCombinedFragment(CombinedFragmentGR fragment, int x, int y) {
+        super.moveGraphicalElement(fragment, x, y);
+        // Just move during drag - auto-resize happens on settle
     }
 
     // apart from just moving the dragged and dropped element
@@ -138,6 +159,11 @@ public abstract class AbstractSDModel extends DiagramModel {
             settleRoleClassifier((RoleClassifierGR) e, x, y);
         } else if (e instanceof SDMessageGR) {
             settleMessage((SDMessageGR) e, x, y);
+        } else if (e instanceof CombinedFragmentGR) {
+            settleCombinedFragment((CombinedFragmentGR) e, x, y);
+        } else {
+            // Handle other elements (e.g., UMLNoteGR)
+            super.settleGraphicalElement(e, x, y);
         }
     }
 
@@ -145,6 +171,8 @@ public abstract class AbstractSDModel extends DiagramModel {
         super.moveGraphicalElement(rc, x, y);
         roleClassifiersChanged();
         restoreRoleClassifiersDistances();
+        // Note: Auto-resize disabled on lifeline settle
+        // Fragments only auto-resize when manually resized or moved
     }
 
     private void settleMessage(SDMessageGR m, int x, int y) {
@@ -152,6 +180,14 @@ public abstract class AbstractSDModel extends DiagramModel {
         validateMessages();
         // sort the messages, give them ranks, and keep the distances
         sortUpdateRankAndLifeLengthsAndValidateInOutMessages();
+        // Note: Auto-resize disabled on message settle - fragments maintain their size
+        // They will auto-resize when messages are added/removed or lifelines move
+    }
+
+    private void settleCombinedFragment(CombinedFragmentGR fragment, int x, int y) {
+        super.moveGraphicalElement(fragment, x, y);
+        // Note: Auto-resize disabled when moving fragment
+        // Only auto-resize on manual resize with handles
     }
 
     // subclasses that need to validate create and destroy messages need to override this method
@@ -170,7 +206,7 @@ public abstract class AbstractSDModel extends DiagramModel {
     public final void sortUpdateRankAndLifeLengthsAndValidateInOutMessages() {
         sortMessagesAndUpdateRanks();
         updateLifelineLengths();
-        
+
         validateInOut();
     }
 
@@ -215,10 +251,10 @@ public abstract class AbstractSDModel extends DiagramModel {
                 movedElements.add(message2);
                 Point2D.Double undoCoordinates = new Point2D.Double(0, 0);
                 Point2D.Double redoCoordinates = new Point2D.Double(0, 0);
-                redoCoordinates.setLocation(0, message1.getY() + (double) MINIMUM_MESSAGE_DISTANCE); 
-                
+                redoCoordinates.setLocation(0, message1.getY() + (double) MINIMUM_MESSAGE_DISTANCE);
+
                 message2.move(0, message1.getY() + MINIMUM_MESSAGE_DISTANCE);
-                
+
                 UndoableEdit edit = new MoveEdit(movedElements, this, undoCoordinates, redoCoordinates);
                 this.compoundEdit.addEdit(edit);
             }
@@ -252,12 +288,7 @@ public abstract class AbstractSDModel extends DiagramModel {
 
     // returns true if the argument object has been destroyed
     public boolean isDestroyed(RoleClassifierGR rc) {
-        Iterator<SDMessageGR> iterator = messages.iterator();
-        SDMessageGR message;
-
-        while (iterator.hasNext()) {
-            message = iterator.next();
-
+        for (SDMessageGR message : messages) {
             if (message instanceof DestroyMessageGR && message.getTarget() == rc) {
                 return true;
             }
@@ -270,11 +301,8 @@ public abstract class AbstractSDModel extends DiagramModel {
     // except those that have been destroyed (i.e. have a determined lifeline length
     private void setEndingY(int y) {
         Vector<RoleClassifierGR> objects = getRoleClassifiers();
-        Iterator<RoleClassifierGR> iterator = objects.iterator();
 
-        while (iterator.hasNext()) {
-            RoleClassifierGR object = iterator.next();
-
+        for (RoleClassifierGR object : objects) {
             if (!isDestroyed(object)) {
                 object.setEndingY(y);
             }
@@ -291,12 +319,18 @@ public abstract class AbstractSDModel extends DiagramModel {
             removeMessage((SDMessageGR) e);
         } else if (e instanceof UMLNoteGR) {
             super.removeGraphicalElement(e);
+        } else if (e instanceof CombinedFragmentGR) {
+            // Remove the domain object from central repository
+            CombinedFragmentGR fragmentGR = (CombinedFragmentGR) e;
+            getCentralRepository().removeCombinedFragment(fragmentGR.getCombinedFragment());
+            // Remove the graphical element from diagram
+            super.removeGraphicalElement(e);
         }
         SystemWideObjectNamePool.getInstance().done();
     }
 
     public List<SDMessageGR> getRoleClaffierGRMessages(RoleClassifierGR rc) {
-        return messages.stream().filter(message -> ((message.getSource() == rc) || (message.getTarget() == rc)))
+        return messages.stream().filter(message -> message.getSource() == rc || message.getTarget() == rc)
                 .collect(Collectors.toList());
     }
 
@@ -319,7 +353,7 @@ public abstract class AbstractSDModel extends DiagramModel {
                 repository.removeActor(((ActorInstance) rc.getRoleClassifier()).getActor());
 
             }
-            repository.removeActorInstance(((ActorInstance) rc.getRoleClassifier()));
+            repository.removeActorInstance((ActorInstance) rc.getRoleClassifier());
         }
 
         removeClassifiersFromRepository(rc);
@@ -360,12 +394,12 @@ public abstract class AbstractSDModel extends DiagramModel {
     private void validateInOut() {
 
         roleClassifiers.forEach(RoleClassifierGR::clearInOutStacks);
-        
-        if(!messages.isEmpty()) {
+
+        if (!messages.isEmpty()) {
             messages.get(0).source.setActiveIn();
         }
-        
-        for(SDMessageGR message:messages) {
+
+        for (SDMessageGR message : messages) {
             message.setOutlineColor(Colors.getOutlineColor());
             message.setErrorMsg("");
             logger.finer(() -> message.message + ": " + message.source + " -> " + message.target);
@@ -385,12 +419,12 @@ public abstract class AbstractSDModel extends DiagramModel {
                     message.setErrorMsg(validatedStr);
                 }
             }
-            if(message.source ==  message.target)
+            if (message.source == message.target)
                 message.source.addActivationHeight(message.getY() + 5);
             else
                 message.source.addActivationHeight(message.getY());
-            
-            if(message instanceof CreateMessageGR)
+
+            if (message instanceof CreateMessageGR)
                 message.target.addActivationHeight(message.getY() + ((CreateMessageGR) message).target.getHeight() / 2);
             else
                 message.target.addActivationHeight(message.getY());
@@ -398,21 +432,21 @@ public abstract class AbstractSDModel extends DiagramModel {
     }
 
     private void moveMessagesBelowBy(SDMessageGR m, int dis) {
-                    
+
         List<GraphicalElement> movedElements = new ArrayList<>();
         Point2D.Double undoCoordinates = new Point2D.Double(0, 0);
         Point2D.Double redoCoordinates = new Point2D.Double(0, 0);
-        for(int i = 0; i< messages.size() - 1; i++) {
+        for (int i = 0; i < messages.size() - 1; i++) {
             if (m == messages.get(i)) {
                 if (m.getMessage().isReflective())
                     dis += 15;
-                if (messages.get(i+1).getY() - m.getY() < dis) {
+                if (messages.get(i + 1).getY() - m.getY() < dis) {
                     logger.fine("MOVING messages below");
 
-                    int moveDis = dis - (messages.get(i+1).getY() - m.getY()); 
-                    redoCoordinates.setLocation(0, moveDis); 
-                    
-                    for(int j = i+1; j < messages.size(); j++) {
+                    int moveDis = dis - (messages.get(i + 1).getY() - m.getY());
+                    redoCoordinates.setLocation(0, moveDis);
+
+                    for (int j = i + 1; j < messages.size(); j++) {
                         movedElements.add(messages.get(j));
                         int y = messages.get(j).getY();
                         messages.get(j).move(0, y + moveDis);
@@ -424,17 +458,17 @@ public abstract class AbstractSDModel extends DiagramModel {
         UndoableEdit edit = new MoveEdit(movedElements, this, undoCoordinates, redoCoordinates);
         this.compoundEdit.addEdit(edit);
     }
-    
+
     public List<SDMessageGR> getMessagesBelow(SDMessageGR m) {
         List<SDMessageGR> messagesBelow = new ArrayList<>();
-        for(int i = 0; i< messages.size() - 1; i++) {
+        for (int i = 0; i < messages.size() - 1; i++) {
             if (m == messages.get(i)) {
-                for(int j = i+1; j < messages.size(); j++) {
+                for (int j = i + 1; j < messages.size(); j++) {
                     messagesBelow.add(messages.get(j));
                 }
                 break;
             }
-        }        
+        }
         return messagesBelow;
     }
 

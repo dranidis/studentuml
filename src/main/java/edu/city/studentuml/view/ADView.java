@@ -6,6 +6,7 @@ import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.EdgeGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.NodeComponentGR;
+import edu.city.studentuml.model.graphical.UMLNoteGR;
 
 /**
  * @author Biser
@@ -22,19 +23,28 @@ public class ADView extends DiagramView {
         // draw edges after the target node is drawn
         lock.lock();
 
+        // FIRST: Draw notes (bottom layer, won't obscure other elements)
+        model.getGraphicalElements().stream()
+                .filter(UMLNoteGR.class::isInstance)
+                .forEach(ge -> ge.draw(g));
+
+        // THEN: Draw nodes and edges (top layer)
         for (GraphicalElement element : model.getGraphicalElements()) {
+            if (element instanceof UMLNoteGR) {
+                continue; // Already drawn
+            }
             if (element instanceof NodeComponentGR) {
                 NodeComponentGR comp = (NodeComponentGR) element;
                 comp.draw(g);
 
-                comp.getIncomingRelations().forEachRemaining(link -> link.draw(g));
+                comp.getIncomingRelations().forEach(link -> link.draw(g));
 
                 comp.createIterator().forEachRemaining(el -> {
                     el.draw(g);
-                    el.getIncomingRelations().forEachRemaining(link -> link.draw(g));
+                    el.getIncomingRelations().forEach(link -> link.draw(g));
                 });
 
-            } else if (!(element instanceof EdgeGR)){ // already drawn
+            } else if (!(element instanceof EdgeGR)) { // already drawn
                 element.draw(g);
             }
         }

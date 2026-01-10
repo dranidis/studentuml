@@ -13,5 +13,6 @@ public class SDToolbar extends AbsractToolbar {
         addToolBarButton("return_message.gif", "ReturnMessageGR", "Return Message", this);
         addToolBarButton("create_message.gif", "CreateMessageGR", "Create Message", this);
         addToolBarButton("destroy_message.gif", "DestroyMessageGR", "Destroy Message", this);
+        addToolBarButton("fragment.gif", "CombinedFragmentGR", "Combined Fragment", this);
     }
 }

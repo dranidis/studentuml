@@ -13,7 +13,6 @@ import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 
 /**
- *
  * @author draganbisercic
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__type")
@@ -60,6 +59,8 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
 
     public void setName(String n) {
         associationClass.setName(n);
+        // Also set name on the inner association so the label arrow can be drawn
+        association.setName(n);
     }
 
     public int getDirection() {
@@ -95,7 +96,7 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
     }
 
     public boolean isReflective() {
-        return (getClassA() == getClassB());
+        return getClassA() == getClassB();
     }
 
     // need for undo/redo
@@ -136,12 +137,43 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
         associationClass.clear();
     }
 
+    public boolean getShowArrow() {
+        return association.getShowArrow();
+    }
+
+    public void setShowArrow(boolean show) {
+        association.setShowArrow(show);
+    }
+
+    public int getLabelDirection() {
+        return association.getLabelDirection();
+    }
+
+    public void setLabelDirection(int direction) {
+        association.setLabelDirection(direction);
+    }
+
+    public void changeLabelDirection() {
+        association.changeLabelDirection();
+    }
+
     @Override
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) throws NotStreamable {
 
         clear();
         setName(node.getAttribute("name"));
         setDirection(Integer.parseInt(node.getAttribute("direction")));
+
+        // Support for showArrow and labelDirection (with defaults for backward compatibility)
+        String showArrowAttr = node.getAttribute("showArrow");
+        if (showArrowAttr != null && !showArrowAttr.isEmpty()) {
+            setShowArrow(Boolean.parseBoolean(showArrowAttr));
+        }
+
+        String labelDirectionAttr = node.getAttribute("labelDirection");
+        if (labelDirectionAttr != null && !labelDirectionAttr.isEmpty()) {
+            setLabelDirection(Integer.parseInt(labelDirectionAttr));
+        }
 
         streamer.streamChildrenFrom(streamer.getNodeById(node, "attributes"), this);
     }
@@ -151,6 +183,8 @@ public abstract class AbstractAssociationClass implements Serializable, IXMLCust
 
         node.setAttribute("name", getName());
         node.setAttribute("direction", Integer.toString(association.getDirection()));
+        node.setAttribute("showArrow", String.valueOf(getShowArrow()));
+        node.setAttribute("labelDirection", Integer.toString(getLabelDirection()));
 
         streamer.streamObject(node, XMLSyntax.ROLEA, getRoleA());
         streamer.streamObject(node, XMLSyntax.ROLEB, getRoleB());

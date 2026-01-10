@@ -41,17 +41,13 @@ public class ProjectToolBar extends JToolBar {
         JButton saveButton = createToolBarButton("save.gif", "Save Project", e -> applicationGUI.saveProject());
         JButton saveAsButton = createToolBarButton("save_as2.gif", "Save As", e -> applicationGUI.saveProjectAs());
         JButton exportButton = createToolBarButton("export.gif", "Export to image", e -> applicationGUI.exportImage());
-        JButton codeGenerateButton = createToolBarButton("code.gif", "Generate Code", e -> applicationGUI.forwardEngineer());
+        // JButton codeGenerateButton = createToolBarButton("code.gif", "Generate Code", e -> applicationGUI.forwardEngineer());
 
-        if (!ApplicationGUI.isApplet()) { // applet version does not allow creation of new project
-            add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
-        }
+        add(createToolBarButton("new.gif", "New Project", e -> applicationGUI.newProject()));
         add(openButton);
         add(saveButton);
-        if (!ApplicationGUI.isApplet()) {
-            add(saveAsButton);
-            add(exportButton);
-        }
+        add(saveAsButton);
+        add(exportButton);
 
         /*
          * uncomment to show button
@@ -83,11 +79,9 @@ public class ProjectToolBar extends JToolBar {
         /**
          * Unused buttons
          */
-        JButton validateSD_DCDButton = createToolBarButton("sd_dcd.gif", "Validate SD against DCD",
-        e -> {});
-        JButton reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> applicationGUI.reloadRules());
-        JButton helpButton = createToolBarButton("help.gif", "Get help on using StudentUML", e -> applicationGUI.help());
-
+        // JButton validateSD_DCDButton = createToolBarButton("sd_dcd.gif", "Validate SD against DCD", e -> {});
+        // JButton reloadRulesButton = createToolBarButton("reload.gif", "Reload Rules", e -> applicationGUI.reloadRules());
+        // JButton helpButton = createToolBarButton("help.gif", "Get help on using StudentUML", e -> applicationGUI.help());
 
         setBorder(new EtchedBorder(EtchedBorder.LOWERED));
     }

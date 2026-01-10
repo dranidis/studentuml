@@ -16,10 +16,10 @@ public class EditDecisionNodeEdit extends AbstractUndoableEdit{
     private DecisionNode redoDecisionNode;
     private DiagramModel model;
 
-    public EditDecisionNodeEdit(DecisionNode originalDecisionNode, DecisionNode undoDecisionNode, DiagramModel model) {
+    public EditDecisionNodeEdit(DecisionNode originalDecisionNode, DecisionNode newDecisionNode, DiagramModel model) {
         this.originalDecisionNode = originalDecisionNode;
-        this.undoDecisionNode = (DecisionNode) undoDecisionNode.clone();
-        this.redoDecisionNode = (DecisionNode) originalDecisionNode.clone();
+        this.undoDecisionNode = (DecisionNode) originalDecisionNode.clone();
+        this.redoDecisionNode = (DecisionNode) newDecisionNode.clone();
         this.model = model;
     }
 

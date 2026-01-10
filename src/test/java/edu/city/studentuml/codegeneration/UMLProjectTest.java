@@ -62,9 +62,9 @@ public class UMLProjectTest {
         File file = new File(filepath);
         if (!file.exists()) {
             if (file.mkdir()) {
-                System.out.println("Directory is created!");
+                // System.out.println("Directory is created!");
             } else {
-                System.out.println("Directory cannot be Created!");
+                // System.out.println("Directory cannot be Created!");
             }
         }
         umlProject.setFilepath(fullpath);

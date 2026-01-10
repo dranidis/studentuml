@@ -3,22 +3,31 @@ package edu.city.studentuml.model.graphical;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.util.logging.Logger;
+
+import javax.swing.undo.UndoableEdit;
 
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.Role;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
+import edu.city.studentuml.util.undoredo.EditAssociationEdit;
+import edu.city.studentuml.view.gui.AssociationEditor;
+import edu.city.studentuml.view.gui.CCDAssociationEditor;
 
 @JsonIncludeProperties({ "from", "to", "internalid", "association" })
 public class AssociationGR extends LinkGR {
+
+    private static final Logger logger = Logger.getLogger(AssociationGR.class.getName());
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
@@ -142,8 +151,7 @@ public class AssociationGR extends LinkGR {
         g.rotate(angle);
 
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(sb.toString(), roleFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(sb.toString(), roleFont, frc);
         int xOffset = (int) bounds.getX();
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();
@@ -174,9 +182,76 @@ public class AssociationGR extends LinkGR {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public Association getAssociation() {
         return association;
+    }
+
+    /**
+     * Protected setter to allow subclasses (like AggregationGR) to update the
+     * association.
+     */
+    protected void setAssociation(Association association) {
+        this.association = association;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        // Choose editor based on diagram type
+        Association originalAssociation = getAssociation();
+        Association editedAssociation = createAndRunEditor(context, originalAssociation);
+
+        if (editedAssociation == null) {
+            return true; // User cancelled
+        }
+
+        // Undo/Redo - capture original state
+        Association undoAssociation = originalAssociation.clone();
+
+        // Apply all changes atomically
+        originalAssociation.setName(editedAssociation.getName());
+        originalAssociation.setDirection(editedAssociation.getDirection());
+        originalAssociation.setShowArrow(editedAssociation.getShowArrow());
+        originalAssociation.setLabelDirection(editedAssociation.getLabelDirection());
+
+        // Update roles
+        Role roleA = originalAssociation.getRoleA();
+        roleA.setName(editedAssociation.getRoleA().getName());
+        roleA.setMultiplicity(editedAssociation.getRoleA().getMultiplicity());
+
+        Role roleB = originalAssociation.getRoleB();
+        roleB.setName(editedAssociation.getRoleB().getName());
+        roleB.setMultiplicity(editedAssociation.getRoleB().getMultiplicity());
+
+        // Undo/Redo
+        UndoableEdit edit = new EditAssociationEdit(originalAssociation, undoAssociation, context.getModel());
+        context.getParentComponent().getUndoSupport().postEdit(edit);
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true;
+    }
+
+    /**
+     * Creates and runs the appropriate editor based on diagram type. Extracted into
+     * a protected method to enable testing without UI dialogs (can be overridden).
+     * 
+     * @param context             the edit context
+     * @param originalAssociation the association to edit
+     * @return the edited association, or null if user cancelled
+     */
+    protected Association createAndRunEditor(EditContext context, Association originalAssociation) {
+        if (context.getModel() instanceof CCDModel) {
+            // Conceptual Class Diagram - use CCDAssociationEditor
+            CCDAssociationEditor associationEditor = new CCDAssociationEditor();
+            return associationEditor.editDialog(originalAssociation, context.getParentComponent());
+        } else {
+            // Design Class Diagram - use full AssociationEditor
+            AssociationEditor associationEditor = new AssociationEditor();
+            return associationEditor.editDialog(originalAssociation, context.getParentComponent());
+        }
     }
 
     @JsonProperty("from")
@@ -205,16 +280,93 @@ public class AssociationGR extends LinkGR {
     }
 
     @Override
+    public boolean canReconnect(EndpointType endpoint, GraphicalElement newElement) {
+        // Must pass base validation
+        if (!super.canReconnect(endpoint, newElement)) {
+            return false;
+        }
+
+        // Associations require classifiers (classes, conceptual classes, or interfaces)
+        if (!(newElement instanceof ClassifierGR)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean reconnectSource(ClassifierGR newSource) {
+        // Note: LinkGR fields 'a' and 'b' are final, so we cannot update them directly.
+        // The caller (SelectionController) must remove this link and create a new one.
+        // Here we just prepare the domain model for the new link.
+
+        // Create a new Role with the new classifier, preserving name and multiplicity
+        Role oldRoleA = association.getRoleA();
+        Role newRoleA = new Role(newSource.getClassifier());
+        newRoleA.setName(oldRoleA.getName());
+        newRoleA.setMultiplicity(oldRoleA.getMultiplicity());
+
+        // Create a new association with the updated role
+        Association newAssoc = new Association(newRoleA, association.getRoleB());
+        newAssoc.setName(association.getName());
+        newAssoc.setDirection(association.getDirection());
+        newAssoc.setShowArrow(association.getShowArrow());
+        newAssoc.setLabelDirection(association.getLabelDirection());
+
+        this.association = newAssoc;
+
+        logger.fine(() -> "Prepared association source reconnection to: " + newSource.getClassifier().getName());
+        return true;
+    }
+
+    @Override
+    public boolean reconnectTarget(ClassifierGR newTarget) {
+        // Note: LinkGR fields 'a' and 'b' are final, so we cannot update them directly.
+        // The caller (SelectionController) must remove this link and create a new one.
+        // Here we just prepare the domain model for the new link.
+
+        // Create a new Role with the new classifier, preserving name and multiplicity
+        Role oldRoleB = association.getRoleB();
+        Role newRoleB = new Role(newTarget.getClassifier());
+        newRoleB.setName(oldRoleB.getName());
+        newRoleB.setMultiplicity(oldRoleB.getMultiplicity());
+
+        // Create a new association with the updated role
+        Association newAssoc = new Association(association.getRoleA(), newRoleB);
+        newAssoc.setName(association.getName());
+        newAssoc.setDirection(association.getDirection());
+        newAssoc.setShowArrow(association.getShowArrow());
+        newAssoc.setLabelDirection(association.getLabelDirection());
+
+        this.association = newAssoc;
+
+        logger.fine(() -> "Prepared association target reconnection to: " + newTarget.getClassifier().getName());
+        return true;
+    }
+
+    /**
+     * Creates a new AssociationGR with updated endpoints. Used for reconnection
+     * since LinkGR endpoints are final.
+     * 
+     * @param newA the new source classifier
+     * @param newB the new target classifier
+     * @return new AssociationGR with same domain model but new endpoints
+     */
+    public AssociationGR createWithNewEndpoints(ClassifierGR newA, ClassifierGR newB) {
+        return new AssociationGR(newA, newB, this.association);
+    }
+
+    @Override
     public AssociationGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Links connect graphical elements, so we reference the same endpoints
         ClassifierGR sameA = (ClassifierGR) a;
         ClassifierGR sameB = (ClassifierGR) b;
         Association sameAssociation = getAssociation();
-        
+
         // Create new graphical wrapper referencing the SAME domain object and endpoints
         AssociationGR clonedGR = new AssociationGR(sameA, sameB, sameAssociation);
-        
+
         return clonedGR;
     }
 

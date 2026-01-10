@@ -1,5 +1,6 @@
 package edu.city.studentuml.controller;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -47,6 +48,8 @@ import edu.city.studentuml.model.domain.UCInclude;
 import edu.city.studentuml.model.domain.AbstractAssociationClass;
 import edu.city.studentuml.model.domain.ControlFlow;
 import edu.city.studentuml.model.domain.ObjectFlow;
+import edu.city.studentuml.model.graphical.AbstractLinkGR;
+import edu.city.studentuml.model.graphical.AbstractSDModel;
 import edu.city.studentuml.model.graphical.AggregationGR;
 import edu.city.studentuml.model.graphical.AssociationClassGR;
 import edu.city.studentuml.model.graphical.AssociationGR;
@@ -56,6 +59,7 @@ import edu.city.studentuml.model.graphical.CompositeNodeGR;
 import edu.city.studentuml.model.graphical.CompositeUCDElementGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
+import edu.city.studentuml.model.graphical.EndpointType;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.EdgeGR;
@@ -65,41 +69,48 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.model.graphical.ControlFlowGR;
 import edu.city.studentuml.model.graphical.ObjectFlowGR;
 import edu.city.studentuml.model.graphical.RealizationGR;
+import edu.city.studentuml.model.graphical.Resizable;
+import edu.city.studentuml.model.graphical.ResizeHandle;
 import edu.city.studentuml.model.graphical.RoleClassifierGR;
 import edu.city.studentuml.model.graphical.SDMessageGR;
 import edu.city.studentuml.model.graphical.CallMessageGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.CreateMessageGR;
 import edu.city.studentuml.model.graphical.DestroyMessageGR;
 import edu.city.studentuml.model.graphical.ReturnMessageGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCAssociationGR;
+import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UCExtendGR;
 import edu.city.studentuml.model.graphical.UCGeneralizationGR;
 import edu.city.studentuml.model.graphical.UCIncludeGR;
-import edu.city.studentuml.model.graphical.UCDComponentGR;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
 import edu.city.studentuml.util.ClipboardManager;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.PositiveRectangle;
-import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
-import edu.city.studentuml.util.undoredo.EditNoteGREdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
+import edu.city.studentuml.util.undoredo.ReconnectLinkEdit;
+import edu.city.studentuml.util.undoredo.ReconnectMessageEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
-import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 /**
  * The SelectionController is the Controller component in MVC that handles all
- * events when the "selection" button in the drawing toolbar is pressed. Serves
- * as the superclass of all selection controllers of particular diagrams.
- * Dragging and dropping, and other mouse events are handled by this superclass,
- * while the details of editing and deleting elements are left to subclasses.
+ * events when the "selection" button in the drawing toolbar is pressed. After
+ * applying the Template Method pattern to GraphicalElement classes, most
+ * diagram-specific selection controllers became empty and were removed. This
+ * class can now be instantiated directly for most diagram types (UCD, CCD, DCD,
+ * AD). For sequence diagrams (SD/SSD), use AbstractSDSelectionController which
+ * extends this class with SD-specific coordinate handling and call message
+ * deletion logic. Dragging, dropping, and other mouse events are handled by
+ * this class. Element editing is delegated to GraphicalElement.edit() via
+ * polymorphism.
  */
-public abstract class SelectionController {
+public class SelectionController {
 
     private static final Logger logger = Logger.getLogger(SelectionController.class.getName());
 
@@ -130,16 +141,24 @@ public abstract class SelectionController {
     JMenuItem editMenuItem;
     JPopupMenu popupMenuOne;
 
+    // Link/message endpoint dragging state
+    protected GraphicalElement draggingLink = null; // Can be AbstractLinkGR or SDMessageGR
+    protected EndpointType draggingEndpoint = EndpointType.NONE;
+    protected Point2D dragPoint = null;
+    protected GraphicalElement potentialTarget = null;
+
+    // Resize handle dragging state
+    protected ResizeHandle draggingResizeHandle = null;
+
     /**
      * A map mapping a class to its editor. Each subclass of SelectionController
      * implements editors for the elements that the diagram implements.
      */
     protected Map<Class<?>, Consumer<GraphicalElement>> editElementMapper;
 
-    protected SelectionController(DiagramInternalFrame parent, DiagramModel m) {
+    public SelectionController(DiagramInternalFrame parent, DiagramModel m) {
 
         editElementMapper = new HashMap<>();
-        editElementMapper.put(UMLNoteGR.class, el -> editUMLNote((UMLNoteGR) el));
 
         parentComponent = parent;
         model = m;
@@ -190,9 +209,21 @@ public abstract class SelectionController {
 
             @Override
             public void mouseMoved(MouseEvent event) {
+                if (!selectionMode) {
+                    return;
+                }
+
                 // Track mouse position for paste positioning
                 currentMouseX = scale(event.getX());
                 currentMouseY = scale(event.getY());
+
+                // First check for resize handles (higher priority)
+                if (updateCursorForResizeHandle(event)) {
+                    return; // Cursor was set for resize handle
+                }
+
+                // Then check for link endpoints
+                updateCursorForLinkEndpoint(event);
             }
         };
 
@@ -244,34 +275,25 @@ public abstract class SelectionController {
     }
 
     private void mapeditElement(GraphicalElement element) {
+        // Try polymorphic edit() method first (new approach)
+        edu.city.studentuml.editing.EditContext context = new edu.city.studentuml.editing.EditContext(model,
+                parentComponent);
+        if (element.edit(context)) {
+            // Element handled its own editing via polymorphic method
+            return;
+        }
+
+        // Fall back to legacy mapper approach for elements not yet migrated
         Consumer<GraphicalElement> editElementConsumer = editElementMapper.get(element.getClass());
         if (editElementConsumer != null) {
             editElementConsumer.accept(element);
         } else {
-            logger.severe("No edit function in the mapper for " + element.getClass().getName());
-            throw new UnsupportedOperationException("not implemented yet!!!");
+            // Some elements (like UCIncludeGR, UCExtendGR) don't have editors
+            // because their properties are fixed or not editable.
+            // Silently ignore double-clicks on these elements.
+            logger.fine("No edit function registered for " + element.getClass().getSimpleName() +
+                    " - element is not editable");
         }
-    }
-
-    private void editUMLNote(UMLNoteGR noteGR) {
-        UMLNoteEditor noteEditor = new UMLNoteEditor(noteGR);
-
-        // Undo/Redo
-        String undoText = noteGR.getText();
-
-        if (!noteEditor.showDialog(parentComponent, "UML Note Editor")) {
-            return;
-        }
-
-        noteGR.setText(noteEditor.getText());
-
-        // Undo/Redo
-        UndoableEdit edit = new EditNoteGREdit(noteGR, model, undoText);
-        parentComponent.getUndoSupport().postEdit(edit);
-
-        // set observable model to changed in order to notify its views
-        model.modelChanged();
-        SystemWideObjectNamePool.getInstance().reload();
     }
 
     private int scale(int number) {
@@ -283,6 +305,16 @@ public abstract class SelectionController {
         lastY = scale(event.getY());
 
         Point2D origin = new Point2D.Double(lastX, lastY);
+
+        // Check if clicking on a resize handle of a selected element
+        if (checkForResizeHandleDrag(origin)) {
+            return; // Resize handle drag initiated, don't proceed with normal selection
+        }
+
+        // Check if clicking on an endpoint of a selected link
+        if (checkForEndpointDrag(origin)) {
+            return; // Endpoint drag initiated, don't proceed with normal selection
+        }
 
         // find the source graphical element
         GraphicalElement element = model.getContainingGraphicalElement(origin);
@@ -338,6 +370,30 @@ public abstract class SelectionController {
     }
 
     protected void myMouseReleased(MouseEvent event) {
+        // Handle resize handle drag completion
+        if (draggingResizeHandle != null) {
+            // Auto-resize ONLY when Control key is pressed during resize
+            // This gives users control over when fragments auto-adjust to messages
+            if (event.isControlDown()) {
+                Resizable resizedElement = draggingResizeHandle.getResizableElement();
+                if (resizedElement instanceof CombinedFragmentGR && model instanceof AbstractSDModel) {
+                    CombinedFragmentGR fragment = (CombinedFragmentGR) resizedElement;
+                    fragment.autoResizeToMessages((AbstractSDModel) model);
+                }
+            }
+
+            draggingResizeHandle = null;
+            // Reset cursor
+            parentComponent.getView().setCursor(Cursor.getDefaultCursor());
+            return;
+        }
+
+        // Handle endpoint drag completion
+        if (draggingLink != null) {
+            completeEndpointDrag(scale(event.getX()), scale(event.getY()));
+            return;
+        }
+
         if (lastPressed != null) {
 
             // check if the event is a popup trigger event
@@ -346,8 +402,8 @@ public abstract class SelectionController {
             setRedoCoordinates();
 
             if (redoCoordinates.getX() != undoCoordinates.getX() || redoCoordinates.getY() != undoCoordinates.getY()) {
-                logger.finest(() -> ("Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY()));
-                logger.finest(() -> ("Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY()));
+                logger.finest(() -> "Undo XY: " + undoCoordinates.getX() + ", " + undoCoordinates.getY());
+                logger.finest(() -> "Redo XY: " + redoCoordinates.getX() + ", " + redoCoordinates.getY());
                 UndoableEdit edit = new MoveEdit(selectedElements, model, undoCoordinates, redoCoordinates);
                 parentComponent.getUndoSupport().postEdit(edit);
             }
@@ -396,6 +452,21 @@ public abstract class SelectionController {
     }
 
     protected void myMouseDragged(MouseEvent event) {
+        // Handle resize handle dragging
+        if (draggingResizeHandle != null) {
+            draggingResizeHandle.move(scale(event.getX()), scale(event.getY()));
+            // Trigger repaint to show resize in real-time
+            model.modelChanged();
+            return;
+        }
+
+        // Handle endpoint dragging
+        if (draggingLink != null) {
+            handleEndpointDrag(scale(event.getX()), scale(event.getY()));
+            return;
+        }
+
+        // Normal element dragging
         if (lastPressed != null) {
             moveElement(scale(event.getX()), scale(event.getY()));
         }
@@ -459,6 +530,42 @@ public abstract class SelectionController {
         setSelectionMode(false);
     }
 
+    /**
+     * Returns true if currently dragging a link endpoint.
+     * 
+     * @return true if dragging an endpoint, false otherwise
+     */
+    public boolean isDraggingEndpoint() {
+        return draggingLink != null;
+    }
+
+    /**
+     * Returns the link or message currently being dragged, or null if not dragging.
+     * 
+     * @return the dragging link/message or null
+     */
+    public GraphicalElement getDraggingLink() {
+        return draggingLink;
+    }
+
+    /**
+     * Returns which endpoint is being dragged.
+     * 
+     * @return the endpoint type being dragged
+     */
+    public EndpointType getDraggingEndpoint() {
+        return draggingEndpoint;
+    }
+
+    /**
+     * Returns the current drag point during endpoint dragging.
+     * 
+     * @return the drag point or null
+     */
+    public Point2D getDragPoint() {
+        return dragPoint;
+    }
+
     // method that shows a popup menu when the right mouse button has been clicked
     public void managePopup(MouseEvent event) {
         if (event.isPopupTrigger()) {
@@ -501,7 +608,7 @@ public abstract class SelectionController {
         for (GraphicalElement selectedElement : selectedElements) {
             // check if element was not already deleted by a link to another element
             if (inModel(selectedElement)) {
-                logger.fine(() -> ("DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString()));
+                logger.fine(() -> "DEL:" + selectedElement.getInternalid() + " " + selectedElement.toString());
 
                 NotifierVector<GraphicalElement> elements = model.getGraphicalElements();
                 int i = 0;
@@ -517,7 +624,6 @@ public abstract class SelectionController {
                 model.removeGraphicalElement(selectedElement);
             }
         }
-
     }
 
     /**
@@ -603,7 +709,10 @@ public abstract class SelectionController {
     /**
      * Copy the selected elements to the clipboard. The elements are stored in the
      * ClipboardManager for later pasting. If a composite element (e.g., System box)
-     * is selected, its child components are also included.
+     * is selected, its child components are also included. Copy the selected
+     * elements to the clipboard. The elements are stored in the ClipboardManager
+     * for later pasting. If a composite element (e.g., System box) is selected, its
+     * child components are also included.
      */
     public void copySelected() {
         if (selectedElements.isEmpty()) {
@@ -637,7 +746,7 @@ public abstract class SelectionController {
         }
 
         ClipboardManager.getInstance().copy(expandedSelection, model);
-        logger.info(() -> "Copied " + expandedSelection.size() + " elements to clipboard (including child components)");
+        logger.fine(() -> "Copied " + expandedSelection.size() + " elements to clipboard (including child components)");
     }
 
     /**
@@ -688,17 +797,23 @@ public abstract class SelectionController {
             }
         }
 
-        // Calculate offset to position at mouse cursor (or use default offset if no mouse position)
+        // Check if we're in a sequence diagram (SD or SSD)
+        boolean isSequenceDiagram = model instanceof AbstractSDModel;
+
+        // Calculate offset to position at mouse cursor (or use default offset if no
+        // mouse position)
         final int offsetX;
         final int offsetY;
         if (currentMouseX > 0 || currentMouseY > 0) {
             // Position the top-left element at the mouse cursor
             offsetX = currentMouseX - minX;
-            offsetY = currentMouseY - minY;
+            // For sequence diagrams, preserve Y coordinate (time axis)
+            // For other diagrams, position at mouse Y
+            offsetY = isSequenceDiagram ? 0 : (currentMouseY - minY);
         } else {
             // Fallback: use fixed offset (20 pixels right and down)
             offsetX = 20;
-            offsetY = 20;
+            offsetY = isSequenceDiagram ? 0 : 20;
         }
 
         // List to store newly created (pasted) elements
@@ -707,10 +822,12 @@ public abstract class SelectionController {
         // Map to track original -> cloned element mappings (for reconnecting links)
         Map<GraphicalElement, GraphicalElement> originalToCloneMap = new HashMap<>();
 
-        // Track which elements are children of composites (should not be added to model directly)
+        // Track which elements are children of composites (should not be added to model
+        // directly)
         Set<GraphicalElement> childElements = new HashSet<>();
 
-        // Create compound edit to group all paste operations into single undoable action
+        // Create compound edit to group all paste operations into single undoable
+        // action
         CompoundEdit compoundEdit = new CompoundEdit();
 
         // Identify child elements first
@@ -726,7 +843,8 @@ public abstract class SelectionController {
 
         // First pass: Clone non-link elements (classes, use cases, etc.)
         for (GraphicalElement originalElement : clipboardElements) {
-            // Skip links, edges, and SD messages in first pass - we'll handle them after objects are cloned
+            // Skip links, edges, and SD messages in first pass - we'll handle them after
+            // objects are cloned
             if (originalElement instanceof LinkGR || originalElement instanceof EdgeGR
                     || originalElement instanceof SDMessageGR) {
                 continue;
@@ -970,6 +1088,8 @@ public abstract class SelectionController {
         }
 
         logger.fine("Successfully pasted " + pastedElements.size() + " elements");
+
+        logger.fine("Successfully pasted " + pastedElements.size() + " elements");
     }
 
     /**
@@ -981,6 +1101,7 @@ public abstract class SelectionController {
      * repository when pasting links whose endpoints share domain classifiers with
      * the original.
      */
+
     private LinkGR createLinkForPastedElements(LinkGR originalLink,
             ClassifierGR newA,
             ClassifierGR newB) {
@@ -1004,47 +1125,42 @@ public abstract class SelectionController {
             return new GeneralizationGR(newA, newB, origDomain);
 
         } else if (originalLink instanceof DependencyGR) {
-            // Dependency requires both to be DesignClass (not interfaces)
-            if (newA instanceof ClassGR && newB instanceof ClassGR) {
-                Dependency origDomain = ((DependencyGR) originalLink).getDependency();
-                // REUSE the same domain Dependency object
-                return new DependencyGR((ClassGR) newA, (ClassGR) newB, origDomain);
-            }
+            // Dependency can connect any two classifiers (classes or interfaces)
+            Dependency origDomain = ((DependencyGR) originalLink).getDependency();
+            // REUSE the same domain Dependency object
+            return new DependencyGR(newA, newB, origDomain);
 
-        } else if (originalLink instanceof RealizationGR) {
-            // Realization requires DesignClass and Interface
-            if (newA instanceof ClassGR && newB instanceof InterfaceGR) {
-                Realization origDomain = ((RealizationGR) originalLink).getRealization();
-                // REUSE the same domain Realization object
-                return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, origDomain);
-            }
+        } else if (originalLink instanceof RealizationGR
+                // Realization requires DesignClass and Interface
+                && newA instanceof ClassGR && newB instanceof InterfaceGR) {
+            Realization origDomain = ((RealizationGR) originalLink).getRealization();
+            // REUSE the same domain Realization object
+            return new RealizationGR((ClassGR) newA, (InterfaceGR) newB, origDomain);
 
-        } else if (originalLink instanceof UCAssociationGR) {
-            // Use Case Association requires UCActorGR and UseCaseGR
-            if (newA instanceof UCActorGR && newB instanceof UseCaseGR) {
-                UCAssociation origDomain = (UCAssociation) ((UCAssociationGR) originalLink).getLink();
-                // REUSE the same domain UCAssociation object
-                return new UCAssociationGR((UCActorGR) newA, (UseCaseGR) newB, origDomain);
-            }
+        } else if (originalLink instanceof UCAssociationGR
+                // Use Case Association requires UCActorGR and UseCaseGR
+                && newA instanceof UCActorGR && newB instanceof UseCaseGR) {
+            UCAssociation origDomain = (UCAssociation) ((UCAssociationGR) originalLink).getLink();
+            // REUSE the same domain UCAssociation object
+            return new UCAssociationGR((UCActorGR) newA, (UseCaseGR) newB, origDomain);
 
-        } else if (originalLink instanceof UCIncludeGR) {
-            // Use Case Include requires two UseCaseGR elements
-            if (newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
-                UCInclude origDomain = (UCInclude) ((UCIncludeGR) originalLink).getLink();
-                // REUSE the same domain UCInclude object
-                return new UCIncludeGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
-            }
+        } else if (originalLink instanceof UCIncludeGR
+                // Use Case Include requires two UseCaseGR elements
+                && newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
+            UCInclude origDomain = (UCInclude) ((UCIncludeGR) originalLink).getLink();
+            // REUSE the same domain UCInclude object
+            return new UCIncludeGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
 
-        } else if (originalLink instanceof UCExtendGR) {
-            // Use Case Extend requires two UseCaseGR elements
-            if (newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
-                UCExtend origDomain = (UCExtend) ((UCExtendGR) originalLink).getLink();
-                // REUSE the same domain UCExtend object
-                return new UCExtendGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
-            }
+        } else if (originalLink instanceof UCExtendGR
+                // Use Case Extend requires two UseCaseGR elements
+                && newA instanceof UseCaseGR && newB instanceof UseCaseGR) {
+            UCExtend origDomain = (UCExtend) ((UCExtendGR) originalLink).getLink();
+            // REUSE the same domain UCExtend object
+            return new UCExtendGR((UseCaseGR) newA, (UseCaseGR) newB, origDomain);
 
         } else if (originalLink instanceof UCGeneralizationGR) {
-            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR elements
+            // Use Case Generalization can connect either two UseCaseGR or two UCActorGR
+            // elements
             UCGeneralization origDomain = (UCGeneralization) ((UCGeneralizationGR) originalLink).getLink();
             // REUSE the same domain UCGeneralization object
             if (newA instanceof UCActorGR && newB instanceof UCActorGR) {
@@ -1106,7 +1222,8 @@ public abstract class SelectionController {
             RoleClassifierGR newSource,
             RoleClassifierGR newTarget) {
         // Create appropriate message type based on the original
-        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends CallMessageGR)
+        // Check for CreateMessageGR BEFORE CallMessageGR (since CreateMessageGR extends
+        // CallMessageGR)
         if (originalMessage instanceof CreateMessageGR) {
             CreateMessageGR origCreate = (CreateMessageGR) originalMessage;
             CreateMessage origDomain = origCreate.getCreateMessage();
@@ -1163,9 +1280,6 @@ public abstract class SelectionController {
             return new CallMessageGR(newSource, newTarget, newDomain, originalMessage.getY());
 
         } else if (originalMessage instanceof DestroyMessageGR) {
-            DestroyMessageGR origDestroy = (DestroyMessageGR) originalMessage;
-            DestroyMessage origDomain = origDestroy.getDestroyMessage();
-
             // Create new domain message with new source/target
             DestroyMessage newDomain = new DestroyMessage(
                     newSource.getRoleClassifier(),
@@ -1193,4 +1307,550 @@ public abstract class SelectionController {
         return null;
     }
 
+    /**
+     * Checks if the mouse press is on an endpoint of a selected link and initiates
+     * endpoint dragging if so.
+     * 
+     * @param point the mouse click point
+     * @return true if endpoint drag was initiated, false otherwise
+     */
+    private boolean checkForEndpointDrag(Point2D point) {
+        // Check all selected elements for links with endpoint at this point
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof AbstractLinkGR) {
+                AbstractLinkGR link = (AbstractLinkGR) element;
+                EndpointType endpointType = link.getEndpointAtPoint(point);
+
+                if (endpointType != EndpointType.NONE) {
+                    // Initiate endpoint drag
+                    draggingLink = link;
+                    draggingEndpoint = endpointType;
+                    dragPoint = new Point2D.Double(point.getX(), point.getY());
+                    potentialTarget = null;
+
+                    logger.fine(() -> "Started dragging " + endpointType + " endpoint of link");
+
+                    // Update cursor to grabbing
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+                    return true;
+                }
+            } else if (element instanceof SDMessageGR) {
+                SDMessageGR message = (SDMessageGR) element;
+                EndpointType endpointType = message.getEndpointAtPoint(point);
+
+                if (endpointType != EndpointType.NONE) {
+                    // Initiate endpoint drag for message
+                    draggingLink = message;
+                    draggingEndpoint = endpointType;
+                    dragPoint = new Point2D.Double(point.getX(), point.getY());
+                    potentialTarget = null;
+
+                    logger.fine(() -> "Started dragging " + endpointType + " endpoint of message");
+
+                    // Update cursor to grabbing
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the mouse is pressed on a resize handle of a selected resizable
+     * element. If so, initiates resize handle dragging.
+     * 
+     * @param point the mouse click point
+     * @return true if resize handle drag was initiated, false otherwise
+     */
+    private boolean checkForResizeHandleDrag(Point2D point) {
+        // Check all selected elements for resizable elements with handles at this point
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof Resizable) {
+                Resizable resizable = (Resizable) element;
+                ResizeHandle handle = resizable.getResizeHandle((int) point.getX(), (int) point.getY());
+
+                if (handle != null) {
+                    // Initiate resize handle drag
+                    draggingResizeHandle = handle;
+
+                    logger.fine(() -> "Started dragging resize handle of " + element.getClass().getSimpleName());
+
+                    // Update cursor to match the resize handle direction
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(handle.getCursorType()));
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Handles the dragging of a link endpoint, updating the drag point and finding
+     * potential targets.
+     * 
+     * @param x the current mouse x coordinate
+     * @param y the current mouse y coordinate
+     */
+    private void handleEndpointDrag(int x, int y) {
+        if (draggingLink == null) {
+            return;
+        }
+
+        // Update drag point
+        dragPoint.setLocation(x, y);
+
+        // Find potential target element under cursor
+        potentialTarget = model.getContainingGraphicalElement(dragPoint);
+
+        // TODO: Validate if reconnection is allowed (Phase 3)
+
+        // Repaint to show visual feedback
+        model.modelChanged();
+    }
+
+    /**
+     * Find the return message that corresponds to a call message. Call and return
+     * messages are created together, with the return message having reversed
+     * source/target and positioned below the call message.
+     * 
+     * @param callMessage the call message to find the return for
+     * @return the corresponding return message, or null if not found
+     */
+    protected ReturnMessageGR findCorrespondingReturnMessage(CallMessageGR callMessage) {
+        // Get all graphical elements in the model
+        for (GraphicalElement element : model.getGraphicalElements()) {
+            if (element instanceof ReturnMessageGR) {
+                ReturnMessageGR returnMsg = (ReturnMessageGR) element;
+
+                // Check if this return message corresponds to the call message
+                // Return message should have reversed endpoints:
+                // Call: A -> B, Return: B -> A
+                if (returnMsg.getSource() == callMessage.getTarget() &&
+                        returnMsg.getTarget() == callMessage.getSource() &&
+                        returnMsg.getY() > callMessage.getY()) {
+
+                    // Also check that it's the first return message after this call
+                    // (to handle multiple calls between same objects)
+                    boolean isImmediate = true;
+                    for (GraphicalElement other : model.getGraphicalElements()) {
+                        if (other instanceof ReturnMessageGR && other != returnMsg) {
+                            ReturnMessageGR otherReturn = (ReturnMessageGR) other;
+                            if (otherReturn.getY() > callMessage.getY() &&
+                                    otherReturn.getY() < returnMsg.getY() &&
+                                    otherReturn.getSource() == returnMsg.getSource() &&
+                                    otherReturn.getTarget() == returnMsg.getTarget()) {
+                                isImmediate = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isImmediate) {
+                        return returnMsg;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Completes the endpoint dragging operation, performing reconnection if over a
+     * valid target.
+     * 
+     * @param x the final mouse x coordinate
+     * @param y the final mouse y coordinate
+     */
+    protected void completeEndpointDrag(int x, int y) {
+        if (draggingLink == null) {
+            return;
+        }
+
+        logger.fine(() -> "Completing endpoint drag at (" + x + ", " + y + ")");
+
+        boolean reconnected = false;
+
+        // Attempt reconnection if over a valid target
+        if (potentialTarget != null) {
+            // Handle class diagram and use case diagram link reconnection
+            if (draggingLink instanceof AbstractLinkGR && potentialTarget instanceof ClassifierGR) {
+                AbstractLinkGR link = (AbstractLinkGR) draggingLink;
+                ClassifierGR newClassifier = (ClassifierGR) potentialTarget;
+
+                if (!link.canReconnect(draggingEndpoint, potentialTarget)) {
+                    logger.warning(() -> "Cannot reconnect to this target");
+                } else {
+                    // Perform the reconnection by replacing the link in the model
+                    // Since LinkGR endpoints are final, we need to create a new link
+                    AbstractLinkGR newLink = null;
+
+                    if (link instanceof AssociationClassGR) {
+                        AssociationClassGR oldAssocClass = (AssociationClassGR) link;
+
+                        // Update domain model
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldAssocClass.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = new AssociationClassGR(newClassifier, oldAssocClass.getB(),
+                                        oldAssocClass.getAssociationClass());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldAssocClass.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = new AssociationClassGR(oldAssocClass.getA(), newClassifier,
+                                        oldAssocClass.getAssociationClass());
+                            }
+                        }
+                    } else if (link instanceof AssociationGR) {
+                        AssociationGR oldAssoc = (AssociationGR) link;
+
+                        // Update domain model
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldAssoc.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldAssoc.createWithNewEndpoints(newClassifier, oldAssoc.getB());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldAssoc.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldAssoc.createWithNewEndpoints(oldAssoc.getA(), newClassifier);
+                            }
+                        }
+                    } else if (link instanceof DependencyGR) {
+                        DependencyGR oldDep = (DependencyGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldDep.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldDep.createWithNewEndpoints(newClassifier, oldDep.getClassB());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldDep.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldDep.createWithNewEndpoints(oldDep.getClassA(), newClassifier);
+                            }
+                        }
+                    } else if (link instanceof RealizationGR) {
+                        RealizationGR oldReal = (RealizationGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldReal.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldReal.createWithNewEndpoints((ClassGR) newClassifier,
+                                        oldReal.getTheInterface());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldReal.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldReal.createWithNewEndpoints(oldReal.getTheClass(),
+                                        (InterfaceGR) newClassifier);
+                            }
+                        }
+                    } else if (link instanceof GeneralizationGR) {
+                        GeneralizationGR oldGen = (GeneralizationGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            // Source is the child/base class
+                            reconnected = oldGen.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldGen.createWithNewEndpoints(newClassifier, oldGen.getSuperClass());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            // Target is the parent/super class
+                            reconnected = oldGen.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldGen.createWithNewEndpoints(oldGen.getBaseClass(), newClassifier);
+                            }
+                        }
+                    } else if (link instanceof UCAssociationGR) {
+                        UCAssociationGR oldUCAssoc = (UCAssociationGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldUCAssoc.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCAssoc.createWithNewEndpoints((UCActorGR) newClassifier,
+                                        (UseCaseGR) oldUCAssoc.getTarget());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldUCAssoc.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCAssoc.createWithNewEndpoints((UCActorGR) oldUCAssoc.getSource(),
+                                        (UseCaseGR) newClassifier);
+                            }
+                        }
+                    } else if (link instanceof UCIncludeGR) {
+                        UCIncludeGR oldUCInclude = (UCIncludeGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldUCInclude.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCInclude.createWithNewEndpoints((UseCaseGR) newClassifier,
+                                        (UseCaseGR) oldUCInclude.getTarget());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldUCInclude.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCInclude.createWithNewEndpoints((UseCaseGR) oldUCInclude.getSource(),
+                                        (UseCaseGR) newClassifier);
+                            }
+                        }
+                    } else if (link instanceof UCExtendGR) {
+                        UCExtendGR oldUCExtend = (UCExtendGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldUCExtend.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCExtend.createWithNewEndpoints((UseCaseGR) newClassifier,
+                                        (UseCaseGR) oldUCExtend.getTarget());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldUCExtend.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCExtend.createWithNewEndpoints((UseCaseGR) oldUCExtend.getSource(),
+                                        (UseCaseGR) newClassifier);
+                            }
+                        }
+                    } else if (link instanceof UCGeneralizationGR) {
+                        UCGeneralizationGR oldUCGen = (UCGeneralizationGR) link;
+
+                        if (draggingEndpoint == EndpointType.SOURCE) {
+                            reconnected = oldUCGen.reconnectSource(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCGen.createWithNewEndpoints((UCDComponentGR) newClassifier,
+                                        (UCDComponentGR) oldUCGen.getTarget());
+                            }
+                        } else if (draggingEndpoint == EndpointType.TARGET) {
+                            reconnected = oldUCGen.reconnectTarget(newClassifier);
+                            if (reconnected) {
+                                newLink = oldUCGen.createWithNewEndpoints((UCDComponentGR) oldUCGen.getSource(),
+                                        (UCDComponentGR) newClassifier);
+                            }
+                        }
+                    }
+
+                    if (reconnected && newLink != null) {
+                        // Replace the old link with the new one in the model
+                        model.removeGraphicalElement(link);
+                        model.addGraphicalElement(newLink);
+
+                        logger.fine(() -> "Successfully reconnected " + draggingEndpoint + " endpoint to: "
+                                + newClassifier.getClassifier().getName());
+
+                        // Create undo/redo edit
+                        ReconnectLinkEdit edit = new ReconnectLinkEdit(link, newLink, model, draggingEndpoint);
+                        parentComponent.getUndoSupport().postEdit(edit);
+
+                        // Update selection tracking
+                        if (selectedElements.contains(link)) {
+                            selectedElements.remove(link);
+                            selectedElements.add(newLink);
+                        }
+                    } else if (reconnected) {
+                        logger.warning(() -> "Failed to reconnect " + draggingEndpoint + " endpoint");
+                    }
+                }
+            } else if (draggingLink instanceof SDMessageGR && potentialTarget instanceof RoleClassifierGR) {
+                // Handle sequence diagram message reconnection
+                SDMessageGR message = (SDMessageGR) draggingLink;
+                RoleClassifierGR newLifeline = (RoleClassifierGR) potentialTarget;
+
+                if (!message.canReconnect(draggingEndpoint, potentialTarget)) {
+                    logger.warning(() -> "Cannot reconnect message to this target");
+                } else {
+                    // Store old endpoints for undo
+                    RoleClassifierGR oldMessageEndpoint = (draggingEndpoint == EndpointType.SOURCE)
+                            ? message.getSource()
+                            : message.getTarget();
+
+                    // For call messages, find the corresponding return message BEFORE reconnection
+                    ReturnMessageGR returnMsg = null;
+                    RoleClassifierGR oldReturnEndpoint = null;
+                    if (message instanceof CallMessageGR) {
+                        returnMsg = findCorrespondingReturnMessage((CallMessageGR) message);
+                        if (returnMsg != null) {
+                            logger.fine(() -> "Found corresponding return message to update");
+                            // Store old return message endpoint for undo
+                            oldReturnEndpoint = (draggingEndpoint == EndpointType.SOURCE)
+                                    ? returnMsg.getTarget()
+                                    : returnMsg.getSource();
+                        }
+                    }
+
+                    if (draggingEndpoint == EndpointType.SOURCE) {
+                        reconnected = message.reconnectSource(newLifeline);
+
+                        // If reconnecting source of a call message, update corresponding return
+                        // message's target
+                        if (reconnected && returnMsg != null) {
+                            returnMsg.reconnectTarget(newLifeline);
+                            logger.fine(() -> "Also updated corresponding return message target");
+                        }
+                    } else if (draggingEndpoint == EndpointType.TARGET) {
+                        reconnected = message.reconnectTarget(newLifeline);
+
+                        // If reconnecting target of a call message, update corresponding return
+                        // message's source
+                        if (reconnected && returnMsg != null) {
+                            returnMsg.reconnectSource(newLifeline);
+                            logger.fine(() -> "Also updated corresponding return message source");
+                        }
+                    }
+
+                    if (reconnected) {
+                        logger.fine(() -> "Successfully reconnected " + draggingEndpoint
+                                + " endpoint of message to: " + newLifeline.getRoleClassifier().getName());
+
+                        // Create undo/redo edits
+                        if (returnMsg != null && oldReturnEndpoint != null) {
+                            // For call messages, create compound edit for both message and return message
+                            CompoundEdit compoundEdit = new CompoundEdit();
+
+                            ReconnectMessageEdit messageEdit = new ReconnectMessageEdit(
+                                    message, model, oldMessageEndpoint, newLifeline, draggingEndpoint);
+                            compoundEdit.addEdit(messageEdit);
+
+                            // Return message has opposite endpoint
+                            EndpointType returnEndpoint = (draggingEndpoint == EndpointType.SOURCE)
+                                    ? EndpointType.TARGET
+                                    : EndpointType.SOURCE;
+                            ReconnectMessageEdit returnEdit = new ReconnectMessageEdit(
+                                    returnMsg, model, oldReturnEndpoint, newLifeline, returnEndpoint);
+                            compoundEdit.addEdit(returnEdit);
+
+                            compoundEdit.end();
+                            parentComponent.getUndoSupport().postEdit(compoundEdit);
+                        } else {
+                            // For simple messages, create single edit
+                            ReconnectMessageEdit edit = new ReconnectMessageEdit(
+                                    message, model, oldMessageEndpoint, newLifeline, draggingEndpoint);
+                            parentComponent.getUndoSupport().postEdit(edit);
+                        }
+                    } else {
+                        logger.warning(() -> "Failed to reconnect " + draggingEndpoint + " endpoint of message");
+                    }
+                }
+            }
+        } // Log if drag was cancelled
+        if (!reconnected) {
+            if (potentialTarget == null) {
+                logger.fine(() -> "Endpoint drag cancelled - no target under cursor");
+            } else {
+                logger.warning(() -> "Endpoint drag cancelled - invalid target: "
+                        + potentialTarget.getClass().getSimpleName());
+                JOptionPane.showMessageDialog(
+                        parentComponent,
+                        "Endpoint drag cancelled - invalid target!",
+                        "Reconnection Failed",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+        // Reset drag state
+        draggingLink = null;
+        draggingEndpoint = EndpointType.NONE;
+        dragPoint = null;
+        potentialTarget = null;
+
+        // Restore cursor
+        parentComponent.getView().setCursor(Cursor.getDefaultCursor());
+
+        // Repaint
+        model.modelChanged();
+    }
+
+    /**
+     * Updates the cursor based on whether the mouse is hovering over a resize
+     * handle. Changes to appropriate resize cursor when over a handle of a selected
+     * resizable element.
+     * 
+     * @param event the mouse event containing the current mouse position
+     * @return true if cursor was set for a resize handle, false otherwise
+     */
+    private boolean updateCursorForResizeHandle(MouseEvent event) {
+        int scaledX = scale(event.getX());
+        int scaledY = scale(event.getY());
+
+        // Check if hovering over a resize handle of any selected resizable element
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof Resizable) {
+                Resizable resizable = (Resizable) element;
+
+                // Check if mouse is over a resize handle
+                ResizeHandle handle = resizable.getResizeHandle(scaledX, scaledY);
+                if (handle != null) {
+                    // Mouse is over a resize handle - show appropriate resize cursor
+                    parentComponent.getView().setCursor(
+                            Cursor.getPredefinedCursor(handle.getCursorType()));
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Updates the cursor based on whether the mouse is hovering over a link
+     * endpoint. Changes to HAND_CURSOR when over an endpoint of a selected link,
+     * otherwise DEFAULT_CURSOR. Also updates hover state for visual feedback.
+     * 
+     * @param event the mouse event containing the current mouse position
+     */
+    private void updateCursorForLinkEndpoint(MouseEvent event) {
+        Point2D mousePoint = new Point2D.Double(scale(event.getX()), scale(event.getY()));
+
+        boolean overEndpoint = false;
+
+        // Check if hovering over an endpoint of any selected link or message
+        for (GraphicalElement element : selectedElements) {
+            if (element instanceof AbstractLinkGR) {
+                AbstractLinkGR link = (AbstractLinkGR) element;
+                EndpointType endpointType = link.getEndpointAtPoint(mousePoint);
+
+                if (endpointType != EndpointType.NONE) {
+                    // Mouse is over an endpoint - show hand cursor
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    overEndpoint = true;
+                    break;
+                }
+            } else if (element instanceof SDMessageGR) {
+                SDMessageGR message = (SDMessageGR) element;
+                EndpointType endpointType = message.getEndpointAtPoint(mousePoint);
+
+                // Update hover state for visual feedback
+                message.setHoveredEndpoint(endpointType);
+
+                if (endpointType != EndpointType.NONE) {
+                    // Mouse is over an endpoint - show hand cursor
+                    parentComponent.getView().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    overEndpoint = true;
+                    model.modelChanged(); // Trigger repaint for hover feedback
+                    break;
+                }
+            }
+        }
+
+        // Clear hover state for messages not being hovered
+        if (!overEndpoint) {
+            for (GraphicalElement element : selectedElements) {
+                if (element instanceof SDMessageGR) {
+                    SDMessageGR message = (SDMessageGR) element;
+                    if (message.getHoveredEndpoint() != EndpointType.NONE) {
+                        message.setHoveredEndpoint(EndpointType.NONE);
+                        model.modelChanged(); // Trigger repaint
+                    }
+                }
+            }
+        }
+
+        // Not over any endpoint - show default cursor
+        if (!overEndpoint) {
+            parentComponent.getView().setCursor(Cursor.getDefaultCursor());
+        }
+    }
 }

@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
- *
  * @author Biser
  */
 public abstract class ResizeHandle extends GraphicalElement {
@@ -19,6 +18,13 @@ public abstract class ResizeHandle extends GraphicalElement {
         width = SIZE;
         height = SIZE;
     }
+
+    /**
+     * Returns the appropriate cursor for this resize handle.
+     * 
+     * @return the cursor type for this handle's direction
+     */
+    public abstract int getCursorType();
 
     public boolean contains(Point2D point) {
         Rectangle2D.Double rect = new Rectangle2D.Double(
@@ -49,6 +55,15 @@ public abstract class ResizeHandle extends GraphicalElement {
     protected abstract void resizeElement(int x, int y);
 
     protected abstract void resizeContext(Resizable context, Resizable element);
+
+    /**
+     * Returns the resizable element that this handle is associated with.
+     * 
+     * @return the resizable element being resized by this handle
+     */
+    public Resizable getResizableElement() {
+        return resizableElement;
+    }
 
     /*
      * Calculates the starting point according to the resizable element

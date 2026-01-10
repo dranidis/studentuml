@@ -18,8 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -59,23 +59,27 @@ import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.Colors;
 import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.FrameProperties;
-import edu.city.studentuml.util.NewversionChecker;
 import edu.city.studentuml.util.ObjectFactory;
 import edu.city.studentuml.util.Settings;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.TreeExpansionState;
 import edu.city.studentuml.util.validation.Rule;
+import edu.city.studentuml.util.version.GitHubVersionProvider;
+import edu.city.studentuml.util.version.VersionChecker;
+import edu.city.studentuml.util.version.PomVersionLoader;
 import edu.city.studentuml.view.gui.components.HTMLEditorPane;
 import edu.city.studentuml.view.gui.components.ProjectToolBar;
 import edu.city.studentuml.view.gui.menu.MenuBar;
 
-public abstract class ApplicationGUI extends JPanel implements KeyListener, Observer {
+/**
+ * Main application GUI panel. Contains legacy applet support that is
+ * deprecated.
+ */
+public abstract class ApplicationGUI extends JPanel implements KeyListener, PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(ApplicationGUI.class.getName());
 
-    public static boolean isApplet = false;
     protected StudentUMLFrame frame = null;
-    protected StudentUMLAppletAPI applet = null;
     protected boolean repairMode = false;
     protected UMLProject umlProject = UMLProject.getInstance();
     protected CentralRepository centralRepository;
@@ -107,12 +111,13 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     protected boolean closingOrLoading = false;
 
     protected MenuBar menuBar;
+    
+    protected RepositoryViewerDialog repositoryViewerDialog;
 
     protected ApplicationGUI(StudentUMLFrame frame) {
 
         loadLookAndFeel();
 
-        isApplet = false;
         this.frame = frame;
         instance = this;
         initialize();
@@ -126,8 +131,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         frame.setVisible(true);
 
-        ObjectFactory.getInstance().addObserver(this);
-        umlProject.addObserver(this);
+        ObjectFactory.getInstance().addPropertyChangeListener(this);
+        umlProject.addPropertyChangeListener(this);
 
         setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
         showFactsTab(Settings.showFacts());
@@ -159,16 +164,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.fine(() -> "Using look and feel: " + UIManager.getLookAndFeel().getClass().getName());
     }
 
-    protected ApplicationGUI(StudentUMLAppletAPI applet) {
-        isApplet = true;
-        this.applet = applet;
-        instance = this;
-        initialize();
-        applet.getContentPane().add(this);
-        applet.setVisible(true);
-        setRunTimeConsistencyCheckAndShowTabbedPane(Settings.isConsistencyCheckEnabled());
-    }
-
     // NEED FOR BACKWARD COMPATIBILITY
     public static ApplicationGUI getInstance() {
         return instance;
@@ -176,7 +171,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
     private void initialize() {
         initializeRules();
-        SystemWideObjectNamePool.getInstance().addObserver(this);
+        SystemWideObjectNamePool.getInstance().addPropertyChangeListener(this);
         setUserId();
         addKeyListener(this);
         createInterface();
@@ -196,11 +191,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
      * sets the user id for coloring purposes (when drawing graphical elements)
      */
     private void setUserId() {
-        if (isApplet) {
-            SystemWideObjectNamePool.getInstance().setUid(applet.getUsername());
-        } else {
-            SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
-        }
+        SystemWideObjectNamePool.getInstance().setUid(Constants.DESKTOP_USER);
     }
 
     private void createInterface() {
@@ -208,7 +199,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         createMenuBar();
         createToolBar();
         createDesktopPane();
-        update(umlProject, this);
+        propertyChange(new PropertyChangeEvent(umlProject, "manualUpdate", null, this));
         createFactsAndMessageTree();
         createDiagramAndConsistencyArea();
         createRepairPopupMenu();
@@ -217,12 +208,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     private void createMenuBar() {
-        if (!isApplet) {
-            menuBar = new MenuBar(this);
-            frame.setJMenuBar(menuBar.getjMenuBar());
-        } else {
-            applet.setJMenuBar(new MenuBar(this).getjMenuBar());
-        }
+        menuBar = new MenuBar(this);
+        frame.setJMenuBar(menuBar.getjMenuBar());
     }
 
     private void createToolBar() {
@@ -317,11 +304,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             try {
                 URL url = new URL(helpString);
-                if (isApplet) {
-                    applet.getAppletContext().showDocument(url, "_blank");
-                } else {
-                    logger.finest("Nothing done if not applet");
-                }
+                // Desktop application - help URLs would need to be opened in a browser
+                logger.finest("Help URL: " + url);
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(null, "No help URL defined or wrong URL", "Wrong URL",
                         JOptionPane.ERROR_MESSAGE);
@@ -337,14 +321,14 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if ((e.isPopupTrigger())) {
+                if (e.isPopupTrigger()) {
                     showMenu(e);
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if ((e.isPopupTrigger())) {
+                if (e.isPopupTrigger()) {
                     showMenu(e);
                 }
             }
@@ -411,7 +395,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                GraphicsHelper.highlightBorder(null);
+                GraphicsHelper.highlightBorder(button); // why is this null?
             }
 
             @Override
@@ -449,13 +433,16 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         logger.finest(() -> "" + e);
     }
 
-    public void update(Observable observable, Object object) {
-        String objString = "null";
-        if (object != null) {
-            objString = object.getClass().getSimpleName();
-        }
-        final String objStringFinal = objString;
-        logger.finest(() -> ("UPDATE: from: " + observable.getClass().getSimpleName() + " arg: " + objStringFinal));
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        Object object = evt.getNewValue();
+        // String objString = "null";
+        // if (object != null) {
+        //     objString = object.getClass().getSimpleName();
+        // }
+        // final String objStringFinal = objString;
+        //     // logger.info(() -> "propertyChange: from: " + evt.getSource().getClass().getSimpleName() + " property: " + evt.getPropertyName()
+        // + evt.getNewValue() != null ? " newValue: " + evt.getNewValue().getClass().getSimpleName() : " newValue: null");
 
         if (object instanceof SystemWideObjectNamePool) {
             CollectionTreeModel messages = SystemWideObjectNamePool.getInstance().getMessages();
@@ -567,7 +554,12 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             throw new IllegalArgumentException("Unknown diagram (int) type: " + type);
         }
         // modelName
-        return JOptionPane.showInputDialog(dialogText, initialName);
+        StringEditorDialog dialog = new StringEditorDialog(this,
+                "Diagram Name", dialogText, initialName);
+        if (!dialog.showDialog()) {
+            return null;
+        }
+        return dialog.getText();
     }
 
     public abstract void help();
@@ -949,9 +941,6 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         return repairPanel;
     }
 
-    public static boolean isApplet() {
-        return isApplet;
-    }
     /*
      * Below methods are used for remembering the tree expansion state for
      * messageTree is path1 descendant of path2
@@ -982,9 +971,8 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
 
         try {
             UIManager.setLookAndFeel(className);
-        } 
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-        | UnsupportedLookAndFeelException | NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException | NoClassDefFoundError e) {
             try {
                 UIManager.setLookAndFeel(oldFeel);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -993,7 +981,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
             }
             logger.severe(e.getMessage());
             JOptionPane.showMessageDialog(this, "Could not change theme to: " + className, "Error",
-            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1020,7 +1008,7 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
         /*
          * create again the repositoryTreeView
          */
-        umlProject.deleteObserver(repositoryTreeView);
+        umlProject.removePropertyChangeListener(repositoryTreeView);
         RepositoryTreeView newRepositoryTreeView = new RepositoryTreeView();
         JScrollPane newTreePane = new JScrollPane(newRepositoryTreeView);
 
@@ -1077,16 +1065,52 @@ public abstract class ApplicationGUI extends JPanel implements KeyListener, Obse
     }
 
     public void checkForUpdates() {
-        NewversionChecker.checkForNewVersion(frame);
+        String latestVersion = new GitHubVersionProvider(
+                "https://api.github.com/repos/dranidis/studentuml/releases/latest").getLatestVersion();
+        String currentVersion = new PomVersionLoader().getCurrentVersion();
+
+        VersionChecker checker = new VersionChecker(latestVersion, currentVersion);
+
+        if (checker.shouldNotify()) {
+            showNewVersionDialog(checker);
+        } else {
+            showUpToDateDialog(checker);
+        }
+    }
+    
+    public void openRepositoryViewer() {
+        if (repositoryViewerDialog == null || !repositoryViewerDialog.isVisible()) {
+            repositoryViewerDialog = new RepositoryViewerDialog(frame, centralRepository, umlProject);
+            repositoryViewerDialog.setVisible(true);
+        } else {
+            repositoryViewerDialog.toFront();
+            repositoryViewerDialog.requestFocus();
+        }
+    }
+    
+    public RepositoryViewerDialog getRepositoryViewerDialog() {
+        return repositoryViewerDialog;
+    }
+
+    private void showNewVersionDialog(VersionChecker checker) {
+        final String DOWNLOAD_URL = "https://github.com/dranidis/studentuml/releases";
+        HTMLEditorPane.showHTMLbody(frame,
+                "A new version (" + checker.getLatestVersion() + ") is available for download at <a href=\""
+                        + DOWNLOAD_URL + "\">" + DOWNLOAD_URL + "</a>");
+    }
+
+    private void showUpToDateDialog(VersionChecker checker) {
+        HTMLEditorPane.showHTMLbody(frame,
+                "You are already using the latest version (" + checker.getCurrentVersion() + ").");
     }
 
     public void aboutStudentUML() {
-        final String  ISSUES_URL = "https://bitbucket.org/studentuml/studentuml-public/issues?status=new&status=open";
+        final String ISSUES_URL = "https://github.com/dranidis/studentuml/issues";
 
         StringBuilder sb = new StringBuilder();
 
         sb.append("<h1>StudentUML</h1>");
-        sb.append("<p>" + "Version: " + NewversionChecker.getCurrentVersion() + "</p>");
+        sb.append("<p>" + "Version: " + new PomVersionLoader().getCurrentVersion() + "</p>");
         sb.append("<p>Report issues at:</p>");
         sb.append("<p><a href=\"" + ISSUES_URL + "\">" + ISSUES_URL + "</a></p>");
 

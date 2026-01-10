@@ -8,7 +8,6 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- *
  * @author draganbisercic
  */
 public class EditReturnMessageEdit extends AbstractUndoableEdit {
@@ -18,10 +17,11 @@ public class EditReturnMessageEdit extends AbstractUndoableEdit {
     private ReturnMessage redoReturnMessage;
     private DiagramModel model;
 
-    public EditReturnMessageEdit(ReturnMessage originalReturnMessage, ReturnMessage undoReturnMessage, DiagramModel model) {
+    public EditReturnMessageEdit(ReturnMessage originalReturnMessage, ReturnMessage newReturnMessage,
+            DiagramModel model) {
         this.originalReturnMessage = originalReturnMessage;
-        this.undoReturnMessage = undoReturnMessage.clone();
-        this.redoReturnMessage = originalReturnMessage.clone();
+        this.undoReturnMessage = originalReturnMessage.clone();
+        this.redoReturnMessage = newReturnMessage.clone();
         this.model = model;
     }
 

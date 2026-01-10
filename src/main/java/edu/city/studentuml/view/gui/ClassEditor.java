@@ -2,6 +2,7 @@ package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -15,21 +16,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import edu.city.studentuml.controller.ClassEditorI;
 import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.Classifier;
-import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
+import edu.city.studentuml.view.gui.components.Editor;
 import edu.city.studentuml.view.gui.components.MethodsPanel;
 
 /**
  * @author Ervin Ramollari
  * @author Dimitris Dranidis
  */
-public class ClassEditor extends ClassifierEditor implements ClassEditorI {
+public class ClassEditor extends ClassifierEditor implements Editor<DesignClass> {
+
+    private static final String TITLE = "Class Editor";
 
     private List<Attribute> attributesFromConceptualClass;
     private AttributesPanel attributesPanel;
@@ -46,8 +48,17 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
 
     private JPanel centerPanel;
 
-    public ClassEditor(DesignClass designClass, CentralRepository cr) {
-        super(designClass, cr, ClassifierEditor.AUTO_COMPLETE);
+    /**
+     * Constructor for Editor<DesignClass> pattern. Creates a ClassEditor with an
+     * empty DesignClass and initializes the UI.
+     */
+    public ClassEditor(CentralRepository cr) {
+        super(new DesignClass(""), cr, AUTO_COMPLETE);
+
+        initializeUI(cr);
+    }
+
+    private void initializeUI(CentralRepository cr) {
 
         stereotypeLabel = new JLabel("Stereotype: ");
         stereotypeField = new JTextField(15);
@@ -92,18 +103,24 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
         add(bottomPanel, BorderLayout.SOUTH);
 
         attributesFromConceptualClass = new Vector<>();
+    }
 
-        if (designClass != null) {
-            if (designClass.getStereotype() != null) {
-                stereotypeField.setText(designClass.getStereotype());
-            }
+    @Override
+    public DesignClass editDialog(DesignClass designClass, Component parent) {
+        setClassifierName(designClass.getName());
+        if (designClass.getStereotype() != null) {
+            stereotypeField.setText(designClass.getStereotype());
+        } else {
+            stereotypeField.setText("");
+        }
+        attributesPanel.setElements(designClass.getAttributes());
+        methodsPanel.setElements(designClass.getMethods());
 
-            attributesPanel.setElements(designClass.getAttributes());
-            methodsPanel.setElements(designClass.getMethods());
-
-            setAttributesFromConceptualClass();
-        }   
-     }
+        if (!showDialog(parent, TITLE)) {
+            return null;
+        }
+        return getDesignClass();
+    }
 
     public DesignClass getDesignClass() {
         DesignClass newClass = new DesignClass(getClassName());
@@ -132,32 +149,6 @@ public class ClassEditor extends ClassifierEditor implements ClassEditorI {
 
     private Vector<Method> getMethods() {
         return methodsPanel.getElements();
-    }
-
-    /**
-     * Populates attributes with attributes from a conceptual class with the same
-     * name.
-     */
-    private void setAttributesFromConceptualClass() {
-        attributesFromConceptualClass.clear();
-
-        if (!getClassName().equals("")) {
-            ConceptualClass concept = repository.getConceptualClass(getClassName());
-            if (concept != null) {
-                concept.getAttributes().forEach(conceptualAttribute -> {
-                    if ((!isAttributeInList(conceptualAttribute, getAttributes()))
-                            && (!isAttributeInList(conceptualAttribute, attributesFromConceptualClass))) {
-                        attributesFromConceptualClass.add(conceptualAttribute.clone());
-                    }
-                });
-            }
-        }
-
-        updateAddAttributesPanel();
-    }
-
-    private boolean isAttributeInList(Attribute attribute, List<Attribute> attributes) {
-        return attributes.stream().anyMatch(a -> attribute.getName().equals(a.getName()));
     }
 
     private void updateAddAttributesPanel() {

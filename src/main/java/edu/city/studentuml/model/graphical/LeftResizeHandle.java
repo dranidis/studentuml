@@ -1,9 +1,9 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Cursor;
 import java.awt.Point;
 
 /**
- *
  * @author Biser
  */
 public class LeftResizeHandle extends ResizeHandle {
@@ -13,29 +13,36 @@ public class LeftResizeHandle extends ResizeHandle {
     }
 
     @Override
+    public int getCursorType() {
+        return Cursor.W_RESIZE_CURSOR;
+    }
+
+    @Override
     public void resizeElement(int x, int y) {
         int oldX = resizableElement.getStartingPoint().x;
-        if (oldX != x) {
-            int widthDifference = oldX - x;
-            Point p = new Point(x, resizableElement.getStartingPoint().y);
+        if (oldX == x)
+            return;
 
-            int border = resizableElement.getLeftBorder();
-            if (p.x < border) {
-                resizableElement.setStartingPoint(p);
-                resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
-            } else {
-                widthDifference = oldX - border;
-                p.setLocation(border, p.y);
-                resizableElement.setStartingPoint(p);
-                resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
-            }
+        int widthDifference = oldX - x;
+        Point p = new Point(x, resizableElement.getStartingPoint().y);
+
+        int border = resizableElement.getLeftBorder();
+        if (p.x < border) {
+            resizableElement.setStartingPoint(p);
+            resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
+        } else {
+            // Hit minimum: clamp to border position
+            widthDifference = oldX - border;
+            p.setLocation(border, p.y);
+            resizableElement.setStartingPoint(p);
+            resizableElement.setWidth(resizableElement.getWidth() + widthDifference);
         }
     }
 
     @Override
     protected void resizeContext(Resizable context, Resizable element) {
         int oldContextX = context.getStartingPoint().x;
-        int elementX = element.getStartingPoint().x - ResizeHandle.SIZE;
+        int elementX = element.getStartingPoint().x - SIZE;
         int widthDifference = oldContextX - elementX;
 
         Point p = new Point(elementX, context.getStartingPoint().y);
@@ -64,7 +71,7 @@ public class LeftResizeHandle extends ResizeHandle {
         // Resize handles don't have domain objects - they're purely graphical UI controls
         // Just create a new handle referencing the same resizable element
         LeftResizeHandle clonedHandle = new LeftResizeHandle(this.resizableElement);
-        
+
         return clonedHandle;
     }
 

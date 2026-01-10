@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import edu.city.studentuml.model.domain.ControlNode;
@@ -67,9 +66,8 @@ public abstract class AbstractDecisionNodeGR extends LeafNodeGR {
         // draw decision node string
         if (!component.toString().equals("")) {
             String decisionName = component.toString();
-            TextLayout layout = new TextLayout(decisionName, font, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(decisionName, font, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = height + NAME_Y_OFFSET - (int) bounds.getY();
 
             g.setFont(font);

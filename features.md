@@ -2,22 +2,38 @@
 
 This document tracks potential features and improvements for StudentUML.
 
-## Diagram Relationships
+## Known Bugs
 
-### Support Dependencies between Classes and Interfaces
+### Association Class Display Bug in DCD
 
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Currently, Dependency relationships only work between DesignClass objects. We should support dependencies from a DesignClass to an Interface, which is a common UML pattern when a class uses an interface without implementing it.
+**Status:** Bug - Not fixed  
+**Priority:** High  
+**Description:** When creating an association class between two classes in a Design Class Diagram (DCD), all three classes (the two original classes and the association class) are incorrectly displayed as association classes with dashed lines connecting them. The two original classes should be displayed as normal classes with solid borders, only the association class itself should have the dashed line to the association.
+
+**Steps to Reproduce:**
+
+1. Create a new DCD diagram
+2. Add two regular classes (e.g., Class A and Class B)
+3. Create an association class connecting them
+4. Observe that all three classes now appear as association classes with dashed lines
+
+**Expected Behavior:**
+
+-   Class A: Normal class with solid border
+-   Class B: Normal class with solid border
+-   Association Class: Connected to the association line with a dashed line
+-   Only the association class should have dashed line representation
 
 **Technical Notes:**
 
--   `ObjectFactory.newdependency()` (line ~946) currently casts both `from` and `to` to DesignClass
--   `ObjectFactory.newdependencygr()` (line ~779) casts `classb` to ClassGR
--   Need to handle Interface/InterfaceGR in addition to DesignClass/ClassGR
--   May need to create a common base type or use conditional logic
+-   Issue likely in `AssociationClassGR` or the rendering logic for associations
+-   May be related to how `ClassGR` instances are marked or styled when part of an association class
+-   Check `AssociationClassGR.paint()` and related rendering methods
+-   Verify that regular classes maintain their style independently of participation in association classes
 
-**Use Case:** When documenting that a class depends on an interface (e.g., VersionChecker depends on VersionProvider interface), currently this causes a ClassCastException.
+**Use Case:** Association classes are a fundamental UML construct. The current bug makes diagrams confusing and non-standard, as it's unclear which classes are actual association classes versus regular classes participating in associations.
+
+## Diagram Relationships
 
 ### Distinction Between Navigability and End Ownership in Associations
 
@@ -75,7 +91,100 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** Projects using generic types (List<T>, Map<K,V>, etc.) cause consistency checking to fail with Prolog syntax errors.
 
+### Activity Diagram Node Degree Constraints
+
+**Status:** Not implemented  
+**Priority:** High  
+**Description:** Enforce control-flow degree constraints in Activity Diagrams:
+
+-   Initial nodes must have exactly one outgoing Control Flow.
+-   Final nodes (Activity Final and Flow Final) must have exactly one incoming Control Flow.
+
+Violations should be prevented at creation time (with a user-facing error/warning) and detected during consistency checks.
+
+**Technical Notes:**
+
+-   Domain types: `InitialNode`, `ActivityFinalNode`, `FlowFinalNode` under `edu.city.studentuml.model.domain`.
+-   Graphical types: `InitialNodeGR`, `ActivityFinalNodeGR`, `FlowFinalNodeGR` under `edu.city.studentuml.model.graphical`.
+-   Edge types: `ControlFlow` (domain) and `ControlFlowGR` (graphical).
+-   Creation path to validate (to locate exact enforcement points):
+    -   Add-element controllers for AD (e.g., `AddControlFlowController` or equivalent) or a generic add-edge controller.
+    -   Reconnection logic in `EdgeGR` and specific GRs (to block making an invalid degree via reconnect).
+    -   Consider a model-level validation in `NodeComponent` or a dedicated validator that counts `getOutgoingEdges()` / `getIncomingEdges()`.
+-   Suggested enforcement:
+    -   Before creating a `ControlFlow` where source is `InitialNode`, check `source.getOutgoingEdges().isEmpty()`; if not empty, block and show: "Initial node can have a single outgoing control flow".
+    -   Before creating a `ControlFlow` where target is `ActivityFinalNode` or `FlowFinalNode`, check `target.getIncomingEdges().isEmpty()`; if not empty, block and show: "Final nodes can have a single incoming control flow".
+    -   Mirror these checks in reconnection handlers (`ControlFlowGR` / `EdgeGR`) to prevent violating the constraints via reconnect.
+    -   Add consistency rules to the Prolog ruleset: count incoming/outgoing degrees for final/initial nodes and report violations.
+-   XML Save/Load:
+    -   On load, optionally run a validation pass to flag diagrams that violate the constraints.
+    -   Consider auto-fix option (disabled by default) that removes surplus flows or highlights them.
+-   Tests:
+    -   Unit tests for creation blocking in controllers.
+    -   Integration tests: attempt to draw invalid flows and assert error dialogs; ensure valid flows are allowed.
+
+**Use Case:** In UML Activity Diagrams, initial nodes represent the single entry point of the activity, and final nodes represent termination points. Allowing multiple outgoing/incoming flows makes the diagram ambiguous and violates UML semantics. Enforcing these constraints keeps models clean and semantically correct.
+
+### Weight Validation for Control and Object Flows
+
+**Status:** Not implemented  
+**Priority:** Medium  
+**Description:** Validate that the weight property of Control Flows and Object Flows in Activity Diagrams is a positive integer. The weight determines the number of tokens that traverse the edge when fired, and must be at least 1.
+
+**Technical Notes:**
+
+-   Domain types: `ControlFlow` and `ObjectFlow` under `edu.city.studentuml.model.domain`
+-   Both classes have a `weight` property (likely int or String)
+-   Need to add validation:
+    -   In setters: `setWeight(int weight)` should throw exception or ignore if weight < 1
+    -   In editors: `ControlFlowEditor` and `ObjectFlowEditor` should validate input before accepting
+    -   Show error message: "Weight must be a positive integer (≥ 1)"
+-   Consider default value: Weight defaults to 1 if not specified (standard UML behavior)
+-   UI validation:
+    -   Add input validation in property dialogs/editors
+    -   Use `JSpinner` with minimum value of 1 instead of free-text field
+    -   Or use regex validation if text field: `^[1-9][0-9]*$`
+-   XML serialization: Ensure invalid weights are not saved or are corrected on load
+-   Consistency checking: Add Prolog rule to detect flows with weight < 1
+-   Tests:
+    -   Unit tests for weight setter validation
+    -   UI tests for editor validation
+    -   Integration tests for XML load with invalid weights
+
+**Use Case:** In UML Activity Diagrams, the weight property specifies how many tokens must be available on the edge for it to be traversed. A weight of 0 or negative value is semantically invalid and would prevent the flow from ever being traversed or cause undefined behavior. Enforcing positive integer validation ensures diagrams remain semantically valid and prevents modeling errors.
+
 ## Class Diagram Features
+
+### Class Renaming Undo/Redo Issues
+
+**Status:** Bug / Not fixed  
+**Priority:** High  
+**Description:** There is an issue with Classes and renaming them. The logic in `editClassifierWithDialog` is not correct. Renaming to an existing class name and multiple undo/redo leave the repository in inconsistent states.
+
+**Reproduction Steps:**
+
+1. **Scenario 1:** Create class, rename to "A", create another class, rename to "A", then undo → **Expected:** Second class name reverts to "" (empty) **Actual:** The class gets deleted instead
+2. **Scenario 2:** Create two classes, rename first to "A", rename second to "B", then rename second to "A", then undo → **Expected:** Undo should work correctly **Actual:** Undo does not work
+3. **Scenario 3:** Multiple undos leave the repository with extra classes at the end instead of proper state restoration
+
+**Technical Notes:**
+
+-   Problem location: `GraphicalElement.editClassifierWithDialog()` method (line 407)
+-   This method implements "Silent Merge on Conflict" pattern (Pattern 2)
+-   Affects: `ClassGR`, `ConceptualClassGR`, `InterfaceGR`
+-   Current algorithm:
+    -   When name conflict detected: performs silent merge (replaces reference, optionally removes original)
+    -   When no conflict: creates undo/redo edit
+-   Issues with empty names ("") and multiple renames not handled correctly
+-   Undo/redo stack becomes inconsistent with repository state
+-   Probably other issues as well
+
+**Investigation Needed:** This requires comprehensive investigation of the name conflict resolution logic, especially:
+
+-   How empty names are handled during undo/redo
+-   Whether silent merges should create undo edits or not
+-   Repository cleanup when classes are removed/merged
+-   Interaction between multiple rename operations and undo stack
 
 ### Support Package Visibility for Methods and Attributes
 
@@ -211,116 +320,25 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** When modeling designs that rely on abstraction and polymorphism (Strategy pattern, dependency injection, plugin architectures), it's important to show that clients depend on abstract types, not concrete implementations. For example, showing `VersionChecker` calling `getLatestVersion()` on a `provider : <<interface>> VersionProvider` makes it clear that any implementation can be used. Concrete implementations (like `GitHubVersionProvider`) can be shown separately using found messages to demonstrate actual execution flow without coupling the abstract interaction to a specific implementation.
 
-### Support Combined Fragments
-
-**Status:** Not implemented  
-**Status:** Not implemented  
-**Priority:** High  
-**Description:** Add support for UML 2.x combined fragments in sequence diagrams, including alternatives (alt), options (opt), loops (loop), parallel execution (par), and other interaction operators. Combined fragments allow modeling of control flow, conditionals, and iteration in sequence diagrams.
-
-**Reference:** https://www.uml-diagrams.org/sequence-diagrams-combined-fragment.html
-
-**Technical Notes:**
-
--   UML 2.x defines 12 interaction operators for combined fragments:
-    -   **alt** (alternatives): mutually exclusive conditional paths (if-then-else)
-    -   **opt** (option): optional execution (if-then)
-    -   **loop** (loop): repeated execution with guard condition
-    -   **par** (parallel): concurrent/parallel execution
-    -   **break**: breaking/exception handling
-    -   **critical**: critical region (atomic execution)
-    -   **neg** (negative): invalid/prohibited interaction
-    -   **assert**: mandatory/required interaction
-    -   **strict**: strict sequential ordering
-    -   **seq**: weak sequential ordering
-    -   **ignore**: ignore certain messages
-    -   **consider**: consider only certain messages
--   Implementation requirements:
-    -   Create `CombinedFragmentGR` class for graphical representation
-    -   Create `CombinedFragment` domain class with:
-        -   Operator type (alt, opt, loop, etc.)
-        -   Guard conditions for each operand
-        -   Nested message sequences
-        -   Coverage (which lifelines are included)
-    -   Rendering:
-        -   Rectangle with rounded corners covering relevant lifelines
-        -   Operator label in pentagon in upper left corner (e.g., "alt", "loop")
-        -   Dashed horizontal lines separating operands (for alt)
-        -   Guard conditions in square brackets (e.g., `[x > 0]`, `[else]`)
-        -   Messages within the fragment region
-    -   Support nesting of fragments (e.g., loop inside alt)
-    -   XML serialization for fragment structure, operators, and guards
-    -   UI: Tools to create/edit fragments, set operators and guards
--   Start with most common operators: **alt**, **opt**, **loop** (Priority 1)
--   Add additional operators in subsequent phases (Priority 2)
-
-**Use Case:** Combined fragments are essential for modeling realistic control flow in sequence diagrams. For example:
-
--   **alt**: Show conditional behavior (e.g., "if shouldNotify() then showDialog() else do nothing")
--   **opt**: Show optional operations (e.g., "[new version available] show update dialog")
--   **loop**: Show repeated operations (e.g., "[for each item] process item")
-    Without combined fragments, sequence diagrams can only show simple linear flows, limiting their usefulness for documenting complex interactions with conditionals, loops, and error handling.
-
-## Rendering and Visualization
-
-### Draw UML Notes Below Other Elements
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** UML notes should be rendered below other diagram elements (classes, use cases, actors, activities, etc.) to prevent them from obscuring important diagram content. Currently, notes are drawn correctly with proper z-order in Class Diagrams (CCD/DCD) and Sequence Diagrams (SD), but they appear above other elements in Activity Diagrams (AD) and Use Case Diagrams (UCD).
-
-**Technical Notes:**
-
--   The rendering order is controlled by the order of elements in the graphical elements list
--   In `DiagramView.paintComponent()`, elements are drawn in iteration order
--   Classes implementing correct z-order (notes below):
-    -   `CCDView` / `DCDView`: Notes drawn correctly
-    -   `SDView` / `SSDView`: Notes drawn correctly
--   Classes with incorrect z-order (notes above):
-    -   `ADView`: Notes should be drawn before activities and flows
-    -   `UCDView`: Notes should be drawn before use cases and actors
--   Implementation approach:
-    -   Option 1: Modify `DiagramView.paintComponent()` to render in two passes (notes first, then other elements)
-    -   Option 2: Sort graphical elements by type before rendering (notes have lowest z-index)
-    -   Option 3: Maintain separate list for notes in `DiagramModel` and render them first
-    -   Option 4: Add `getZIndex()` method to `GraphicalElement` interface and sort by z-index
--   Need to ensure XML serialization order doesn't affect functionality
--   Need to verify all diagram types (AD, UCD, CCD, DCD, SD, SSD) handle z-order consistently
-
-**Use Case:** When annotating diagrams with explanatory notes, users expect notes to appear as background elements that don't hide important diagram content (classes, relationships, activities, use cases). The inconsistent behavior between diagram types is confusing and can result in notes obscuring critical diagram elements in AD and UCD views.
-
 ## Copy/Paste Operations
 
-### Copy/Paste Support for Missing Graphical Elements
+### UML Note Y-Position in Sequence Diagrams
 
 **Status:** Not implemented  
-**Priority:** High (Hotfix needed for current release)  
-**Description:** Several graphical element types do not support copy/paste operations, either failing silently without warning or causing errors. Additionally, UMLNotes are not properly linked to copied elements, breaking the connection between notes and diagram elements after paste.
+**Priority:** Low  
+**Description:** When pasting UML notes in Sequence Diagrams, the Y-coordinate should be preserved from the original position (with offset), not calculated relative to the mouse cursor. In Sequence Diagrams, all elements are positioned at the top of the diagram, and the mouse Y-coordinate is irrelevant for vertical positioning.
 
 **Technical Notes:**
 
--   **Unsupported graphical elements** (paste operations fail or are not implemented):
-    -   `DestroyMessageGR` (Sequence Diagrams): No paste support
-    -   `AssociationClassGR` (Class Diagrams): No paste support
-    -   `UCIncludeGR` (Use Case Diagrams): No paste support
-    -   `UCExtendGR` (Use Case Diagrams): No paste support
-    -   `UCGeneralizationGR` (Use Case Diagrams): No paste support
--   **Silent failures** (no user warning when copy/paste doesn't work):
-    -   `ControlFlowGR` (Activity Diagrams): Silently not copied, no warning shown
-    -   `ObjectFlowGR` (Activity Diagrams): Silently not copied, no warning shown
--   **Broken relationships after paste**:
-    -   `UMLNote`: Notes are copied but not properly linked to the copied elements
-    -   After paste, notes remain linked to original elements instead of the newly pasted elements
-    -   Results in dangling note links or incorrect note associations
--   Implementation requirements:
-    -   Add copy/paste support to all missing element types (implement `Copyable<T>` interface)
-    -   Add user warnings when copy operations include unsupported elements
-    -   Fix note linking: Update `UMLNote` references to point to new element IDs after paste
-    -   Update `CopyPasteManager` or equivalent to handle note re-linking during paste
-    -   Add tests for copy/paste operations on all element types
--   Related work: Editor refactoring (see `plan-editor-interface.md`) addressed copy/paste for many elements but revealed these remaining gaps
+-   Current behavior: `SelectionController.pasteClipboard()` uses mouse position (currentMouseY) to calculate offsetY for all elements, including UML notes in SD diagrams
+-   Expected behavior: In Sequence Diagrams, UML notes should use their original Y-coordinate plus a fixed offset, ignoring mouse Y
+-   Implementation:
+    -   In `SelectionController.pasteClipboard()`, detect if target diagram is a Sequence Diagram (SDModel or SSDModel)
+    -   For SD/SSD diagrams: when calculating offsetY for UMLNoteGR elements, use a fixed offset (e.g., 20 pixels) instead of currentMouseY
+    -   For other diagram types: keep current mouse-based positioning behavior
+-   Related code: `SelectionController.pasteClipboard()` lines ~770-795 (offset calculation)
 
-**Use Case:** When duplicating diagram sections or creating variations of existing designs, users expect copy/paste to work consistently for all element types. Silent failures and broken note links cause confusion and data integrity issues. For example, copying a sequence diagram with destroy messages, or copying use case relationships (include/extend/generalization), currently fails without clear feedback. Activity diagrams lose control flow and object flow connections when pasted, making it impossible to duplicate complex activity structures.
+**Use Case:** When copying and pasting elements in Sequence Diagrams, UML notes attached to messages or objects should maintain their relative position in the timeline/Y-axis. Using the mouse Y-coordinate causes notes to jump to unexpected positions since SD elements are always positioned at the top regardless of where the user clicks.
 
 ## Additional Potential Features
 

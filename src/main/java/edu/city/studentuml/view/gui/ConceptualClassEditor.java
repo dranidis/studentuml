@@ -1,9 +1,9 @@
 package edu.city.studentuml.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -12,17 +12,24 @@ import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.view.gui.components.AttributesPanel;
+import edu.city.studentuml.view.gui.components.Editor;
 
 /**
  * @author draganbisercic
  * @author Dimitris Dranidis
  */
-public class ConceptualClassEditor extends ClassifierEditor {
+public class ConceptualClassEditor extends ClassifierEditor implements Editor<ConceptualClass> {
 
+    private static final String TITLE = "Conceptual Class Editor";
     private AttributesPanel attributesPanel;
 
-    public ConceptualClassEditor(ConceptualClass cl, CentralRepository cr) {
-        super(cl, cr);
+    /**
+     * Constructor for Editor<ConceptualClass> interface pattern.
+     * 
+     * @param cr the central repository
+     */
+    public ConceptualClassEditor(CentralRepository cr) {
+        super(new ConceptualClass(""), cr);
 
         attributesPanel = new AttributesPanel("Class attributes", cr);
 
@@ -30,11 +37,18 @@ public class ConceptualClassEditor extends ClassifierEditor {
         add(namePanel, BorderLayout.NORTH);
         add(attributesPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+    }
 
-        if (cl != null) {
+    @Override
+    public ConceptualClass editDialog(ConceptualClass conceptualClass, Component parent) {
+        // Initialize with the conceptual class data
+        setClassifierName(conceptualClass.getName());
+        attributesPanel.setElements(conceptualClass.getAttributes());
 
-            attributesPanel.setElements(cl.getAttributes());
+        if (!showDialog(parent, TITLE)) {
+            return null; // Cancelled
         }
+        return getConceptualClass();
     }
 
     private Vector<Attribute> getAttributes() {
@@ -61,9 +75,8 @@ public class ConceptualClassEditor extends ClassifierEditor {
         ConceptualClass newClass = new ConceptualClass(getClassName());
 
         // add the attributes to the new class
-        Iterator<Attribute> attributeIterator = getAttributes().iterator();
-        while (attributeIterator.hasNext()) {
-            newClass.addAttribute(attributeIterator.next());
+        for (Attribute attribute : getAttributes()) {
+            newClass.addAttribute(attribute);
         }
         return newClass;
     }

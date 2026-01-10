@@ -1,15 +1,20 @@
 package edu.city.studentuml.model.graphical;
 
+import java.awt.Cursor;
 import java.awt.Point;
 
 /**
- *
  * @author Biser
  */
 public class RightResizeHandle extends ResizeHandle {
 
     public RightResizeHandle(Resizable resizableElement) {
         super(resizableElement);
+    }
+
+    @Override
+    public int getCursorType() {
+        return Cursor.E_RESIZE_CURSOR;
     }
 
     @Override
@@ -30,7 +35,7 @@ public class RightResizeHandle extends ResizeHandle {
     @Override
     protected void resizeContext(Resizable context, Resizable element) {
         int oldContextX = context.getStartingPoint().x + context.getWidth();
-        int elementX = element.getStartingPoint().x + element.getWidth() + ResizeHandle.SIZE;
+        int elementX = element.getStartingPoint().x + element.getWidth() + SIZE;
         int widthDifference = elementX - oldContextX;
 
         context.setWidth(context.getWidth() + widthDifference);
@@ -58,7 +63,7 @@ public class RightResizeHandle extends ResizeHandle {
         // Resize handles don't have domain objects - they're purely graphical UI controls
         // Just create a new handle referencing the same resizable element
         RightResizeHandle clonedHandle = new RightResizeHandle(this.resizableElement);
-        
+
         return clonedHandle;
     }
 

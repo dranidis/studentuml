@@ -3,19 +3,26 @@ package edu.city.studentuml.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Dependency;
+import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.DCDModel;
+import edu.city.studentuml.model.graphical.DependencyGR;
 import edu.city.studentuml.model.graphical.GeneralizationGR;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.InterfaceGR;
+import edu.city.studentuml.util.undoredo.EditInterfaceEdit;
 import edu.city.studentuml.view.gui.DCDInternalFrame;
+import edu.city.studentuml.editing.EditContext;
 
 public class DCDSelectionControllerTest {
 
@@ -32,7 +39,7 @@ public class DCDSelectionControllerTest {
         model = new DCDModel("ccd", umlProject);
         internalFrame = new DCDInternalFrame(model, true);
         h = new Helper(model);
-        selectionController = new DCDSelectionController(internalFrame, model);
+        selectionController = new SelectionController(internalFrame, model);
     }
 
     @Test
@@ -229,19 +236,19 @@ public class DCDSelectionControllerTest {
 
         // After paste: original 2 classes + 1 association + pasted 2 classes = 5 elements
         // Association should NOT be copied unless explicitly selected
-        assertEquals("Should have 5 elements after paste (2 original classes, 1 association, 2 pasted classes)", 
-                     5, model.getGraphicalElements().size());
+        assertEquals("Should have 5 elements after paste (2 original classes, 1 association, 2 pasted classes)",
+                5, model.getGraphicalElements().size());
 
         // Count associations - should still have only 1 (the original)
         long associationCount = model.getGraphicalElements().stream()
-            .filter(e -> e instanceof AssociationGR)
-            .count();
+                .filter(e -> e instanceof AssociationGR)
+                .count();
         assertEquals("Should have only 1 association (not copied)", 1, associationCount);
 
         // Find the pasted classes (they should be selected)
         long selectedClassCount = model.getGraphicalElements().stream()
-            .filter(e -> e instanceof ClassGR && e.isSelected())
-            .count();
+                .filter(e -> e instanceof ClassGR && e.isSelected())
+                .count();
         assertEquals("Should have 2 selected classes (the pasted ones)", 2, selectedClassCount);
     }
 
@@ -265,20 +272,20 @@ public class DCDSelectionControllerTest {
         selectionController.pasteClipboard();
 
         // After paste: original 2 classes + 1 association + pasted 2 classes + 1 pasted association = 6 elements
-        assertEquals("Should have 6 elements after paste (original 3 + pasted 3)", 
-                     6, model.getGraphicalElements().size());
+        assertEquals("Should have 6 elements after paste (original 3 + pasted 3)",
+                6, model.getGraphicalElements().size());
 
         // Count associations - should have 2 (one for original, one for pasted)
         long associationCount = model.getGraphicalElements().stream()
-            .filter(e -> e instanceof AssociationGR)
-            .count();
+                .filter(e -> e instanceof AssociationGR)
+                .count();
         assertEquals("Should have 2 associations after paste", 2, associationCount);
 
         // Find the new association
         AssociationGR newAssociation = (AssociationGR) model.getGraphicalElements().stream()
-            .filter(e -> e instanceof AssociationGR && e != originalAssociation)
-            .findFirst()
-            .orElse(null);
+                .filter(e -> e instanceof AssociationGR && e != originalAssociation)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull("Should have created a new association for pasted classes", newAssociation);
 
@@ -286,14 +293,14 @@ public class DCDSelectionControllerTest {
         ClassGR newAssocClassA = (ClassGR) newAssociation.getA();
         ClassGR newAssocClassB = (ClassGR) newAssociation.getB();
 
-        assertTrue("New association should connect different class instances", 
-                   newAssocClassA != classA && newAssocClassB != classB);
-        
+        assertTrue("New association should connect different class instances",
+                newAssocClassA != classA && newAssocClassB != classB);
+
         // Verify the pasted classes share the same domain objects (as per clone() behavior)
-        assertEquals("Pasted class A should share domain object", 
-                     classA.getDesignClass(), newAssocClassA.getDesignClass());
-        assertEquals("Pasted class B should share domain object", 
-                     classB.getDesignClass(), newAssocClassB.getDesignClass());
+        assertEquals("Pasted class A should share domain object",
+                classA.getDesignClass(), newAssocClassA.getDesignClass());
+        assertEquals("Pasted class B should share domain object",
+                classB.getDesignClass(), newAssocClassB.getDesignClass());
     }
 
     @Test
@@ -302,7 +309,7 @@ public class DCDSelectionControllerTest {
         ClassGR classA = h.addClass("A");
         ClassGR classB = h.addClass("B");
         AssociationGR originalAssociation = h.addAssociation(classA, classB);
-        
+
         // Configure the association with properties
         originalAssociation.getAssociation().setName("manages");
         originalAssociation.getAssociation().setDirection(1); // A to B
@@ -320,25 +327,25 @@ public class DCDSelectionControllerTest {
 
         // Find the new association
         AssociationGR newAssociation = (AssociationGR) model.getGraphicalElements().stream()
-            .filter(e -> e instanceof AssociationGR && e != originalAssociation)
-            .findFirst()
-            .orElse(null);
+                .filter(e -> e instanceof AssociationGR && e != originalAssociation)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull("Should have created a new association", newAssociation);
 
         // Verify properties were copied
-        assertEquals("Association name should be preserved", 
-                     "manages", newAssociation.getAssociation().getName());
-        assertEquals("Direction should be preserved", 
-                     1, newAssociation.getAssociation().getDirection());
-        assertEquals("Role A name should be preserved", 
-                     "manager", newAssociation.getAssociation().getRoleA().getName());
-        assertEquals("Role A multiplicity should be preserved", 
-                     "1", newAssociation.getAssociation().getRoleA().getMultiplicity());
-        assertEquals("Role B name should be preserved", 
-                     "employee", newAssociation.getAssociation().getRoleB().getName());
-        assertEquals("Role B multiplicity should be preserved", 
-                     "*", newAssociation.getAssociation().getRoleB().getMultiplicity());
+        assertEquals("Association name should be preserved",
+                "manages", newAssociation.getAssociation().getName());
+        assertEquals("Direction should be preserved",
+                1, newAssociation.getAssociation().getDirection());
+        assertEquals("Role A name should be preserved",
+                "manager", newAssociation.getAssociation().getRoleA().getName());
+        assertEquals("Role A multiplicity should be preserved",
+                "1", newAssociation.getAssociation().getRoleA().getMultiplicity());
+        assertEquals("Role B name should be preserved",
+                "employee", newAssociation.getAssociation().getRoleB().getName());
+        assertEquals("Role B multiplicity should be preserved",
+                "*", newAssociation.getAssociation().getRoleB().getMultiplicity());
     }
 
     @Test
@@ -362,21 +369,21 @@ public class DCDSelectionControllerTest {
 
         // Count generalizations
         long genCount = model.getGraphicalElements().stream()
-            .filter(e -> e instanceof GeneralizationGR)
-            .count();
+                .filter(e -> e instanceof GeneralizationGR)
+                .count();
         assertEquals("Should have 2 generalizations after paste", 2, genCount);
 
         // Find the new generalization
         GeneralizationGR newGen = (GeneralizationGR) model.getGraphicalElements().stream()
-            .filter(e -> e instanceof GeneralizationGR && e != originalGen)
-            .findFirst()
-            .orElse(null);
+                .filter(e -> e instanceof GeneralizationGR && e != originalGen)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull("Should have created a new generalization for pasted classes", newGen);
 
         // Verify it connects different graphical instances
-        assertTrue("New generalization should connect different instances", 
-                   newGen.getA() != subClass && newGen.getB() != superClass);
+        assertTrue("New generalization should connect different instances",
+                newGen.getA() != subClass && newGen.getB() != superClass);
     }
 
     @Test
@@ -396,28 +403,149 @@ public class DCDSelectionControllerTest {
         selectionController.copySelected();
         selectionController.pasteClipboard();
 
-        assertEquals("After paste should have 6 elements (2 original + 2 pasted classes + 2 associations)", 
-                     6, model.getGraphicalElements().size());
+        assertEquals("After paste should have 6 elements (2 original + 2 pasted classes + 2 associations)",
+                6, model.getGraphicalElements().size());
 
         // Undo the paste operation (should be atomic - one compound edit)
         internalFrame.getUndoManager().undo();
-        
-        assertEquals("After undo should be back to original 3 elements", 
-                     initialCount, model.getGraphicalElements().size());
-        
+
+        assertEquals("After undo should be back to original 3 elements",
+                initialCount, model.getGraphicalElements().size());
+
         // Verify the original association still exists
-        assertTrue("Original association should still be in model", 
-                   model.getGraphicalElements().contains(assoc));
-        assertTrue("Original class A should still be in model", 
-                   model.getGraphicalElements().contains(classA));
-        assertTrue("Original class B should still be in model", 
-                   model.getGraphicalElements().contains(classB));
+        assertTrue("Original association should still be in model",
+                model.getGraphicalElements().contains(assoc));
+        assertTrue("Original class A should still be in model",
+                model.getGraphicalElements().contains(classA));
+        assertTrue("Original class B should still be in model",
+                model.getGraphicalElements().contains(classB));
 
         // Redo
         internalFrame.getUndoManager().redo();
-        
-        assertEquals("After redo should have 6 elements again", 
-                     6, model.getGraphicalElements().size());
+
+        assertEquals("After redo should have 6 elements again",
+                6, model.getGraphicalElements().size());
+    }
+
+    @Test
+    public void testClassEdit_withPolymorphicMethod() {
+        // This test verifies that ClassGR.edit() method exists and accepts EditContext
+        // We cannot test the actual dialog interaction in headless mode
+
+        // Verify the polymorphic edit() method exists and has correct signature
+        try {
+            java.lang.reflect.Method editMethod = ClassGR.class.getMethod("edit", EditContext.class);
+            assertNotNull("ClassGR should have edit(EditContext) method", editMethod);
+            assertEquals("edit() should return boolean", boolean.class, editMethod.getReturnType());
+
+            // Verify EditContext can be created with correct dependencies
+            EditContext context = new EditContext(model, internalFrame);
+            assertNotNull("EditContext should be created successfully", context);
+            assertEquals("EditContext should provide correct model", model, context.getModel());
+            assertEquals("EditContext should provide correct repository",
+                    model.getCentralRepository(), context.getRepository());
+            assertEquals("EditContext should provide correct parent component",
+                    internalFrame, context.getParentComponent());
+            assertNotNull("EditContext should provide undo support", context.getUndoSupport());
+
+        } catch (NoSuchMethodException e) {
+            assertTrue("ClassGR should have edit(EditContext) method", false);
+        }
+    }
+
+    @Test
+    public void testInterfaceEdit_withPolymorphicMethod() {
+        // This test verifies that InterfaceGR.edit() method exists and accepts EditContext
+        // We cannot test the actual dialog interaction in headless mode
+
+        // Verify the polymorphic edit() method exists and has correct signature
+        try {
+            java.lang.reflect.Method editMethod = InterfaceGR.class.getMethod("edit", EditContext.class);
+            assertNotNull("InterfaceGR should have edit(EditContext) method", editMethod);
+            assertEquals("edit() should return boolean", boolean.class, editMethod.getReturnType());
+
+            // Verify EditContext can be created with correct dependencies
+            EditContext context = new EditContext(model, internalFrame);
+            assertNotNull("EditContext should be created successfully", context);
+            assertEquals("EditContext should provide correct model", model, context.getModel());
+            assertEquals("EditContext should provide correct repository",
+                    model.getCentralRepository(), context.getRepository());
+            assertEquals("EditContext should provide correct parent component",
+                    internalFrame, context.getParentComponent());
+            assertNotNull("EditContext should provide undo support", context.getUndoSupport());
+
+        } catch (NoSuchMethodException e) {
+            assertTrue("InterfaceGR should have edit(EditContext) method", false);
+        }
+    }
+
+    @Test
+    public void testEditInterfaceNameWithUndo() {
+        // Create an Interface
+        InterfaceGR interfaceGR = h.addInterface("OriginalInterface");
+        Interface interfaceObj = interfaceGR.getInterface();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalInterface", interfaceObj.getName());
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("OriginalInterface"));
+
+        // Create edit
+        Interface newInterface = interfaceObj.clone();
+        newInterface.setName("EditedInterface");
+        EditInterfaceEdit edit = new EditInterfaceEdit(interfaceObj, newInterface, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedInterface", interfaceObj.getName());
+        // Repository should be synchronized
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("EditedInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("OriginalInterface"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalInterface", interfaceObj.getName());
+        // Repository should be restored
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("OriginalInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("EditedInterface"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedInterface", interfaceObj.getName());
+        assertEquals(interfaceObj, umlProject.getCentralRepository().getInterface("EditedInterface"));
+        assertNull(umlProject.getCentralRepository().getInterface("OriginalInterface"));
+    }
+
+    @Test
+    public void testCreateDependencyFromClassToInterface() {
+        // Create a DesignClass A
+        ClassGR classA = h.addClass("A");
+        DesignClass designClassA = (DesignClass) classA.getClassifier();
+
+        // Create an Interface I
+        InterfaceGR interfaceI = h.addInterface("I");
+        Interface interfaceClassI = (Interface) interfaceI.getClassifier();
+
+        // Verify both are in the repository
+        assertNotNull("Class A should be in repository",
+                umlProject.getCentralRepository().getDesignClass("A"));
+        assertNotNull("Interface I should be in repository",
+                umlProject.getCentralRepository().getInterface("I"));
+
+        // Create a Dependency from Class A to Interface I
+        // This simulates dragging a dependency line from class A to interface I in the UI
+        Dependency dependency = new Dependency(designClassA, interfaceClassI);
+        DependencyGR dependencyGR = new DependencyGR(classA, interfaceI, dependency);
+
+        model.addGraphicalElement(dependencyGR);
+
+        // Verify the dependency was created successfully
+        assertNotNull("Dependency should be created", dependencyGR);
+        assertEquals("Dependency should have class A as source", classA, dependencyGR.getA());
+        assertEquals("Dependency should have interface I as target", interfaceI, dependencyGR.getB());
+
+        // Verify it's in the model
+        assertTrue("Dependency should be in graphical elements",
+                model.getGraphicalElements().contains(dependencyGR));
     }
 
 }

@@ -16,6 +16,7 @@ import edu.city.studentuml.model.domain.Actor;
 import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
+import edu.city.studentuml.model.domain.CombinedFragment;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.DecisionNode;
@@ -28,6 +29,7 @@ import edu.city.studentuml.model.domain.FlowFinalNode;
 import edu.city.studentuml.model.domain.ForkNode;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.InitialNode;
+import edu.city.studentuml.model.domain.InteractionOperator;
 import edu.city.studentuml.model.domain.Interface;
 import edu.city.studentuml.model.domain.JoinNode;
 import edu.city.studentuml.model.domain.MergeNode;
@@ -55,6 +57,7 @@ import edu.city.studentuml.model.graphical.AssociationGR;
 import edu.city.studentuml.model.graphical.CCDModel;
 import edu.city.studentuml.model.graphical.ClassGR;
 import edu.city.studentuml.model.graphical.ClassifierGR;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.ConceptualClassGR;
 import edu.city.studentuml.model.graphical.DecisionNodeGR;
 import edu.city.studentuml.model.graphical.DependencyGR;
@@ -137,6 +140,7 @@ public class AddElementControllerFactory {
     }
 
     private AddElementController makeController(DiagramModel model, DiagramInternalFrame frame, String elementClass) {
+        logger.finer(() -> "Creating AddElementController for string " + elementClass);
 
         switch (elementClass) {
         case "UMLNoteGR":
@@ -239,6 +243,18 @@ public class AddElementControllerFactory {
                     return new MultiObjectGR(new MultiObject("", new DesignClass("")), x);
                 }
 
+            };
+
+        case "CombinedFragmentGR":
+            return new AddClickElementController(model, frame) {
+
+                @Override
+                protected GraphicalElement makeGraphicalElement(int x, int y) {
+                    return new CombinedFragmentGR(
+                            new CombinedFragment(InteractionOperator.OPT, ""),
+                            new Point(x, y),
+                            CombinedFragmentGR.DEFAULT_WIDTH);
+                }
             };
 
         case "InitialNodeGR":
@@ -350,12 +366,14 @@ public class AddElementControllerFactory {
 
                 @Override
                 protected LinkGR createRelationship(ClassifierGR classA, ClassifierGR classB) {
-                    if (classA != classB && classA instanceof ClassGR && classB instanceof ClassGR) {
-                        ClassGR classAGR = (ClassGR) classA;
-                        ClassGR classBGR = (ClassGR) classB;
-                        Dependency dependency = new Dependency(classAGR.getDesignClass(), classBGR.getDesignClass());
+                    logger.finer(() -> "Creating DependencyGR between " + classA + " and " + classB);
+                    if (classA != classB
+                            && classA instanceof ClassifierGR
+                            && classB instanceof ClassifierGR) {
+                        // Dependencies can connect any two classifiers (classes or interfaces)
+                        Dependency dependency = new Dependency(classA.getClassifier(), classB.getClassifier());
 
-                        return new DependencyGR(classAGR, classBGR, dependency);
+                        return new DependencyGR(classA, classB, dependency);
                     } else {
                         return null;
                     }
@@ -475,6 +493,8 @@ public class AddElementControllerFactory {
 
                     if (baseClass instanceof AbstractClassGR && superClass instanceof InterfaceGR
                             || superClass instanceof AbstractClassGR && baseClass instanceof InterfaceGR) {
+                        showErrorMessage(frame,
+                                "Interfaces and Classes cannot participate in Generalizations with each other!");
                         return null;
                     }
                     if (baseClass instanceof UCDComponentGR && superClass instanceof UCDComponentGR) {
@@ -608,7 +628,7 @@ public class AddElementControllerFactory {
                         return null;
                     }
                     DestroyMessage message = new DestroyMessage(roleA.getRoleClassifier(), roleB.getRoleClassifier());
-                    return new DestroyMessageGR(roleA, roleB, message, y);                    
+                    return new DestroyMessageGR(roleA, roleB, message, y);
                 }
 
             };
@@ -625,33 +645,35 @@ public class AddElementControllerFactory {
 
     protected boolean relationshipExists(DiagramModel model, ClassifierGR baseClass, ClassifierGR superClass) {
 
-         Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
-                r -> (r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
+        Optional<Generalization> aGeneralization = model.getCentralRepository().getGeneralizations().stream().filter(
+                r -> r.getBaseClass() == baseClass.getClassifier() && r.getSuperClass() == superClass.getClassifier()
                         || r.getBaseClass() == superClass.getClassifier()
-                                && r.getSuperClass() == baseClass.getClassifier())).findFirst();
+                                && r.getSuperClass() == baseClass.getClassifier())
+                .findFirst();
 
         Optional<Realization> aRealization = model.getCentralRepository().getRealizations().stream().filter(
-                r -> (r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier())
-                        || (r.getTheClass() == superClass.getClassifier()
-                                && r.getTheInterface() == baseClass.getClassifier()))
+                r -> r.getTheClass() == baseClass.getClassifier() && r.getTheInterface() == superClass.getClassifier()
+                        || r.getTheClass() == superClass.getClassifier()
+                                && r.getTheInterface() == baseClass.getClassifier())
                 .findFirst();
 
         if (aRealization.isPresent() || aGeneralization.isPresent()) {
             if (aRealization.isPresent()) {
                 Realization realization = aRealization.get();
-                // it is the same relationship; allow
-                if (realization.getTheClass() == baseClass.getClassifier()) {
-                    return false;
+                // Check if it's the reverse direction (still a conflict)
+                if (realization.getTheClass() != baseClass.getClassifier()) {
+                    return true; // Reverse direction exists, don't allow
                 }
+                return true; // Same direction exists, don't allow duplicate
             }
             if (aGeneralization.isPresent()) {
-                 Generalization generalization = aGeneralization.get();
-                // it is the same relationship; allow
-                if (generalization.getBaseClass() == baseClass.getClassifier()) {
-                    return false;
+                Generalization generalization = aGeneralization.get();
+                // Check if it's the reverse direction (still a conflict)
+                if (generalization.getBaseClass() != baseClass.getClassifier()) {
+                    return true; // Reverse direction exists, don't allow
                 }
+                return true; // Same direction exists, don't allow duplicate
             }
-            return true;
         }
 
         if (baseClass instanceof UCDComponentGR && superClass instanceof UCDComponentGR) {
@@ -659,8 +681,8 @@ public class AddElementControllerFactory {
             UCDComponentGR superGR = (UCDComponentGR) superClass;
 
             return model.getCentralRepository().getUCLinks().stream()
-                    .anyMatch(r -> (r.getSource() == baseGR.getComponent() && r.getTarget() == superGR.getComponent()
-                            || r.getTarget() == baseGR.getComponent() && r.getSource() == superGR.getComponent()));
+                    .anyMatch(r -> r.getSource() == baseGR.getComponent() && r.getTarget() == superGR.getComponent()
+                            || r.getTarget() == baseGR.getComponent() && r.getSource() == superGR.getComponent());
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package edu.city.studentuml.model.graphical;
 
-import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -10,10 +11,11 @@ import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class UCLinkGR extends LinkGR {
+
+    private static final Logger logger = Logger.getLogger(UCLinkGR.class.getName());
 
     protected UCLink link;
 
@@ -23,8 +25,8 @@ public abstract class UCLinkGR extends LinkGR {
     }
 
     protected boolean canAddLink() {
-        for (int x = 0; x < AbstractLinkGR.linkInstances.size(); x++) {
-            if (this.isSameLink(AbstractLinkGR.linkInstances.get(x))) {
+        for (int x = 0; x < linkInstances.size(); x++) {
+            if (this.isSameLink(linkInstances.get(x))) {
                 return false;
             }
         }
@@ -63,7 +65,7 @@ public abstract class UCLinkGR extends LinkGR {
         link.removeExtensionPoint(extensionPoint);
     }
 
-    public Iterator<ExtensionPoint> getExtensionPoints() {
+    public List<ExtensionPoint> getExtensionPoints() {
         return link.getExtensionPoints();
     }
 
@@ -94,5 +96,29 @@ public abstract class UCLinkGR extends LinkGR {
         node.setAttribute("to", SystemWideObjectNamePool.getInstance().getNameForObject(b));
 
         streamer.streamObject(node, "link", link);
+    }
+
+    @Override
+    public boolean canReconnect(EndpointType endpoint, GraphicalElement newElement) {
+        // Must pass base validation
+        if (!super.canReconnect(endpoint, newElement)) {
+            return false;
+        }
+
+        // UC links must connect to UCD components (actors or use cases)
+        if (!(newElement instanceof UCDComponentGR)) {
+            logger.fine(() -> "Cannot reconnect UC link: target is not a UCDComponentGR");
+            return false;
+        }
+
+        // Specific validation is delegated to subclasses
+        return true;
+    }
+
+    /**
+     * Protected setter to allow subclasses to update the link.
+     */
+    protected void setLink(UCLink link) {
+        this.link = link;
     }
 }

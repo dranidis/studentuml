@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uml>
+  <object class="UMLProject" id="project">
+    <object class="DCDModel" framex="0,0,1472,916" iconified="false" id="" internalid="dcdmodel0" name="DCD: Stereotype Test" selected="true">
+      <object class="ClassGR" id="" internalid="classgr0" uid="Desktop Application User" x="50" y="50">
+        <object class="DesignClass" id="designclass" internalid="designclass0" name="ClassA" stereotype="">
+          <object class="GenericClass" id="generic" name="ClassA"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr1" uid="Desktop Application User" x="250" y="50">
+        <object class="DesignClass" id="designclass" internalid="designclass1" name="ClassB" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass1" name="ClassB"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr2" uid="Desktop Application User" x="450" y="50">
+        <object class="DesignClass" id="designclass" internalid="designclass2" name="ClassC" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass2" name="ClassC"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr3" uid="Desktop Application User" x="50" y="200">
+        <object class="DesignClass" id="designclass" internalid="designclass3" name="ClassD" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass3" name="ClassD"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr4" uid="Desktop Application User" x="250" y="200">
+        <object class="DesignClass" id="designclass" internalid="designclass4" name="ClassE" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass4" name="ClassE"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="ClassGR" id="" internalid="classgr5" uid="Desktop Application User" x="450" y="200">
+        <object class="DesignClass" id="designclass" internalid="designclass5" name="ClassF" stereotype="">
+          <object class="GenericClass" id="generic" internalid="genericclass5" name="ClassF"/>
+          <object id="attributes"/>
+          <object id="methods"/>
+        </object>
+      </object>
+      <object class="DependencyGR" classa="classgr0" classb="classgr1" id="" internalid="dependencygr0">
+        <object class="Dependency" from="designclass0" id="dependency" internalid="dependency0" stereotype="use" to="designclass1"/>
+      </object>
+      <object class="DependencyGR" classa="classgr1" classb="classgr2" id="" internalid="dependencygr1">
+        <object class="Dependency" from="designclass1" id="dependency" internalid="dependency1" stereotype="create" to="designclass2"/>
+      </object>
+      <object class="DependencyGR" classa="classgr3" classb="classgr4" id="" internalid="dependencygr2">
+        <object class="Dependency" from="designclass3" id="dependency" internalid="dependency2" stereotype="call" to="designclass4"/>
+      </object>
+      <object class="DependencyGR" classa="classgr4" classb="classgr5" id="" internalid="dependencygr3">
+        <object class="Dependency" from="designclass4" id="dependency" internalid="dependency3" stereotype="instantiate" to="designclass5"/>
+      </object>
+      <object class="DependencyGR" classa="classgr0" classb="classgr3" id="" internalid="dependencygr4">
+        <object class="Dependency" from="designclass0" id="dependency" internalid="dependency4" to="designclass3"/>
+      </object>
+      <object class="DependencyGR" classa="classgr2" classb="classgr5" id="" internalid="dependencygr5">
+        <object class="Dependency" from="designclass2" id="dependency" internalid="dependency5" stereotype="import" to="designclass5"/>
+      </object>
+    </object>
+  </object>
+</uml>

@@ -14,7 +14,7 @@ import edu.city.studentuml.util.NotifierVector;
 
 public class CCMethod {
 
-    private static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private boolean iterative = false;
 

@@ -4,10 +4,9 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +68,7 @@ import edu.city.studentuml.util.Constants;
 import edu.city.studentuml.util.MyImageIcon;
 import edu.city.studentuml.util.TreeExpansionState;
 
-public class RepositoryTreeView extends JPanel implements Observer {
+public class RepositoryTreeView extends JPanel implements PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(RepositoryTreeView.class.getName());
 
@@ -98,12 +97,12 @@ public class RepositoryTreeView extends JPanel implements Observer {
         datamodelnode = addObject("Data Model");
         diagrammodelnode = addObject("Diagram Model");
         tree.addTreeSelectionListener(new RepositoryTreeSelectionListener());
-        umlProject.addObserver(this);
+        umlProject.addPropertyChangeListener(this);
 
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void propertyChange(PropertyChangeEvent evt) {
         updateTree();
     }
 
@@ -125,7 +124,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         classes.addAll(umlProject.getCentralRepository().getClasses());
         classes.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-        for(DesignClass dc : classes) {
+        for (DesignClass dc : classes) {
             DefaultMutableTreeNode designClassNode = addObject(datamodelnode, dc);
 
             DefaultMutableTreeNode generalizationsNode = addObject(designClassNode, "extends");
@@ -153,9 +152,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             dnode = addObject(diagrammodelnode, diagram);
 
             if (diagram instanceof UCDModel) {
-                Iterator<GraphicalElement> i = ((UCDModel) diagram).getGraphicalElements().iterator();
-                while (i.hasNext()) {
-                    GraphicalElement e = i.next();
+                for (GraphicalElement e : ((UCDModel) diagram).getGraphicalElements()) {
                     if (e instanceof UCDComponentGR) {
                         ucdComponent = ((UCDComponentGR) e).getComponent();
                         addUCDComponent(dnode, ucdComponent);
@@ -164,13 +161,11 @@ public class RepositoryTreeView extends JPanel implements Observer {
             }
 
             if (diagram instanceof SSDModel) {
-                Vector<RoleClassifierGR> roleClassifiers  = ((SSDModel) diagram).getRoleClassifiers();
+                Vector<RoleClassifierGR> roleClassifiers = ((SSDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
-                    Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
-
-                    while (iterator2.hasNext()) {
-                        classifier = (iterator2.next()).getRoleClassifier();
+                    for (RoleClassifierGR rcGR : roleClassifiers) {
+                        classifier = rcGR.getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }
@@ -179,10 +174,8 @@ public class RepositoryTreeView extends JPanel implements Observer {
             if (diagram instanceof CCDModel) {
                 Vector<ConceptualClassGR> concepts = ((CCDModel) diagram).getConceptualClasses();
 
-                Iterator<ConceptualClassGR> iterator2 = concepts.iterator();
-
-                while (iterator2.hasNext()) {
-                    concept = (iterator2.next()).getConceptualClass();
+                for (ConceptualClassGR conceptGR : concepts) {
+                    concept = conceptGR.getConceptualClass();
                     addObject(dnode, concept);
                 }
 
@@ -192,19 +185,15 @@ public class RepositoryTreeView extends JPanel implements Observer {
                 Vector<RoleClassifierGR> roleClassifiers = ((SDModel) diagram).getRoleClassifiers();
 
                 if (roleClassifiers != null) {
-                    Iterator<RoleClassifierGR> iterator2 = roleClassifiers.iterator();
-
-                    while (iterator2.hasNext()) {
-                        classifier = (iterator2.next()).getRoleClassifier();
+                    for (RoleClassifierGR rcGR : roleClassifiers) {
+                        classifier = rcGR.getRoleClassifier();
                         addObject(dnode, classifier);
                     }
                 }
             }
 
             if (diagram instanceof ADModel) {
-                Iterator<GraphicalElement> i = ((ADModel) diagram).getGraphicalElements().iterator();
-                while (i.hasNext()) {
-                    GraphicalElement e = i.next();
+                for (GraphicalElement e : ((ADModel) diagram).getGraphicalElements()) {
                     if (e instanceof NodeComponentGR) {
                         nodeComponent = ((NodeComponentGR) e).getComponent();
                         addNodeComponent(dnode, nodeComponent);
@@ -249,7 +238,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         if (parentPath == null) {
             parentNode = rootNode;
         } else {
-            parentNode = (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
+            parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
         }
 
         return addObject(parentNode, child, true);
@@ -298,7 +287,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
         public void treeNodesChanged(TreeModelEvent e) {
             DefaultMutableTreeNode node;
 
-            node = (DefaultMutableTreeNode) (e.getTreePath().getLastPathComponent());
+            node = (DefaultMutableTreeNode) e.getTreePath().getLastPathComponent();
 
             /*
              * If the event lists children, then the changed node is the child of the node
@@ -308,7 +297,7 @@ public class RepositoryTreeView extends JPanel implements Observer {
             try {
                 int index = e.getChildIndices()[0];
 
-                node = (DefaultMutableTreeNode) (node.getChildAt(index));
+                node = (DefaultMutableTreeNode) node.getChildAt(index);
             } catch (NullPointerException exc) {
                 logger.finest("Doing nothing on NullPointerException");
             }

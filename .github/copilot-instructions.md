@@ -52,6 +52,99 @@ This project uses a local Maven repo (`local-maven-repo/`) for custom JARs:
 -   Test helpers create models without GUI: see `src/test/java/edu/city/studentuml/controller/Helper.java` for examples
 -   Models can exist independently of frames/views for testing
 
+#### CRITICAL: Never Duplicate Production Code in Tests (Non-Negotiable)
+
+**Tests MUST call actual production code, not copy it.** This is a fundamental principle that cannot be compromised.
+
+-   ❌ **WRONG**: Copying production logic into test methods to execute it
+-   ✅ **CORRECT**: Calling production methods directly from tests
+-   ❌ **WRONG**: Reimplementing algorithms in test code to verify behavior
+-   ✅ **CORRECT**: Invoking the actual production methods and asserting on their results
+-   ❌ **WRONG**: Creating "test helper" methods that duplicate production logic
+-   ✅ **CORRECT**: Using production methods directly, making them `protected` or package-private if needed for testing
+
+**Why this matters:**
+
+1. Duplicated code masks bugs: if the test copies buggy logic, it will pass even when production code is wrong
+2. Double maintenance burden: changes require updating both production and test code
+3. Tests become unreliable: they test the copy, not the actual production behavior
+4. Violates DRY principle: reduces code quality and maintainability
+
+**If production code is not accessible for testing (e.g., `private` methods with hardcoded dependencies):**
+
+1. Refactor production code to be testable (extract methods, use dependency injection)
+2. Make methods package-private (`static` without modifier) for testing
+3. Extract logic into separate testable classes if needed
+
+**Examples:**
+
+```java
+// ❌ WRONG: Copying version parsing logic into test
+@Test
+public void testVersionParsing() {
+    String tagName = "v1.3.1";
+    String version = tagName.substring(1); // DUPLICATING PRODUCTION LOGIC
+    assertEquals("1.3.1", version);
+}
+
+// ✅ CORRECT: Testing actual production method with mock
+@Test
+public void testParseVersionFromJSON_withVPrefix() {
+    GitHubVersionProvider provider = new GitHubVersionProvider(mockUrl);
+    String json = "{\"tag_name\":\"v1.3.1\"}";
+    String version = provider.parseVersionFromJSON(json);
+    assertEquals("1.3.1", version);
+}
+```
+
+This principle applies to ALL tests without exception. If you find yourself copying production code into a test, STOP and refactor the production code to be testable instead.
+
+#### Design for Testability
+
+**When creating new classes or refactoring existing ones, follow these principles:**
+
+1. **Separate Concerns**: Utility classes should not handle UI concerns (dialogs, HTML rendering). Extract UI logic to caller or separate view classes.
+2. **Dependency Injection**: Avoid static methods with hardcoded dependencies. Use constructor injection or method parameters.
+3. **Interface Extraction**: Create interfaces for external dependencies (HTTP clients, file systems) to enable mocking.
+4. **Avoid Static State**: Prefer instance methods over static methods for better testability.
+5. **Package-Private Methods**: Make methods package-private (no modifier) instead of `private` when they need to be tested directly.
+
+**Example: Refactoring for Testability**
+
+```java
+// ❌ BEFORE: Not testable - static methods, hardcoded HTTP, UI responsibility
+public class NewversionChecker {
+    private static final String URL = "https://api.github.com/...";
+
+    public static void checkForNewVersion(JFrame frame) {
+        String version = getFromURL(); // Hardcoded HTTP call
+        if (isNewer(version)) {
+            JOptionPane.showMessageDialog(frame, "New version!"); // UI responsibility
+        }
+    }
+}
+
+// ✅ AFTER: Testable - DI, separated concerns, mockable dependencies
+public class VersionChecker {
+    private final VersionProvider versionProvider;
+    private final String currentVersion;
+
+    public VersionChecker(VersionProvider versionProvider, String currentVersion) {
+        this.versionProvider = versionProvider;
+        this.currentVersion = currentVersion;
+    }
+
+    public VersionCheckResult checkForNewVersion() {
+        String latest = versionProvider.getLatestVersion();
+        return new VersionCheckResult(currentVersion, latest, isNewer(latest));
+    }
+
+    // Caller handles UI:
+    // VersionCheckResult result = checker.checkForNewVersion();
+    // if (result.isNewerAvailable()) { showDialog(result); }
+}
+```
+
 ### Test-Driven Bug Fixes
 
 **When an issue is reported, follow this workflow:**
@@ -81,6 +174,7 @@ This project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PAT
 -   **Breaking changes** → Increment MAJOR, reset MINOR and PATCH (e.g., 1.4.0 → 2.0.0)
 
 **SNAPSHOT versions** (e.g., 1.4.0-SNAPSHOT) indicate unreleased development versions. When a release is ready:
+
 1. Remove -SNAPSHOT suffix
 2. Update CHANGELOG.md with release date
 3. Tag the release in git
@@ -124,6 +218,14 @@ This maintains a clear history of changes for each release and helps with versio
 
 -   `DiagramModel.getName()`
 -   `DiagramModel.getGraphicalElements()`
+
+### Import Style (Avoid Fully Qualified Names)
+
+-   Always prefer imports over using fully qualified class names in code.
+-   Do not write fully qualified names (e.g., `java.util.List`) in method bodies or fields unless absolutely necessary to disambiguate a name conflict.
+-   If a name conflict exists, use the fully qualified name only at the specific usage site where the conflict occurs; otherwise, import normally.
+-   When editing existing files that use fully qualified names, favor replacing them with proper imports where safe and readable.
+-   Use static imports sparingly for readability; prefer regular imports for classes and enums.
 
 ### Undo/Redo System
 
@@ -175,3 +277,138 @@ Use `DiagramType` constants (not magic numbers):
 
 User preferences stored at: `~/.java/.userPrefs/edu/city/studentuml/util/prefs.xml`
 Includes default paths, fill colors for themes, recent files, etc.
+
+## Feature Development Workflow
+
+**When the user requests to START development of a feature from `features.md`, follow this workflow:**
+
+### 1. Create Feature Branch
+
+Create a new feature branch from `develop` with an appropriate descriptive name:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/XXXX-descriptive-name
+```
+
+Branch naming convention: `feature/XXXX-descriptive-name` where XXXX is a short identifier related to the feature.
+
+### 2. Create Plan File
+
+Create a plan file `plan-XXXX.md` in the project root to document:
+
+-   **Investigation**: Explore the current codebase to understand how the feature fits into existing architecture
+-   **Affected Components**: List classes, methods, and files that need modification
+-   **Design Decisions**: Document architectural choices and rationale
+-   **Implementation Tasks**: Break down the feature into actionable TODO items
+
+Example structure:
+
+```markdown
+# Plan: Feature Name
+
+## Investigation
+
+[Document findings from codebase exploration]
+
+## Affected Components
+
+-   Class: `ClassName` - Reason for modification
+-   File: `path/to/file` - Changes needed
+
+## Design Decisions
+
+[Document architectural choices]
+
+## TODO Tasks
+
+-   [ ] Task 1: Description
+-   [ ] Task 2: Description
+-   [ ] Task 3: Description
+
+## Implementation Summary
+
+[To be filled at completion]
+
+## Design Documentation
+
+[Reference to StudentUML diagram file]
+```
+
+### 3. Implement Feature Using Test-First Approach
+
+For each task in the plan:
+
+1. **Write failing test first**:
+    - Create test that demonstrates the desired functionality
+    - Test should compile but FAIL initially
+    - Use descriptive test names following pattern: `test<FeatureName>_<scenario>()`
+2. **Implement minimal code** to make the test pass
+3. **Verify test passes** - Run `mvn test` or `mvn test -Dtest=ClassName`
+4. **Refactor if needed** while keeping tests green
+5. **Mark task as completed** in plan file: `- [x] Task completed`
+
+**Test-First Principles:**
+
+-   Write test BEFORE implementation code
+-   Test should fail initially (Red phase)
+-   Implement just enough to pass (Green phase)
+-   Refactor for quality (Refactor phase)
+-   Never skip the failing test step - it proves the test actually validates the feature
+
+### 4. Iterate Through All Tasks
+
+Continue implementing tasks sequentially:
+
+-   Mark each task as completed: `- [x]` in plan file
+-   Commit changes frequently with descriptive messages
+-   Keep all tests passing before moving to next task
+-   Update plan file if new tasks are discovered during implementation
+
+### 5. Create Implementation Summary
+
+At completion, add to the plan file:
+
+-   **Implementation Summary**: Describe the final design and how it was implemented
+-   **Key Changes**: Highlight important modifications
+-   **Testing Coverage**: Note what tests were added
+-   **Known Limitations**: Document any constraints or future improvements
+
+### 6. Create StudentUML Documentation Diagram
+
+Create a StudentUML XML file (e.g., `diagrams/feature-XXXX.xml`) containing:
+
+1. **Design Class Diagram (DCD)**:
+
+    - Show new/modified classes
+    - Include attributes and methods with visibility
+    - Show relationships (dependencies, associations, inheritance)
+    - Use appropriate stereotypes if applicable
+
+2. **Sequence Diagram (SD)**:
+    - Illustrate the main interaction flow for the feature
+    - Show message exchanges between objects
+    - Include self-calls for important internal logic
+    - Use proper return messages
+
+**Diagram Guidelines:**
+
+-   Keep diagrams focused on the feature changes, not entire codebase
+-   Position classes logically (top-to-bottom, left-to-right flow)
+-   Use consistent naming matching actual code
+-   Include method signatures that changed/were added
+-   Verify diagram loads correctly in StudentUML application
+
+### 7. Final Steps
+
+Before considering the feature complete:
+
+1. **Run full test suite**: `mvn clean test`
+2. **Check code coverage**: `mvn jacoco:report`
+3. **Update CHANGELOG.md**: Add entry under `[Unreleased]` section with brief description
+4. **Remove feature from features.md**: Delete the completed feature section from `features.md` (including title, description, technical notes, and use case)
+5. **Review plan file**: Ensure all sections are complete
+6. **Commit all changes**: Including plan file, diagram, CHANGELOG.md, and features.md updates
+
+The feature branch is now ready for review and merging into `develop`.

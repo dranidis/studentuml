@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -16,12 +15,13 @@ import java.util.Optional;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ActivityNode;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditActivityNodeEdit;
 
 /**
- *
  * @author Biser
  */
 public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
@@ -90,8 +90,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // draw acticity node name
         if (!component.toString().equals("")) {
             String activityName = component.toString();
-            TextLayout layout = new TextLayout(activityName, activityNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(activityName, activityNameFont, frc);
 
             int nameX = activityNameXOffset;
             int nameY = activityNameYOffset + (int) bounds.getHeight();
@@ -108,9 +107,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), activityNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            activityNameWidth = (int) bounds.getWidth() + (2 * activityNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), activityNameFont, frc);
+            activityNameWidth = (int) bounds.getWidth() + 2 * activityNameXOffset;
 
             if (activityNameWidth > newWidth) {
                 newWidth = activityNameWidth;
@@ -143,7 +141,8 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        Optional<ResizeHandle> resizeHandle = resizeHandles.stream().filter(handle -> handle.contains(new Point2D.Double(x, y))).findFirst();
+        Optional<ResizeHandle> resizeHandle = resizeHandles.stream()
+                .filter(handle -> handle.contains(new Point2D.Double(x, y))).findFirst();
         if (resizeHandle.isPresent()) {
             return resizeHandle.get();
         }
@@ -255,10 +254,10 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     }
 
     public boolean hasResizableContext() {
-        if (context == NodeComponentGR.DEFAULT_CONTEXT) {
+        if (context == DEFAULT_CONTEXT) {
             return false;
         } else {
-            return (context instanceof Resizable);
+            return context instanceof Resizable;
         }
     }
 
@@ -306,17 +305,37 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     public ActivityNodeGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         ActivityNode sameActivityNode = (ActivityNode) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
         ActivityNodeGR clonedGR = new ActivityNodeGR(sameActivityNode, this.startingPoint.x, this.startingPoint.y);
-        
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         // Note: components (child nodes) are NOT cloned - they would need to be
         // copied separately if the user also selects them
-        
+
         return clonedGR;
+    }
+
+    /**
+     * Opens an editor dialog for editing the activity node's name. Uses the
+     * template method from NodeComponentGR for the common editing workflow.
+     * 
+     * @param context the edit context providing access to model, repository, parent
+     *                component, and undo support
+     * @return true if the edit was successful and applied, false if cancelled
+     */
+    @Override
+    public boolean edit(EditContext context) {
+        return editNameWithDialog(
+                context,
+                "Activity Node Editor",
+                "Activity name: ",
+                (original, newValue, model) -> new EditActivityNodeEdit(
+                        (ActivityNode) original,
+                        (ActivityNode) newValue,
+                        model));
     }
 }

@@ -3,7 +3,6 @@ package edu.city.studentuml.model.graphical;
 import edu.city.studentuml.model.domain.MultiObject;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.domain.UMLProject;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -37,7 +36,7 @@ public class SDModel extends AbstractSDModel {
                 ((SDObject) rc.getRoleClassifier()).getDesignClass().clear();
                 repository.removeClass(((SDObject) rc.getRoleClassifier()).getDesignClass());
             }
-            repository.removeObject(((SDObject) rc.getRoleClassifier()));
+            repository.removeObject((SDObject) rc.getRoleClassifier());
         }
 
         if (rc.getRoleClassifier() instanceof MultiObject) {
@@ -96,25 +95,24 @@ public class SDModel extends AbstractSDModel {
     public void validateMessages() {
         // keeps track of messages that have been checked already
         Vector<SDMessageGR> checked = new Vector<>();
-        Iterator<SDMessageGR> iterator = messages.iterator();
-        SDMessageGR message;
 
-        while (iterator.hasNext()) {
-            message = iterator.next();
+        // Use index-based iteration to handle list modifications during iteration
+        for (int i = 0; i < messages.size(); i++) {
+            SDMessageGR message = messages.get(i);
 
             if (message instanceof CreateMessageGR && !checked.contains(message)) {
 
                 // this method might result in direct changes to the messages list
-                // so the iterator is refreshed to be safe from inconsistencies
+                // so we restart from the beginning after validation
                 validateCreateMessagePosition((CreateMessageGR) message);
                 checked.add(message);
 
-                // refresh the iterator
-                iterator = messages.iterator();
+                // restart iteration to account for list modifications
+                i = -1; // Will be incremented to 0 in next loop iteration
             } else if (message instanceof DestroyMessageGR && !checked.contains(message)) {
                 validateDestroyMessagePosition((DestroyMessageGR) message);
                 checked.add(message);
-                iterator = messages.iterator();
+                i = -1; // Restart iteration
             }
         }
     }
@@ -137,10 +135,11 @@ public class SDModel extends AbstractSDModel {
                 createMessage.refreshTargetPosition();
                 i--;
             } else if ((message.getTarget() == createMessage.getTarget()
-                    || message.getSource() == createMessage.getTarget()) && message != createMessage
+                    || message.getSource() == createMessage.getTarget())
+                    && message != createMessage
                     && message.getY() <= createMessage.getY()) {
                 // move the message down
-                message.move(0, (createMessage.getY() + i + 1));
+                message.move(0, createMessage.getY() + i + 1);
             }
         }
     }
@@ -162,11 +161,12 @@ public class SDModel extends AbstractSDModel {
                 destroyMessage.refreshTargetPosition();
                 i--;
             } else if ((message.getTarget() == destroyMessage.getTarget()
-                    || message.getSource() == destroyMessage.getTarget()) && message != destroyMessage
+                    || message.getSource() == destroyMessage.getTarget())
+                    && message != destroyMessage
                     && message.getY() >= destroyMessage.getY()) {
 
                 // move the message up
-                message.move(0, (destroyMessage.getY() - (messages.size() - i)));
+                message.move(0, destroyMessage.getY() - (messages.size() - i));
             }
         }
     }

@@ -2,6 +2,7 @@ package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
+import edu.city.studentuml.controller.SDResizeController;
 import edu.city.studentuml.controller.SDSelectionController;
 import edu.city.studentuml.controller.SelectionController;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -34,7 +35,7 @@ public class SDInternalFrame extends DiagramInternalFrame {
     @Override
     protected ResizeWithCoveredElementsController makeResizeWithCoveredElementsController(
             DiagramInternalFrame diagramInternalFrame, DiagramModel model, SelectionController selectionController) {
-        return null;
+        return new SDResizeController(diagramInternalFrame, model, selectionController);
     }
 
     @Override
@@ -46,6 +47,5 @@ public class SDInternalFrame extends DiagramInternalFrame {
     @Override
     protected String makeElementClassString() {
         return "SDObjectGR";
-    }    
-    
+    }
 }

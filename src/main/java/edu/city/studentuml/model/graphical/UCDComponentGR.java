@@ -12,7 +12,6 @@ import edu.city.studentuml.model.domain.UCDComponent;
 import edu.city.studentuml.util.Coverable;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class UCDComponentGR extends GraphicalElement implements ClassifierGR, Coverable {
@@ -35,14 +34,14 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     public abstract void add(UCDComponentGR component);
 
     public abstract void remove(UCDComponentGR component);
-    
+
     public UCDComponentGR getContext() {
         return context;
     }
 
     public void setContext(UCDComponentGR context) {
         this.context = context;
-        if (context != UCDComponentGR.DEFAULT_CONTEXT) {
+        if (context != DEFAULT_CONTEXT) {
             component.setContext(context.getComponent());
         } else {
             component.setContext(UCDComponent.DEFAULT_CONTEXT);
@@ -81,8 +80,8 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
         return outgoingRelations.size();
     }
 
-    public Iterator<UCLinkGR> getOutgoingRelations() {
-        return outgoingRelations.iterator();
+    public List<UCLinkGR> getOutgoingRelations() {
+        return outgoingRelations;
     }
 
     /**
@@ -115,7 +114,7 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
     public Classifier getClassifier() {
         return component;
     }
-    
+
     public void refreshDimensions(Graphics2D g) {
         calculateWidth(g);
         calculateHeight(g);
@@ -127,6 +126,6 @@ public abstract class UCDComponentGR extends GraphicalElement implements Classif
 
     @Override
     public String toString() {
-        return component.getName() + " : " +  component.getClass().getSimpleName();
-    }    
+        return component.getName() + " : " + component.getClass().getSimpleName();
+    }
 }

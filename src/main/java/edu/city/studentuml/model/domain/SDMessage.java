@@ -3,15 +3,14 @@ package edu.city.studentuml.model.domain;
 import java.io.Serializable;
 
 /**
- * 
  * @author Ervin Ramollari
  */
 public abstract class SDMessage implements Serializable {
 
-    protected int rank;    // the rank is not initialized in the constructor, but
+    protected int rank; // the rank is not initialized in the constructor, but
     // instead it is set by the diagram model
-    protected RoleClassifier source;    // message originating from this object
-    protected RoleClassifier target;    // message directed to this object
+    protected RoleClassifier source; // message originating from this object
+    protected RoleClassifier target; // message directed to this object
     private String returnParameter = "x";
 
     protected SDMessage(RoleClassifier from, RoleClassifier to) {
@@ -23,7 +22,7 @@ public abstract class SDMessage implements Serializable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public RoleClassifier getSource() {
         return source;
     }
@@ -32,16 +31,32 @@ public abstract class SDMessage implements Serializable {
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */    
+     */
     public RoleClassifier getTarget() {
         return target;
+    }
+
+    /**
+     * Update the source (from) of this message. Used when reconnecting message
+     * endpoints.
+     */
+    public void setSource(RoleClassifier newSource) {
+        this.source = newSource;
+    }
+
+    /**
+     * Update the target (to) of this message. Used when reconnecting message
+     * endpoints.
+     */
+    public void setTarget(RoleClassifier newTarget) {
+        this.target = newTarget;
     }
 
     /*
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */        
+     */
     public int getRank() {
         return rank;
     }
@@ -51,23 +66,22 @@ public abstract class SDMessage implements Serializable {
     }
 
     public boolean isReflective() {
-        return (source == target);
+        return source == target;
     }
-    
-    
-    public void setReturnParameter (String newParameter) {
-    	this.returnParameter = newParameter;
+
+    public void setReturnParameter(String newParameter) {
+        this.returnParameter = newParameter;
     }
-    
-    public String getReturnParameter () {
-    	return this.returnParameter;
+
+    public String getReturnParameter() {
+        return this.returnParameter;
     }
 
     /*
      * DO NOT CHANGE THE NAME: CALLED BY REFLECTION IN CONSISTENCY CHECK
      *
      * if name is changed the rules.txt / file needs to be updated
-     */        
+     */
     public abstract String getName();
 
     // the sd message subclasses should define a toString() method

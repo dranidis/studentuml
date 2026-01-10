@@ -1,6 +1,5 @@
 package edu.city.studentuml.view.gui;
 
-import edu.city.studentuml.controller.DCDSelectionController;
 import edu.city.studentuml.controller.EdgeController;
 import edu.city.studentuml.controller.ResizeWithCoveredElementsController;
 import edu.city.studentuml.controller.SelectionController;
@@ -40,7 +39,7 @@ public class DCDInternalFrame extends DiagramInternalFrame {
     @Override
     protected SelectionController makeSelectionController(DiagramInternalFrame diagramInternalFrame,
             DiagramModel model) {
-        return new DCDSelectionController(this, model);
+        return new SelectionController(this, model);
     }
 
     @Override

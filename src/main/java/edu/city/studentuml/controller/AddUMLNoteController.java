@@ -6,13 +6,11 @@ import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.UMLNoteGR;
 import java.awt.Point;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 public class AddUMLNoteController extends AddElementController {
-    private static final Logger logger = Logger.getLogger(AddUMLNoteController.class.getName());
 
     private static final String MESSAGE = "To create a note you must select an element first, then click the note button and anywhere on the diagram.";
     GraphicalElement selectedElement;
@@ -28,7 +26,7 @@ public class AddUMLNoteController extends AddElementController {
         } else {
             JOptionPane.showMessageDialog(null, MESSAGE,
                     "Error", JOptionPane.ERROR_MESSAGE);
-        }        
+        }
         UndoableEdit edit;
 
         if (selectedElement != null && !(selectedElement instanceof UMLNoteGR)) {
@@ -45,10 +43,10 @@ public class AddUMLNoteController extends AddElementController {
     }
 
     public void dragged(int x, int y) {
-        logger.info(() -> "dragged XY: " + x + y);
+        /** Intentionally empty */
     }
 
     public void released(int x, int y) {
-        logger.info(() -> "released XY: " + x + y);
+        /** Intentionally empty */
     }
 }

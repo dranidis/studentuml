@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui.components;
 
 import java.awt.Component;
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ public class AutocompleteJComboBox extends JComboBox<String> {
                 public void changedUpdate(DocumentEvent e) {
                     // empty
                 }
+
                 @Override
                 public void insertUpdate(DocumentEvent arg0) {
                     update(tc);
@@ -60,7 +62,8 @@ public class AutocompleteJComboBox extends JComboBox<String> {
             tc.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent arg0) {
-                    if (tc.getText().length() > 0) {
+                    // Avoid popup operations in headless environments to prevent exceptions
+                    if (!GraphicsEnvironment.isHeadless() && tc.getText().length() > 0 && tc.isShowing()) {
                         setPopupVisible(true);
                     }
                 }
@@ -98,8 +101,11 @@ public class AutocompleteJComboBox extends JComboBox<String> {
                 addItem(s);
             }
             setEditable(true);
-            setPopupVisible(true);
-            tc.requestFocus();
+            // Avoid popup operations in headless environments to prevent exceptions
+            if (!GraphicsEnvironment.isHeadless() && tc.isShowing()) {
+                setPopupVisible(true);
+                tc.requestFocus();
+            }
         });
 
     }

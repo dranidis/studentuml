@@ -1,5 +1,8 @@
 target/
 
+# Test output directories
+xml-test-files/
+
 *.class
 build/
 dist/

@@ -5,21 +5,20 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.ExtensionPoint;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 
 /**
- *
  * @author draganbisercic
  */
 public class UseCaseGR extends LeafUCDElementGR {
@@ -32,8 +31,8 @@ public class UseCaseGR extends LeafUCDElementGR {
     private static final int VGAP_BETWEEN_EXTENSION_POINTS = 6;
     private static final int VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS = 20;
     private static final int HEIGHT_OF_LINE = 2;
-    private static final int VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS =
-            VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS / 2
+    private static final int VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS = VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS
+            / 2
             - HEIGHT_OF_LINE / 2;
     private static final String EXTENSION_POINTS_LABEL = "Extension Points";
 
@@ -79,8 +78,8 @@ public class UseCaseGR extends LeafUCDElementGR {
 
             Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
 
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-            int nameY = ((height - (int) bounds.getHeight()) / 2) - (int) bounds.getY();
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
+            int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
 
             g.setFont(useCaseFont);
             g.drawString(useCaseName, startingX + nameX, startingY + nameY);
@@ -96,7 +95,7 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
                 counter = counter + extend.getNumberOfExtensionPoints();
-            }            
+            }
         }
 
         return counter;
@@ -115,9 +114,9 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
 
-        int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
-        int nameY = ((height - (int) bounds.getHeight()) / 2)
-                - (int) bounds.getY() - VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS;
+        int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
+        int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds)
+                - VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS;
         int x = getX() + nameX;
         int y = getY() + nameY;
 
@@ -127,7 +126,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         // draw extansion points label
         bounds = getBounds(g, EXTENSION_POINTS_LABEL, extensionPointLabelFont);
 
-        nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+        nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         nameY += VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS;
         x = getX() + nameX;
         y = getY() + nameY;
@@ -142,9 +141,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = (j.next()).getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
                         if (bounds.getWidth() > largest) {
@@ -162,13 +160,12 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = (j.next()).getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
 
-                        nameX = ((width - largest) / 2) - (int) bounds.getX();
+                        nameX = (width - largest) / 2 - (int) bounds.getX();
                         nameY += VGAP_BETWEEN_EXTENSION_POINTS + bounds.getHeight();
                         x = getX() + nameX;
                         y = getY() + nameY;
@@ -214,14 +211,14 @@ public class UseCaseGR extends LeafUCDElementGR {
 
         int newWidth = 0;
         if (bounds.getWidth() > newWidth) {
-            newWidth = ((int) bounds.getWidth());
+            newWidth = (int) bounds.getWidth();
         }
 
         // check the extension point label
         bounds = getBounds(g, EXTENSION_POINTS_LABEL, extensionPointLabelFont);
 
         if (bounds.getWidth() > newWidth) {
-            newWidth = ((int) bounds.getWidth());
+            newWidth = (int) bounds.getWidth();
         }
 
         // check every extension string
@@ -229,15 +226,14 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = (j.next()).getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
 
                         if (bounds.getWidth() > newWidth) {
                             multiplier += 1.5;
-                            newWidth = ((int) bounds.getWidth());
+                            newWidth = (int) bounds.getWidth();
                         }
                     }
                 }
@@ -282,9 +278,8 @@ public class UseCaseGR extends LeafUCDElementGR {
             if (link instanceof UCExtendGR) {
                 UCExtendGR extend = (UCExtendGR) link;
 
-                Iterator<ExtensionPoint> j = extend.getExtensionPoints();
-                while (j.hasNext()) {
-                    String s = (j.next()).getName();
+                for (ExtensionPoint ep : extend.getExtensionPoints()) {
+                    String s = ep.getName();
                     if (s.length() > 0) {
                         bounds = getBounds(g, s, extensionPointFont);
                         newHeight += bounds.getHeight() + VGAP_BETWEEN_EXTENSION_POINTS;
@@ -300,8 +295,7 @@ public class UseCaseGR extends LeafUCDElementGR {
 
     private Rectangle2D getBounds(Graphics2D g, String s, Font f) {
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(s, f, frc);
-        return layout.getBounds();
+        return GraphicsHelper.getTextBounds(s, f, frc);
     }
 
     @Override
@@ -330,15 +324,38 @@ public class UseCaseGR extends LeafUCDElementGR {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         // Multiple graphical elements can reference the same domain object
         UseCase sameUseCase = (UseCase) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        UseCaseGR clonedGR = new UseCaseGR(sameUseCase, 
-            this.startingPoint.x, this.startingPoint.y);
-        
+        UseCaseGR clonedGR = new UseCaseGR(sameUseCase,
+                this.startingPoint.x, this.startingPoint.y);
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        UseCase originalUseCase = (UseCase) getComponent();
+
+        // Delegate to the centralized helper with conflict checking
+        return editStringPropertyWithDialog(
+                context,
+                "Use Case Editor",
+                "Use Case Name:",
+                originalUseCase,
+                UseCase::getName,
+                UseCase::setName,
+                UseCase::clone,
+                (original, redo, model) -> new EditUseCaseEdit(
+                        original,
+                        redo,
+                        model),
+                // Duplicate detection in UCD: block on duplicates
+                newName -> StringUtils.isNotEmpty(newName)
+                        && context.getRepository().getUseCase(newName) != null,
+                "There is an existing use case with the same name already!\n");
     }
 }

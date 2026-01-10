@@ -54,7 +54,7 @@ public abstract class AbstractPointGR extends GraphicalElement {
 
     @Override
     public boolean contains(Point2D p) {
-        return (new Rectangle(getStartingPoint().x, getStartingPoint().y, width, height)).contains(p);
+        return new Rectangle(getStartingPoint().x, getStartingPoint().y, width, height).contains(p);
     }
 
     @Override

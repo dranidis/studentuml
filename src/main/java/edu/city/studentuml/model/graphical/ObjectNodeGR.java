@@ -5,13 +5,25 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JOptionPane;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
+
+import edu.city.studentuml.editing.EditContext;
+import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.ObjectNode;
+import edu.city.studentuml.model.repository.CentralRepository;
+import edu.city.studentuml.util.SystemWideObjectNamePool;
+import edu.city.studentuml.util.undoredo.DesignClassRepositoryOperations;
+import edu.city.studentuml.util.undoredo.EditObjectNodeEdit;
+import edu.city.studentuml.util.undoredo.TypeRepositoryOperations;
+import edu.city.studentuml.view.gui.ObjectNodeEditor;
+import edu.city.studentuml.view.gui.TypeOperation;
+import edu.city.studentuml.view.gui.TypedEntityEditResult;
 
 /**
- *
  * @author Biser
  * @author Dimitris Dranidis
  */
@@ -70,7 +82,6 @@ public class ObjectNodeGR extends LeafNodeGR {
         // draw the action node
         g.draw(shape);
 
-
         g.setStroke(originalStroke);
         g.setPaint(getOutlineColor());
 
@@ -88,10 +99,9 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type in the center
         if (!name.equals("")) {
-            TextLayout layout = new TextLayout(name, objectNameFont, frc);
-            Rectangle2D nameBounds = layout.getBounds();
-            int nameX = ((width - (int) nameBounds.getWidth()) / 2) - (int) nameBounds.getX();
-            int nameY = ((height - (int) nameBounds.getHeight()) / 2) - (int) nameBounds.getY();
+            Rectangle2D nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
+            int nameY = GraphicsHelper.calculateCenteredTextY(height, nameBounds);
 
             g.setFont(objectNameFont);
             g.drawString(name, getX() + nameX, getY() + nameY);
@@ -104,9 +114,8 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type
         if (!name.equals("")) {
-            TextLayout layout = new TextLayout(name, objectNameFont, frc);
-            nameBounds = layout.getBounds();
-            int nameX = ((width - (int) nameBounds.getWidth()) / 2) - (int) nameBounds.getX();
+            nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
             int nameY = objectNameYOffset - (int) nameBounds.getY();
 
             g.setFont(objectNameFont);
@@ -118,9 +127,8 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // draw object node states
         if (!states.equals("")) {
-            TextLayout layout = new TextLayout(states, objectStatesFont, frc);
-            statesBounds = layout.getBounds();
-            int nameX = ((width - (int) statesBounds.getWidth()) / 2) - (int) statesBounds.getX();
+            statesBounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, statesBounds);
             int nameY = objectStatesYOffset + objectNameYOffset - (int) nameBounds.getY() - (int) statesBounds.getY();
 
             g.setFont(objectStatesFont);
@@ -135,9 +143,8 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // consider object name and type text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), objectNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int objectNameWidth = (int) bounds.getWidth() + (2 * objectNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), objectNameFont, frc);
+            int objectNameWidth = (int) bounds.getWidth() + 2 * objectNameXOffset;
 
             if (objectNameWidth > newWidth) {
                 newWidth = objectNameWidth;
@@ -151,9 +158,8 @@ public class ObjectNodeGR extends LeafNodeGR {
         // consider object states text dimensions
         String states = ((ObjectNode) component).getStatesAsString();
         if (states.length() != 0) {
-            TextLayout layout = new TextLayout(states, objectStatesFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            int objectStatesWidth = (int) bounds.getWidth() + (2 * objectStatesXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            int objectStatesWidth = (int) bounds.getWidth() + 2 * objectStatesXOffset;
 
             if (objectStatesWidth > newWidth) {
                 newWidth = objectStatesWidth;
@@ -176,17 +182,84 @@ public class ObjectNodeGR extends LeafNodeGR {
     }
 
     @Override
+    public boolean edit(EditContext context) {
+        CentralRepository repository = context.getModel().getCentralRepository();
+        ObjectNode objectNode = (ObjectNode) getComponent();
+
+        // Create editor and initial result
+        ObjectNodeEditor objectNodeEditor = createEditor(context);
+        TypedEntityEditResult<DesignClass, ObjectNode> initialResult = new TypedEntityEditResult<>(objectNode,
+                new java.util.ArrayList<>());
+
+        TypedEntityEditResult<DesignClass, ObjectNode> result = objectNodeEditor.editDialog(initialResult,
+                context.getParentComponent());
+
+        // Check if user cancelled
+        if (result == null) {
+            return true; // User cancelled, but we handled it
+        }
+
+        ObjectNode newObjectNode = result.getDomainObject();
+
+        // do not edit if name and type are both empty
+        if (newObjectNode.getName().isEmpty() && newObjectNode.getType() == null) {
+            JOptionPane.showMessageDialog(context.getParentComponent(),
+                    "Object name and/or type is missing!",
+                    "Object Node Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return true; // Error shown, we handled it
+        }
+
+        // Create compound edit for all operations
+        CompoundEdit compoundEdit = new CompoundEdit();
+
+        // Apply type operations first and add their undo edits
+        TypeRepositoryOperations<DesignClass> typeOps = new DesignClassRepositoryOperations();
+        for (TypeOperation<DesignClass> typeOp : result.getTypeOperations()) {
+            typeOp.applyTypeOperationsAndAddTheirUndoEdits(repository, typeOps, compoundEdit);
+        }
+
+        // Add domain object edit and apply
+        UndoableEdit edit = new EditObjectNodeEdit(objectNode, newObjectNode, context.getModel());
+        compoundEdit.addEdit(edit);
+        repository.editObjectNode(objectNode, newObjectNode);
+
+        // Post the compound edit
+        compoundEdit.end();
+        if (!compoundEdit.isInProgress() && compoundEdit.canUndo()) {
+            context.getParentComponent().getUndoSupport().postEdit(compoundEdit);
+        }
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true; // Successfully handled
+    }
+
+    /**
+     * Creates the editor for this Object Node. Extracted into a protected method to
+     * enable testing without UI dialogs (can be overridden to return mock editor).
+     * 
+     * @param context the edit context containing repository
+     * @return the editor instance
+     */
+    protected ObjectNodeEditor createEditor(EditContext context) {
+        return new ObjectNodeEditor(context.getRepository());
+    }
+
+    @Override
     public ObjectNodeGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         ObjectNode sameObjectNode = (ObjectNode) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
         ObjectNodeGR clonedGR = new ObjectNodeGR(sameObjectNode, this.startingPoint.x, this.startingPoint.y);
-        
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         return clonedGR;
     }
 }

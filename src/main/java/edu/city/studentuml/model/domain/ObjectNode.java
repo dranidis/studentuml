@@ -1,7 +1,6 @@
 package edu.city.studentuml.model.domain;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.logging.Logger;
@@ -15,7 +14,6 @@ import edu.city.studentuml.util.XMLStreamer;
 import edu.city.studentuml.util.XMLSyntax;
 
 /**
- *
  * @author Biser
  */
 public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
@@ -64,8 +62,8 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
         states.remove(state);
     }
 
-    public Iterator<State> getStates() {
-        return states.iterator();
+    public List<State> getStates() {
+        return states;
     }
 
     public boolean hasStates() {
@@ -188,6 +186,6 @@ public class ObjectNode extends LeafNode implements IXMLCustomStreamable {
             node.setAttribute(TYPEID, "");
         }
 
-        streamer.streamObjects(streamer.addChild(node, "states"), states.iterator());
+        streamer.streamObjects(streamer.addChild(node, "states"), getStates().iterator());
     }
 }

@@ -44,6 +44,7 @@ public class MenuBar {
         createFileMenu();
         createEditMenu();
         createCreateMenu();
+        createToolsMenu();
         jMenuBar.add(createHelpMenu());
     }
 
@@ -108,13 +109,6 @@ public class MenuBar {
             }
         });
         fileMenu.add(exitMenuItem);
-
-        if (ApplicationGUI.isApplet) {
-            newProjectMenuItem.setEnabled(false);
-            saveProjectAsMenuItem.setEnabled(false);
-            exportToImageMenuItem.setEnabled(false);
-            exitMenuItem.setEnabled(false);
-        }
     }
 
     private void createEditMenu() {
@@ -215,8 +209,6 @@ public class MenuBar {
         });
         showRuleEditorCheckBoxMenuItem.setSelected(Settings.showRules());
 
-
-
         JCheckBoxMenuItem showFactsTabCheckBoxMenuItem = new JCheckBoxMenuItem();
         showFactsTabCheckBoxMenuItem.setText("Show Facts Tab");
         showFactsTabCheckBoxMenuItem.setToolTipText("<html><b>Advanced:</b> Displays the fact's tab</html>");
@@ -225,8 +217,6 @@ public class MenuBar {
             app.showFactsTab(showFactsTabCheckBoxMenuItem.isSelected());
         });
         showFactsTabCheckBoxMenuItem.setSelected(Settings.showFacts());
-
-
 
         JRadioButtonMenuItem simpleModeRadioButtonMenuItem = new JRadioButtonMenuItem("Simple Mode", false);
         simpleModeRadioButtonMenuItem.setToolTipText(
@@ -254,7 +244,6 @@ public class MenuBar {
             bgroup.add(advancedModeRadioButtonMenuItem);
             preferencesMenu.addSeparator();
         }
-
 
         ButtonGroup lookAndFeelGroup = new ButtonGroup();
 
@@ -294,12 +283,12 @@ public class MenuBar {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        
+
         for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.SSD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
         }
-        
+
         for (JInternalFrame sdFrame : app.getInternalFramesOfType(DiagramType.DCD)) {
             logger.finer(REPAINT);
             sdFrame.repaint();
@@ -347,6 +336,20 @@ public class MenuBar {
         createMenu.add(newDesignClassMenuItem);
     }
 
+    private void createToolsMenu() {
+        JMenu toolsMenu = new JMenu();
+        toolsMenu.setText(" Tools ");
+        jMenuBar.add(toolsMenu);
+
+        JMenuItem repositoryViewerMenuItem = new JMenuItem();
+        repositoryViewerMenuItem.setText("Repository Viewer");
+        repositoryViewerMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 
+                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        repositoryViewerMenuItem.setToolTipText("Open a window to view and monitor repository changes");
+        repositoryViewerMenuItem.addActionListener(e -> app.openRepositoryViewer());
+        toolsMenu.add(repositoryViewerMenuItem);
+    }
+
     private JMenu createHelpMenu() {
         JMenu helpMenu = new JMenu();
         helpMenu.setText(" Help ");
@@ -361,8 +364,8 @@ public class MenuBar {
         JMenuItem aboutMenuItem = new JMenuItem();
         aboutMenuItem.setText("About");
         aboutMenuItem.addActionListener(e -> app.aboutStudentUML());
-        helpMenu.add(aboutMenuItem);        
+        helpMenu.add(aboutMenuItem);
 
         return helpMenu;
-    }    
+    }
 }

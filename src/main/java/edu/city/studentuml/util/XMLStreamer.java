@@ -149,8 +149,8 @@ public class XMLStreamer {
     }
 
     /**
-     * Returns the first child of parent that matches the id.
-     * If called with a null parent the parent is set to the doc top element
+     * Returns the first child of parent that matches the id. If called with a null
+     * parent the parent is set to the doc top element
      * 
      * @param parent
      * @param id
@@ -245,14 +245,20 @@ public class XMLStreamer {
     }
 
     /**
-     * Called with an element which has many children.
-     * It creates and reads all the children of the element.
+     * Called with an element which has many children. It creates and reads all the
+     * children of the element.
      * 
      * @param element
      * @param parent
      * @throws NotStreamable
      */
     public void streamChildrenFrom(Element element, Object parent) throws NotStreamable {
+        if (element == null) {
+            String parentInfo = parent != null ? parent.getClass().getName() : "null";
+            logger.severe("Cannot stream children from null element. Parent: " + parentInfo);
+            throw new NotStreamable("Invalid XML structure: missing required element for " + parentInfo);
+        }
+
         for (int i = 0; i < element.getChildNodes().getLength(); i++) {
             Node child = element.getChildNodes().item(i);
             if (child instanceof Element) {
@@ -299,7 +305,7 @@ public class XMLStreamer {
             doc = builder.parse(file);
         } catch (SAXException | ParserConfigurationException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     public void saveToFile(String xml) {

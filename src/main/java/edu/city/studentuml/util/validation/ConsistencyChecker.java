@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +20,7 @@ import edu.city.studentuml.view.gui.CollectionTreeModel;
 public class ConsistencyChecker {
 
     private boolean useMockAPI = false;
-    
+
     public void setPrologAPI(boolean useMockAPI) {
         this.useMockAPI = useMockAPI;
     }
@@ -37,13 +36,13 @@ public class ConsistencyChecker {
     private PrologAPI prologAPI;
 
     private PrologAPI makePrologAPI() {
-         
+
         if (useMockAPI) {
             this.prologAPI = new PrologAPIMock();
         } else {
             this.prologAPI = new JLogPrologAPIAdapter();
         }
-        return this.prologAPI;           
+        return this.prologAPI;
     }
 
     protected Map<String, Vector<ConsistencyCheckerFact>> factTemplates = new HashMap<>();
@@ -53,12 +52,12 @@ public class ConsistencyChecker {
     public ConsistencyChecker(String location) {
         logger.finer(() -> "Loading rules from: " + location);
         loadRules(getNotCommentedLinesFromURL(location));
-        logger.fine(() -> "Consistency checker initialized. " + rules.size() + " rules loaded, " + factTemplates.size() + " fact templates.");
+        logger.fine(() -> "Consistency checker initialized. " + rules.size() + " rules loaded, " + factTemplates.size()
+                + " fact templates.");
     }
 
     /**
      * Returns a vector of lines ignoring the commented and the empty lines.
-     *
      */
     private List<String> getNotCommentedLinesFromURL(String urlLocation) {
         List<String> lines = new ArrayList<>();
@@ -147,20 +146,16 @@ public class ConsistencyChecker {
             return null;
         }
 
-   }
+    }
 
-   /**
-    * Creates new ruleBasedEngine (from prolog) asserts all the facts in to it
-    * (the facts are generated from the fact template explained above) and then
-    * for every rule that is defined in rules.txt, parsed and stored in the rules
-    * vector
-    * it executes those rules
-    * 
-    * must not throw exceptions!!
-    *
-    * 
-    */
-    public boolean checkState(Set<Object> objects, String executeRule, Set<String> messageTypes, CollectionTreeModel messages, CollectionTreeModel facts) {
+    /**
+     * Creates new ruleBasedEngine (from prolog) asserts all the facts in to it (the
+     * facts are generated from the fact template explained above) and then for
+     * every rule that is defined in rules.txt, parsed and stored in the rules
+     * vector it executes those rules must not throw exceptions!!
+     */
+    public boolean checkState(Set<Object> objects, String executeRule, Set<String> messageTypes,
+            CollectionTreeModel messages, CollectionTreeModel facts) {
         rbs = new RuleBasedEngine(makePrologAPI());
 
         Vector<String> factsList = new Vector<>();
@@ -187,14 +182,11 @@ public class ConsistencyChecker {
 
             String res = "all";
             Map<String, Map<String, ?>> rez = rbs.checkRule(rule.getexpression(), res.equals(rule.getresult()));
-            
+
             if (rez != null) {
-                logger.finer(() ->"Solutions: " + rez.keySet().size());
+                logger.finer(() -> "Solutions: " + rez.keySet().size());
 
-                Iterator<String> solutionIterator = rez.keySet().iterator();
-                while (solutionIterator.hasNext()) {
-                    String solutionName = solutionIterator.next();
-
+                for (String solutionName : rez.keySet()) {
                     messageTypes.add(rule.getSeverity());
                     messages.put(rule.getSeverity(), rule.getName());
                     messages.put(rule.getName(), rule.getMessage(rez.get(solutionName)));
@@ -203,7 +195,6 @@ public class ConsistencyChecker {
                             && rule.executeAction(rez.get(solutionName))) {
                         return true;
                     }
-
                 }
 
                 if (rule.getSeverity().equals("failure")) {
@@ -217,7 +208,7 @@ public class ConsistencyChecker {
         return false;
     }
 
-public String getAllQueriesString() {
-    return prologAPI.getAllQueriesString();
-}
+    public String getAllQueriesString() {
+        return prologAPI.getAllQueriesString();
+    }
 }

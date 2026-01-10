@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+import edu.city.studentuml.model.graphical.AbstractSDModel;
+import edu.city.studentuml.model.graphical.CombinedFragmentGR;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.graphical.GraphicalElement;
 import edu.city.studentuml.model.graphical.Resizable;
@@ -27,7 +29,6 @@ import edu.city.studentuml.util.undoredo.ResizeWithCoveredElementsEditFactory;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class ResizeWithCoveredElementsController {
@@ -63,7 +64,7 @@ public abstract class ResizeWithCoveredElementsController {
 
             @Override
             public void mouseReleased(MouseEvent event) {
-                myMouseReleased();
+                myMouseReleased(event);
             }
         };
 
@@ -108,7 +109,8 @@ public abstract class ResizeWithCoveredElementsController {
 
             // UNDO/REDO [resize]
             undoSize = new SizeWithCoveredElements();
-            undoSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
+            undoSize.setStartingPosition(
+                    new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
             undoSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));
 
             if (resizableElement.hasResizableContext()) {
@@ -117,7 +119,7 @@ public abstract class ResizeWithCoveredElementsController {
         }
     }
 
-    private void myMouseReleased() {
+    private void myMouseReleased(MouseEvent event) {
         if (!selectionMode) {
             return;
         }
@@ -139,8 +141,12 @@ public abstract class ResizeWithCoveredElementsController {
                 addContainingElements();
 
                 CompoundEdit edit = new CompoundResizeEdit();
-                UndoableEdit resizeEdit = ResizeWithCoveredElementsEditFactory.getInstance().createResizeEdit(resizableElement, undoSize, redoSize, model);
-                edit.addEdit(resizeEdit);
+                UndoableEdit resizeEdit = ResizeWithCoveredElementsEditFactory.getInstance()
+                        .createResizeEdit(resizableElement, undoSize, redoSize, model);
+
+                if (resizeEdit != null) {
+                    edit.addEdit(resizeEdit);
+                }
 
                 Resizable context = resizableElement.getResizableContext();
                 if (undoContextSizes.size() == redoContextSizes.size()) {
@@ -158,6 +164,16 @@ public abstract class ResizeWithCoveredElementsController {
 
                 edit.end();
                 diagramInternalFrame.getUndoSupport().postEdit(edit);
+            }
+
+            // Auto-resize THIS specific combined fragment after manual resize
+            // Only resize the one that was manually resized, not all fragments
+            // Only auto-resize when Ctrl key is held down
+            if (resizableElement instanceof CombinedFragmentGR && event.isControlDown()) {
+                CombinedFragmentGR fragment = (CombinedFragmentGR) resizableElement;
+                if (model instanceof AbstractSDModel) {
+                    fragment.autoResizeToMessages((AbstractSDModel) model);
+                }
             }
 
             handle = null;
@@ -191,15 +207,14 @@ public abstract class ResizeWithCoveredElementsController {
 
         // resize the resizable element by moving the handle
         handle.move(x, y);
-        
-        lastSize.setStartingPosition(new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
+
+        lastSize.setStartingPosition(
+                new Point(resizableElement.getStartingPoint().x, resizableElement.getStartingPoint().y));
         lastSize.setDimension(new Dimension(resizableElement.getWidth(), resizableElement.getHeight()));
 
         // MODEL CHANGED
         model.modelChanged();
     }
-
-
 
     private Point scalePoint(Point point) {
         int newx = scale(point.getX());

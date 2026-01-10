@@ -18,9 +18,12 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.util.NotStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditNoteGREdit;
+import edu.city.studentuml.view.gui.UMLNoteEditor;
 
 public class UMLNoteGR extends GraphicalElement {
     private static final Logger logger = Logger.getLogger(UMLNoteGR.class.getName());
@@ -38,7 +41,8 @@ public class UMLNoteGR extends GraphicalElement {
 
     public UMLNoteGR(String textualContent, GraphicalElement connectedTo, Point start) {
         if (connectedTo == null) {
-            logger.severe(() -> "Note: " + textualContent + " at Point: " + start.getX() + ", " + start.getY() + " not connected to an element!");
+            logger.severe(() -> "Note: " + textualContent + " at Point: " + start.getX() + ", " + start.getY()
+                    + " not connected to an element!");
         }
         to = connectedTo;
         startingPoint = start;
@@ -60,14 +64,15 @@ public class UMLNoteGR extends GraphicalElement {
 
         // REPLACE super.draw(g) because only UMLNoteGR should show user
         g.setFont(new Font("SansSerif", Font.PLAIN, 8));
-        
+
         g.setStroke(GraphicsHelper.makeSolidStroke());
         Rectangle2D toBounds = to.getBounds();
 
         // Draw connecting line
-        
+
         g.setStroke(GraphicsHelper.makeDashedStroke());
-        g.drawLine(getX() + getWidth() / 2, getY() + getHeight() / 2, (int) toBounds.getCenterX(), (int) toBounds.getCenterY());
+        g.drawLine(getX() + getWidth() / 2, getY() + getHeight() / 2, (int) toBounds.getCenterX(),
+                (int) toBounds.getCenterY());
 
         // Draw note shape
         GeneralPath shape = new GeneralPath();
@@ -103,11 +108,11 @@ public class UMLNoteGR extends GraphicalElement {
         // Draw the text
         Point pen = new Point(getX(), getY() + paddingVertical);
         g.setColor(getOutlineColor());
-        
+
         String noteText = getNoteText();
         String[] lines = noteText.split("\\R");
 
-        for(int i=0; i < lines.length; i++) {
+        for (int i = 0; i < lines.length; i++) {
             drawLineOfText(g, pen, lines[i]);
         }
 
@@ -120,10 +125,10 @@ public class UMLNoteGR extends GraphicalElement {
         String[] lines = noteText.split("\\R");
 
         int width = 0;
-        for(int i=0; i < lines.length; i++) {
+        for (int i = 0; i < lines.length; i++) {
             width = Math.max(width, calculateLineWidth(g, lines[i]));
-        } 
-        
+        }
+
         // adjust width according to text width
         // except if it is longer than MAXWIDTH or shorter than MINWIDTH
         // Since doubles are truncated and nextLayout has rounding problems
@@ -137,10 +142,10 @@ public class UMLNoteGR extends GraphicalElement {
         String[] lines = noteText.split("\\R");
 
         int height = 0;
-        for(int i=0; i < lines.length; i++) {
+        for (int i = 0; i < lines.length; i++) {
             height += calculateLineHeight(g, lines[i]);
         }
-        return (height + 2 * paddingVertical);
+        return height + 2 * paddingVertical;
     }
 
     private int calculateLineHeight(Graphics2D g, String noteText) {
@@ -159,10 +164,10 @@ public class UMLNoteGR extends GraphicalElement {
             // The ascent is the distance from the top (right) of the TextLayout to the baseline. 
             // The descent is the distance from the baseline to the bottom (left) of the TextLayout. 
             // The leading is the suggested interline spacing for this TextLayout
-            
+
             // don't merege the two following lines together, due to rounding effects
-            textHeight += layout.getAscent() ; 
-            textHeight +=  layout.getDescent();
+            textHeight += layout.getAscent();
+            textHeight += layout.getDescent();
         }
 
         return textHeight;
@@ -183,19 +188,18 @@ public class UMLNoteGR extends GraphicalElement {
 
             dx = paddingHorizontal;
             layout.draw(g, pen.x + dx, pen.y);
-            pen.y += layout.getDescent(); 
+            pen.y += layout.getDescent();
         }
     }
-    
+
     private int calculateLineWidth(Graphics2D g, String noteText) {
-         // AVOID 
+        // AVOID 
         // java.lang.IllegalArgumentException: Can't add attribute to 0-length text      
         noteText += " ";
         FontRenderContext frc = g.getFontRenderContext();
-        TextLayout layout = new TextLayout(noteText, nameFont, frc);
-        Rectangle2D bounds = layout.getBounds();
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(noteText, nameFont, frc);
 
-        return (int) ((bounds.getWidth()) + 2 * paddingHorizontal);
+        return (int) bounds.getWidth() + 2 * paddingHorizontal;
     }
 
     public void move(int x, int y) {
@@ -262,29 +266,61 @@ public class UMLNoteGR extends GraphicalElement {
         amap.put(TextAttribute.FONT, nameFont);
 
         return new LineBreakMeasurer(
-            new AttributedString(noteText, amap).getIterator(),
-            BreakIterator.getLineInstance(),
-            g.getFontRenderContext());
+                new AttributedString(noteText, amap).getIterator(),
+                BreakIterator.getLineInstance(),
+                g.getFontRenderContext());
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        UMLNoteEditor noteEditor = createEditor(context);
+
+        // Undo/Redo
+        String undoText = getText();
+
+        if (!noteEditor.showDialog()) {
+            return true; // User cancelled, but we handled it
+        }
+
+        setText(noteEditor.getText());
+
+        // Undo/Redo
+        context.getParentComponent().getUndoSupport().postEdit(
+                new EditNoteGREdit(this, context.getModel(), undoText));
+
+        // set observable model to changed in order to notify its views
+        context.getModel().modelChanged();
+        SystemWideObjectNamePool.getInstance().reload();
+
+        return true; // Successfully handled
+    }
+
+    /**
+     * Creates the editor for this UML Note. Extracted into a protected method to
+     * enable testing without UI dialogs (can be overridden to return mock editor).
+     * 
+     * @param context the edit context containing parent component
+     * @return the editor instance
+     */
+    protected UMLNoteEditor createEditor(EditContext context) {
+        return new UMLNoteEditor(context.getParentComponent(), "UML Note Editor", this);
     }
 
     @Override
     public UMLNoteGR clone() {
         // Notes don't have domain objects in CentralRepository - they're purely graphical
         // Just copy the text content and create a new note at the same position
-        UMLNoteGR clonedNote = new UMLNoteGR(this.text, this.to, 
-            new Point(this.startingPoint.x, this.startingPoint.y));
-        
+        UMLNoteGR clonedNote = new UMLNoteGR(this.text, this.to,
+                new Point(this.startingPoint.x, this.startingPoint.y));
+
         // Copy visual properties
         clonedNote.width = this.width;
         clonedNote.height = this.height;
-        
+
         // Note: The "to" reference will need to be updated during paste
         // if the connected element is also in the clipboard
-        
+
         return clonedNote;
     }
 
 }
-
-
-

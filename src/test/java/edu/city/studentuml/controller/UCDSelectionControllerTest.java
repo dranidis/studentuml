@@ -2,10 +2,13 @@ package edu.city.studentuml.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.city.studentuml.model.domain.Actor;
+import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.model.domain.UMLProject;
 import edu.city.studentuml.model.domain.UseCase;
 import edu.city.studentuml.model.graphical.DiagramModel;
@@ -13,6 +16,9 @@ import edu.city.studentuml.model.graphical.SystemGR;
 import edu.city.studentuml.model.graphical.UCActorGR;
 import edu.city.studentuml.model.graphical.UCDModel;
 import edu.city.studentuml.model.graphical.UseCaseGR;
+import edu.city.studentuml.util.undoredo.EditActorEdit;
+import edu.city.studentuml.util.undoredo.EditSystemEdit;
+import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 import edu.city.studentuml.view.gui.UCDInternalFrame;
 
@@ -34,19 +40,19 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCreation() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
         assertNotNull(selectionController);
     }
 
-    @Test 
+    @Test
     public void testDeleteActorWithRelationshipToUC() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         UCActorGR a = h.addActor("A");
         UseCaseGR u = h.addUseCase("U");
         h.addUcAssociation(a, u);
         assertEquals(3, model.getGraphicalElements().size());
-        
+
         selectionController.addElementToSelection(a);
 
         // System.out.println("DELETE");
@@ -57,25 +63,25 @@ public class UCDSelectionControllerTest {
 
         // System.out.println("UNDO");
         internalFrame.getUndoManager().undo();
-        
+
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
         assertEquals(3, model.getGraphicalElements().size());
     }
 
     @Test
     public void testDeleteSystemWithUseCase() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
-        SystemGR s = h.addSystem("System");  
+        SystemGR s = h.addSystem("System");
         UseCaseGR uc = new UseCaseGR(new UseCase("U"), 0, 0);
         s.add(uc);
         // if this is not acced, it does not terminate
         uc.setContext(s);
 
-        model.getGraphicalElements().forEach(e -> System.out.println(e));
+        // model.getGraphicalElements().forEach(e -> System.out.println(e));
         // System.out.println(s.getNumberOfElements());
-        
-        s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
+
+        // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         selectionController.addElementToSelection(s);
 
@@ -86,21 +92,21 @@ public class UCDSelectionControllerTest {
         internalFrame.getUndoManager().undo();
 
         // model.getGraphicalElements().forEach(e -> System.out.println(e));
-        System.out.println(s.getNumberOfElements());
+        // System.out.println(s.getNumberOfElements());
 
         // s.createIterator().forEachRemaining(e -> System.out.println("IN s: " + e));
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, ((SystemGR) model.getGraphicalElements().get(0)).getNumberOfElements());
-             
+
     }
 
     @Test
     public void testDeleteSystemWithinSystem() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
-        SystemGR s1 = h.addSystem("System1");  
-        SystemGR s2 = h.addSystem("System2");  
+        SystemGR s1 = h.addSystem("System1");
+        SystemGR s2 = h.addSystem("System2");
 
         model.removeGraphicalElement(s2);
         s1.add(s2);
@@ -120,16 +126,16 @@ public class UCDSelectionControllerTest {
 
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(0, s1.getNumberOfElements());
-             
+
     }
 
     @Test
     public void testDeleteSystemWithinSystemWithinSystem() {
-        SelectionController selectionController  = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
-        SystemGR s1 = h.addSystem("System1");  
-        SystemGR s2 = h.addSystem("System2");  
-        SystemGR s3 = h.addSystem("System3");  
+        SystemGR s1 = h.addSystem("System1");
+        SystemGR s2 = h.addSystem("System2");
+        SystemGR s3 = h.addSystem("System3");
 
         model.removeGraphicalElement(s2);
         s1.add(s2);
@@ -153,18 +159,18 @@ public class UCDSelectionControllerTest {
         assertEquals(1, model.getGraphicalElements().size());
         assertEquals(1, s1.getNumberOfElements());
         assertEquals(0, s2.getNumberOfElements());
-             
+
     }
 
     @Test
     public void testCopyPasteSystemWithUseCases() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         // Create a system with use cases inside
         SystemGR system = h.addSystem("System");
         UseCaseGR uc1 = h.addUseCase("UseCase1");
         UseCaseGR uc2 = h.addUseCase("UseCase2");
-        
+
         // Move use cases inside system
         model.removeGraphicalElement(uc1);
         model.removeGraphicalElement(uc2);
@@ -172,20 +178,20 @@ public class UCDSelectionControllerTest {
         uc1.setContext(system);
         system.add(uc2);
         uc2.setContext(system);
-        
+
         assertEquals(1, model.getGraphicalElements().size()); // Just the system
         assertEquals(2, system.getNumberOfElements()); // 2 use cases inside
-        
+
         // Select only the system (not individual use cases)
         selectionController.addElementToSelection(system);
-        
+
         // Copy and paste
         selectionController.copySelected();
         selectionController.pasteClipboard();
-        
+
         // Should now have 2 systems, each with 2 use cases
         assertEquals(2, model.getGraphicalElements().size());
-        
+
         // Find the pasted system (should be the second one)
         SystemGR pastedSystem = null;
         for (int i = 0; i < model.getGraphicalElements().size(); i++) {
@@ -193,10 +199,10 @@ public class UCDSelectionControllerTest {
                 pastedSystem = (SystemGR) model.getGraphicalElements().get(i);
             }
         }
-        
+
         assertNotNull("Pasted system should exist", pastedSystem);
         assertEquals("Pasted system should have 2 use cases", 2, pastedSystem.getNumberOfElements());
-        
+
         // Verify the use cases are properly connected to the pasted system
         final SystemGR finalPastedSystem = pastedSystem;
         pastedSystem.createIterator().forEachRemaining(child -> {
@@ -206,13 +212,13 @@ public class UCDSelectionControllerTest {
 
     @Test
     public void testCopyPasteUndoSingleOperation() {
-        SelectionController selectionController = new UCDSelectionController(internalFrame, model);
+        SelectionController selectionController = new SelectionController(internalFrame, model);
 
         // Create a system with use cases inside
         SystemGR system = h.addSystem("System");
         UseCaseGR uc1 = h.addUseCase("UseCase1");
         UseCaseGR uc2 = h.addUseCase("UseCase2");
-        
+
         // Move use cases inside system
         model.removeGraphicalElement(uc1);
         model.removeGraphicalElement(uc2);
@@ -220,25 +226,132 @@ public class UCDSelectionControllerTest {
         uc1.setContext(system);
         system.add(uc2);
         uc2.setContext(system);
-        
+
         int initialCount = model.getGraphicalElements().size();
         assertEquals(1, initialCount); // Just the system
-        
+
         // Select and paste the system
         selectionController.addElementToSelection(system);
         selectionController.copySelected();
         selectionController.pasteClipboard();
-        
+
         // Should now have 2 systems
         assertEquals(2, model.getGraphicalElements().size());
-        
+
         // Single undo should remove all pasted elements (1 system + 2 use cases)
         internalFrame.getUndoManager().undo();
-        
+
         // Should be back to original state with single undo
-        assertEquals("Single undo should remove entire paste operation", 
-                     initialCount, model.getGraphicalElements().size());
+        assertEquals("Single undo should remove entire paste operation",
+                initialCount, model.getGraphicalElements().size());
+    }
+
+    @Test
+    public void testEditActorNameWithUndo() {
+        // Create an Actor
+        UCActorGR actorGR = h.addActor("OriginalActor");
+        Actor actor = (Actor) actorGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalActor", actor.getName());
+        assertEquals(actor, umlProject.getCentralRepository().getActor("OriginalActor"));
+
+        // Create edit
+        Actor newActor = (Actor) actor.clone();
+        newActor.setName("EditedActor");
+        EditActorEdit edit = new EditActorEdit(actor, newActor, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedActor", actor.getName());
+        // Repository should be synchronized
+        assertEquals(actor, umlProject.getCentralRepository().getActor("EditedActor"));
+        assertNull(umlProject.getCentralRepository().getActor("OriginalActor"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalActor", actor.getName());
+        // Repository should be restored
+        assertEquals(actor, umlProject.getCentralRepository().getActor("OriginalActor"));
+        assertNull(umlProject.getCentralRepository().getActor("EditedActor"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedActor", actor.getName());
+        assertEquals(actor, umlProject.getCentralRepository().getActor("EditedActor"));
+        assertNull(umlProject.getCentralRepository().getActor("OriginalActor"));
+    }
+
+    @Test
+    public void testEditUseCaseNameWithUndo() {
+        // Create a UseCase
+        UseCaseGR useCaseGR = h.addUseCase("OriginalUseCase");
+        UseCase useCase = (UseCase) useCaseGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalUseCase", useCase.getName());
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+
+        // Create edit
+        UseCase newUseCase = (UseCase) useCase.clone();
+        newUseCase.setName("EditedUseCase");
+        EditUseCaseEdit edit = new EditUseCaseEdit(useCase, newUseCase, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedUseCase", useCase.getName());
+        // Repository should be synchronized
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalUseCase", useCase.getName());
+        // Repository should be restored
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedUseCase", useCase.getName());
+        assertEquals(useCase, umlProject.getCentralRepository().getUseCase("EditedUseCase"));
+        assertNull(umlProject.getCentralRepository().getUseCase("OriginalUseCase"));
+    }
+
+    @Test
+    public void testEditSystemNameWithUndo() {
+        // Create a System
+        SystemGR systemGR = h.addSystem("OriginalSystem");
+        System system = (System) systemGR.getComponent();
+
+        // Verify initial state in both domain and repository
+        assertEquals("OriginalSystem", system.getName());
+        assertEquals(system, umlProject.getCentralRepository().getSystem("OriginalSystem"));
+
+        // Create edit
+        System newSystem = (System) system.clone();
+        newSystem.setName("EditedSystem");
+        EditSystemEdit edit = new EditSystemEdit(system, newSystem, model);
+
+        // Apply edit (redo)
+        edit.redo();
+        assertEquals("EditedSystem", system.getName());
+        // Repository should be synchronized
+        assertEquals(system, umlProject.getCentralRepository().getSystem("EditedSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("OriginalSystem"));
+
+        // Undo
+        edit.undo();
+        assertEquals("OriginalSystem", system.getName());
+        // Repository should be restored
+        assertEquals(system, umlProject.getCentralRepository().getSystem("OriginalSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("EditedSystem"));
+
+        // Redo again
+        edit.redo();
+        assertEquals("EditedSystem", system.getName());
+        assertEquals(system, umlProject.getCentralRepository().getSystem("EditedSystem"));
+        assertNull(umlProject.getCentralRepository().getSystem("OriginalSystem"));
     }
 
 }
-

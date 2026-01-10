@@ -16,7 +16,7 @@ public class SSDModel extends AbstractSDModel {
     @Override
     protected void addToRepository(RoleClassifierGR rc) {
         if (rc.getRoleClassifier() instanceof SystemInstance) {
-            repository.addSystemInstance(((SystemInstance) rc.getRoleClassifier()));
+            repository.addSystemInstance((SystemInstance) rc.getRoleClassifier());
         }
     }
 

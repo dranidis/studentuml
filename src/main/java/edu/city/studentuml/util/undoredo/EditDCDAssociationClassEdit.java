@@ -1,18 +1,13 @@
 package edu.city.studentuml.util.undoredo;
 
-import edu.city.studentuml.model.domain.Attribute;
 import edu.city.studentuml.model.domain.DesignAssociationClass;
 import edu.city.studentuml.model.graphical.DiagramModel;
-import edu.city.studentuml.model.domain.Method;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
-import java.util.Iterator;
-import java.util.Vector;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- *
  * @author draganbisercic
  */
 public class EditDCDAssociationClassEdit extends AbstractUndoableEdit {
@@ -55,22 +50,10 @@ public class EditDCDAssociationClassEdit extends AbstractUndoableEdit {
         originalAssociationClass.setRoleB(a.getRoleB().clone());
 
         originalAssociationClass.getAttributes().clear();
-        Attribute attribute;
-        Vector attributes = a.getAttributes();
-        Iterator i = attributes.iterator();
-        while (i.hasNext()) {
-            attribute = (Attribute) i.next();
-            originalAssociationClass.addAttribute(attribute.clone());
-        }
+        a.getAttributes().forEach(attribute -> originalAssociationClass.addAttribute(attribute.clone()));
 
         originalAssociationClass.getMethods().clear();
-        Method method;
-        Vector methods = a.getMethods();
-        i = methods.iterator();
-        while (i.hasNext()) {
-            method = (Method) i.next();
-            originalAssociationClass.addMethod(method.clone());
-        }
+        a.getMethods().forEach(method -> originalAssociationClass.addMethod(method.clone()));
     }
 
     public boolean canUndo() {

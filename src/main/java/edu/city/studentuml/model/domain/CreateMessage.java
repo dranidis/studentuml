@@ -1,6 +1,5 @@
 package edu.city.studentuml.model.domain;
 
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -44,18 +43,17 @@ public class CreateMessage extends CallMessage {
     }
 
     public Vector<MethodParameter> getSDMethodParameters() {
-        Iterator<MethodParameter> iterator = parameters.iterator();
         Vector<MethodParameter> methodParameters = new Vector<>();
 
-        while (iterator.hasNext()) {
-            MethodParameter param = iterator.next();
+        for (MethodParameter param : parameters) {
             String[] parameterStr = param.getName().split("\\s+");
             try {
                 Type parameterType = new DataType(parameterStr[0]);
                 String parameter = parameterStr[1];
                 methodParameters.add(new MethodParameter(parameter, parameterType));
             } catch (ArrayIndexOutOfBoundsException e) {
-                logger.severe("Wrong Parameter: " + "STRING: " + parameterStr + " " + getName() + ": " + source.getName() + " -> " + target.getName());
+                logger.severe("Wrong Parameter: " + "STRING: " + parameterStr + " " + getName() + ": "
+                        + source.getName() + " -> " + target.getName());
                 e.printStackTrace();
             }
         }
@@ -66,12 +64,7 @@ public class CreateMessage extends CallMessage {
     public CreateMessage clone() {
         CreateMessage copyCreateMessage = new CreateMessage(getSource(), getTarget());
 
-        Iterator<MethodParameter> iterator = parameters.iterator();
-        MethodParameter parameter;
-        while (iterator.hasNext()) {
-            parameter = iterator.next();
-            copyCreateMessage.addParameter(parameter.clone());
-        }
+        parameters.forEach(parameter -> copyCreateMessage.addParameter(parameter.clone()));
 
         return copyCreateMessage;
     }

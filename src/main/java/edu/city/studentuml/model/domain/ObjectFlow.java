@@ -2,6 +2,7 @@ package edu.city.studentuml.model.domain;
 
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.view.gui.components.Copyable;
 import edu.city.studentuml.util.IXMLCustomStreamable;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
 import edu.city.studentuml.util.XMLStreamer;
@@ -12,7 +13,7 @@ import edu.city.studentuml.util.XMLSyntax;
  *
  * @author Biser
  */
-public class ObjectFlow extends Edge implements IXMLCustomStreamable {
+public class ObjectFlow extends Edge implements IXMLCustomStreamable, Copyable<ObjectFlow> {
 
     protected String weight;
 
@@ -58,7 +59,7 @@ public class ObjectFlow extends Edge implements IXMLCustomStreamable {
         }
 
         int temp = Integer.parseInt(weight);
-        
+
         return temp > 0;
     }
 
@@ -76,7 +77,7 @@ public class ObjectFlow extends Edge implements IXMLCustomStreamable {
     }
 
     @Override
-    public Edge clone() {
+    public ObjectFlow clone() {
         ObjectFlow copyFlow = new ObjectFlow(this.getSource(), this.getTarget());
 
         String g = this.getGuard();
@@ -92,12 +93,19 @@ public class ObjectFlow extends Edge implements IXMLCustomStreamable {
         return copyFlow;
     }
 
+    @Override
+    public ObjectFlow copyOf(ObjectFlow source) {
+        return source.clone();
+    }
+
     public void streamFromXML(Element node, XMLStreamer streamer, Object instance) {
         setGuard(node.getAttribute("guard"));
         setWeight(node.getAttribute("weight"));
 
-        source = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(XMLSyntax.SOURCE));
-        target = (NodeComponent) SystemWideObjectNamePool.getInstance().getObjectByName(node.getAttribute(XMLSyntax.TARGET));
+        source = (NodeComponent) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(node.getAttribute(XMLSyntax.SOURCE));
+        target = (NodeComponent) SystemWideObjectNamePool.getInstance()
+                .getObjectByName(node.getAttribute(XMLSyntax.TARGET));
     }
 
     public void streamToXML(Element node, XMLStreamer streamer) {

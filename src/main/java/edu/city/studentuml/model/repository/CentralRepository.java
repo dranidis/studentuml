@@ -1,9 +1,6 @@
 package edu.city.studentuml.model.repository;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -18,6 +15,7 @@ import edu.city.studentuml.model.domain.ActorInstance;
 import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.Classifier;
+import edu.city.studentuml.model.domain.CombinedFragment;
 import edu.city.studentuml.model.domain.ConceptualAssociationClass;
 import edu.city.studentuml.model.domain.ConceptualClass;
 import edu.city.studentuml.model.domain.ControlFlow;
@@ -67,7 +65,7 @@ import edu.city.studentuml.util.NotifierVector;
  * 
  * @author Ervin Ramollari
  */
-public class CentralRepository extends Observable implements Serializable {
+public class CentralRepository implements Serializable {
     private static final Logger logger = Logger.getLogger(CentralRepository.class.getName());
 
     private Vector<DataType> datatypes;
@@ -93,7 +91,7 @@ public class CentralRepository extends Observable implements Serializable {
     private NotifierVector<SDObject> sdObjects;
     private NotifierVector<Realization> realizations;
     private NotifierVector<SDMessage> sdMessages;
-    private NotifierVector ssdMessages; // TODO: remove????
+    private NotifierVector<CombinedFragment> combinedFragments;
     private NotifierVector<ControlFlow> controlFlows;
     private NotifierVector<ObjectFlow> objectFlows;
     private NotifierVector<ActionNode> actionNodes;
@@ -106,6 +104,8 @@ public class CentralRepository extends Observable implements Serializable {
     private NotifierVector<JoinNode> joinNodes;
     private NotifierVector<ObjectNode> objectNodes;
     private NotifierVector<ActivityNode> activityNodes;
+
+    private transient Vector<RepositoryChangeListener> changeListeners = new Vector<>();
 
     public CentralRepository() {
 
@@ -139,7 +139,7 @@ public class CentralRepository extends Observable implements Serializable {
         sdObjects = new NotifierVector<>();
         multiObjects = new NotifierVector<>();
         sdMessages = new NotifierVector<>();
-        ssdMessages = new NotifierVector<>();
+        combinedFragments = new NotifierVector<>();
 
         controlFlows = new NotifierVector<>();
         objectFlows = new NotifierVector<>();
@@ -153,57 +153,6 @@ public class CentralRepository extends Observable implements Serializable {
         joinNodes = new NotifierVector<>();
         objectNodes = new NotifierVector<>();
         activityNodes = new NotifierVector<>();
-    }
-
-    @Override
-    public synchronized void addObserver(Observer o) {
-        logger.fine(() -> "OBSERVER added: " + o.toString());
-        super.addObserver(o);
-    }
-
-    public Vector<Object> getAllObjects() {
-        Vector<Object> v = new Vector<>();
-
-        v.addAll(actorInstances);
-        v.addAll(actors);
-        v.addAll(aggregations);
-        v.addAll(associations);
-        v.addAll(classes);
-        v.addAll(concepts);
-        v.addAll(getDatatypes());
-        v.addAll(dependencies);
-        v.addAll(generalizations);
-        v.addAll(genericAttributes);
-        v.addAll(genericClasses);
-        v.addAll(genericOperations);
-        v.addAll(interfaces);
-        v.addAll(multiObjects);
-        v.addAll(sdObjects);
-        v.addAll(realizations);
-        v.addAll(sdMessages);
-        v.addAll(ssdMessages); // ????
-
-        v.addAll(ucLinks);
-        v.addAll(useCases);
-        v.addAll(designAssociationClasses);
-        v.addAll(conceptualAssociationClasses);
-        v.addAll(systems);
-        v.addAll(systemInstances);
-
-        v.addAll(controlFlows);
-        v.addAll(objectFlows);
-        v.addAll(actionNodes);
-        v.addAll(initialNodes);
-        v.addAll(activityFinalNodes);
-        v.addAll(flowFinalNodes);
-        v.addAll(decisionNodes);
-        v.addAll(mergeNodes);
-        v.addAll(forkNodes);
-        v.addAll(joinNodes);
-        v.addAll(objectNodes);
-        v.addAll(activityNodes);
-
-        return v;
     }
 
     public void clear() {
@@ -221,7 +170,7 @@ public class CentralRepository extends Observable implements Serializable {
         actors.clear();
         actorInstances.clear();
         sdMessages.clear();
-        ssdMessages.clear();
+        combinedFragments.clear();
         genericClasses.clear();
         genericAttributes.clear();
         genericOperations.clear();
@@ -247,14 +196,6 @@ public class CentralRepository extends Observable implements Serializable {
         activityNodes.clear();
     }
 
-    // this method occurs whenever a change in the repository occurs to notify
-    // observers
-    public void repositoryChanged() {
-        logger.fine(() -> "Notifying observers: " + this.countObservers());
-        setChanged();
-        notifyObservers();
-    }
-
     private void initialiseDataTypes() {
         datatypes.add(DataType.VOID);
         datatypes.add(DataType.INTEGER);
@@ -264,10 +205,6 @@ public class CentralRepository extends Observable implements Serializable {
         datatypes.add(DataType.LONG);
         datatypes.add(DataType.BYTE);
         datatypes.add(DataType.STRING);
-    }
-
-    public void setDatatypes(Vector<DataType> datatypes) {
-        this.datatypes = datatypes;
     }
 
     public Vector<DataType> getDatatypes() {
@@ -308,8 +245,6 @@ public class CentralRepository extends Observable implements Serializable {
                 c.setGenericClass(gc);
             }
 
-            repositoryChanged();
-
             return true;
         } else {
             return false;
@@ -328,19 +263,12 @@ public class CentralRepository extends Observable implements Serializable {
 
     public boolean editConceptualClass(ConceptualClass originalClass, ConceptualClass newClass) {
         ConceptualClass existingClass = getConceptualClass(newClass.getName());
-
-        if (editAbstractClass(originalClass, newClass, existingClass)) {
-            repositoryChanged();
-            return true;
-        } else {
-            return false;
-        }
+        return editAbstractClass(originalClass, newClass, existingClass);
     }
 
     public boolean removeConceptualClass(ConceptualClass c) {
         if (concepts.remove(c)) {
             removeGenericClass(c.getGenericClass());
-            repositoryChanged();
             return true;
         } else {
             return false;
@@ -372,7 +300,6 @@ public class CentralRepository extends Observable implements Serializable {
                 c.setGenericClass(gc);
             }
 
-            repositoryChanged();
             logger.fine(() -> "Classes:" + classes);
 
             return true;
@@ -389,7 +316,6 @@ public class CentralRepository extends Observable implements Serializable {
         if (editAbstractClass(originalClass, newClass, existingClass)) {
             originalClass.setStereotype(newClass.getStereotype());
             originalClass.setMethods(newClass.getMethods());
-            repositoryChanged();
             return true;
         } else {
             return false;
@@ -397,7 +323,8 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     // returns true if the editing was successful
-    private boolean editAbstractClass(AbstractClass originalClass, AbstractClass newClass, AbstractClass existingClass) {
+    private boolean editAbstractClass(AbstractClass originalClass, AbstractClass newClass,
+            AbstractClass existingClass) {
 
         // if the name of the class is changed and the new name causes conflict
         // with an existing class, and the new name is non-blank, then don't edit
@@ -419,11 +346,10 @@ public class CentralRepository extends Observable implements Serializable {
 
         return true;
     }
-    
+
     public boolean removeClass(DesignClass c) {
         if (classes.remove(c)) {
             removeGenericClass(c.getGenericClass());
-            repositoryChanged();
             return true;
         } else {
             return false;
@@ -457,7 +383,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingInterface == null || i.getName().equals("")) {
             interfaces.add(i);
-            repositoryChanged();
 
             return true;
         } else {
@@ -477,14 +402,12 @@ public class CentralRepository extends Observable implements Serializable {
 
         originalInterface.setName(newInterface.getName());
         originalInterface.setMethods(newInterface.getMethods());
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeInterface(Interface i) {
         if (interfaces.remove(i)) {
-            repositoryChanged();
 
             return true;
         } else {
@@ -515,19 +438,12 @@ public class CentralRepository extends Observable implements Serializable {
     // methods for manipulating the list of project associations
     public boolean addAssociation(Association a) {
         associations.add(a);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeAssociation(Association a) {
-        if (associations.remove(a)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return associations.remove(a);
     }
 
     public Vector<Association> getAssociations() {
@@ -541,19 +457,13 @@ public class CentralRepository extends Observable implements Serializable {
         } else if (associationClass instanceof DesignAssociationClass) {
             designAssociationClasses.add((DesignAssociationClass) associationClass);
         }
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeAssociationClass(AbstractAssociationClass a) {
-        if (a instanceof ConceptualAssociationClass && conceptualAssociationClasses.remove(a)
-                || a instanceof DesignAssociationClass && designAssociationClasses.remove(a)) {
-            repositoryChanged();
-            return true;
-        }
-
-        return false;
+        return a instanceof ConceptualAssociationClass && conceptualAssociationClasses.remove(a)
+                || a instanceof DesignAssociationClass && designAssociationClasses.remove(a);
     }
 
     public Vector<ConceptualAssociationClass> getConceptualAssociationClasses() {
@@ -564,15 +474,13 @@ public class CentralRepository extends Observable implements Serializable {
         return designAssociationClasses;
     }
 
-
     /**
-     * Adds the generalization between two classes only if there
-     * doesn't exists one between them as there is no need for more than one
+     * Adds the generalization between two classes only if there doesn't exists one
+     * between them as there is no need for more than one
      */
     public boolean addGeneralization(Generalization g) {
         if (getGeneralization(g.getSuperClass(), g.getBaseClass()) == null) {
             generalizations.add(g);
-            repositoryChanged();
 
             return true;
         } else {
@@ -581,13 +489,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeGeneralization(Generalization g) {
-        if (generalizations.remove(g)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return generalizations.remove(g);
     }
 
     public Vector<Generalization> getGeneralizations() {
@@ -609,25 +511,17 @@ public class CentralRepository extends Observable implements Serializable {
     // methods for manipulating the list of project aggregations
     public boolean addAggregation(Aggregation a) {
         aggregations.add(a);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeAggregation(Aggregation a) {
-        if (aggregations.remove(a)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return aggregations.remove(a);
     }
 
     public Vector<Aggregation> getAggregations() {
         return aggregations;
     }
-
 
     /**
      * Adds the realization between one class and one interface only if there
@@ -639,8 +533,6 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addRealization(Realization r) {
         if (getRealization(r.getTheClass(), r.getTheInterface()) == null) {
             realizations.add(r);
-            repositoryChanged();
-
             return true;
         } else {
             return false;
@@ -648,13 +540,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeRealization(Realization r) {
-        if (realizations.remove(r)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return realizations.remove(r);
     }
 
     public Vector<Realization> getRealizations() {
@@ -680,7 +566,6 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addDependency(Dependency d) {
         if (getDependency(d.getFrom(), d.getTo()) == null) {
             dependencies.add(d);
-            repositoryChanged();
 
             return true;
         } else {
@@ -689,21 +574,15 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeDependency(Dependency d) {
-        if (dependencies.remove(d)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return dependencies.remove(d);
     }
 
     public Vector<Dependency> getDependencies() {
         return dependencies;
     }
 
-    // returns the dependency that exists between two classes, if any
-    public Dependency getDependency(DesignClass from, DesignClass to) {
+    // returns the dependency that exists between two classifiers, if any
+    public Dependency getDependency(Classifier from, Classifier to) {
 
         Optional<Dependency> found = dependencies.stream()
                 .filter(dependency -> dependency.getFrom() == from && dependency.getTo() == to).findAny();
@@ -720,7 +599,6 @@ public class CentralRepository extends Observable implements Serializable {
         SystemInstance existingSystem = getSystemInstance(s.getName());
         if (existingSystem == null || s.getName().equals("")) {
             systemInstances.add(s);
-            repositoryChanged();
             return true;
         } else {
             return false;
@@ -735,9 +613,11 @@ public class CentralRepository extends Observable implements Serializable {
             return false;
         }
 
+        String oldName = originalSystemInstance.getName();
         originalSystemInstance.setName(newSystemInstance.getName());
         originalSystemInstance.setSystem(newSystemInstance.getSystem());
-        repositoryChanged();
+
+        notifyEdit("SystemInstance", oldName, newSystemInstance.getName());
 
         return true;
     }
@@ -761,7 +641,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingSystem == null || s.getName().equals("")) {
             systems.add(s);
-            repositoryChanged();
 
             return true;
         } else {
@@ -770,13 +649,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeSystem(System s) {
-        if (systems.remove(s)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return systems.remove(s);
     }
 
     public boolean editSystem(System originalSystem, System newSystem) {
@@ -787,7 +660,6 @@ public class CentralRepository extends Observable implements Serializable {
         }
 
         originalSystem.setName(newSystem.getName());
-        repositoryChanged();
 
         return true;
     }
@@ -807,13 +679,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeSystemInstance(SystemInstance s) {
-        if (systemInstances.remove(s)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return systemInstances.remove(s);
     }
 
     public boolean addObject(SDObject o) {
@@ -822,7 +688,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingObject == null || o.getName().equals("")) {
             sdObjects.add(o);
-            repositoryChanged();
 
             logger.finer(() -> "objects: " + sdObjects);
             return true;
@@ -840,21 +705,17 @@ public class CentralRepository extends Observable implements Serializable {
             return false;
         }
 
+        String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
 
-        repositoryChanged();
+        notifyEdit("SDObject", oldName, newObject.getName());
+
         return true;
     }
 
     public boolean removeObject(SDObject o) {
-        if (sdObjects.remove(o)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return sdObjects.remove(o);
     }
 
     public Vector<SDObject> getSdObjects() {
@@ -883,7 +744,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingMultiObject == null || mo.getName().equals("")) {
             multiObjects.add(mo);
-            repositoryChanged();
 
             return true;
         } else {
@@ -900,21 +760,17 @@ public class CentralRepository extends Observable implements Serializable {
             return false;
         }
 
+        String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
-        repositoryChanged();
+
+        notifyEdit("MultiObject", oldName, newObject.getName());
 
         return true;
     }
 
     public boolean removeMultiObject(MultiObject mo) {
-        if (multiObjects.remove(mo)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return multiObjects.remove(mo);
     }
 
     public Vector<MultiObject> getMultiObjects() {
@@ -939,7 +795,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingActor == null || a.getName().equals("")) {
             actors.add(a);
-            repositoryChanged();
 
             return true;
         } else {
@@ -957,19 +812,12 @@ public class CentralRepository extends Observable implements Serializable {
         }
 
         originalActor.setName(newActor.getName());
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeActor(Actor a) {
-        if (actors.remove(a)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return actors.remove(a);
     }
 
     public Vector<Actor> getActors() {
@@ -995,7 +843,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingActor == null || a.getName().equals("")) {
             actorInstances.add(a);
-            repositoryChanged();
 
             return true;
         } else {
@@ -1012,21 +859,17 @@ public class CentralRepository extends Observable implements Serializable {
             return false;
         }
 
+        String oldName = originalActorInstance.getName();
         originalActorInstance.setName(newActorInstance.getName());
         originalActorInstance.setActor(newActorInstance.getActor());
-        repositoryChanged();
+
+        notifyEdit("ActorInstance", oldName, newActorInstance.getName());
 
         return true;
     }
 
     public boolean removeActorInstance(ActorInstance a) {
-        if (actorInstances.remove(a)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return actorInstances.remove(a);
     }
 
     public Vector<ActorInstance> getActorInstances() {
@@ -1049,23 +892,31 @@ public class CentralRepository extends Observable implements Serializable {
     public boolean addSDMessage(SDMessage m) {
         logger.fine(() -> "Adding message " + m.toString());
         sdMessages.add(m);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeSDMessage(SDMessage m) {
-        if (sdMessages.remove(m)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return sdMessages.remove(m);
     }
 
     public Vector<SDMessage> getSDMessages() {
         return sdMessages;
+    }
+
+    // methods for manipulating the list of combined fragments
+    public boolean addCombinedFragment(CombinedFragment fragment) {
+        logger.fine(() -> "Adding combined fragment " + fragment.toString());
+        combinedFragments.add(fragment);
+        return true;
+    }
+
+    public boolean removeCombinedFragment(CombinedFragment fragment) {
+        return combinedFragments.remove(fragment);
+    }
+
+    public Vector<CombinedFragment> getCombinedFragments() {
+        return combinedFragments;
     }
 
     // The following methods manage the lists of generic concepts which can be
@@ -1076,19 +927,12 @@ public class CentralRepository extends Observable implements Serializable {
     // methods for manipulating the list of generic classes
     public boolean addGenericClass(GenericClass gc) {
         genericClasses.add(gc);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeGenericClass(GenericClass gc) {
-        if (genericClasses.remove(gc)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return genericClasses.remove(gc);
     }
 
     public Vector<GenericClass> getGenericClasses() {
@@ -1113,19 +957,12 @@ public class CentralRepository extends Observable implements Serializable {
     // methods for manipulating the list of generic operations
     public boolean addGenericOperation(GenericOperation go) {
         genericOperations.add(go);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeGenericOperation(GenericOperation go) {
-        if (genericOperations.remove(go)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return genericOperations.remove(go);
     }
 
     public Vector<GenericOperation> getGenericOperations() {
@@ -1140,19 +977,9 @@ public class CentralRepository extends Observable implements Serializable {
     // same class
     // to which the element can refer
     public GenericOperation getGenericOperation(String name, GenericClass parentClass) {
-        GenericOperation go;
-        DesignClass designClass;
-        Iterator<DesignClass> iterator = classes.iterator();
-
-        while (iterator.hasNext()) {
-            designClass = iterator.next();
-
+        for (DesignClass designClass : classes) {
             if (designClass.getGenericClass() == parentClass) {
-                Iterator<GenericOperation> goIterator = genericOperations.iterator();
-
-                while (goIterator.hasNext()) {
-                    go = goIterator.next();
-
+                for (GenericOperation go : genericOperations) {
                     if (go.getName().equals(name)) {
                         return go;
                     }
@@ -1166,19 +993,12 @@ public class CentralRepository extends Observable implements Serializable {
     // methods for manipulating the list of generic attributes
     public boolean addGenericAttribute(GenericAttribute ga) {
         genericAttributes.add(ga);
-        repositoryChanged();
 
         return true;
     }
 
     public boolean removeGenericAttribute(GenericAttribute ga) {
-        if (genericAttributes.remove(ga)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return genericAttributes.remove(ga);
     }
 
     public Vector<GenericAttribute> getGenericAttributes() {
@@ -1192,19 +1012,9 @@ public class CentralRepository extends Observable implements Serializable {
     // already exists a generic attribute with the same name and belonging to same
     // class
     public GenericAttribute getGenericAttribute(String name, GenericClass parentClass) {
-        GenericAttribute ga;
-
-        DesignClass designClass;
-        Iterator<DesignClass> iterator = classes.iterator();
-        while (iterator.hasNext()) {
-            designClass = iterator.next();
-
+        for (DesignClass designClass : classes) {
             if (designClass.getGenericClass() == parentClass) {
-                Iterator<GenericAttribute> gaIterator = genericAttributes.iterator();
-
-                while (gaIterator.hasNext()) {
-                    ga = gaIterator.next();
-
+                for (GenericAttribute ga : genericAttributes) {
                     if (ga.getName().equals(name)) {
                         return ga;
                     }
@@ -1212,17 +1022,9 @@ public class CentralRepository extends Observable implements Serializable {
             }
         }
 
-        ConceptualClass concept;
-        Iterator<ConceptualClass> iterator2 = concepts.iterator();
-        while (iterator2.hasNext()) {
-            concept = iterator2.next();
-
+        for (ConceptualClass concept : concepts) {
             if (concept.getGenericClass() == parentClass) {
-                Iterator<GenericAttribute> gaIterator = genericAttributes.iterator();
-
-                while (gaIterator.hasNext()) {
-                    ga = gaIterator.next();
-
+                for (GenericAttribute ga : genericAttributes) {
                     if (ga.getName().equals(name)) {
                         return ga;
                     }
@@ -1238,7 +1040,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (uc == null || useCase.getName().equals("")) {
             useCases.add(useCase);
-            repositoryChanged();
 
             return true;
         } else {
@@ -1265,26 +1066,21 @@ public class CentralRepository extends Observable implements Serializable {
 
         original.setName(other.getName());
 
-        repositoryChanged();
-
         return true;
     }
 
     public boolean removeUseCase(UseCase useCase) {
-        if (useCases.remove(useCase)) {
-            repositoryChanged();
+        return useCases.remove(useCase);
+    }
 
-            return true;
-        } else {
-            return false;
-        }
+    public Vector<UseCase> getUseCases() {
+        return useCases;
     }
 
     public boolean addUCLink(UCLink link) {
-        if ((getUCLink(link.getSource(), link.getTarget()) == null)
+        if (getUCLink(link.getSource(), link.getTarget()) == null
                 && getUCLink(link.getTarget(), link.getSource()) == null) {
             ucLinks.add(link);
-            repositoryChanged();
 
             return true;
         } else {
@@ -1308,20 +1104,13 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     public boolean removeLink(UCLink link) {
-        if (ucLinks.remove(link)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return ucLinks.remove(link);
     }
 
     public void editUCExtend(UCExtend originalUCExtend, UCExtend newUCExtend) {
         originalUCExtend.clearPoints();
-        Iterator<ExtensionPoint> i = newUCExtend.getExtensionPoints();
-        while (i.hasNext()) {
-            originalUCExtend.addExtensionPoint((i.next()).clone());
+        for (ExtensionPoint ep : newUCExtend.getExtensionPoints()) {
+            originalUCExtend.addExtensionPoint(ep.clone());
         }
     }
 
@@ -1364,14 +1153,12 @@ public class CentralRepository extends Observable implements Serializable {
 
     private boolean addControlFlow(ControlFlow controlFlow) {
         controlFlows.add(controlFlow);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addObjectFlow(ObjectFlow objectFlow) {
         objectFlows.add(objectFlow);
-        repositoryChanged();
 
         return true;
     }
@@ -1388,23 +1175,11 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     private boolean removeControlFlow(ControlFlow controlFlow) {
-        if (controlFlows.remove(controlFlow)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return controlFlows.remove(controlFlow);
     }
 
     private boolean removeObjectFlow(ObjectFlow objectFlow) {
-        if (objectFlows.remove(objectFlow)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return objectFlows.remove(objectFlow);
     }
 
     public boolean addNodeComponent(NodeComponent nodeComponent) {
@@ -1428,7 +1203,6 @@ public class CentralRepository extends Observable implements Serializable {
 
         if (existingActionNode == null || actionNode.getName().equals("")) {
             actionNodes.add(actionNode);
-            repositoryChanged();
 
             return true;
         } else {
@@ -1469,63 +1243,54 @@ public class CentralRepository extends Observable implements Serializable {
 
     private boolean addInitialNode(InitialNode initialNode) {
         initialNodes.add(initialNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addActivityFinalNode(ActivityFinalNode activityFinalNode) {
         activityFinalNodes.add(activityFinalNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addFlowFinalNode(FlowFinalNode flowFinalNode) {
         flowFinalNodes.add(flowFinalNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addDecisionNode(DecisionNode decisionNode) {
         decisionNodes.add(decisionNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addMergeNode(MergeNode mergeNode) {
         mergeNodes.add(mergeNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addForkNode(ForkNode forkNode) {
         forkNodes.add(forkNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addJoinNode(JoinNode joinNode) {
         joinNodes.add(joinNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addObjectNode(ObjectNode objectNode) {
         objectNodes.add(objectNode);
-        repositoryChanged();
 
         return true;
     }
 
     private boolean addActivityNode(ActivityNode activityNode) {
         activityNodes.add(activityNode);
-        repositoryChanged();
 
         return true;
     }
@@ -1546,13 +1311,7 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     private boolean removeActionNode(ActionNode actionNode) {
-        if (actionNodes.remove(actionNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return actionNodes.remove(actionNode);
     }
 
     private boolean removeControlNode(ControlNode controlNode) {
@@ -1577,108 +1336,103 @@ public class CentralRepository extends Observable implements Serializable {
     }
 
     private boolean removeInitialNode(InitialNode initialNode) {
-        if (initialNodes.remove(initialNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return initialNodes.remove(initialNode);
     }
 
     private boolean removeActivityFinalNode(ActivityFinalNode activityFinalNode) {
-        if (activityFinalNodes.remove(activityFinalNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return activityFinalNodes.remove(activityFinalNode);
     }
 
     private boolean removeFlowFinalNode(FlowFinalNode flowFinalNode) {
-        if (flowFinalNodes.remove(flowFinalNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return flowFinalNodes.remove(flowFinalNode);
     }
 
     private boolean removeDecisionNode(DecisionNode decisionNode) {
-        if (decisionNodes.remove(decisionNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return decisionNodes.remove(decisionNode);
     }
 
     private boolean removeMergeNode(MergeNode mergeNode) {
-        if (mergeNodes.remove(mergeNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return mergeNodes.remove(mergeNode);
     }
 
     private boolean removeForkNode(ForkNode forkNode) {
-        if (forkNodes.remove(forkNode)) {
-            repositoryChanged();
+        return forkNodes.remove(forkNode);
 
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private boolean removeJoinNode(JoinNode joinNode) {
-        if (joinNodes.remove(joinNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return joinNodes.remove(joinNode);
     }
 
     private boolean removeObjectNode(ObjectNode objectNode) {
-        if (objectNodes.remove(objectNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return objectNodes.remove(objectNode);
     }
 
     private boolean removeActivityNode(ActivityNode activityNode) {
-        if (activityNodes.remove(activityNode)) {
-            repositoryChanged();
-
-            return true;
-        } else {
-            return false;
-        }
+        return activityNodes.remove(activityNode);
     }
 
     public boolean editObjectNode(ObjectNode originalObjectNode, ObjectNode newObjectNode) {
+        String oldName = originalObjectNode.getName();
         originalObjectNode.setName(newObjectNode.getName());
         originalObjectNode.setType(newObjectNode.getType());
 
         originalObjectNode.clearStates();
-        Iterator<State> it = newObjectNode.getStates();
-        while (it.hasNext()) {
-            State state = it.next();
+        for (State state : newObjectNode.getStates()) {
             originalObjectNode.addState(state);
         }
 
-        repositoryChanged();
+        notifyEdit("ObjectNode", oldName, newObjectNode.getName());
 
         return true;
+    }
+
+    // Repository change listener support
+
+    public void addRepositoryChangeListener(RepositoryChangeListener listener) {
+        if (changeListeners == null) {
+            changeListeners = new Vector<>();
+        }
+        if (!changeListeners.contains(listener)) {
+            changeListeners.add(listener);
+        }
+    }
+
+    public void removeRepositoryChangeListener(RepositoryChangeListener listener) {
+        if (changeListeners != null) {
+            changeListeners.remove(listener);
+        }
+    }
+
+    protected void notifyAdd(String entityType, String entityName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onAdd(entityType, entityName);
+            }
+        }
+    }
+
+    protected void notifyEdit(String entityType, String oldName, String newName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onEdit(entityType, oldName, newName);
+            }
+        }
+    }
+
+    protected void notifyRemove(String entityType, String entityName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onRemove(entityType, entityName);
+            }
+        }
+    }
+
+    protected void notifyTypeOperation(String operation, String typeName) {
+        if (changeListeners != null) {
+            for (RepositoryChangeListener listener : changeListeners) {
+                listener.onTypeOperation(operation, typeName);
+            }
+        }
     }
 }

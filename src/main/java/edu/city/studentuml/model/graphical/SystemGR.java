@@ -6,22 +6,22 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
+import edu.city.studentuml.editing.EditContext;
 import edu.city.studentuml.model.domain.Classifier;
 import edu.city.studentuml.model.domain.System;
 import edu.city.studentuml.util.NotStreamable;
+import edu.city.studentuml.util.StringUtils;
 import edu.city.studentuml.util.XMLStreamer;
+import edu.city.studentuml.util.undoredo.EditSystemEdit;
 
 /**
- *
  * @author draganbisercic
  */
 public class SystemGR extends CompositeUCDElementGR implements Resizable {
@@ -51,7 +51,7 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         resizeHandles.add(new LeftResizeHandle(this));
         resizeHandles.add(new RightResizeHandle(this));
     }
-    
+
     @Override
     public void draw(Graphics2D g) {
 
@@ -86,17 +86,16 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
         // draw system name
         if (!component.toString().equals("")) {
             String systemName = component.toString();
-            TextLayout layout = new TextLayout(systemName, systemNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(systemName, systemNameFont, frc);
 
-            int nameX = ((width - (int) bounds.getWidth()) / 2) - (int) bounds.getX();
+            int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = systemNameYOffset + (int) bounds.getHeight();
 
             g.setFont(systemNameFont);
             g.drawString(systemName, startingX + nameX, startingY + nameY);
         }
     }
-    
+
     @Override
     protected int calculateWidth(Graphics2D g) {
         int newWidth = width;
@@ -104,9 +103,8 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            TextLayout layout = new TextLayout(component.toString(), systemNameFont, frc);
-            Rectangle2D bounds = layout.getBounds();
-            systemNameWidth = (int) bounds.getWidth() + (2 * systemNameXOffset);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), systemNameFont, frc);
+            systemNameWidth = (int) bounds.getWidth() + 2 * systemNameXOffset;
 
             newWidth = Math.max(newWidth, systemNameWidth);
         } else {
@@ -131,22 +129,22 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
 
         return rect.contains(p);
     }
-    
+
     public boolean isResizeHandleSelected(int x, int y) {
-        for (ResizeHandle handle: resizeHandles) {
+        for (ResizeHandle handle : resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return true;
-            }            
+            }
         }
         return false;
     }
 
     public ResizeHandle getResizeHandle(int x, int y) {
-        for (ResizeHandle handle: resizeHandles) {
+        for (ResizeHandle handle : resizeHandles) {
             if (handle.contains(new Point2D.Double(x, y))) {
                 return handle;
-            }            
-        }        
+            }
+        }
         return null;
     }
 
@@ -255,10 +253,10 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     }
 
     public boolean hasResizableContext() {
-        if (context == UCDComponentGR.DEFAULT_CONTEXT) {
+        if (context == DEFAULT_CONTEXT) {
             return false;
         } else {
-            return (context instanceof Resizable);
+            return context instanceof Resizable;
         }
     }
 
@@ -316,18 +314,40 @@ public class SystemGR extends CompositeUCDElementGR implements Resizable {
     public SystemGR clone() {
         // IMPORTANT: Share the domain object reference (do NOT clone it)
         System sameSystem = (System) getComponent();
-        
+
         // Create new graphical wrapper referencing the SAME domain object
-        SystemGR clonedGR = new SystemGR(sameSystem, 
-            this.startingPoint.x, this.startingPoint.y);
-        
+        SystemGR clonedGR = new SystemGR(sameSystem,
+                this.startingPoint.x, this.startingPoint.y);
+
         // Copy visual properties
         clonedGR.width = this.width;
         clonedGR.height = this.height;
-        
+
         // Note: components (child elements) are NOT cloned - they would need to be
         // copied separately if the user also selects them
-        
+
         return clonedGR;
+    }
+
+    @Override
+    public boolean edit(EditContext context) {
+        System originalSystem = (System) getComponent();
+
+        // Delegate to centralized helper: conflict check handled by Edit class
+        return editStringPropertyWithDialog(
+                context,
+                "System Editor",
+                "System Name:",
+                originalSystem,
+                System::getName,
+                System::setName,
+                System::clone,
+                (original, redo, model) -> new EditSystemEdit(
+                        original,
+                        redo,
+                        model),
+                newName -> StringUtils.isNotEmpty(newName)
+                        && context.getRepository().getSystem(newName) != null,
+                "There is an existing system with the given name already!\n");
     }
 }
