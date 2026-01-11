@@ -854,10 +854,19 @@ public class SelectionController {
                 // Clone the graphical element (shares domain object reference)
                 GraphicalElement clonedElement = originalElement.clone();
 
+                // Calculate offset for this specific element
+                int elementOffsetY = offsetY;
+
+                // Special case: UML Notes in Sequence Diagrams should use fixed offset
+                // to maintain their position relative to the timeline, not mouse position
+                if (isSequenceDiagram && originalElement instanceof UMLNoteGR) {
+                    elementOffsetY = 0;
+                }
+
                 // Apply calculated offset to position element at mouse cursor
                 clonedElement.move(
                         clonedElement.getX() + offsetX,
-                        clonedElement.getY() + offsetY);
+                        clonedElement.getY() + elementOffsetY);
 
                 // Only add to model if it's NOT a child of a composite
                 // Children will be added to their parent composite in the third pass

@@ -611,6 +611,9 @@ public abstract class DiagramInternalFrame extends JInternalFrame {
                 zOrder = frameProperties.zOrder;
             }
 
+            // Transfer focus to the diagram view so user can start drawing immediately
+            view.requestFocusInWindow();
+
         } catch (PropertyVetoException vetoException) {
             vetoException.printStackTrace();
         }
