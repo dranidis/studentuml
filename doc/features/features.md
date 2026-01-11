@@ -3,7 +3,7 @@
 This document tracks potential features and improvements for StudentUML.
 
 ## Known Bugs
- 
+
 ## Diagram Relationships
 
 ### Distinction Between Navigability and End Ownership in Associations

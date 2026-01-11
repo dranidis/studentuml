@@ -856,11 +856,11 @@ public class SelectionController {
 
                 // Calculate offset for this specific element
                 int elementOffsetY = offsetY;
-                
+
                 // Special case: UML Notes in Sequence Diagrams should use fixed offset
                 // to maintain their position relative to the timeline, not mouse position
                 if (isSequenceDiagram && originalElement instanceof UMLNoteGR) {
-                    elementOffsetY = 20; // Fixed offset to avoid exact overlap
+                    elementOffsetY = 0;
                 }
 
                 // Apply calculated offset to position element at mouse cursor

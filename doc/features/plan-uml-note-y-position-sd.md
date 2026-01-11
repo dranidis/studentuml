@@ -6,24 +6,24 @@ The issue is in `SelectionController.pasteClipboard()` method where UML notes in
 
 ## Affected Components
 
-- Class: `SelectionController` - `pasteClipboard()` method needs modification
-- File: `src/main/java/edu/city/studentuml/controller/SelectionController.java`
+-   Class: `SelectionController` - `pasteClipboard()` method needs modification
+-   File: `src/main/java/edu/city/studentuml/controller/SelectionController.java`
 
 ## Design Decisions
 
-- Detect if the target diagram is a Sequence Diagram (SDModel or SSDModel)
-- For SD/SSD: Use original Y-coordinate plus fixed offset for UMLNoteGR elements
-- For other diagrams: Keep existing mouse-based positioning behavior
-- Use a small fixed offset (20 pixels) to avoid exact overlap with original
+-   Detect if the target diagram is a Sequence Diagram (SDModel or SSDModel)
+-   For SD/SSD: Use original Y-coordinate plus fixed offset for UMLNoteGR elements
+-   For other diagrams: Keep existing mouse-based positioning behavior
+-   Use a small fixed offset (20 pixels) to avoid exact overlap with original
 
 ## TODO Tasks
 
-- [x] Investigate pasteClipboard() method
-- [x] Write test to reproduce the issue
-- [x] Implement fix for SD/SSD diagrams
-- [x] Verify fix works correctly
-- [x] Run full test suite
-- [x] Update CHANGELOG
+-   [x] Investigate pasteClipboard() method
+-   [x] Write test to reproduce the issue
+-   [x] Implement fix for SD/SSD diagrams
+-   [x] Verify fix works correctly
+-   [x] Run full test suite
+-   [x] Update CHANGELOG
 
 ## Implementation Summary
 
@@ -31,5 +31,5 @@ Modified `SelectionController.pasteClipboard()` to detect Sequence Diagrams (SDM
 
 ## Testing Coverage
 
-- Added test case in SelectionControllerTest to verify UML note paste behavior in SD
-- Verified all existing tests still pass
+-   Added test case in SelectionControllerTest to verify UML note paste behavior in SD
+-   Verified all existing tests still pass
