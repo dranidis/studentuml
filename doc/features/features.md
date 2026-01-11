@@ -293,4 +293,64 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 
 ## Additional Potential Features
 
+### Quick Message Entry with Parsing in Sequence Diagrams
+
+**Status:** Not implemented  
+**Priority:** High  
+**Description:** Enable users to quickly enter call messages in Sequence Diagrams (SD) and System Sequence Diagrams (SSD) by typing directly on the diagram canvas. The system should parse the entered text and automatically set the return value, return type, message name, and parameters with optional types.
+
+**User Interaction:**
+- **Double-click on message text** (on the canvas): Opens inline text editor for quick entry/editing with parsing
+- **Double-click on message arrow**: Opens full message editor dialog for detailed editing
+- **Inline editing**: Text field appears directly on the diagram where the message text is displayed
+- **Editing existing messages**: Text field shows reconstructed syntax from current message configuration
+
+**Syntax:**
+- `message(par1, par2)` - Call message with parameters (no types)
+- `message(par1: Type1, par2: Type2)` - Call message with typed parameters
+- `rv := message(par1, par2)` - Call with return value and parameters
+- `rv: ReturnType := message(par1, par2)` - Call with typed return value and parameters
+- `message()` - Call message without parameters
+- `rv := message()` - Call with return value, no parameters
+- `rv: ReturnType := message()` - Call with typed return value, no parameters
+
+**Parser Format:**
+```
+[returnValue [: returnType] :=] messageName([parameter1 [: type1] [, parameter2 [: type2], ...]])
+```
+
+**Technical Notes:**
+- **Inline editing on canvas**: Implement text editing directly on the diagram view, not in a dialog
+- **Parsing**: Create parser utility to handle the syntax above
+- **Parameter types**: Optional but should be parsed when provided
+- **Return value vs return type**: Support both `returnValue` (variable name) and optional `returnType`
+- Parser should be lenient with whitespace
+- Validate identifier names (Java naming conventions)
+- **Error handling**: Show error message but keep text field open for correction
+- **Reconstruction**: When editing existing message, reconstruct the syntax string from current message state
+
+**Implementation Considerations:**
+- Add inline text editing capability in `DiagramView` or message graphical representation
+- Create `MessageSyntaxParser` utility class with methods:
+  - `parse(String text) -> ParseResult` 
+  - `reconstruct(CallMessage) -> String`
+- Modify `SDMessageGR` or `CallMessageGR` to support inline text editing
+- Distinguish between double-click on arrow (open dialog) vs double-click on text (inline edit)
+- Update `CallMessage` domain model to support bulk parameter setting if needed
+- Add validation and error feedback mechanism
+- Support both SD and SSD diagrams (same behavior for system messages)
+
+**Use Case:** When creating sequence diagrams, users currently need to:
+1. Create the message
+2. Open the message editor dialog
+3. Manually add each parameter one by one
+4. Set the return value separately
+5. Set types for return value and parameters individually
+
+With this feature, users could simply double-click on the message text and type:
+```
+result: double := calculateTotal(items: List, taxRate: double)
+```
+All components would be automatically parsed and configured, significantly speeding up diagram creation and reducing friction in the modeling workflow.
+
 _Add new feature requests below this line_
