@@ -2,6 +2,7 @@ package edu.city.studentuml.model.graphical;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Logger;
@@ -137,6 +138,9 @@ public class AssociationClassGR extends LinkGR {
         int x2 = (int) p.getX();
         int y2 = (int) p.getY();
 
+        // Save the original stroke before setting dashed stroke
+        Stroke originalStroke = g.getStroke();
+
         if (isSelected()) {
             g.setStroke(GraphicsHelper.makeSelectedDashedStroke());
             g.setPaint(getHighlightColor());
@@ -146,6 +150,9 @@ public class AssociationClassGR extends LinkGR {
         }
 
         g.drawLine(x1, y1, x2, y2);
+
+        // Restore the original stroke before drawing the class element
+        g.setStroke(originalStroke);
 
         int x = x2 - (classElement.getWidth() / 2);
         int y = y2 - (classElement.getHeight() / 2);

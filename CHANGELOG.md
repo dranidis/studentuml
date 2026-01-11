@@ -14,6 +14,18 @@
 
 ### Security
 
+## [1.5.1] - 2026-01-10
+
+### Fixed
+
+-   Association Class border now displays with solid stroke instead of dashed stroke in Design Class Diagrams (DCDs)
+-   UML Note Y-position now preserved correctly when pasting in Sequence Diagrams (SD/SSD) - uses fixed offset instead of mouse position
+-   Diagram view now receives focus automatically when creating or opening diagrams (zoom dropdown no longer steals focus)
+
+### Changed
+
+-   Reorganized documentation: moved feature plans to `doc/features/` and maintenance/refactoring plans to `doc/maintenance/`
+
 ## [1.5.0] - 2026-01-10
 
 ### Added
