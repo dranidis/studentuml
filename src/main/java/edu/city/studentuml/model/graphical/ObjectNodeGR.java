@@ -35,8 +35,8 @@ public class ObjectNodeGR extends LeafNodeGR {
     private final int objectNameYOffset;
     private final int objectStatesXOffset;
     private final int objectStatesYOffset;
-    private Font objectNameFont;
-    private Font objectStatesFont;
+    private static final Font OBJECT_NAME_FONT = FontRegistry.OBJECT_NODE_NAME_FONT;
+    private static final Font OBJECT_STATES_FONT = FontRegistry.OBJECT_NODE_STATES_FONT;
 
     public ObjectNodeGR(ObjectNode objectNode, int x, int y) {
         super(objectNode, x, y);
@@ -51,9 +51,6 @@ public class ObjectNodeGR extends LeafNodeGR {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-
-        objectNameFont = new Font("SansSerif", Font.PLAIN, 14);
-        objectStatesFont = new Font("SansSerif", Font.PLAIN, 11);
     }
 
     @Override
@@ -99,11 +96,11 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type in the center
         if (!name.equals("")) {
-            Rectangle2D nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            Rectangle2D nameBounds = GraphicsHelper.getTextBounds(name, OBJECT_NAME_FONT, frc);
             int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
             int nameY = GraphicsHelper.calculateCenteredTextY(height, nameBounds);
 
-            g.setFont(objectNameFont);
+            g.setFont(OBJECT_NAME_FONT);
             g.drawString(name, getX() + nameX, getY() + nameY);
         }
     }
@@ -114,11 +111,11 @@ public class ObjectNodeGR extends LeafNodeGR {
         FontRenderContext frc = g.getFontRenderContext();
         // draw object node name and type
         if (!name.equals("")) {
-            nameBounds = GraphicsHelper.getTextBounds(name, objectNameFont, frc);
+            nameBounds = GraphicsHelper.getTextBounds(name, OBJECT_NAME_FONT, frc);
             int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
             int nameY = objectNameYOffset - (int) nameBounds.getY();
 
-            g.setFont(objectNameFont);
+            g.setFont(OBJECT_NAME_FONT);
             g.drawString(name, getX() + nameX, getY() + nameY);
         } else {
             // if ever get here, do not draw states
@@ -127,11 +124,11 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // draw object node states
         if (!states.equals("")) {
-            statesBounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            statesBounds = GraphicsHelper.getTextBounds(states, OBJECT_STATES_FONT, frc);
             int nameX = GraphicsHelper.calculateCenteredTextX(width, statesBounds);
             int nameY = objectStatesYOffset + objectNameYOffset - (int) nameBounds.getY() - (int) statesBounds.getY();
 
-            g.setFont(objectStatesFont);
+            g.setFont(OBJECT_STATES_FONT);
             g.drawString(states, getX() + nameX, getY() + nameY);
         }
     }
@@ -143,7 +140,7 @@ public class ObjectNodeGR extends LeafNodeGR {
 
         // consider object name and type text dimensions
         if (component.toString().length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), objectNameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), OBJECT_NAME_FONT, frc);
             int objectNameWidth = (int) bounds.getWidth() + 2 * objectNameXOffset;
 
             if (objectNameWidth > newWidth) {
@@ -158,7 +155,7 @@ public class ObjectNodeGR extends LeafNodeGR {
         // consider object states text dimensions
         String states = ((ObjectNode) component).getStatesAsString();
         if (states.length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(states, objectStatesFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(states, OBJECT_STATES_FONT, frc);
             int objectStatesWidth = (int) bounds.getWidth() + 2 * objectStatesXOffset;
 
             if (objectStatesWidth > newWidth) {

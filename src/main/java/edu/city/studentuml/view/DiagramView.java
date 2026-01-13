@@ -40,6 +40,9 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
 
     private double scale = 1.0;
 
+    // Inline message editor for quick text editing on canvas
+    private InlineMessageEditor inlineMessageEditor;
+
     /**
      * Necessary for remembering the necessary max width and height of the view area
      * in order not to unnecessarily update the size of the panel. Unfortunately
@@ -59,6 +62,9 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
         }
 
         setDoubleBuffered(true);
+
+        // Initialize inline message editor - pass this as parent component
+        inlineMessageEditor = new InlineMessageEditor(this, this);
     }
 
     public double getScale() {
@@ -115,6 +121,20 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
         g2d.scale(scale, scale);
 
         drawDiagram(g2d);
+    }
+
+    @Override
+    protected void paintChildren(Graphics g) {
+        // Create a clean graphics context for children without the scale transform
+        // This prevents the text field cursor from appearing at wrong location
+        Graphics2D g2d = (Graphics2D) g.create();
+        try {
+            // Reset to identity transform (no scaling)
+            g2d.setTransform(new java.awt.geom.AffineTransform());
+            super.paintChildren(g2d);
+        } finally {
+            g2d.dispose();
+        }
     }
 
     // Original size image
@@ -320,6 +340,15 @@ public abstract class DiagramView extends JPanel implements PropertyChangeListen
 
     public DiagramModel getModel() {
         return model;
+    }
+
+    /**
+     * Get the inline message editor for this view.
+     * 
+     * @return the inline message editor
+     */
+    public InlineMessageEditor getInlineMessageEditor() {
+        return inlineMessageEditor;
     }
 
     @Override

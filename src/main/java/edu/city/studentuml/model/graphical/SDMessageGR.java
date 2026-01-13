@@ -20,7 +20,7 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     // the message concept this graphical element refers to
     protected SDMessage message;
-    protected Font messageFont;
+    protected static final Font MESSAGE_FONT = FontRegistry.MESSAGE_FONT;
     protected RoleClassifierGR source;
     protected RoleClassifierGR target;
     private String errorMessage;
@@ -29,6 +29,9 @@ public abstract class SDMessageGR extends GraphicalElement {
 
     // Track which endpoint is being hovered
     private EndpointType hoveredEndpoint = EndpointType.NONE;
+
+    // Flag to control visibility of message text (for inline editing)
+    private boolean hideText = false;
 
     /**
      * of the x and y coordinates, only y is significant, since the x coordinate is
@@ -44,8 +47,6 @@ public abstract class SDMessageGR extends GraphicalElement {
         target = to;
         message = m;
         startingPoint = new Point(0, y);
-
-        messageFont = new Font("SansSerif", Font.PLAIN, 12);
     }
 
     public int getStartingX() {
@@ -115,33 +116,39 @@ public abstract class SDMessageGR extends GraphicalElement {
             g.setPaint(getOutlineColor());
 
             // draw the message string 
-            g.setFont(messageFont);
+            g.setFont(MESSAGE_FONT);
 
-            String messageText = message.toString();
-            FontRenderContext frc = g.getFontRenderContext();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(messageText, messageFont, frc);
-            int lineWidth = Math.abs(startingX - endingX);
-            int textX = GraphicsHelper.calculateCenteredTextX(lineWidth, bounds);
-            int messageStartX = Math.min(startingX, endingX);
+            // Only draw text if not hidden (e.g., during inline editing)
+            if (!hideText) {
+                String messageText = message.toString();
+                FontRenderContext frc = g.getFontRenderContext();
+                Rectangle2D bounds = GraphicsHelper.getTextBounds(messageText, MESSAGE_FONT, frc);
+                int lineWidth = Math.abs(startingX - endingX);
+                int textX = GraphicsHelper.calculateCenteredTextX(lineWidth, bounds);
+                int messageStartX = Math.min(startingX, endingX);
 
-            int atX = messageStartX + textX;
-            int atY = getY() - messageDY;
-            g.drawString(messageText, atX, atY);
+                int atX = messageStartX + textX;
+                int atY = getY() - messageDY;
+                g.drawString(messageText, atX, atY);
 
-            if (errorMessage != null && errorMessage.length() > 0) {
-                g.drawString(errorMessage, atX, atY - 10);
+                if (errorMessage != null && errorMessage.length() > 0) {
+                    g.drawString(errorMessage, atX, atY - 10);
+                }
             }
         } else {
             g.setPaint(getOutlineColor());
 
             // draw the message string 
-            int atX = startingX + 5;
-            int atY = getY() - messageDY;
-            g.setFont(messageFont);
-            g.drawString(message.toString(), atX, atY);
+            // Only draw text if not hidden (e.g., during inline editing)
+            if (!hideText) {
+                int atX = startingX + 5;
+                int atY = getY() - messageDY;
+                g.setFont(MESSAGE_FONT);
+                g.drawString(message.toString(), atX, atY);
 
-            if (errorMessage != null && errorMessage.length() > 0) {
-                g.drawString(errorMessage, atX, atY - 10);
+                if (errorMessage != null && errorMessage.length() > 0) {
+                    g.drawString(errorMessage, atX, atY - 10);
+                }
             }
         }
     }
@@ -209,16 +216,94 @@ public abstract class SDMessageGR extends GraphicalElement {
             int boundsX = Math.min(getStartingX(), getEndingX());
             int boundsWidth = Math.abs(getStartingX() - getEndingX());
 
-            // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(boundsX, getY() - 5.0, boundsWidth, 10.0);
+            // Include both the arrow line AND the text area above it
+            int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
+
+            // Calculate text height to include in bounds
+            String messageText = message.toString();
+            FontRenderContext frc = new FontRenderContext(null, true, true);
+            Rectangle2D textBounds = GraphicsHelper.getTextBounds(messageText, MESSAGE_FONT, frc);
+
+            // Text is positioned at getY() - messageDY
+            // So the bounds should extend from (text top) to (arrow bottom)
+            double textTop = getY() - messageDY - textBounds.getHeight();
+            double boundsHeight = messageDY + textBounds.getHeight() + 5; // +5 for arrow tolerance
+
+            // construct the rectangle defining both the message line and text
+            Rectangle2D bounds = new Rectangle2D.Double(boundsX, textTop, boundsWidth, boundsHeight);
 
             return bounds.contains(point);
         } else {
+            // For reflective messages, include BOTH the text area AND the arrow loop
+            int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
 
-            // construct the rectangle defining the message line
-            Rectangle2D bounds = new Rectangle2D.Double(getStartingX(), getY(), 40.0, 15.0);
+            // Calculate text height to include in bounds
+            String messageText = message.toString();
+            FontRenderContext frc = new FontRenderContext(null, true, true);
+            Rectangle2D textBounds = GraphicsHelper.getTextBounds(messageText, MESSAGE_FONT, frc);
+
+            // Text baseline is at getY() - messageDY
+            // Text extends upward by textBounds.getHeight()
+            double textTop = getY() - messageDY - textBounds.getHeight();
+
+            // Arrow loop extends from getY() down 15 pixels
+            double loopBottom = getY() + 15.0;
+
+            // Total height from text top to loop bottom
+            double totalHeight = loopBottom - textTop;
+
+            // construct the rectangle defining both the text and the arrow loop
+            Rectangle2D bounds = new Rectangle2D.Double(getStartingX(), textTop, 40.0, totalHeight);
 
             return bounds.contains(point);
+        }
+    }
+
+    /**
+     * Check if a point is on the message text (not just the arrow line). This is
+     * used to distinguish between double-clicking on the text (inline edit) vs
+     * double-clicking on the arrow (dialog edit).
+     *
+     * @param point The point to check
+     * @return true if the point is on the message text area
+     */
+    public boolean containsText(Point2D point) {
+        int messageDY = ConstantsGR.getInstance().get("SDMessageGR", "messageDY");
+        String messageText = message.toString();
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        Rectangle2D textBounds = GraphicsHelper.getTextBounds(messageText, MESSAGE_FONT, frc);
+
+        if (!message.isReflective()) {
+            int lineWidth = Math.abs(getStartingX() - getEndingX());
+            int textX = GraphicsHelper.calculateCenteredTextX(lineWidth, textBounds);
+            int messageStartX = Math.min(getStartingX(), getEndingX());
+            int atX = messageStartX + textX;
+            int atY = getY() - messageDY;
+
+            // Create a rectangle around the text with padding
+            // Text baseline is at atY, text extends UPWARD by textBounds.getHeight()
+            // We want the clickable area to be around the visible text only, not down to the arrow
+            Rectangle2D textRect = new Rectangle2D.Double(
+                    atX - 2,
+                    atY - textBounds.getHeight(),
+                    textBounds.getWidth() + 4,
+                    textBounds.getHeight());
+
+            return textRect.contains(point);
+        } else {
+            // Reflective message - text area only (not the arrow loop)
+            int atX = getStartingX() + 5;
+            int atY = getY() - messageDY;
+
+            // Create a rectangle around ONLY the text with generous padding for easier clicking
+            // Text extends upward from baseline
+            Rectangle2D textRect = new Rectangle2D.Double(
+                    atX - 5, // Extra padding on left
+                    atY - textBounds.getHeight() - 3, // Extra padding above text
+                    textBounds.getWidth() + 10, // Extra padding on right  
+                    textBounds.getHeight() + 8); // Extra padding below baseline (extends a bit below text)
+
+            return textRect.contains(point);
         }
     }
 
@@ -331,6 +416,20 @@ public abstract class SDMessageGR extends GraphicalElement {
             double dy = point.getY() - targetY;
             return (dx * dx + dy * dy) <= (HIT_RADIUS * HIT_RADIUS);
         }
+    }
+
+    /**
+     * Set whether to hide the message text (used during inline editing).
+     */
+    public void setHideText(boolean hideText) {
+        this.hideText = hideText;
+    }
+
+    /**
+     * Check if message text is hidden.
+     */
+    public boolean isTextHidden() {
+        return hideText;
     }
 
     /**

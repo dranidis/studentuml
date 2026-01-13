@@ -63,7 +63,7 @@ public class ActorInstanceGR extends AbstractSDObjectGR {
     protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
         String actorText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorText, nameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorText, NAME_FONT, frc);
         int nameY = STICKFIGURE_HEIGHT / 2 + ACTOR_TEXT_DISTANCE - (int) bounds.getY();
 
         super.drawObjectName(g, startingX, startingY + nameY);

@@ -14,21 +14,18 @@ import java.util.Deque;
 import edu.city.studentuml.model.domain.RoleClassifier;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
-    protected Font nameFont;
+    protected static final Font NAME_FONT = FontRegistry.SD_OBJECT_NAME_FONT;
 
     protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
         width = minimumNameBoxWidth;
         height = nameBoxHeight;
-        nameFont = new Font("SansSerif", Font.BOLD, 12);
-
     }
 
     // the graphical sd object is selected if it is clicked at the name box
@@ -38,8 +35,8 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         Rectangle2D rectangle1 = new Rectangle2D.Double(getX(), getY(), width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + (double)height, 
-                16, (double)endingY - getY() - height);
+        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + (double) height,
+                16, (double) endingY - getY() - height);
 
         return rectangle1.contains(point) || rectangle2.contains(point);
     }
@@ -69,7 +66,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
         // restore the original stroke
         g.setStroke(originalStroke);
-        
+
         drawActivationBars(g);
     }
 
@@ -90,13 +87,13 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         // draw the object text within the box
         String nameBoxText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(nameBoxText, nameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(nameBoxText, NAME_FONT, frc);
 
         // center the name string in the box
         int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
 
-        g.setFont(nameFont);
+        g.setFont(NAME_FONT);
         g.drawString(nameBoxText, startingX + nameX, startingY + nameY);
 
         if (ConstantsGR.UNDERLINE_OBJECTS) {
@@ -125,7 +122,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
     private int calculateWidth(Graphics2D g) {
         FontRenderContext frc = g.getFontRenderContext();
         String boxText = roleClassifier.toString();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(boxText, nameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(boxText, NAME_FONT, frc);
 
         if (bounds.getWidth() + 8 > minimumNameBoxWidth) {
             width = ((int) bounds.getWidth()) + 8;
@@ -142,11 +139,11 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
          */
         Deque<ActivationBar> bars = new ArrayDeque<>();
         Deque<ActivationBar> finalBars = new ArrayDeque<>();
-        
+
         int previousActivation = 0;
-        for(int i=0; i < messageYs.size(); i++) {
+        for (int i = 0; i < messageYs.size(); i++) {
             int currentActivation = activationAt.get(messageYs.get(i));
-            if( currentActivation > previousActivation ) {
+            if (currentActivation > previousActivation) {
                 ActivationBar bar = new ActivationBar();
                 bar.fromY = messageYs.get(i);
                 bar.depth = activationAt.get(messageYs.get(i));
@@ -158,23 +155,24 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             }
             previousActivation = currentActivation;
         }
-        while(!finalBars.isEmpty()) {
+        while (!finalBars.isEmpty()) {
             drawBar(g, finalBars.pop());
         }
     }
-    
+
     private class ActivationBar {
         int fromY;
         int toY;
         int depth;
+
         public String toString() {
             return "From: " + fromY + " to: " + toY + " depth: " + depth;
         }
     }
-    
+
     private void drawBar(Graphics2D g, ActivationBar bar) {
         int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
-        int startingX = getX() + width / 2 + (bar.depth - 1) * barWidth/2 - barWidth/2;
+        int startingX = getX() + width / 2 + (bar.depth - 1) * barWidth / 2 - barWidth / 2;
         int startingY = bar.fromY;
         int width = barWidth;
         int height = bar.toY - bar.fromY;
@@ -193,7 +191,6 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             g.setPaint(getOutlineColor());
         }
 
-        g.draw(shape);        
-   }
-    
+        g.draw(shape);
+    }
 }

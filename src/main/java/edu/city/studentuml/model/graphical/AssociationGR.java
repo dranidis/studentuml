@@ -31,15 +31,12 @@ public class AssociationGR extends LinkGR {
 
     private Association association;
     // the graphical classes that the association line connects in the diagram
-    private Font nameFont;
-    private Font roleFont;
+    private static final Font NAME_FONT = FontRegistry.ASSOCIATION_NAME_FONT;
+    private static final Font ROLE_FONT = FontRegistry.ASSOCIATION_ROLE_FONT;
 
     public AssociationGR(ClassifierGR a, ClassifierGR b, Association assoc) {
         super(a, b);
-        association = assoc;
-
-        nameFont = new Font("SansSerif", Font.PLAIN, 12);
-        roleFont = new Font("SansSerif", Font.PLAIN, 10);
+        this.association = assoc;
     }
 
     @Override
@@ -64,7 +61,7 @@ public class AssociationGR extends LinkGR {
         g.setPaint(getOutlineColor());
 
         // draw the association name string
-        g.setFont(nameFont);
+        g.setFont(NAME_FONT);
 
         double angle = 0;
         if (association.getLabelDirection() == Association.FROM_A_TO_B) {
@@ -76,7 +73,7 @@ public class AssociationGR extends LinkGR {
                 association.getName(), association.getShowArrow(), g);
 
         // draw role names and multiplicities
-        g.setFont(roleFont);
+        g.setFont(ROLE_FONT);
         String roleAName = association.getRoleA().getName();
         String roleAMultiplicity = association.getRoleA().getMultiplicity();
         String roleBName = association.getRoleB().getName();
@@ -88,7 +85,7 @@ public class AssociationGR extends LinkGR {
     @Override
     protected void drawRoles(int aX, int aY, int bX, int bY, double angleA, double angleB, Graphics2D g) {
         // draw role names and multiplicities
-        g.setFont(roleFont);
+        g.setFont(ROLE_FONT);
         drawRoleString(aX, aY, angleA, association.getRoleA().getMultiplicity(), association.getRoleA().getName(),
                 true, g);
         drawRoleString(bX, bY, angleB, association.getRoleB().getMultiplicity(), association.getRoleB().getName(),
@@ -151,7 +148,7 @@ public class AssociationGR extends LinkGR {
         g.rotate(angle);
 
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(sb.toString(), roleFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(sb.toString(), ROLE_FONT, frc);
         int xOffset = (int) bounds.getX();
         int yOffset = (int) bounds.getY();
         int textWidth = (int) bounds.getWidth();

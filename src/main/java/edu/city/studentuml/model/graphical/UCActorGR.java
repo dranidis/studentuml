@@ -23,15 +23,13 @@ public class UCActorGR extends LeafUCDElementGR {
     private static int actorTextDistance = 6;
     private static int stickFigureHeight = 35;
     private static int stickFigureWidth = 20;
-    private Font actorNameFont;
+    private static final Font ACTOR_NAME_FONT = FontRegistry.ACTOR_NAME_FONT;
 
     public UCActorGR(Actor actor, int x, int y) {
         super(actor, x, y);
 
         width = stickFigureWidth;
         height = stickFigureHeight;
-
-        actorNameFont = new Font("Sans Serif", Font.BOLD, 12);
     }
 
     @Override
@@ -65,13 +63,13 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, ACTOR_NAME_FONT, frc);
 
         // draw the actor name under the figure and center it
         int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         int nameY = stickFigureHeight + actorTextDistance - (int) bounds.getY();
 
-        g.setFont(actorNameFont);
+        g.setFont(ACTOR_NAME_FONT);
         g.drawString(actorName, startingX + nameX, startingY + nameY);
     }
 
@@ -81,7 +79,7 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, ACTOR_NAME_FONT, frc);
         int newWidth = stickFigureWidth;
 
         if (bounds.getWidth() > newWidth) {
@@ -99,7 +97,7 @@ public class UCActorGR extends LeafUCDElementGR {
             actorName = " ";
         }
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, actorNameFont, frc);
+        Rectangle2D bounds = GraphicsHelper.getTextBounds(actorName, ACTOR_NAME_FONT, frc);
 
         height = stickFigureHeight + actorTextDistance + (int) bounds.getHeight();
 
