@@ -41,8 +41,8 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
     protected static final int ATTRIBUTEFIELDXOFFSET = 4;
     protected static final int ATTRIBUTEFIELDYOFFSET = 3;
 
-    protected Font nameFont;
-    protected Font attributeFont;
+    protected static final Font NAME_FONT = FontRegistry.CLASS_NAME_FONT;
+    protected static final Font ATTRIBUTE_FONT = FontRegistry.CLASS_ATTRIBUTE_FONT;
 
     @JsonProperty("class")
     protected AbstractClass abstractClass;
@@ -54,9 +54,6 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // initialize the element's width and height to the minimum ones
         width = MINIMUMWIDTH;
         height = MINIMUMNAMEFIELDHEIGHT + MINIMUMATTRIBUTEFIELDHEIGHT + MINIMUMMETHODFIELDHEIGHT;
-
-        nameFont = new Font("SansSerif", Font.BOLD, 14);
-        attributeFont = new Font("SansSerif", Font.PLAIN, 12);
     }
 
     // template method pattern; code reuse for both conceptual and design class
@@ -104,22 +101,22 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         // draw class name
         if (!abstractClass.getName().equals("")) {
             String name = abstractClass.getName();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, nameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, NAME_FONT, frc);
             int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = currentY + NAMEFIELDYOFFSET - (int) bounds.getY();
 
-            g.setFont(nameFont);
+            g.setFont(NAME_FONT);
             g.drawString(name, startingX + nameX, startingY + nameY);
         }
 
         // draw the attributes
-        g.setFont(attributeFont);
+        g.setFont(ATTRIBUTE_FONT);
 
         currentY = nameFieldHeight + 2;
 
         for (Attribute a : abstractClass.getAttributes()) {
             String name = a.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, attributeFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, ATTRIBUTE_FONT, frc);
             int attributeX = ATTRIBUTEFIELDXOFFSET - (int) bounds.getX();
             int attributeY = currentY + ATTRIBUTEFIELDYOFFSET - (int) bounds.getY();
             g.drawString(name, startingX + attributeX, startingY + attributeY);
@@ -162,7 +159,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider name text dimensions
         if (abstractClass.getName().length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), NAME_FONT, frc);
             int nameWidth = (int) bounds.getWidth() + 2 * NAMEFIELDXOFFSET;
 
             if (nameWidth > newWidth) {
@@ -175,7 +172,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider attribute text dimensions
         for (Attribute a : abstractClass.getAttributes()) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), ATTRIBUTE_FONT, frc);
             int attributeWidth = (int) bounds.getWidth() + 2 * ATTRIBUTEFIELDXOFFSET;
 
             if (attributeWidth > newWidth) {
@@ -214,7 +211,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
 
         // consider name text dimensions
         if (!abstractClass.getName().equals("")) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), nameFont,
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(abstractClass.getName(), NAME_FONT,
                     g.getFontRenderContext());
 
             height = height + (int) bounds.getHeight() + (2 * NAMEFIELDYOFFSET);
@@ -236,7 +233,7 @@ public abstract class AbstractClassGR extends GraphicalElement implements Classi
         int height = 0;
 
         for (Attribute a : abstractClass.getAttributes()) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), attributeFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(a.toString(), ATTRIBUTE_FONT, g.getFontRenderContext());
 
             height += (int) bounds.getHeight() + ATTRIBUTEFIELDYOFFSET;
         }

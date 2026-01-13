@@ -30,7 +30,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
     private static int minimumHeight = 50;
     private static int activityNameXOffset = 5;
     private static int activityNameYOffset = 5;
-    private Font activityNameFont;
+    private static final Font ACTIVITY_NAME_FONT = FontRegistry.ACTIVITY_NAME_FONT;
     // resize handles needed in order to control activity node resizing
     private List<ResizeHandle> resizeHandles;
     private int activityNameWidth = 0; // calculated in calculateWidth()
@@ -41,8 +41,6 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-
-        activityNameFont = new Font("SansSerif", Font.BOLD, 12);
 
         // resize handles
         resizeHandles = new ArrayList<>();
@@ -90,12 +88,12 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
         // draw acticity node name
         if (!component.toString().equals("")) {
             String activityName = component.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(activityName, activityNameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(activityName, ACTIVITY_NAME_FONT, frc);
 
             int nameX = activityNameXOffset;
             int nameY = activityNameYOffset + (int) bounds.getHeight();
 
-            g.setFont(activityNameFont);
+            g.setFont(ACTIVITY_NAME_FONT);
             g.drawString(activityName, startingX + nameX, startingY + nameY);
         }
     }
@@ -107,7 +105,7 @@ public class ActivityNodeGR extends CompositeNodeGR implements Resizable {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), activityNameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), ACTIVITY_NAME_FONT, frc);
             activityNameWidth = (int) bounds.getWidth() + 2 * activityNameXOffset;
 
             if (activityNameWidth > newWidth) {

@@ -10,22 +10,23 @@ import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
 
 /**
- * Parser for message syntax in sequence diagrams.
- * Supports syntax: [returnValue [: returnType] :=] messageName([parameter1 [: type1] [, parameter2 [: type2], ...]])
+ * Parser for message syntax in sequence diagrams. Supports syntax: [returnValue
+ * [: returnType] :=] messageName[([parameter1 [: type1] [, parameter2 [:
+ * type2], ...]])] Note: Parentheses are optional. If omitted, the message is
+ * assumed to have no parameters.
  *
  * @author Dimitris Dranidis
  */
 public class MessageSyntaxParser {
 
     // Pattern to match the complete message syntax
+    // Parentheses are optional - if not present, assumes no parameters
     private static final Pattern MESSAGE_PATTERN = Pattern.compile(
-        "^\\s*(?:([\\w]+)\\s*(?::\\s*([\\w]+))?\\s*:=\\s*)?([\\w]+)\\s*\\(([^)]*)\\)\\s*$"
-    );
+            "^\\s*(?:([\\w]+)\\s*(?::\\s*([\\w]+))?\\s*:=\\s*)?([\\w]+)(?:\\s*\\(([^)]*)\\))?\\s*$");
 
     // Pattern to match individual parameters
     private static final Pattern PARAMETER_PATTERN = Pattern.compile(
-        "([\\w]+)\\s*(?::\\s*([\\w]+))?"
-    );
+            "([\\w]+)\\s*(?::\\s*([\\w]+))?");
 
     /**
      * Parse a message syntax string.
@@ -35,18 +36,21 @@ public class MessageSyntaxParser {
      */
     public ParseResult parse(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return new ParseResult("Input text cannot be empty");
+            return new ParseResult();
         }
 
         Matcher matcher = MESSAGE_PATTERN.matcher(text);
         if (!matcher.matches()) {
-            return new ParseResult("Invalid message syntax. Expected format: [returnValue [: returnType] :=] messageName([param1 [: type1], ...])");
+            return new ParseResult(
+                    "Invalid message syntax. Expected format: [returnValue [: returnType] :=] messageName([param1 [: type1], ...])"
+                            +
+                            "\nExamples:\nresult: int := do(param1: String, param2: int)\nr:= do()\ndo(par)\ndo()\ndo");
         }
 
-        String returnValue = matcher.group(1);  // Optional return value
-        String returnType = matcher.group(2);   // Optional return type
-        String messageName = matcher.group(3);  // Required message name
-        String parametersString = matcher.group(4);  // Parameters string (may be empty)
+        String returnValue = matcher.group(1); // Optional return value
+        String returnType = matcher.group(2); // Optional return type
+        String messageName = matcher.group(3); // Required message name
+        String parametersString = matcher.group(4); // Parameters string (may be empty)
 
         if (messageName == null || messageName.trim().isEmpty()) {
             return new ParseResult("Message name cannot be empty");
@@ -105,6 +109,11 @@ public class MessageSyntaxParser {
         if (messageName == null) {
             messageName = "";
         }
+
+        if (messageName.isEmpty()) {
+            return " "; // Minimal representation if name is empty
+        }
+
         sb.append(messageName);
 
         // Add parameters
@@ -146,6 +155,16 @@ public class MessageSyntaxParser {
             this.returnType = returnType;
             this.messageName = messageName;
             this.parameters = parameters != null ? parameters : new ArrayList<>();
+        }
+
+        // Constructor for empty result (no message)
+        public ParseResult() {
+            this.valid = true;
+            this.errorMessage = null;
+            this.returnValue = "";
+            this.returnType = "";
+            this.messageName = "";
+            this.parameters = new ArrayList<>();
         }
 
         // Constructor for failed parse

@@ -39,8 +39,8 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
     private static int nameFieldYOffset = 3;
     @JsonProperty("interface")
     private Interface coreInterface;
-    private Font methodFont;
-    private Font nameFont;
+    private static final Font METHOD_FONT = FontRegistry.INTERFACE_METHOD_FONT;
+    private static final Font NAME_FONT = FontRegistry.INTERFACE_NAME_FONT;
 
     public InterfaceGR(Interface i, Point start) {
         coreInterface = i;
@@ -48,9 +48,6 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         width = minimumWidth;
         height = minimumNameFieldHeight + minimumMethodFieldHeight;
-
-        nameFont = new Font("SansSerif", Font.BOLD, 14);
-        methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
     @Override
@@ -93,24 +90,24 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         if (!coreInterface.getName().equals("")) {
             String name = coreInterface.getName();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, nameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, NAME_FONT, frc);
 
             // center the name text
             int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = nameFieldYOffset - (int) bounds.getY();
 
-            g.setFont(nameFont);
+            g.setFont(NAME_FONT);
             g.drawString(name, startingX + nameX, startingY + nameY);
         }
 
-        g.setFont(methodFont);
+        g.setFont(METHOD_FONT);
 
         // draw the methods
         int currentY = nameFieldHeight + 2;
 
         for (Method m : coreInterface.getMethods()) {
             String name = m.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, methodFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(name, METHOD_FONT, frc);
             int methodX = methodFieldXOffset - (int) bounds.getX();
             int methodY = currentY + methodFieldYOffset - (int) bounds.getY();
             g.drawString(name, startingX + methodX, startingY + methodY);
@@ -136,7 +133,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         // consider name text dimensions
         if (!coreInterface.getName().equals("")) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), nameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), NAME_FONT, frc);
 
             height = height + (int) bounds.getHeight() + (2 * nameFieldYOffset);
         }
@@ -153,7 +150,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         for (Method m : coreInterface.getMethods()) {
             String method = m.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, methodFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, METHOD_FONT, g.getFontRenderContext());
             height += (int) bounds.getHeight() + methodFieldYOffset;
         }
 
@@ -173,7 +170,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
 
         // consider name text dimensions
         if (coreInterface.getName().length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), nameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(coreInterface.getName(), NAME_FONT, frc);
             int nameWidth = (int) bounds.getWidth() + 2 * nameFieldXOffset;
 
             newWidth = Math.max(nameWidth, newWidth);
@@ -182,7 +179,7 @@ public class InterfaceGR extends GraphicalElement implements ClassifierGR {
         // consider method text dimensions
         for (Method m : coreInterface.getMethods()) {
             String method = m.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, methodFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(method, METHOD_FONT, g.getFontRenderContext());
             int methodWidth = (int) bounds.getWidth() + 2 * methodFieldXOffset;
             newWidth = Math.max(methodWidth, newWidth);
         }

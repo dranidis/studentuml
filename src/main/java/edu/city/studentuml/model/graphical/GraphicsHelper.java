@@ -31,7 +31,7 @@ public class GraphicsHelper {
             return;
         }
 
-        Font font = new Font("SansSerif", Font.PLAIN, 9);
+        Font font = FontRegistry.HELPER_TEXT_FONT;
 
         double textAngle = angle;
 

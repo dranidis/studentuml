@@ -23,14 +23,11 @@ public class ClassGR extends AbstractClassGR {
     private static final int STEREOTYPE_DISTANCE = 4;
     private static final int METHOD_XOFFSET = 4;
     private static final int METHOD_YOFFSET = 3;
-    private Font stereotypeFont;
-    private Font methodFont;
+    private static final Font STEREOTYPE_FONT = FontRegistry.CLASS_STEREOTYPE_FONT;
+    private static final Font METHOD_FONT = FontRegistry.CLASS_METHOD_FONT;
 
     public ClassGR(DesignClass c, Point start) {
         super(c, start);
-
-        stereotypeFont = new Font("SansSerif", Font.PLAIN, 12);
-        methodFont = new Font("SansSerif", Font.ITALIC, 12);
     }
 
     public ClassGR(String name) {
@@ -44,14 +41,14 @@ public class ClassGR extends AbstractClassGR {
         // draw the stereotype text first, if any
         if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
             String stereotype = "<<" + designClass.getStereotype() + ">>";
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(stereotype, stereotypeFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(stereotype, STEREOTYPE_FONT, frc);
 
             // x and y positions relative to the top left corner; text is centered
             int stereotypeX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int stereotypeY = NAMEFIELDYOFFSET - (int) bounds.getY();
 
             currentY = (int) bounds.getHeight() + STEREOTYPE_DISTANCE;
-            g.setFont(stereotypeFont);
+            g.setFont(STEREOTYPE_FONT);
             g.drawString(stereotype, startingX + stereotypeX, startingY + stereotypeY);
         }
 
@@ -62,7 +59,7 @@ public class ClassGR extends AbstractClassGR {
     protected int drawMethods(Graphics2D g, FontRenderContext frc, int startingX, int startingY, int currentY) {
         DesignClass designClass = (DesignClass) abstractClass;
         // draw the methods
-        g.setFont(methodFont);
+        g.setFont(METHOD_FONT);
 
         Rectangle2D bounds;
 
@@ -71,7 +68,7 @@ public class ClassGR extends AbstractClassGR {
 
         for (Method m : designClass.getMethods()) {
             String name = m.toString();
-            bounds = GraphicsHelper.getTextBounds(name, methodFont, frc);
+            bounds = GraphicsHelper.getTextBounds(name, METHOD_FONT, frc);
             methodX = METHOD_XOFFSET - (int) bounds.getX();
             methodY = currentY + METHOD_YOFFSET - (int) bounds.getY();
             g.drawString(name, startingX + methodX, startingY + methodY);
@@ -89,7 +86,8 @@ public class ClassGR extends AbstractClassGR {
 
         // consider stereotype text dimensions
         if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds("<<" + designClass.getStereotype() + ">>", stereotypeFont,
+            Rectangle2D bounds = GraphicsHelper.getTextBounds("<<" + designClass.getStereotype() + ">>",
+                    STEREOTYPE_FONT,
                     frc);
             int stereotypeWidth = (int) bounds.getWidth() + 2 * NAMEFIELDXOFFSET;
 
@@ -109,7 +107,7 @@ public class ClassGR extends AbstractClassGR {
         // consider method text dimensions
 
         for (Method m : designClass.getMethods()) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), methodFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), METHOD_FONT, g.getFontRenderContext());
             int methodWidth = (int) bounds.getWidth() + 2 * METHOD_XOFFSET;
 
             if (methodWidth > newWidth) {
@@ -129,7 +127,7 @@ public class ClassGR extends AbstractClassGR {
         // consider stereotype text dimensions
         if (designClass.getStereotype() != null && !designClass.getStereotype().equals("")) {
             String stereotype = "<<" + designClass.getStereotype() + ">>";
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(stereotype, stereotypeFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(stereotype, STEREOTYPE_FONT, frc);
 
             hgt = hgt + (int) bounds.getHeight() + STEREOTYPE_DISTANCE;
         }
@@ -143,7 +141,7 @@ public class ClassGR extends AbstractClassGR {
         DesignClass designClass = (DesignClass) abstractClass;
 
         for (Method m : designClass.getMethods()) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), methodFont, g.getFontRenderContext());
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(m.toString(), METHOD_FONT, g.getFontRenderContext());
 
             height = height + (int) bounds.getHeight() + METHOD_YOFFSET;
         }

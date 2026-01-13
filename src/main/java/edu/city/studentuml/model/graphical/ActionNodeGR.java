@@ -22,7 +22,7 @@ public class ActionNodeGR extends LeafNodeGR {
     private static int minimumHeight = 24;
     protected static int actionNameXOffset = 10;
     protected static int actionNameYOffset = 5;
-    private Font actionNameFont;
+    private static final Font ACTION_NAME_FONT = FontRegistry.ACTION_NODE_FONT;
 
     public ActionNodeGR(ActionNode actionNode, int x, int y) {
         super(actionNode, x, y);
@@ -30,8 +30,6 @@ public class ActionNodeGR extends LeafNodeGR {
         // initialize the element's width and height to the minimum ones
         width = minimumWidth;
         height = minimumHeight;
-
-        actionNameFont = new Font("SansSerif", Font.PLAIN, 14);
     }
 
     @Override
@@ -68,11 +66,11 @@ public class ActionNodeGR extends LeafNodeGR {
         // draw action node name
         if (!component.toString().equals("")) {
             String actionName = component.toString();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(actionName, actionNameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(actionName, ACTION_NAME_FONT, frc);
             int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
 
-            g.setFont(actionNameFont);
+            g.setFont(ACTION_NAME_FONT);
             g.drawString(actionName, startingX + nameX, startingY + nameY);
         }
     }
@@ -84,7 +82,7 @@ public class ActionNodeGR extends LeafNodeGR {
 
         // consider action name text dimensions
         if (component.toString().length() != 0) {
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), actionNameFont, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(component.toString(), ACTION_NAME_FONT, frc);
             int actionNameWidth = (int) bounds.getWidth() + 2 * actionNameXOffset;
 
             if (actionNameWidth > newWidth) {

@@ -161,12 +161,33 @@ public abstract class TypedEntityEditor<T, D> extends JPanel
         dialog.getContentPane().add(this);
         dialog.setTitle(title);
         dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
+        // Add ESC key handler to act as Cancel
+        addEscapeKeyHandler(dialog);
+
         dialog.pack();
         dialog.setResizable(false);
         dialog.setLocationRelativeTo(owner);
         dialog.setVisible(true);
 
         return ok;
+    }
+
+    /**
+     * Adds an ESC key handler to the dialog to act as Cancel.
+     * 
+     * @param dialog The dialog to add the ESC handler to
+     */
+    private void addEscapeKeyHandler(JDialog dialog) {
+        javax.swing.KeyStroke escapeKey = javax.swing.KeyStroke.getKeyStroke(
+                java.awt.event.KeyEvent.VK_ESCAPE, 0);
+        dialog.getRootPane().registerKeyboardAction(
+                e -> {
+                    ok = false;
+                    dialog.setVisible(false);
+                },
+                escapeKey,
+                javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
