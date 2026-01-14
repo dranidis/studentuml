@@ -4,6 +4,11 @@
 
 ### Added
 
+-   Activity Diagram: Enforced degree constraints for Initial and Final nodes
+    -   Initial nodes can have only one outgoing control flow
+    -   Final nodes (Activity Final and Flow Final) can have only one incoming control flow
+    -   Violations are blocked at creation time with clear error messages
+
 ### Changed
 
 ### Fixed

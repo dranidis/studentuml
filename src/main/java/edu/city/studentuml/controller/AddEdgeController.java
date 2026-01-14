@@ -16,7 +16,6 @@ import edu.city.studentuml.model.graphical.NodeComponentGR;
 import edu.city.studentuml.view.gui.DiagramInternalFrame;
 
 /**
- *
  * @author Biser
  */
 public abstract class AddEdgeController extends AddElementController {
@@ -78,6 +77,28 @@ public abstract class AddEdgeController extends AddElementController {
             showErrorMessage("Initial node cannot have incoming edges!");
             setSelectionMode();
             return;
+        }
+
+        // UML Semantic validation: Initial node must have exactly one outgoing edge
+        if (src instanceof InitialNodeGR) {
+            int outgoingCount = src.getComponent().getNumberOfOutgoingEdges();
+            if (outgoingCount >= 1) {
+                showErrorMessage(
+                        "Initial node can have only one outgoing control flow! Use a decision or fork node to split the flow.");
+                setSelectionMode();
+                return;
+            }
+        }
+
+        // UML Semantic validation: Final nodes must have exactly one incoming edge
+        if (trg instanceof FinalNodeGR) {
+            int incomingCount = trg.getComponent().getNumberOfIncomingEdges();
+            if (incomingCount >= 1) {
+                showErrorMessage(
+                        "Final nodes can have only one incoming control flow! Use a merge or join node to combine the flows.");
+                setSelectionMode();
+                return;
+            }
         }
 
         if (trg instanceof DecisionNodeGR) {
