@@ -1,6 +1,7 @@
 package edu.city.studentuml.util.undoredo;
 
 import edu.city.studentuml.model.domain.DesignClass;
+import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.graphical.DiagramModel;
 import edu.city.studentuml.model.repository.CentralRepository;
 import edu.city.studentuml.util.SystemWideObjectNamePool;
@@ -9,7 +10,6 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- *
  * @author draganbisercic
  */
 public class EditSDObjectEdit extends AbstractUndoableEdit {
@@ -36,22 +36,30 @@ public class EditSDObjectEdit extends AbstractUndoableEdit {
     }
 
     private void edit(ObjectEdit original, ObjectEdit edit) {
+        SDObject editObj = edit.getObject();
+        SDObject originalObj = original.getObject();
         CentralRepository repository = model.getCentralRepository();
         if (!edit.getTypeName().equals("")) {
             DesignClass c = repository.getDesignClass(edit.getTypeName());
             if (c != null) {
-                original.getObject().setDesignClass(c);
-                original.getObject().setName(edit.getObject().getName());
+                originalObj.setDesignClass(c);
+                originalObj.setName(editObj.getName());
+                originalObj.setStereotype(editObj.getStereotype());
+                originalObj.setScope(editObj.getScope());
             } else {
                 DesignClass cl = new DesignClass(edit.getTypeName());
                 repository.addClass(cl);
-                original.getObject().setDesignClass(cl);
-                original.getObject().setName(edit.getObject().getName());
+                originalObj.setDesignClass(cl);
+                originalObj.setName(editObj.getName());
+                originalObj.setStereotype(editObj.getStereotype());
+                originalObj.setScope(editObj.getScope());
             }
         } else {
             DesignClass c = new DesignClass("");
-            original.getObject().setDesignClass(c);
-            original.getObject().setName(edit.getObject().getName());
+            originalObj.setDesignClass(c);
+            originalObj.setName(editObj.getName());
+            originalObj.setStereotype(editObj.getStereotype());
+            originalObj.setScope(editObj.getScope());
         }
 
         // set observable model to changed in order to notify its views

@@ -246,65 +246,31 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** When modeling interactions triggered by external events (timers, external systems, callbacks) where the specific sender is not part of the system being modeled. Provides a cleaner alternative to creating an Actor for every external stimulus.
 
-### Stereotype Support for Objects in Sequence Diagrams
+### Prevent Messages from Moving Above Object Boxes
 
 **Status:** Not implemented  
 **Priority:** Medium  
-**Description:** Add support for stereotypes on objects in Sequence Diagrams (SD/SSD) to enable modeling of static method calls, abstract classes, and interfaces. This allows objects to be annotated with stereotypes like `<<metaclass>>`, `<<interface>>`, `<<abstract>>`, or custom stereotypes, providing more semantic information about the object's role in the interaction.
+**Description:** Prevent messages in Sequence Diagrams (SD/SSD) from being moved higher than the lowest point of the object boxes. Messages should not be allowed to overlap with or appear above the object name boxes at the top of lifelines.
 
 **Technical Notes:**
 
--   Add stereotype support to `SDObject` domain model:
-    -   Add `stereotype` field (String, optional)
-    -   Common values: `"metaclass"`, `"interface"`, `"abstract"`, or custom values
-    -   Default: null or empty (no stereotype)
--   Update `SDObjectGR` rendering:
-    -   Display stereotype above object name in guillemets: `<<stereotype>>`
-    -   Position between top border and object name
-    -   Use appropriate font size and styling
--   UI enhancements:
-    -   Add stereotype field to object creation/edit dialog
-    -   Dropdown with common stereotypes: `<<metaclass>>`, `<<interface>>`, `<<abstract>>`, or allow custom entry
-    -   Optional: "None" to clear stereotype
--   XML serialization:
-    -   Add `stereotype="value"` attribute to SDObject XML elements
-    -   Ensure backward compatibility (missing stereotype = no stereotype)
--   Use cases enabled by stereotypes:
+-   Currently, messages can be moved freely on the Y-axis, potentially overlapping with object boxes
+-   Need to add validation when moving messages vertically
+-   Calculate the minimum Y position based on the lowest point of all object boxes in the diagram
+-   Object boxes typically have a fixed height (e.g., 30 pixels) and start at a vertical offset
+-   Apply constraint in message movement controllers and drag handlers
+-   Affected classes:
+    -   Message movement/repositioning logic in `SDMessageGR` or message controllers
+    -   Mouse drag handlers for message elements
+    -   Possibly `SDModel` to calculate min Y position for messages
+-   UI feedback:
+    -   Prevent mouse drag from moving message above threshold
+    -   Or snap message to minimum allowed position
+    -   Visual indicator when constraint is reached
+-   Consider activation bars: ensure messages don't overlap with activation bar tops either
+-   XML load: validate and fix messages that were saved above object boxes (legacy diagrams)
 
-    **Static Method Calls (<<metaclass>>):**
-
-    -   Represent class-level operations (e.g., factory methods, utility functions)
-    -   Example: `Math <<metaclass>>` receiving `sqrt(x)` message
-    -   Semantically correct representation of static method invocations
-
-    **Polymorphic Messages (<<interface>> or <<abstract>>):**
-
-    -   Show dependency on abstractions rather than concrete implementations
-    -   Example: `provider : VersionProvider <<interface>>`
-    -   Makes it clear that any implementation can be used
-    -   Can be combined with found messages to show concrete implementation separately
-
-    **Custom Stereotypes:**
-
-    -   Support domain-specific stereotypes (e.g., `<<controller>>`, `<<service>>`, `<<repository>>`)
-    -   Enables architectural pattern documentation
-
-**Implementation Considerations:**
-
--   Type selection: When stereotype is `<<interface>>` or `<<abstract>>`, allow selecting from available interfaces/abstract classes in the repository
--   Validation: Optionally validate that stereotype matches the object's type (e.g., `<<interface>>` should refer to an interface)
--   Code generation: Stereotyped objects may affect generated code (static calls, interface types)
--   Consistency checking: Validate stereotype usage (e.g., `<<metaclass>>` should only receive static method calls)
-
-**Use Cases:**
-
-1. **Static Utility Methods**: Model calls like `VersionLoader.getCurrentVersion()` or `Math.sqrt()` by creating a `VersionLoader <<metaclass>>` object, making it semantically correct rather than showing a false instance.
-
-2. **Dependency Inversion**: Show a client depending on `provider : VersionProvider <<interface>>` rather than a concrete implementation, documenting the use of abstraction and polymorphism (Strategy pattern, dependency injection).
-
-3. **Architectural Patterns**: Use stereotypes like `<<controller>>` or `<<service>>` to document architectural layers and responsibilities in the sequence diagram.
-
-4. **Testing Scenarios**: Use `<<mock>>` or `<<stub>>` stereotypes to document test doubles in test scenario diagrams.
+**Use Case:** When manually repositioning messages in a sequence diagram, users sometimes accidentally drag messages too high, causing them to overlap with object name boxes. This makes the diagram look incorrect and hard to read. By preventing messages from moving above the object boxes, diagrams remain clean and adhere to proper UML notation where messages always appear on lifelines below the object headers.
 
 ## Additional Potential Features
 

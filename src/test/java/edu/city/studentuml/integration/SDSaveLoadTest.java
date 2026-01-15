@@ -942,4 +942,147 @@ public class SDSaveLoadTest extends SaveLoadTestBase {
         Vector<SDMessage> sdMessages = project.getCentralRepository().getSDMessages();
         assertEquals("Repository should have 13 messages", 13, sdMessages.size());
     }
+
+    @Test
+    public void testSDObjectStereotypeSaveLoad() throws Exception {
+        // ============================================================
+        // 1. CREATE - Build SD with objects having different stereotypes
+        // ============================================================
+        SDModel model = new SDModel("Stereotype Test SD", project);
+
+        // Create Design Classes
+        DesignClass versionProviderClass = new DesignClass("VersionProvider");
+        DesignClass versionLoaderClass = new DesignClass("VersionLoader");
+        DesignClass versionCheckerClass = new DesignClass("VersionChecker");
+        DesignClass controllerClass = new DesignClass("UserController");
+        DesignClass plainClass = new DesignClass("PlainClass");
+
+        // Add all classes to repository
+        project.getCentralRepository().addClass(versionProviderClass);
+        project.getCentralRepository().addClass(versionLoaderClass);
+        project.getCentralRepository().addClass(versionCheckerClass);
+        project.getCentralRepository().addClass(controllerClass);
+        project.getCentralRepository().addClass(plainClass);
+
+        // Create SD Objects with stereotypes
+        SDObject provider = new SDObject("provider", versionProviderClass);
+        provider.setStereotype("interface");
+        SDObjectGR providerGR = new SDObjectGR(provider, 50);
+        model.addRoleClassifier(providerGR);
+
+        SDObject loader = new SDObject("VersionLoader", versionLoaderClass);
+        loader.setScope(AbstractObject.Scope.CLASS); // Use CLASS scope for static methods
+        SDObjectGR loaderGR = new SDObjectGR(loader, 200);
+        model.addRoleClassifier(loaderGR);
+
+        SDObject checker = new SDObject("checker", versionCheckerClass);
+        checker.setStereotype("abstract");
+        SDObjectGR checkerGR = new SDObjectGR(checker, 350);
+        model.addRoleClassifier(checkerGR);
+
+        SDObject controller = new SDObject("controller", controllerClass);
+        controller.setStereotype("controller");
+        SDObjectGR controllerGR = new SDObjectGR(controller, 500);
+        model.addRoleClassifier(controllerGR);
+
+        // Object without stereotype for comparison
+        SDObject plainObject = new SDObject("plain", plainClass);
+        SDObjectGR plainGR = new SDObjectGR(plainObject, 650);
+        model.addRoleClassifier(plainGR);
+
+        // Add objects to repository
+        project.getCentralRepository().addObject(provider);
+        project.getCentralRepository().addObject(loader);
+        project.getCentralRepository().addObject(checker);
+        project.getCentralRepository().addObject(controller);
+        project.getCentralRepository().addObject(plainObject);
+
+        // Add a simple message to make the diagram more realistic
+        GenericOperation getVersionOp = new GenericOperation("getVersion");
+
+        CallMessage msg = new CallMessage(controller, provider, getVersionOp);
+        CallMessageGR msgGR = new CallMessageGR(controllerGR, providerGR, msg, 100);
+        model.addMessage(msgGR);
+        project.getCentralRepository().addSDMessage(msg);
+
+        // ============================================================
+        // 2. SAVE - Write to XML
+        // ============================================================
+        saveProject();
+
+        // ============================================================
+        // 3. LOAD - Read from XML
+        // ============================================================
+        loadProject();
+
+        // ============================================================
+        // 4. VERIFY - Check stereotypes are preserved
+        // ============================================================
+        Vector<DiagramModel> diagrams = project.getDiagramModels();
+        assertEquals("Should have 1 diagram", 1, diagrams.size());
+        SDModel loadedModel = (SDModel) diagrams.get(0);
+        assertNotNull("SD model should be loaded", loadedModel);
+        assertEquals("Model name should match", "Stereotype Test SD", loadedModel.getName());
+
+        Vector<RoleClassifierGR> roleClassifiers = loadedModel.getRoleClassifiers();
+        assertEquals("Should have 5 role classifiers", 5, roleClassifiers.size());
+
+        // Verify provider with <<interface>> stereotype
+        SDObjectGR loadedProviderGR = findObjectByName(roleClassifiers, "provider");
+        assertNotNull("Provider object should be loaded", loadedProviderGR);
+        SDObject loadedProvider = loadedProviderGR.getSDObject();
+        assertEquals("Provider stereotype should be 'interface'", "interface", loadedProvider.getStereotype());
+        assertEquals("Provider class should match", "VersionProvider", loadedProvider.getDesignClass().getName());
+        assertEquals("Provider scope should be INSTANCE", AbstractObject.Scope.INSTANCE, loadedProvider.getScope());
+
+        // Verify loader with CLASS scope (for static methods)
+        SDObjectGR loadedLoaderGR = findObjectByName(roleClassifiers, "VersionLoader");
+        assertNotNull("Loader object should be loaded", loadedLoaderGR);
+        SDObject loadedLoader = loadedLoaderGR.getSDObject();
+        assertEquals("Loader scope should be CLASS", AbstractObject.Scope.CLASS, loadedLoader.getScope());
+        assertEquals("Loader class should match", "VersionLoader", loadedLoader.getDesignClass().getName());
+        assertEquals("Loader toString should not contain colon", "VersionLoader", loadedLoader.toString());
+
+        // Verify checker with <<abstract>> stereotype
+        SDObjectGR loadedCheckerGR = findObjectByName(roleClassifiers, "checker");
+        assertNotNull("Checker object should be loaded", loadedCheckerGR);
+        SDObject loadedChecker = loadedCheckerGR.getSDObject();
+        assertEquals("Checker stereotype should be 'abstract'", "abstract", loadedChecker.getStereotype());
+        assertEquals("Checker class should match", "VersionChecker", loadedChecker.getDesignClass().getName());
+
+        // Verify controller with custom <<controller>> stereotype
+        SDObjectGR loadedControllerGR = findObjectByName(roleClassifiers, "controller");
+        assertNotNull("Controller object should be loaded", loadedControllerGR);
+        SDObject loadedController = loadedControllerGR.getSDObject();
+        assertEquals("Controller stereotype should be 'controller'", "controller", loadedController.getStereotype());
+        assertEquals("Controller class should match", "UserController", loadedController.getDesignClass().getName());
+
+        // Verify plain object without stereotype
+        SDObjectGR loadedPlainGR = findObjectByName(roleClassifiers, "plain");
+        assertNotNull("Plain object should be loaded", loadedPlainGR);
+        SDObject loadedPlain = loadedPlainGR.getSDObject();
+        assertNull("Plain object should have no stereotype", loadedPlain.getStereotype());
+        assertEquals("Plain class should match", "PlainClass", loadedPlain.getDesignClass().getName());
+
+        // Verify message is loaded
+        Vector<SDMessageGR> messages = loadedModel.getMessages();
+        assertEquals("Should have 1 message", 1, messages.size());
+        CallMessageGR loadedMsgGR = (CallMessageGR) messages.get(0);
+        assertEquals("Message name should match", "getVersion", loadedMsgGR.getMessage().getName());
+    }
+
+    /**
+     * Helper method to find an SDObject by name in a list of role classifiers.
+     */
+    private SDObjectGR findObjectByName(Vector<RoleClassifierGR> classifiers, String name) {
+        for (RoleClassifierGR rc : classifiers) {
+            if (rc instanceof SDObjectGR) {
+                SDObjectGR objGR = (SDObjectGR) rc;
+                if (objGR.getSDObject().getName().equals(name)) {
+                    return objGR;
+                }
+            }
+        }
+        return null;
+    }
 }

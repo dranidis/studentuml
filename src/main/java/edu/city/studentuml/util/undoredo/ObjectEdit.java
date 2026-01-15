@@ -3,7 +3,6 @@ package edu.city.studentuml.util.undoredo;
 import edu.city.studentuml.model.domain.SDObject;
 
 /**
- *
  * @author draganbisercic
  */
 public class ObjectEdit {
@@ -34,6 +33,8 @@ public class ObjectEdit {
 
     public ObjectEdit clone() {
         SDObject obj = new SDObject(object.getName(), object.getDesignClass());
+        obj.setStereotype(object.getStereotype());
+        obj.setScope(object.getScope());
         ObjectEdit copy = new ObjectEdit(obj, typeName);
         return copy;
     }

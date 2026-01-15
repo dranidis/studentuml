@@ -4,6 +4,13 @@
 
 ### Added
 
+-   Sequence Diagrams (SD/SSD): Stereotype support for objects
+    -   Objects can now have stereotypes (e.g., `<<interface>>`, `<<abstract>>`, `<<controller>>`)
+    -   Stereotypes displayed with guillemets above object name in smaller font
+-   Sequence Diagrams (SD/SSD): Scope property for objects (instance vs class)
+    -   Objects can be set as INSTANCE (default) or CLASS scope
+    -   INSTANCE scope displays as "instanceName : ClassName" (standard UML)
+    -   CLASS scope displays as "ClassName" only (for modeling static method calls)
 -   Activity Diagram: Enforced degree constraints for Initial and Final nodes
     -   Initial nodes can have only one outgoing control flow
     -   Final nodes (Activity Final and Flow Final) can have only one incoming control flow
