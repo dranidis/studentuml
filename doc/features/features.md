@@ -246,32 +246,6 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** When modeling interactions triggered by external events (timers, external systems, callbacks) where the specific sender is not part of the system being modeled. Provides a cleaner alternative to creating an Actor for every external stimulus.
 
-### Prevent Messages from Moving Above Object Boxes
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Prevent messages in Sequence Diagrams (SD/SSD) from being moved higher than the lowest point of the object boxes. Messages should not be allowed to overlap with or appear above the object name boxes at the top of lifelines.
-
-**Technical Notes:**
-
--   Currently, messages can be moved freely on the Y-axis, potentially overlapping with object boxes
--   Need to add validation when moving messages vertically
--   Calculate the minimum Y position based on the lowest point of all object boxes in the diagram
--   Object boxes typically have a fixed height (e.g., 30 pixels) and start at a vertical offset
--   Apply constraint in message movement controllers and drag handlers
--   Affected classes:
-    -   Message movement/repositioning logic in `SDMessageGR` or message controllers
-    -   Mouse drag handlers for message elements
-    -   Possibly `SDModel` to calculate min Y position for messages
--   UI feedback:
-    -   Prevent mouse drag from moving message above threshold
-    -   Or snap message to minimum allowed position
-    -   Visual indicator when constraint is reached
--   Consider activation bars: ensure messages don't overlap with activation bar tops either
--   XML load: validate and fix messages that were saved above object boxes (legacy diagrams)
-
-**Use Case:** When manually repositioning messages in a sequence diagram, users sometimes accidentally drag messages too high, causing them to overlap with object name boxes. This makes the diagram look incorrect and hard to read. By preventing messages from moving above the object boxes, diagrams remain clean and adhere to proper UML notation where messages always appear on lifelines below the object headers.
-
 ## Additional Potential Features
 
 _Add new feature requests below this line_

@@ -155,6 +155,8 @@ public class SelectionController {
     // Resize handle dragging state
     protected ResizeHandle draggingResizeHandle = null;
 
+    private final int minY = RoleClassifierGR.VERTICAL_OFFSET + 30 + 20; //20px padding
+
     /**
      * A map mapping a class to its editor. Each subclass of SelectionController
      * implements editors for the elements that the diagram implements.
@@ -591,10 +593,7 @@ public class SelectionController {
             lastX = x;
             lastY = y;
 
-            /**
-             * Make sure that none of the selected elements go beyond the top and left edge
-             * margin.
-             */
+            // Make sure that none of the selected elements go beyond the top and left edge margin.
             for (GraphicalElement e : selectedElements) {
                 /**
                  * First condition is for SD messages: they have getX = 0. Without the condition
@@ -603,8 +602,17 @@ public class SelectionController {
                 if (e.getX() != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
                     return;
                 }
+                // Prevent top edge violation (for all elements)
                 if (deltaY + e.getY() < Constants.CANVAS_MARGIN) {
                     return;
+                }
+                // Prevent SDMessageGR from moving above object boxes
+                if (e instanceof SDMessageGR) {
+                    // Block if new position would be above (less than) minimum Y
+                    int newY = e.getY() + deltaY;
+                    if (newY < minY) {
+                        return;
+                    }
                 }
             }
 
