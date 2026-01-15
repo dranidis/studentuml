@@ -246,128 +246,66 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** When modeling interactions triggered by external events (timers, external systems, callbacks) where the specific sender is not part of the system being modeled. Provides a cleaner alternative to creating an Actor for every external stimulus.
 
-### Support Static Method Calls to Classes
+### Stereotype Support for Objects in Sequence Diagrams
 
 **Status:** Not implemented  
 **Priority:** Medium  
-**Description:** Add support for calling static methods on classes (not object instances) in sequence diagrams. Messages should be sent to the class itself rather than to an object instance.
+**Description:** Add support for stereotypes on objects in Sequence Diagrams (SD/SSD) to enable modeling of static method calls, abstract classes, and interfaces. This allows objects to be annotated with stereotypes like `<<metaclass>>`, `<<interface>>`, `<<abstract>>`, or custom stereotypes, providing more semantic information about the object's role in the interaction.
 
 **Technical Notes:**
 
--   UML represents static method calls as messages sent to a class rather than an instance
--   Two possible notations:
-    1. **Metaclass stereotype:** Show `<<metaclass>>` stereotype above the object name, with no class specified (e.g., just `VersionLoader` instead of `loader : VersionLoader`)
-    2. **Class instance notation:** Show object as an instance of `Class` (e.g., `Customer : Class`), with or without the `<<metaclass>>` stereotype
--   `SDObject` or `SDObjectGR` needs to support:
-    -   Optional flag `isMetaclass` or `isStatic`
-    -   Rendering of `<<metaclass>>` stereotype when flag is set
-    -   Alternative rendering: `ClassName : Class` format
--   UI: Add checkbox or option in object creation dialog to mark as metaclass/static
--   XML serialization: Add attribute like `metaclass="true"` or `static="true"`
--   Messages to metaclass objects should typically call static methods from the class diagram
-
-**Use Case:** When modeling static utility methods (e.g., `VersionLoader.getCurrentVersion()`, `Math.sqrt()`, factory methods) in sequence diagrams. Currently, these must be shown as regular object instances, which is semantically incorrect since no instance is created. Showing these as class-level calls makes the diagram more accurate and aligned with UML standards.
-
-### Support Polymorphic Messages to Abstract Classes and Interfaces
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Add support for sending messages to abstract classes or interfaces in sequence diagrams, representing polymorphic method calls. The abstract type should be shown with `<<abstract>>` or `<<interface>>` stereotype, and the diagram should not show implementation details. Alternative implementations should only be shown when using concrete class instances (potentially using found message notation).
-
-**Technical Notes:**
-
--   `SDObject` needs to support abstract classes and interfaces as types
--   Rendering should show stereotypes:
-    -   `<<abstract>>` above object name for abstract classes
-    -   `<<interface>>` above object name for interfaces
--   When a message is sent to an abstract type/interface object:
-    -   The method call is shown but no implementation details should be revealed
-    -   The lifeline continues normally (no activation bar expansion showing internal calls)
--   For showing concrete implementations:
-    -   Create separate `SDObject` instances for concrete classes (e.g., `concreteImpl : ConcreteClass`)
-    -   Use found messages to show the actual implementation execution on the concrete instance
-    -   This separates the polymorphic call from the concrete implementation
+-   Add stereotype support to `SDObject` domain model:
+    -   Add `stereotype` field (String, optional)
+    -   Common values: `"metaclass"`, `"interface"`, `"abstract"`, or custom values
+    -   Default: null or empty (no stereotype)
+-   Update `SDObjectGR` rendering:
+    -   Display stereotype above object name in guillemets: `<<stereotype>>`
+    -   Position between top border and object name
+    -   Use appropriate font size and styling
+-   UI enhancements:
+    -   Add stereotype field to object creation/edit dialog
+    -   Dropdown with common stereotypes: `<<metaclass>>`, `<<interface>>`, `<<abstract>>`, or allow custom entry
+    -   Optional: "None" to clear stereotype
 -   XML serialization:
-    -   Support Interface and AbstractClass types in addition to DesignClass
-    -   May need stereotype attribute: `stereotype="interface"` or `stereotype="abstract"`
--   UI: Allow selecting interfaces/abstract classes when creating SD objects
--   Example pattern:
-    ```
-    caller -> provider : <<interface>> : getLatestVersion()
-    [found message] -> concreteProvider : GitHubVersionProvider : getLatestVersion()
-    ```
+    -   Add `stereotype="value"` attribute to SDObject XML elements
+    -   Ensure backward compatibility (missing stereotype = no stereotype)
+-   Use cases enabled by stereotypes:
 
-**Use Case:** When modeling designs that rely on abstraction and polymorphism (Strategy pattern, dependency injection, plugin architectures), it's important to show that clients depend on abstract types, not concrete implementations. For example, showing `VersionChecker` calling `getLatestVersion()` on a `provider : <<interface>> VersionProvider` makes it clear that any implementation can be used. Concrete implementations (like `GitHubVersionProvider`) can be shown separately using found messages to demonstrate actual execution flow without coupling the abstract interaction to a specific implementation.
+    **Static Method Calls (<<metaclass>>):**
 
-## Additional Potential Features
+    -   Represent class-level operations (e.g., factory methods, utility functions)
+    -   Example: `Math <<metaclass>>` receiving `sqrt(x)` message
+    -   Semantically correct representation of static method invocations
 
-### Quick Message Entry with Parsing in Sequence Diagrams
+    **Polymorphic Messages (<<interface>> or <<abstract>>):**
 
-**Status:** Not implemented  
-**Priority:** High  
-**Description:** Enable users to quickly enter call messages in Sequence Diagrams (SD) and System Sequence Diagrams (SSD) by typing directly on the diagram canvas. The system should parse the entered text and automatically set the return value, return type, message name, and parameters with optional types.
+    -   Show dependency on abstractions rather than concrete implementations
+    -   Example: `provider : VersionProvider <<interface>>`
+    -   Makes it clear that any implementation can be used
+    -   Can be combined with found messages to show concrete implementation separately
 
-**User Interaction:**
+    **Custom Stereotypes:**
 
--   **Creating new message**: When a new call message is drawn, immediately enter inline editing mode (text field appears)
--   **Double-click on message text** (on the canvas): Opens inline text editor for quick entry/editing with parsing
--   **Double-click on message arrow**: Opens full message editor dialog for detailed editing
--   **Inline editing**: Text field appears directly on the diagram where the message text is displayed
--   **Editing existing messages**: Text field shows reconstructed syntax from current message configuration
-
-**Syntax:**
-
--   `message(par1, par2)` - Call message with parameters (no types)
--   `message(par1: Type1, par2: Type2)` - Call message with typed parameters
--   `rv := message(par1, par2)` - Call with return value and parameters
--   `rv: ReturnType := message(par1, par2)` - Call with typed return value and parameters
--   `message()` - Call message without parameters
--   `rv := message()` - Call with return value, no parameters
--   `rv: ReturnType := message()` - Call with typed return value, no parameters
-
-**Parser Format:**
-
-```
-[returnValue [: returnType] :=] messageName([parameter1 [: type1] [, parameter2 [: type2], ...]])
-```
-
-**Technical Notes:**
-
--   **Inline editing on canvas**: Implement text editing directly on the diagram view, not in a dialog
--   **Parsing**: Create parser utility to handle the syntax above
--   **Parameter types**: Optional but should be parsed when provided
--   **Return value vs return type**: Support both `returnValue` (variable name) and optional `returnType`
--   Parser should be lenient with whitespace
--   Validate identifier names (Java naming conventions)
--   **Error handling**: Show error message but keep text field open for correction
--   **Reconstruction**: When editing existing message, reconstruct the syntax string from current message state
+    -   Support domain-specific stereotypes (e.g., `<<controller>>`, `<<service>>`, `<<repository>>`)
+    -   Enables architectural pattern documentation
 
 **Implementation Considerations:**
 
--   Add inline text editing capability in `DiagramView` or message graphical representation
--   Create `MessageSyntaxParser` utility class with methods:
-    -   `parse(String text) -> ParseResult`
-    -   `reconstruct(CallMessage) -> String`
--   Modify `SDMessageGR` or `CallMessageGR` to support inline text editing
--   Distinguish between double-click on arrow (open dialog) vs double-click on text (inline edit)
--   Update `CallMessage` domain model to support bulk parameter setting if needed
--   Add validation and error feedback mechanism
--   Support both SD and SSD diagrams (same behavior for system messages)
+-   Type selection: When stereotype is `<<interface>>` or `<<abstract>>`, allow selecting from available interfaces/abstract classes in the repository
+-   Validation: Optionally validate that stereotype matches the object's type (e.g., `<<interface>>` should refer to an interface)
+-   Code generation: Stereotyped objects may affect generated code (static calls, interface types)
+-   Consistency checking: Validate stereotype usage (e.g., `<<metaclass>>` should only receive static method calls)
 
-**Use Case:** When creating sequence diagrams, users currently need to:
+**Use Cases:**
 
-1. Create the message
-2. Open the message editor dialog
-3. Manually add each parameter one by one
-4. Set the return value separately
-5. Set types for return value and parameters individually
+1. **Static Utility Methods**: Model calls like `VersionLoader.getCurrentVersion()` or `Math.sqrt()` by creating a `VersionLoader <<metaclass>>` object, making it semantically correct rather than showing a false instance.
 
-With this feature, users could simply double-click on the message text and type:
+2. **Dependency Inversion**: Show a client depending on `provider : VersionProvider <<interface>>` rather than a concrete implementation, documenting the use of abstraction and polymorphism (Strategy pattern, dependency injection).
 
-```
-result: double := calculateTotal(items: List, taxRate: double)
-```
+3. **Architectural Patterns**: Use stereotypes like `<<controller>>` or `<<service>>` to document architectural layers and responsibilities in the sequence diagram.
 
-All components would be automatically parsed and configured, significantly speeding up diagram creation and reducing friction in the modeling workflow.
+4. **Testing Scenarios**: Use `<<mock>>` or `<<stub>>` stereotypes to document test doubles in test scenario diagrams.
+
+## Additional Potential Features
 
 _Add new feature requests below this line_
