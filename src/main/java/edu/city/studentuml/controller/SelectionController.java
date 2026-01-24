@@ -34,10 +34,12 @@ import edu.city.studentuml.model.domain.Aggregation;
 import edu.city.studentuml.model.domain.Association;
 import edu.city.studentuml.model.domain.CallMessage;
 import edu.city.studentuml.model.domain.CreateMessage;
+import edu.city.studentuml.model.domain.DataType;
 import edu.city.studentuml.model.domain.Dependency;
 import edu.city.studentuml.model.domain.DestroyMessage;
 import edu.city.studentuml.model.domain.Generalization;
 import edu.city.studentuml.model.domain.GenericOperation;
+import edu.city.studentuml.model.domain.MessageReturnValue;
 import edu.city.studentuml.model.domain.MethodParameter;
 import edu.city.studentuml.model.domain.Realization;
 import edu.city.studentuml.model.domain.ReturnMessage;
@@ -88,11 +90,14 @@ import edu.city.studentuml.model.graphical.UMLNoteGR;
 import edu.city.studentuml.model.graphical.UseCaseGR;
 import edu.city.studentuml.util.ClipboardManager;
 import edu.city.studentuml.util.Constants;
+import edu.city.studentuml.util.MessageSyntaxParser.ParameterInfo;
+import edu.city.studentuml.util.MessageSyntaxParser.ParseResult;
 import edu.city.studentuml.util.NotifierVector;
 import edu.city.studentuml.util.PositiveRectangle;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEdit;
 import edu.city.studentuml.util.undoredo.CompositeDeleteEditLoader;
 import edu.city.studentuml.util.undoredo.DeleteEditFactory;
+import edu.city.studentuml.util.undoredo.EditCallMessageEdit;
 import edu.city.studentuml.util.undoredo.MoveEdit;
 import edu.city.studentuml.util.undoredo.ReconnectLinkEdit;
 import edu.city.studentuml.util.undoredo.ReconnectMessageEdit;
@@ -149,6 +154,8 @@ public class SelectionController {
 
     // Resize handle dragging state
     protected ResizeHandle draggingResizeHandle = null;
+
+    private final int minY = RoleClassifierGR.VERTICAL_OFFSET + 30 + 20; //20px padding
 
     /**
      * A map mapping a class to its editor. Each subclass of SelectionController
@@ -296,6 +303,89 @@ public class SelectionController {
         }
     }
 
+    /**
+     * Start inline editing for a message element. This allows quick editing of
+     * message syntax directly on the canvas. Made public to allow triggering from
+     * AddCallMessageController.
+     */
+    public void startInlineMessageEdit(SDMessageGR messageGR) {
+
+        // Only support inline editing for CallMessage and CreateMessage
+        if (!(messageGR.getMessage() instanceof CallMessage)) {
+            // Fall back to dialog editing for other message types
+            mapeditElement(messageGR);
+            return;
+        }
+
+        CallMessage message = (CallMessage) messageGR
+                .getMessage();
+
+        // Create a copy for undo
+        CallMessage undoMessage = message.clone();
+
+        // Start inline editing
+        parentComponent.getView().getInlineMessageEditor().startEditing(
+                messageGR,
+                parseResult -> {
+                    // Success callback - parse result is always valid here
+                    applyParsedMessageChanges(message, parseResult);
+
+                    // Create undo/redo edit
+                    UndoableEdit edit = new EditCallMessageEdit(message, undoMessage, model);
+                    parentComponent.getUndoSupport().postEdit(edit);
+
+                    // Notify model changed
+                    model.modelChanged();
+                },
+                () -> {
+                    // Cancel callback - do nothing
+                    logger.fine("Inline message edit cancelled");
+                });
+    }
+
+    /**
+     * Apply the parsed message syntax to a CallMessage object.
+     */
+    private void applyParsedMessageChanges(
+            CallMessage message,
+            ParseResult parseResult) {
+
+        // Set message name
+        message.setName(parseResult.getMessageName());
+
+        // Set return value
+        if (parseResult.getReturnValue() != null && !parseResult.getReturnValue().isEmpty()) {
+            message.setReturnValue(
+                    new MessageReturnValue(parseResult.getReturnValue()));
+        } else {
+            message.setReturnValue(null);
+        }
+
+        // Set return type
+        if (parseResult.getReturnType() != null && !parseResult.getReturnType().isEmpty()) {
+            message.setReturnType(new DataType(parseResult.getReturnType()));
+            message.setReturnType(new DataType(parseResult.getReturnType()));
+        } else {
+            message.setReturnType(null);
+        }
+
+        // Clear ONLY parameters (not return value/type!)
+        // Note: message.clear() would also clear return value and return type
+        message.getParameters().clear();
+
+        // Set parameters
+        for (ParameterInfo paramInfo : parseResult.getParameters()) {
+            MethodParameter param = new MethodParameter(
+                    paramInfo.getName());
+
+            if (paramInfo.getType() != null && !paramInfo.getType().isEmpty()) {
+                param.setType(new DataType(paramInfo.getType()));
+            }
+
+            message.addParameter(param);
+        }
+    }
+
     private int scale(int number) {
         return (int) (number / parentComponent.getView().getScale());
     }
@@ -430,12 +520,35 @@ public class SelectionController {
     protected void myMouseClicked(MouseEvent event) {
         if (event.getButton() == MouseEvent.BUTTON1 && event.getClickCount() == 2 && selectedElements.size() == 1) {
             Point2D origin = new Point2D.Double(scale(event.getX()), scale(event.getY()));
+
             lastX = scale(event.getX());
             lastY = scale(event.getY());
             // find the source graphical element
             GraphicalElement element = model.getContainingGraphicalElement(origin);
 
             if (element != null) {
+                logger.fine("Double-click on element: " + element.getClass().getSimpleName());
+
+                // Check if double-click is on a message's text (for inline editing)
+                if (element instanceof SDMessageGR) {
+                    SDMessageGR messageGR = (SDMessageGR) element;
+
+                    logger.fine("Double-click on message, checking if on text...");
+
+                    // IMPORTANT: Check text FIRST before falling through to arrow/dialog
+                    // containsText() is more specific than contains()
+                    if (messageGR.containsText(origin)) {
+                        logger.fine("Double-click on message TEXT - starting inline edit");
+                        // Double-click on message text -> inline edit
+                        startInlineMessageEdit(messageGR);
+                        return; // Don't fall through to dialog
+                    } else {
+                        logger.fine("Double-click NOT on text (on arrow) - opening dialog");
+                    }
+                    // Fall through to normal dialog edit
+                }
+
+                // Normal editing (dialog or polymorphic edit)
                 mapeditElement(element);
             }
         } else {
@@ -480,10 +593,7 @@ public class SelectionController {
             lastX = x;
             lastY = y;
 
-            /**
-             * Make sure that none of the selected elements go beyond the top and left edge
-             * margin.
-             */
+            // Make sure that none of the selected elements go beyond the top and left edge margin.
             for (GraphicalElement e : selectedElements) {
                 /**
                  * First condition is for SD messages: they have getX = 0. Without the condition
@@ -492,8 +602,17 @@ public class SelectionController {
                 if (e.getX() != 0 && deltaX + e.getX() < Constants.CANVAS_MARGIN) {
                     return;
                 }
+                // Prevent top edge violation (for all elements)
                 if (deltaY + e.getY() < Constants.CANVAS_MARGIN) {
                     return;
+                }
+                // Prevent SDMessageGR from moving above object boxes
+                if (e instanceof SDMessageGR) {
+                    // Block if new position would be above (less than) minimum Y
+                    int newY = e.getY() + deltaY;
+                    if (newY < minY) {
+                        return;
+                    }
                 }
             }
 

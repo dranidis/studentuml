@@ -35,7 +35,7 @@ public abstract class EdgeGR extends GraphicalElement {
     protected NodeComponentGR target;
     protected Edge edge;
     protected List<AbstractPointGR> points;
-    private Font font;
+    private static final Font FONT = FontRegistry.EDGE_FONT;
 
     /**
      * This constructor is used in persistency module only (ObjectFactory). It does
@@ -48,9 +48,6 @@ public abstract class EdgeGR extends GraphicalElement {
         this.edge = edge;
 
         points = new ArrayList<>();
-
-        font = new Font("SansSerif", Font.PLAIN, 10);
-
     }
 
     protected EdgeGR(NodeComponentGR source, NodeComponentGR target, Edge edge, Point srcPoint, Point trgPoint) {
@@ -61,8 +58,6 @@ public abstract class EdgeGR extends GraphicalElement {
         points = new ArrayList<>();
         points.add(getInitialPoint(srcPoint));
         points.add(getInitialPoint(trgPoint));
-
-        font = new Font("SansSerif", Font.PLAIN, 10);
 
     }
 
@@ -343,12 +338,12 @@ public abstract class EdgeGR extends GraphicalElement {
             }
 
             FontRenderContext frc = g.getFontRenderContext();
-            Rectangle2D bounds = GraphicsHelper.getTextBounds(string, font, frc);
+            Rectangle2D bounds = GraphicsHelper.getTextBounds(string, FONT, frc);
             int textWidth = (int) bounds.getWidth();
 
             g.translate(x, y);
             g.rotate(textAngle);
-            g.setFont(font);
+            g.setFont(FONT);
             g.drawString(string, -textWidth / 2, -4);
             g.rotate(-textAngle);
             g.translate(-x, -y);

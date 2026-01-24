@@ -62,8 +62,8 @@ public class SDObjectGR extends AbstractSDObjectGR {
 
         SDObject newObject = result.getDomainObject();
 
-        // UNDO/REDO setup
-        SDObject undoObject = new SDObject(originalObject.getName(), originalObject.getDesignClass());
+        // UNDO/REDO setup - clone the original object to preserve all properties
+        SDObject undoObject = originalObject.clone();
         ObjectEdit undoEdit = new ObjectEdit(undoObject, originalObject.getDesignClass().getName());
 
         // Create compound edit for all operations (type operations + domain object change)

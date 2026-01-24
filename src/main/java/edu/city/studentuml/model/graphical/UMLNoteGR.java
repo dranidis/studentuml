@@ -35,7 +35,7 @@ public class UMLNoteGR extends GraphicalElement {
 
     private static final int MAXWIDTH = 400;
     private static final int MINWIDTH = 50;
-    private static final Font nameFont = new Font("SansSerif", Font.PLAIN, 10);
+    private static final Font nameFont = FontRegistry.NOTE_FONT;
 
     private static final int ENVELOPE_DISTANCE = 8;
 
@@ -63,7 +63,7 @@ public class UMLNoteGR extends GraphicalElement {
         this.height = calculateHeight(g);
 
         // REPLACE super.draw(g) because only UMLNoteGR should show user
-        g.setFont(new Font("SansSerif", Font.PLAIN, 8));
+        g.setFont(FontRegistry.NOTE_SMALL_FONT);
 
         g.setStroke(GraphicsHelper.makeSolidStroke());
         Rectangle2D toBounds = to.getBounds();

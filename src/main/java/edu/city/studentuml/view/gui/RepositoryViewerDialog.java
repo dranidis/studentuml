@@ -1,6 +1,7 @@
 package edu.city.studentuml.view.gui;
 
 import edu.city.studentuml.model.domain.*;
+import edu.city.studentuml.model.graphical.FontRegistry;
 import edu.city.studentuml.model.repository.CentralRepository;
 
 import javax.swing.*;
@@ -40,7 +41,7 @@ public class RepositoryViewerDialog extends JDialog implements PropertyChangeLis
 
         stateArea = new JTextArea(20, 40);
         stateArea.setEditable(false);
-        stateArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        stateArea.setFont(FontRegistry.REPOSITORY_STATE_FONT);
         JScrollPane stateScroll = new JScrollPane(stateArea);
         statePanel.add(stateScroll, BorderLayout.CENTER);
 
@@ -50,7 +51,7 @@ public class RepositoryViewerDialog extends JDialog implements PropertyChangeLis
 
         changeLogArea = new JTextArea(20, 40);
         changeLogArea.setEditable(false);
-        changeLogArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        changeLogArea.setFont(FontRegistry.REPOSITORY_LOG_FONT);
         JScrollPane logScroll = new JScrollPane(changeLogArea);
         logPanel.add(logScroll, BorderLayout.CENTER);
 

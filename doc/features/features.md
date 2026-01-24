@@ -62,40 +62,6 @@ This document tracks potential features and improvements for StudentUML.
 
 **Use Case:** Projects using generic types (List<T>, Map<K,V>, etc.) cause consistency checking to fail with Prolog syntax errors.
 
-### Activity Diagram Node Degree Constraints
-
-**Status:** Not implemented  
-**Priority:** High  
-**Description:** Enforce control-flow degree constraints in Activity Diagrams:
-
--   Initial nodes must have exactly one outgoing Control Flow.
--   Final nodes (Activity Final and Flow Final) must have exactly one incoming Control Flow.
-
-Violations should be prevented at creation time (with a user-facing error/warning) and detected during consistency checks.
-
-**Technical Notes:**
-
--   Domain types: `InitialNode`, `ActivityFinalNode`, `FlowFinalNode` under `edu.city.studentuml.model.domain`.
--   Graphical types: `InitialNodeGR`, `ActivityFinalNodeGR`, `FlowFinalNodeGR` under `edu.city.studentuml.model.graphical`.
--   Edge types: `ControlFlow` (domain) and `ControlFlowGR` (graphical).
--   Creation path to validate (to locate exact enforcement points):
-    -   Add-element controllers for AD (e.g., `AddControlFlowController` or equivalent) or a generic add-edge controller.
-    -   Reconnection logic in `EdgeGR` and specific GRs (to block making an invalid degree via reconnect).
-    -   Consider a model-level validation in `NodeComponent` or a dedicated validator that counts `getOutgoingEdges()` / `getIncomingEdges()`.
--   Suggested enforcement:
-    -   Before creating a `ControlFlow` where source is `InitialNode`, check `source.getOutgoingEdges().isEmpty()`; if not empty, block and show: "Initial node can have a single outgoing control flow".
-    -   Before creating a `ControlFlow` where target is `ActivityFinalNode` or `FlowFinalNode`, check `target.getIncomingEdges().isEmpty()`; if not empty, block and show: "Final nodes can have a single incoming control flow".
-    -   Mirror these checks in reconnection handlers (`ControlFlowGR` / `EdgeGR`) to prevent violating the constraints via reconnect.
-    -   Add consistency rules to the Prolog ruleset: count incoming/outgoing degrees for final/initial nodes and report violations.
--   XML Save/Load:
-    -   On load, optionally run a validation pass to flag diagrams that violate the constraints.
-    -   Consider auto-fix option (disabled by default) that removes surplus flows or highlights them.
--   Tests:
-    -   Unit tests for creation blocking in controllers.
-    -   Integration tests: attempt to draw invalid flows and assert error dialogs; ensure valid flows are allowed.
-
-**Use Case:** In UML Activity Diagrams, initial nodes represent the single entry point of the activity, and final nodes represent termination points. Allowing multiple outgoing/incoming flows makes the diagram ambiguous and violates UML semantics. Enforcing these constraints keeps models clean and semantically correct.
-
 ### Weight Validation for Control and Object Flows
 
 **Status:** Not implemented  
@@ -123,6 +89,48 @@ Violations should be prevented at creation time (with a user-facing error/warnin
     -   Integration tests for XML load with invalid weights
 
 **Use Case:** In UML Activity Diagrams, the weight property specifies how many tokens must be available on the edge for it to be traversed. A weight of 0 or negative value is semantically invalid and would prevent the flow from ever being traversed or cause undefined behavior. Enforcing positive integer validation ensures diagrams remain semantically valid and prevents modeling errors.
+
+### Edge Reconnection in Activity Diagrams
+
+**Status:** Not implemented  
+**Priority:** Medium  
+**Description:** Enable users to reconnect control flows and object flows in Activity Diagrams by dragging edge endpoints to different nodes. This allows for easier diagram modification without having to delete and recreate edges.
+
+**Technical Notes:**
+
+-   Currently, edges in Activity Diagrams cannot be reconnected - must be deleted and recreated
+-   Similar functionality exists in other diagram types (e.g., associations in class diagrams)
+-   Need to implement reconnection for both edge types:
+    -   `ControlFlowGR` - control flow edges
+    -   `ObjectFlowGR` - object flow edges (if applicable)
+-   Implementation approach:
+    -   Add mouse handlers to detect dragging of edge endpoints
+    -   Visual feedback: highlight valid target nodes during drag
+    -   Validation: check if reconnection violates semantic constraints
+    -   Update domain model: change source/target in `ControlFlow` or `ObjectFlow`
+    -   Undo/redo support: create reconnection edit
+-   Validation during reconnection must enforce:
+    -   Initial node degree constraint (exactly 1 outgoing)
+    -   Final node degree constraint (exactly 1 incoming)
+    -   Action node constraints (at most 1 incoming, 1 outgoing)
+    -   Decision/Merge/Fork/Join node constraints
+    -   Edge type compatibility (control flow vs object flow)
+    -   Same activity context
+-   UI considerations:
+    -   Cursor feedback when hovering over edge endpoints
+    -   Visual indication of drag operation
+    -   Error message if reconnection violates constraints
+    -   Snap to valid target nodes
+-   Edge cases to handle:
+    -   Reconnecting to the same node (reflexive edge)
+    -   Reconnecting both source and target
+    -   Reconnecting while maintaining guard conditions (for decision nodes)
+-   Undo/redo:
+    -   Create `ReconnectEdgeEdit` undoable edit
+    -   Store old and new source/target nodes
+    -   Handle edge repositioning on undo
+
+**Use Case:** When refactoring an activity diagram, users often need to change the flow connections. Currently, this requires deleting the edge and creating a new one, which is tedious and loses properties like guards. With reconnection support, users can simply drag an edge endpoint to a different node, making diagram modification much faster and preserving edge properties. For example, when reorganizing a workflow, a user could drag a control flow from one action to another without losing the flow's configuration.
 
 ## Class Diagram Features
 
@@ -237,59 +245,6 @@ Violations should be prevented at creation time (with a user-facing error/warnin
 -   Consider similar support for "lost messages" (no receiver specified)
 
 **Use Case:** When modeling interactions triggered by external events (timers, external systems, callbacks) where the specific sender is not part of the system being modeled. Provides a cleaner alternative to creating an Actor for every external stimulus.
-
-### Support Static Method Calls to Classes
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Add support for calling static methods on classes (not object instances) in sequence diagrams. Messages should be sent to the class itself rather than to an object instance.
-
-**Technical Notes:**
-
--   UML represents static method calls as messages sent to a class rather than an instance
--   Two possible notations:
-    1. **Metaclass stereotype:** Show `<<metaclass>>` stereotype above the object name, with no class specified (e.g., just `VersionLoader` instead of `loader : VersionLoader`)
-    2. **Class instance notation:** Show object as an instance of `Class` (e.g., `Customer : Class`), with or without the `<<metaclass>>` stereotype
--   `SDObject` or `SDObjectGR` needs to support:
-    -   Optional flag `isMetaclass` or `isStatic`
-    -   Rendering of `<<metaclass>>` stereotype when flag is set
-    -   Alternative rendering: `ClassName : Class` format
--   UI: Add checkbox or option in object creation dialog to mark as metaclass/static
--   XML serialization: Add attribute like `metaclass="true"` or `static="true"`
--   Messages to metaclass objects should typically call static methods from the class diagram
-
-**Use Case:** When modeling static utility methods (e.g., `VersionLoader.getCurrentVersion()`, `Math.sqrt()`, factory methods) in sequence diagrams. Currently, these must be shown as regular object instances, which is semantically incorrect since no instance is created. Showing these as class-level calls makes the diagram more accurate and aligned with UML standards.
-
-### Support Polymorphic Messages to Abstract Classes and Interfaces
-
-**Status:** Not implemented  
-**Priority:** Medium  
-**Description:** Add support for sending messages to abstract classes or interfaces in sequence diagrams, representing polymorphic method calls. The abstract type should be shown with `<<abstract>>` or `<<interface>>` stereotype, and the diagram should not show implementation details. Alternative implementations should only be shown when using concrete class instances (potentially using found message notation).
-
-**Technical Notes:**
-
--   `SDObject` needs to support abstract classes and interfaces as types
--   Rendering should show stereotypes:
-    -   `<<abstract>>` above object name for abstract classes
-    -   `<<interface>>` above object name for interfaces
--   When a message is sent to an abstract type/interface object:
-    -   The method call is shown but no implementation details should be revealed
-    -   The lifeline continues normally (no activation bar expansion showing internal calls)
--   For showing concrete implementations:
-    -   Create separate `SDObject` instances for concrete classes (e.g., `concreteImpl : ConcreteClass`)
-    -   Use found messages to show the actual implementation execution on the concrete instance
-    -   This separates the polymorphic call from the concrete implementation
--   XML serialization:
-    -   Support Interface and AbstractClass types in addition to DesignClass
-    -   May need stereotype attribute: `stereotype="interface"` or `stereotype="abstract"`
--   UI: Allow selecting interfaces/abstract classes when creating SD objects
--   Example pattern:
-    ```
-    caller -> provider : <<interface>> : getLatestVersion()
-    [found message] -> concreteProvider : GitHubVersionProvider : getLatestVersion()
-    ```
-
-**Use Case:** When modeling designs that rely on abstraction and polymorphism (Strategy pattern, dependency injection, plugin architectures), it's important to show that clients depend on abstract types, not concrete implementations. For example, showing `VersionChecker` calling `getLatestVersion()` on a `provider : <<interface>> VersionProvider` makes it clear that any implementation can be used. Concrete implementations (like `GitHubVersionProvider`) can be shown separately using found messages to demonstrate actual execution flow without coupling the abstract interaction to a specific implementation.
 
 ## Additional Potential Features
 

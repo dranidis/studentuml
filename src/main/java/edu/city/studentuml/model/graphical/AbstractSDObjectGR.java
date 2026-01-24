@@ -14,21 +14,18 @@ import java.util.Deque;
 import edu.city.studentuml.model.domain.RoleClassifier;
 
 /**
- *
  * @author draganbisercic
  */
 public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     private static int minimumNameBoxWidth = 50;
     private static int nameBoxHeight = 30;
-    protected Font nameFont;
+    protected static final Font NAME_FONT = FontRegistry.SD_OBJECT_NAME_FONT;
 
     protected AbstractSDObjectGR(RoleClassifier obj, int x) {
         super(obj, x);
         width = minimumNameBoxWidth;
         height = nameBoxHeight;
-        nameFont = new Font("SansSerif", Font.BOLD, 12);
-
     }
 
     // the graphical sd object is selected if it is clicked at the name box
@@ -38,8 +35,8 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
         Rectangle2D rectangle1 = new Rectangle2D.Double(getX(), getY(), width, height);
 
         // The portion of the visual object including the life line
-        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + (double)height, 
-                16, (double)endingY - getY() - height);
+        Rectangle2D rectangle2 = new Rectangle2D.Double(getX() + width / 2.0 - 8.0, getY() + (double) height,
+                16, (double) endingY - getY() - height);
 
         return rectangle1.contains(point) || rectangle2.contains(point);
     }
@@ -69,7 +66,7 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
         // restore the original stroke
         g.setStroke(originalStroke);
-        
+
         drawActivationBars(g);
     }
 
@@ -87,26 +84,75 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
     }
 
     protected void drawObjectName(Graphics2D g, int startingX, int startingY) {
-        // draw the object text within the box
         String nameBoxText = roleClassifier.toString();
         FontRenderContext frc = g.getFontRenderContext();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(nameBoxText, nameFont, frc);
 
-        // center the name string in the box
-        int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
-        int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
+        // Check if stereotype exists
+        String stereotype = getStereotypeText();
+        boolean hasStereotype = stereotype != null && !stereotype.isEmpty();
 
-        g.setFont(nameFont);
+        // Calculate bounds for name
+        Rectangle2D nameBounds = GraphicsHelper.getTextBounds(nameBoxText, NAME_FONT, frc);
+
+        // Calculate bounds for stereotype if present
+        Rectangle2D stereotypeBounds = null;
+        if (hasStereotype) {
+            Font stereotypeFont = NAME_FONT.deriveFont(NAME_FONT.getSize() * 0.85f);
+            stereotypeBounds = GraphicsHelper.getTextBounds(stereotype, stereotypeFont, frc);
+        }
+
+        // Calculate vertical positions
+        int nameY;
+        int stereotypeY = 0; // Initialize to avoid compilation error
+        if (hasStereotype) {
+            // Total height needed for both texts with spacing
+            double totalTextHeight = stereotypeBounds.getHeight() + nameBounds.getHeight() + 2; // 2px spacing
+            // Center both texts vertically in the box
+            int topMargin = (int) ((height - totalTextHeight) / 2);
+            stereotypeY = topMargin + (int) stereotypeBounds.getHeight();
+            nameY = stereotypeY + 2 + (int) nameBounds.getHeight(); // 2px spacing between stereotype and name
+        } else {
+            // Center name vertically as before
+            nameY = GraphicsHelper.calculateCenteredTextY(height, nameBounds);
+        }
+
+        // Draw stereotype if present
+        if (hasStereotype) {
+            Font stereotypeFont = NAME_FONT.deriveFont(NAME_FONT.getSize() * 0.85f);
+            g.setFont(stereotypeFont);
+            int stereotypeX = GraphicsHelper.calculateCenteredTextX(width, stereotypeBounds);
+            g.drawString(stereotype, startingX + stereotypeX, startingY + stereotypeY);
+        }
+
+        // Draw name
+        int nameX = GraphicsHelper.calculateCenteredTextX(width, nameBounds);
+        g.setFont(NAME_FONT);
         g.drawString(nameBoxText, startingX + nameX, startingY + nameY);
 
         if (ConstantsGR.UNDERLINE_OBJECTS) {
-            // underline the text
-            int underlineX = nameX + (int) bounds.getX();
-            int underlineY = nameY + (int) bounds.getY() + (int) bounds.getHeight();
+            // underline the name text
+            int underlineX = nameX + (int) nameBounds.getX();
+            int underlineY = nameY + (int) nameBounds.getY() + (int) nameBounds.getHeight();
 
             g.drawLine(startingX + underlineX - 2, startingY + underlineY + 2,
-                    startingX + underlineX + (int) bounds.getWidth() + 2, startingY + underlineY + 2);
+                    startingX + underlineX + (int) nameBounds.getWidth() + 2, startingY + underlineY + 2);
         }
+    }
+
+    /**
+     * Get the stereotype text with guillemets if a stereotype is set.
+     * 
+     * @return The stereotype formatted as "<<stereotype>>" or null if no stereotype
+     */
+    private String getStereotypeText() {
+        if (roleClassifier instanceof edu.city.studentuml.model.domain.AbstractObject) {
+            edu.city.studentuml.model.domain.AbstractObject obj = (edu.city.studentuml.model.domain.AbstractObject) roleClassifier;
+            String stereotype = obj.getStereotype();
+            if (stereotype != null && !stereotype.isEmpty()) {
+                return "<<" + stereotype + ">>";
+            }
+        }
+        return null;
     }
 
     private void drawLifeline(Graphics2D g, int startingX, int startingY) {
@@ -122,13 +168,24 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
 
     // Calculates the width of the name box as it appears on the screen.
     // The width will depend on the length of the name string and the graphics context.
+    // Also accounts for stereotype text width if present.
     private int calculateWidth(Graphics2D g) {
         FontRenderContext frc = g.getFontRenderContext();
         String boxText = roleClassifier.toString();
-        Rectangle2D bounds = GraphicsHelper.getTextBounds(boxText, nameFont, frc);
+        Rectangle2D nameBounds = GraphicsHelper.getTextBounds(boxText, NAME_FONT, frc);
 
-        if (bounds.getWidth() + 8 > minimumNameBoxWidth) {
-            width = ((int) bounds.getWidth()) + 8;
+        double maxWidth = nameBounds.getWidth();
+
+        // Check if stereotype is present and potentially wider
+        String stereotype = getStereotypeText();
+        if (stereotype != null && !stereotype.isEmpty()) {
+            Font stereotypeFont = NAME_FONT.deriveFont(NAME_FONT.getSize() * 0.85f);
+            Rectangle2D stereotypeBounds = GraphicsHelper.getTextBounds(stereotype, stereotypeFont, frc);
+            maxWidth = Math.max(maxWidth, stereotypeBounds.getWidth());
+        }
+
+        if (maxWidth + 8 > minimumNameBoxWidth) {
+            width = ((int) maxWidth) + 8;
         } else {
             width = minimumNameBoxWidth;
         }
@@ -142,11 +199,11 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
          */
         Deque<ActivationBar> bars = new ArrayDeque<>();
         Deque<ActivationBar> finalBars = new ArrayDeque<>();
-        
+
         int previousActivation = 0;
-        for(int i=0; i < messageYs.size(); i++) {
+        for (int i = 0; i < messageYs.size(); i++) {
             int currentActivation = activationAt.get(messageYs.get(i));
-            if( currentActivation > previousActivation ) {
+            if (currentActivation > previousActivation) {
                 ActivationBar bar = new ActivationBar();
                 bar.fromY = messageYs.get(i);
                 bar.depth = activationAt.get(messageYs.get(i));
@@ -158,23 +215,24 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             }
             previousActivation = currentActivation;
         }
-        while(!finalBars.isEmpty()) {
+        while (!finalBars.isEmpty()) {
             drawBar(g, finalBars.pop());
         }
     }
-    
+
     private class ActivationBar {
         int fromY;
         int toY;
         int depth;
+
         public String toString() {
             return "From: " + fromY + " to: " + toY + " depth: " + depth;
         }
     }
-    
+
     private void drawBar(Graphics2D g, ActivationBar bar) {
         int barWidth = ConstantsGR.getInstance().get("SDMessageGR", "barWidth");
-        int startingX = getX() + width / 2 + (bar.depth - 1) * barWidth/2 - barWidth/2;
+        int startingX = getX() + width / 2 + (bar.depth - 1) * barWidth / 2 - barWidth / 2;
         int startingY = bar.fromY;
         int width = barWidth;
         int height = bar.toY - bar.fromY;
@@ -193,7 +251,6 @@ public abstract class AbstractSDObjectGR extends RoleClassifierGR {
             g.setPaint(getOutlineColor());
         }
 
-        g.draw(shape);        
-   }
-    
+        g.draw(shape);
+    }
 }

@@ -67,8 +67,8 @@ public class CombinedFragmentGR extends GraphicalElement implements Resizable {
     /**
      * Font for operator label and guard condition
      */
-    private static final Font OPERATOR_FONT = new Font("SansSerif", Font.BOLD, 10);
-    private static final Font GUARD_FONT = new Font("SansSerif", Font.PLAIN, 10);
+    private static final Font OPERATOR_FONT = FontRegistry.COMBINED_FRAGMENT_OPERATOR_FONT;
+    private static final Font GUARD_FONT = FontRegistry.COMBINED_FRAGMENT_GUARD_FONT;
 
     /**
      * Resize handles for corner dragging

@@ -708,6 +708,8 @@ public class CentralRepository implements Serializable {
         String oldName = originalObject.getName();
         originalObject.setName(newObject.getName());
         originalObject.setDesignClass(newObject.getDesignClass());
+        originalObject.setStereotype(newObject.getStereotype());
+        originalObject.setScope(newObject.getScope());
 
         notifyEdit("SDObject", oldName, newObject.getName());
 

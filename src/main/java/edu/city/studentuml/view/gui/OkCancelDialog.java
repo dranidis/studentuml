@@ -6,9 +6,12 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -86,12 +89,32 @@ public abstract class OkCancelDialog extends JPanel implements ActionListener {
         dialog = new JDialog(owner, title, true);
         dialog.getContentPane().add(this);
         dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
+        // Add ESC key handler to act as Cancel
+        addEscapeKeyHandler(dialog);
+
         dialog.pack();
         dialog.setResizable(false);
         dialog.setLocationRelativeTo(owner);
         dialog.setVisible(true);
 
         return ok;
+    }
+
+    /**
+     * Adds an ESC key handler to the dialog to act as Cancel.
+     * 
+     * @param dialog The dialog to add the ESC handler to
+     */
+    private void addEscapeKeyHandler(JDialog dialog) {
+        KeyStroke escapeKey = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        dialog.getRootPane().registerKeyboardAction(
+                e -> {
+                    ok = false;
+                    dialog.setVisible(false);
+                },
+                escapeKey,
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**

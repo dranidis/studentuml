@@ -23,10 +23,9 @@ import edu.city.studentuml.util.undoredo.EditUseCaseEdit;
  */
 public class UseCaseGR extends LeafUCDElementGR {
 
-    private static final String SANS_SERIF = "Sans Serif";
-    private Font useCaseFont = new Font(SANS_SERIF, Font.PLAIN, 12);
-    private Font extensionPointLabelFont = new Font(SANS_SERIF, Font.BOLD, 10);
-    private Font extensionPointFont = new Font(SANS_SERIF, Font.PLAIN, 8);
+    private static final Font USE_CASE_FONT = FontRegistry.USE_CASE_FONT;
+    private static final Font EXTENSION_POINT_LABEL_FONT = FontRegistry.USE_CASE_EXTENSION_POINT_LABEL_FONT;
+    private static final Font EXTENSION_POINT_FONT = FontRegistry.USE_CASE_EXTENSION_POINT_FONT;
     private static final Dimension MIN = new Dimension(100, 50);
     private static final int VGAP_BETWEEN_EXTENSION_POINTS = 6;
     private static final int VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS = 20;
@@ -76,12 +75,12 @@ public class UseCaseGR extends LeafUCDElementGR {
                 useCaseName = " ";
             }
 
-            Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
+            Rectangle2D bounds = getBounds(g, useCaseName, USE_CASE_FONT);
 
             int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
             int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds);
 
-            g.setFont(useCaseFont);
+            g.setFont(USE_CASE_FONT);
             g.drawString(useCaseName, startingX + nameX, startingY + nameY);
         } else {
             drawUseCaseNameAndExtensionPoints(g);
@@ -112,7 +111,7 @@ public class UseCaseGR extends LeafUCDElementGR {
             useCaseName = " ";
         }
 
-        Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
+        Rectangle2D bounds = getBounds(g, useCaseName, USE_CASE_FONT);
 
         int nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         int nameY = GraphicsHelper.calculateCenteredTextY(height, bounds)
@@ -120,18 +119,18 @@ public class UseCaseGR extends LeafUCDElementGR {
         int x = getX() + nameX;
         int y = getY() + nameY;
 
-        g.setFont(useCaseFont);
+        g.setFont(USE_CASE_FONT);
         g.drawString(useCaseName, x, y);
 
         // draw extansion points label
-        bounds = getBounds(g, EXTENSION_POINTS_LABEL, extensionPointLabelFont);
+        bounds = getBounds(g, EXTENSION_POINTS_LABEL, EXTENSION_POINT_LABEL_FONT);
 
         nameX = GraphicsHelper.calculateCenteredTextX(width, bounds);
         nameY += VGAP_BETWEEN_USE_CASE_NAME_AND_EXTENSION_POINTS;
         x = getX() + nameX;
         y = getY() + nameY;
 
-        g.setFont(extensionPointLabelFont);
+        g.setFont(EXTENSION_POINT_LABEL_FONT);
         g.drawString(EXTENSION_POINTS_LABEL, x, y);
 
         // get the largest width of all extension points
@@ -144,7 +143,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 for (ExtensionPoint ep : extend.getExtensionPoints()) {
                     String s = ep.getName();
                     if (s.length() > 0) {
-                        bounds = getBounds(g, s, extensionPointFont);
+                        bounds = getBounds(g, s, EXTENSION_POINT_FONT);
                         if (bounds.getWidth() > largest) {
                             largest = (int) bounds.getWidth();
                         }
@@ -154,7 +153,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         }
 
         // draw extension points
-        g.setFont(extensionPointFont);
+        g.setFont(EXTENSION_POINT_FONT);
 
         for (UCLinkGR link : getIncomingRelations()) {
             if (link instanceof UCExtendGR) {
@@ -163,7 +162,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 for (ExtensionPoint ep : extend.getExtensionPoints()) {
                     String s = ep.getName();
                     if (s.length() > 0) {
-                        bounds = getBounds(g, s, extensionPointFont);
+                        bounds = getBounds(g, s, EXTENSION_POINT_FONT);
 
                         nameX = (width - largest) / 2 - (int) bounds.getX();
                         nameY += VGAP_BETWEEN_EXTENSION_POINTS + bounds.getHeight();
@@ -184,7 +183,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 useCaseName = " ";
             }
 
-            Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
+            Rectangle2D bounds = getBounds(g, useCaseName, USE_CASE_FONT);
 
             int newWidth = MIN.width;
             if (bounds.getWidth() > newWidth) {
@@ -207,7 +206,7 @@ public class UseCaseGR extends LeafUCDElementGR {
             useCaseName = " ";
         }
 
-        Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
+        Rectangle2D bounds = getBounds(g, useCaseName, USE_CASE_FONT);
 
         int newWidth = 0;
         if (bounds.getWidth() > newWidth) {
@@ -215,7 +214,7 @@ public class UseCaseGR extends LeafUCDElementGR {
         }
 
         // check the extension point label
-        bounds = getBounds(g, EXTENSION_POINTS_LABEL, extensionPointLabelFont);
+        bounds = getBounds(g, EXTENSION_POINTS_LABEL, EXTENSION_POINT_LABEL_FONT);
 
         if (bounds.getWidth() > newWidth) {
             newWidth = (int) bounds.getWidth();
@@ -229,7 +228,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 for (ExtensionPoint ep : extend.getExtensionPoints()) {
                     String s = ep.getName();
                     if (s.length() > 0) {
-                        bounds = getBounds(g, s, extensionPointFont);
+                        bounds = getBounds(g, s, EXTENSION_POINT_FONT);
 
                         if (bounds.getWidth() > newWidth) {
                             multiplier += 1.5;
@@ -252,7 +251,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 useCaseName = " ";
             }
 
-            Rectangle2D bounds = getBounds(g, useCaseName, useCaseFont);
+            Rectangle2D bounds = getBounds(g, useCaseName, USE_CASE_FONT);
 
             int newHeight = MIN.height;
             if (bounds.getHeight() > newHeight) {
@@ -270,7 +269,7 @@ public class UseCaseGR extends LeafUCDElementGR {
     private int calculateComplexHeight(Graphics2D g) {
         int newHeight = HEIGHT_OF_LINE / 2 + VGAP_BETWEEN_LINE_AND_EXTENSION_POINTS;
 
-        Rectangle2D bounds = getBounds(g, EXTENSION_POINTS_LABEL, extensionPointLabelFont);
+        Rectangle2D bounds = getBounds(g, EXTENSION_POINTS_LABEL, EXTENSION_POINT_LABEL_FONT);
 
         newHeight += ((int) bounds.getHeight()) + VGAP_BETWEEN_EXTENSION_POINTS;
 
@@ -281,7 +280,7 @@ public class UseCaseGR extends LeafUCDElementGR {
                 for (ExtensionPoint ep : extend.getExtensionPoints()) {
                     String s = ep.getName();
                     if (s.length() > 0) {
-                        bounds = getBounds(g, s, extensionPointFont);
+                        bounds = getBounds(g, s, EXTENSION_POINT_FONT);
                         newHeight += bounds.getHeight() + VGAP_BETWEEN_EXTENSION_POINTS;
                     }
                 }

@@ -1,14 +1,26 @@
 package edu.city.studentuml.view.gui;
 
+import edu.city.studentuml.model.domain.AbstractObject;
 import edu.city.studentuml.model.domain.DesignClass;
 import edu.city.studentuml.model.domain.SDObject;
 import edu.city.studentuml.model.repository.CentralRepository;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.Vector;
+import javax.swing.ButtonGroup;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 /**
  * Editor for SD Objects in Sequence Diagrams.
  */
 public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
+
+    private JComboBox<String> stereotypeComboBox;
+    private JRadioButton instanceScopeRadio;
+    private JRadioButton classScopeRadio;
 
     /**
      * Constructor that accepts domain object.
@@ -17,6 +29,48 @@ public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
      */
     public ObjectEditor(CentralRepository cr) {
         super(cr);
+        addStereotypeAndScopeFields();
+    }
+
+    /**
+     * Add stereotype and scope fields to the editor UI.
+     */
+    private void addStereotypeAndScopeFields() {
+        // Change centerPanel layout to accommodate more rows
+        centerPanel.setLayout(new GridLayout(5, 1));
+
+        // Stereotype panel
+        JPanel stereotypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel stereotypeLabel = new JLabel("Stereotype: ");
+
+        // Create editable combo box with common stereotypes
+        String[] commonStereotypes = { "(none)", "interface", "abstract", "controller", "service", "repository",
+                "utility" };
+        stereotypeComboBox = new JComboBox<>(commonStereotypes);
+        stereotypeComboBox.setEditable(true);
+        stereotypeComboBox.setSelectedIndex(0); // Default to "(none)"
+
+        stereotypePanel.add(stereotypeLabel);
+        stereotypePanel.add(stereotypeComboBox);
+
+        // Scope panel
+        JPanel scopePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel scopeLabel = new JLabel("Scope: ");
+
+        instanceScopeRadio = new JRadioButton("Instance", true);
+        classScopeRadio = new JRadioButton("Class (static)");
+
+        ButtonGroup scopeGroup = new ButtonGroup();
+        scopeGroup.add(instanceScopeRadio);
+        scopeGroup.add(classScopeRadio);
+
+        scopePanel.add(scopeLabel);
+        scopePanel.add(instanceScopeRadio);
+        scopePanel.add(classScopeRadio);
+
+        // Add panels to centerPanel (after existing name, type, and card panels)
+        centerPanel.add(stereotypePanel);
+        centerPanel.add(scopePanel);
     }
 
     /**
@@ -58,11 +112,42 @@ public class ObjectEditor extends TypedEntityEditor<DesignClass, SDObject> {
         setCurrentType(object.getDesignClass());
         nameField.setText(object.getName());
         initializeTypeComboBox();
+
+        // Initialize stereotype
+        String stereotype = object.getStereotype();
+        if (stereotype == null || stereotype.isEmpty()) {
+            stereotypeComboBox.setSelectedIndex(0); // "(none)"
+        } else {
+            stereotypeComboBox.setSelectedItem(stereotype);
+        }
+
+        // Initialize scope
+        if (object.getScope() == AbstractObject.Scope.CLASS) {
+            classScopeRadio.setSelected(true);
+        } else {
+            instanceScopeRadio.setSelected(true);
+        }
     }
 
     @Override
     protected SDObject buildDomainObject() {
-        return new SDObject(getEntityName(), getCurrentType());
+        SDObject object = new SDObject(getEntityName(), getCurrentType());
+
+        // Set stereotype from combo box
+        String selectedStereotype = (String) stereotypeComboBox.getSelectedItem();
+        if (selectedStereotype != null && !selectedStereotype.equals("(none)")
+                && !selectedStereotype.trim().isEmpty()) {
+            object.setStereotype(selectedStereotype.trim());
+        }
+
+        // Set scope from radio buttons
+        if (classScopeRadio.isSelected()) {
+            object.setScope(AbstractObject.Scope.CLASS);
+        } else {
+            object.setScope(AbstractObject.Scope.INSTANCE);
+        }
+
+        return object;
     }
 
     @Override

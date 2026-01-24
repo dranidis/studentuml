@@ -35,7 +35,7 @@ public class AddCallMessageController extends AddSDLinkController {
 
         ReturnMessage returnMessage = new ReturnMessage(target.getRoleClassifier(), source.getRoleClassifier(), "");
         ReturnMessageGR returnMessageGR = new ReturnMessageGR(target, source, returnMessage, y + barHeight);
-        
+
         /**
          * fix undo
          */
@@ -56,6 +56,22 @@ public class AddCallMessageController extends AddSDLinkController {
         parentFrame.getUndoSupport().postEdit(compoundEdit);
         ((AbstractSDModel) diagramModel).setCompoundEdit(null);
 
+        // Auto-invoke inline editing for the newly created message
+        triggerInlineEditing(messageGR);
+    }
+
+    /**
+     * Trigger inline editing for a newly created message. Uses
+     * SwingUtilities.invokeLater to ensure the message is fully added to the view
+     * before starting inline editing.
+     */
+    private void triggerInlineEditing(SDMessageGR messageGR) {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            // Get the selection controller to start inline editing
+            if (parentFrame.getSelectionController() != null) {
+                parentFrame.getSelectionController().startInlineMessageEdit(messageGR);
+            }
+        });
     }
 
     @Override
